@@ -1,0 +1,72 @@
+Reading inexact literals as literals?
+
+#i1.4142135623731
+6369051672525795/4503599627370496
+
+//////////////////////////////////////////////////////////////////////
+
+(expt (2 20)) —>
+Procedure expects undefined arguments, but received 1
+
+No location in the exception
+
+//////////////////////////////////////////////////////////////////////
+
+
+(open-image-url “http://plt-scheme.org/logo.png”)
+> Uncaught Error: unable to install toplevel element open-image-urlhttp://plt-scheme.org/logo.png
+
+//////////////////////////////////////////////////////////////////////
+
+
+> (tan 50
+<interactions>:1:0: read: expected a `)' to close `('
+
+Inconsistent location reporting on syntax errors.
+
+
+//////////////////////////////////////////////////////////////////////
+
+> (area-of-ring 4)
+Procedure expects 2 arguments, but received 1
+
+No location information, no information about what procedure the
+error's talking about.
+
+
+
+//////////////////////////////////////////////////////////////////////
+
+(+ (10) 20)
+Procedure expects undefined arguments, but received 0
+
+No information about the position of the application
+
+
+//////////////////////////////////////////////////////////////////////
+
+(define (g x)
+  + x 10)
+define expects either an identifier and a body: (define answer 42), or a function header and body: (define (double x ) (* x 2)) Location: line 17, column 0, span 23, offset 194, id "<definitions>"
+
+
+Inconsistent presentation of location for compile-time error message.
+
+
+//////////////////////////////////////////////////////////////////////
+
+
+> (f 5 8)
+Procedure expects 1 arguments, but received 2
+
+
+Again, no location information.
+
+//////////////////////////////////////////////////////////////////////
+
+> (+ 5 (/ 1 0))
+division by zero
+
+No location information
+
+

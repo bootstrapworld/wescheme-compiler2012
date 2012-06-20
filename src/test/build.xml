@@ -1,0 +1,46 @@
+<project default="test">
+
+<path id="test.classpath">
+  <pathelement location="build" />
+  <pathelement location="../../support/common/externals/junit-4.5.jar" />
+</path>
+
+
+<target name="init">
+  <mkdir dir="build"/>
+</target>
+
+
+<target name="compile" depends="clean,init">
+  <javac srcdir="../../support/common/src" destdir="build" debug="true">
+    <classpath refid="test.classpath"/>
+  </javac>
+
+  <javac srcdir="java-src" destdir="build" debug="true">
+    <classpath refid="test.classpath"/>
+  </javac>
+</target>
+
+
+<target name="test" depends="compile">
+  <junit fork="yes" haltonfailure="true">
+
+
+    <batchtest fork="yes">
+      <fileset dir="java-src">
+        <include name="**/Test*.java" />
+      </fileset>
+    </batchtest>
+
+
+    <formatter type="plain" usefile="false"/>
+    <classpath refid="test.classpath" />
+  </junit>
+</target>
+
+
+<target name="clean">
+  <delete dir="build"/>
+</target>
+
+</project>

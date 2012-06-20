@@ -1,0 +1,29 @@
+The GUI subclasses:
+
+  canvas
+  slider
+
+are still in need of implementation.
+
+
+Implement these in the GuiRenderer class:
+
+    moby/support/j2me/src/org/plt/guiworld/GuiRenderer
+
+
+
+The widgets are in:
+
+    moby/support/common/src/org/plt/guiworld/
+
+
+As you add implementations for the widgets, adjust the GuiWorldTest
+program in
+
+    moby/sandbox/guiworld
+
+and test the widgets out.
+
+
+
+Integrate the other event hooks (on-location, on-tilt, on-acceleration, on-key, on-tick) into gui-world.

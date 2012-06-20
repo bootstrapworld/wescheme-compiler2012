@@ -1,0 +1,32 @@
+* Image transparency isn't being done during image lifting.  This
+  might be a problem in DrScheme itself, as pure white is being
+  treated as the transparent color, which is the wrong approach: we
+  should be using alpha transparency throughout.
+
+* The test case org.plt.TestKernel.testBigExp is failing because
+  our current approach always converts to floating point.
+
+* BigInteger literals aren't being handled in beginner-to-javascript
+
+* Functions that are recursive can trigger an effective stack
+  overflow, manifested as an exception in android.view.ViewRoot.draw.
+  Run the sketch test program for some period of time, and the error
+  should mainfest.
+
+* The unit tests in TestKernel concerning the complex numbers aren't
+  exercising that functionality correctly.
+
+* placeImage breaks if the scene passed in is an Image, and not a
+  Scene.
+
+* apks hosted on a web server may not be hosted properly.  This may be
+  a consequence of
+  http://code.google.com/p/android/issues/detail?id=1085, but I'm not
+  sure.
+
+* open-image-url breaks badly if the image url isn't good.
+
+* The reader in read.ss doesn't tell the location in the exception object
+  it throws.
+
+* The identifiers in read.js aren't in the plt package.

@@ -1,0 +1,84 @@
+!!! WARNING
+!!! This is not ready for public consumption yet. !!!
+!!! This is not ready for public consumption yet. !!!
+!!! This is not ready for public consumption yet. !!!
+!!! WARNING
+
+
+Summary
+
+    mzscheme-vm: an implementation of the mzscheme VM in Javascript.
+
+
+
+Prerequisites:
+
+    * node.js: http://nodejs.org
+
+    * mzscheme 4.2.5
+        use mzscheme 4.2.5, as the VM may change from version to version.
+
+##################################################
+Installation:
+
+    1.  Check out the git repository.
+
+        $ git clone git://github.com/dyoo/mzscheme-vm.git
+
+
+    2.  Check out the submodules within the git repository.
+
+        $ cd mzscheme-vm
+        $ git submodule init
+        $ git submodule update
+
+##################################################
+Running core opcode tests:
+
+    $ cd t
+    $ node tests.js
+
+##################################################
+Running examples:
+
+    $ cd tests
+    
+    There should be several subdirectories.  For example, let's
+    go into 42:
+
+    $ cd 42
+    $ cat 42.ss
+    #lang scheme/base
+    42
+
+    It's a simple program that should display 42.  Let's compile it.
+
+    $ mzscheme ../../src/mzjs.ss 42.ss
+
+    This should produce a file, 42.js, which we can now run.
+
+    $ node 42.js
+    42
+
+
+##################################################
+TODO
+
+* Add support for topsyntax opcode.  Currently missing.
+
+* Fix the support of the primitives in the runtime.  Start pulling
+  content from Moby-scheme's kernel.
+
+* Make the tests/mzscheme-basic tests run under mzscheme-vm.
+
+* Structured error values
+
+
+
+######################################################################
+
+
+Contributors: the following folks have helped to implement
+mzscheme-vm:
+
+   * Ethan Cecchetti

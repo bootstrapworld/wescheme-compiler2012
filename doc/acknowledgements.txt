@@ -1,0 +1,28 @@
+JUnit 4.5: http://junit.org/
+License: Common Public License 1.0
+
+
+YUI Compressor: http://developer.yahoo.com/yui/compressor/
+support/yuicompresor-2.4.2.jar
+
+
+Phonegap http://phonegap.com/
+support/phonegap-fork
+
+
+Gears init http://code.google.com/apis/gears/tools.html
+support/js/gears_init.js
+
+
+excanvas: http://excanvas.sourceforge.net/
+support/js/compat/excanvas.js
+
+
+canvas-text: http://code.google.com/p/canvas-text/
+support/js/compat/canvas-text
+
+xmlhttprequest: cross browser XMLHttpRequest: http://code.google.com/p/xmlhttprequest/
+
+
+jshahstable: http://www.timdown.co.uk/jshashtable/
+support/js/jshashtable.js

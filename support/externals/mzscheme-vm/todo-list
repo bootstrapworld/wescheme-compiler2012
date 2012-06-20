@@ -1,0 +1,45 @@
+This is a list of stuff that needs to get done
+
+
+**** Very High Priority **** (stuff Emmanuel needs)
+Make sure all errors are emitting reasonable locations
+Test for correctness on IE 6, IE 7, and IE 8
+Robustly test all non-world primitives
+
+Speed up WeScheme (page loads take forever)
+put in vertical scroll bar on definitions window (and maybe interactions too?)
+
+
+*** High Priority ***
+Get primitives tested using PLT test suite
+Test for performance on different platforms
+Fix on-key so it recognizes shift being held down
+Gracefully catch errors in procedure->{cps,void}-js-fun instead of just throwing
+Change API for make-effect-type to the more sensable one
+
+
+** Medium Priority **
+(probably fixed) Get newlines to display properly with js-text
+Rewrite jsworld to work with cooperative and reentrant big-bangs
+	Fix extraneous manual poll (after world stops) on text inputs (around line 1180 in jsworld/jsworld.js)
+Add in missing jsworld procedures (on-mouse, on-mouse!, image-rotate)
+Add fields to errors to display arguments better (using toDomNode instead of toWrittenString)
+
+
+* Low Priority *
+
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Errors in the REPL:
+
+
+On Firefox, use of the 'text' image function will produce the following error:
+
+    ctx.measureText is not a function
+
+
+//////////////////////////////////////////////////////////////////////

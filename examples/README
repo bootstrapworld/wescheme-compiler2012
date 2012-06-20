@@ -1,0 +1,36 @@
+The following are programs that demonstrate Moby's features.
+
+----------------------------------------------------------------------
+
+
+rolling-out-of-time.ss: a game that uses the tilt sensor to play a
+ball-rolling game.
+
+
+minding-the-store.ss: an application that uses the GPS location
+feature and Google Maps web-service to alert the user when we're close
+to an interesting grocery store.
+
+
+homeward-bound.ss: another GPS application that also uses SMS to
+notify another of the place where a user is located.
+
+
+bell-ringing.ss: uses a shake handler to play a bell sound whenever the
+phone is jerked.  The user interface allows switching to different
+notes.
+
+
+lullaby.ss: plays songs from the user's playlist; as time
+progresses, the volume of the music drops unless the phone is shaked.
+
+
+
+
+----------------------------------------------------------------------
+
+Other simple examples:
+
+falling-ball.ss: a World program that shows a falling ball.
+
+simple-location.ss: a World program that shows the user's geolocation.

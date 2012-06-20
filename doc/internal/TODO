@@ -1,0 +1,78 @@
+Here are the TODOs:
+
+
+If you wish to take any of these on, please contact us
+
+    Danny Yoo <dyoo@cs.wpi.edu>,
+    Shriram Krishnamurthi <sk@cs.brown.edu>
+
+first to consult on the design of solutions.
+
+----------------------------------------------------------------------
+
+Major:
+
+
+* Implement all of the BSL primitives in the runtime.  The list of
+  primitives can be found in bsl-todo.txt.
+
+* Fix the bugs listed in BUGS.
+
+* Implement all of the image.ss teachpack primitives.  See image-ss-todo.txt.
+
+* Port the gui-world teachpack to Moby.  See gui-world-todo.txt.
+
+* Connect Google Maps to DrScheme so we can drive tests of the
+  location system when testing Moby programs on the desktop.
+
+* Expose Android-specific functionality.  Definitely talk to us before
+  tackling this one: we want to make sure the design matches the
+  functional flavor of the world primitives.  See
+  android-functionality.txt.
+
+* Port universe.ss to Moby.
+
+* Incorporate the libraries of mobile.processing.org into Moby.
+
+* Work on the network compiler in
+  moby/src/web-application/simple-server.ss.
+
+   - Add error trapping.
+
+   - Design security features.
+
+   - Set up server.
+
+   - Set up watchdog.
+
+* Implement an interesting Moby program.  See
+  moby-application-proposals.txt.
+
+* Revive the J2ME port.  Some classes that we use aren't available
+  in the J2ME environment, so you'll need to carefully write
+  replacements for the missing components.
+
+
+Minor:
+
+
+* The bridge classes we've adopted for the J2ME-Android bridge are not
+  reproducing correct behavior.  We need someone to investigate and
+  fix the differences described in j2me-android-gui-differences.txt.
+
+* Add more unit test cases for the functions in org.plt.Kernel.  There
+  are very few tests at this point.  Any new primitives should have
+  tests written for them.  These tests should be in
+  src/test/java-src/org/plt/TestKernel.java, exercising code that's in
+  support/common/src/org/plt/Kernel.java.
+
+* Improve the design of the numeric support.  For expediency, the
+  kernel code reproduced the behavior of the numeric tower with a
+  bunch of hardcoded if statements.  We want to look existing
+  implementations of the numeric tower from other Java Scheme systems
+  like SISC and adopt one of them.
+
+* Remove unnecessary classes like MicroFloat from Android platform
+  compilation.  Android guarantees a floating-point unit; our current
+  implementation uses the MicroFloat fixed-point library even though
+  we don't need it.

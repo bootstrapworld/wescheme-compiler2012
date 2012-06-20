@@ -1,0 +1,42 @@
+#!/bin/bash
+
+origdir=`pwd`
+cd `dirname $0`
+
+if [ $2 ]
+    then
+	if [[ $2 == /* ]]
+	    then
+		target=$2
+	    else
+		target=$origdir/$2
+	fi
+    else
+	target=support.js
+fi
+
+if [[ $target == */ ]]
+    then
+	target=$target/support.js
+fi
+
+rm -f $target
+
+if [ -f $1-platform.js ]
+    then
+	echo 'Adding platform-specific code';
+	cat $1-platform.js >> $target;
+    else
+	echo "Requires platform either browser or node"
+	exit
+fi
+
+echo 'Concatinating main source files';
+for i in `cat order`; do
+	echo '    adding' $i;
+	cat $i >> $target;
+done;
+
+
+echo
+echo 'Done building'

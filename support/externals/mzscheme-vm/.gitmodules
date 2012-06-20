@@ -1,0 +1,6 @@
+[submodule "externals/compiler"]
+	path = externals/compiler
+	url = http://github.com/jeapostrophe/compiler.git
+[submodule "externals/js-numbers"]
+	path = externals/js-numbers
+	url = git://github.com/dyoo/js-numbers.git
