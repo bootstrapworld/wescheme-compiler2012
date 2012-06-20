@@ -1,4 +1,4 @@
-#lang scheme/base
+#lang racket/base
 
 (require web-server/servlet
          web-server/servlet-env
@@ -6,20 +6,20 @@
          scheme/match
          scheme/list
          racket/cmdline
-         "write-support.ss"
-         "compile.ss"
-         "private/json.ss"
-         "../moby-failure.ss"
-         "../pinfo.ss"
-         "../../collects/moby/runtime/permission-struct.ss"
-         "../../collects/moby/runtime/error-struct.ss"
-         "../../collects/moby/runtime/error-struct-to-dom.ss"
-         "../../collects/moby/runtime/stx.ss"
-         "../../../js-runtime/src/sexp.ss")
+         "src/compiler/mzscheme-vm/write-support.ss"
+         "src/compiler/mzscheme-vm/compile.ss"
+         "src/compiler/mzscheme-vm/private/json.ss"
+         "src/compiler/moby-failure.ss"
+         "src/compiler/pinfo.ss"
+         "src/collects/moby/runtime/permission-struct.ss"
+         "src/collects/moby/runtime/error-struct.ss"
+         "src/collects/moby/runtime/error-struct-to-dom.ss"
+         "src/collects/moby/runtime/stx.ss"
+         "js-runtime/src/sexp.ss")
 
-(define-runtime-path htdocs "servlet-htdocs")
+(define-runtime-path htdocs "src/compiler/mzscheme-vm/servlet-htdocs")
 (define-runtime-path compat 
-  "../../../js-runtime/lib/compat")
+  "js-runtime/lib/compat")
 
 
 ;; make-port-response: (values response/incremental output-port)
