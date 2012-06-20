@@ -18,7 +18,7 @@
          "collections/manifest.ss"
          "compile.ss")
 
-(define-runtime-path mzscheme-vm-library-path "../../../support/externals/mzscheme-vm/lib")
+(define-runtime-path mzscheme-vm-library-path "../../../js-runtime/lib")
 
 (define-runtime-path collections-path "collections")
 

@@ -25,7 +25,7 @@
 
 (require 
  (prefix-in bcode: 
-            "../../../support/externals/mzscheme-vm/src/bytecode-structs.ss"))
+            "../../../js-runtime/src/bytecode-structs.ss"))
 
 
 

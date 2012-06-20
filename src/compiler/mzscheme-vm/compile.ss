@@ -7,8 +7,8 @@
          (only-in "../helpers.ss" program?)
          "../modules.ss"
          "../../compile-helpers.ss"
-         "../../../support/externals/mzscheme-vm/src/bytecode-compiler.ss"
-         "../../../support/externals/mzscheme-vm/src/sexp.ss")
+         "../../../js-runtime/src/bytecode-compiler.ss"
+         "../../../js-runtime/src/sexp.ss")
 
 
 (define default-base-pinfo (pinfo-update-module-resolver

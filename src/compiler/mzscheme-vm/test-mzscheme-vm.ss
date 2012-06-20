@@ -6,7 +6,7 @@
          "../pinfo.ss"
          "../../collects/moby/runtime/stx.ss"
          "../../stx-helpers.ss"
-         (except-in "../../../support/externals/mzscheme-vm/src/bytecode-structs.ss" stx?))
+         (except-in "../../../js-runtime/src/bytecode-structs.ss" stx?))
 
 (require (for-syntax scheme/base))
 

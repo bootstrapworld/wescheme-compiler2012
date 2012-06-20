@@ -15,11 +15,11 @@
          "../../collects/moby/runtime/error-struct.ss"
          "../../collects/moby/runtime/error-struct-to-dom.ss"
          "../../collects/moby/runtime/stx.ss"
-         "../../../support/externals/mzscheme-vm/src/sexp.ss")
+         "../../../js-runtime/src/sexp.ss")
 
 (define-runtime-path htdocs "servlet-htdocs")
 (define-runtime-path compat 
-  "../../../support/externals/mzscheme-vm/lib/compat")
+  "../../../js-runtime/lib/compat")
 
 
 ;; make-port-response: (values response/incremental output-port)
