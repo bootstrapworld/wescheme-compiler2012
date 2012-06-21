@@ -38,10 +38,14 @@
   (cond [(rbtree-empty? t) 
          (on-failure)]
         [(lt? k (rbtree-key t)) 
-         (rbtree-ref lt? (rbtree-lkid t) k
+         (rbtree-ref lt?
+                     (rbtree-lkid t)
+                     k
                      on-failure)]
         [(lt? (rbtree-key t) k)
-         (rbtree-ref lt? (rbtree-rkid t) k
+         (rbtree-ref lt?
+                     (rbtree-rkid t)
+                     k
                      on-failure)]
         [else 
          (rbtree-value t)]))
@@ -135,6 +139,11 @@
                '()))
                
 
+;; Contracts off for rbtree-ref because of performance reasons.
+(provide rbtree-ref)
+;; Contracts off for rbtree-lookup because of performance reasons.
+(provide rbtree-lookup)
+
 
 
 (provide/contract [rbtree? (any/c . -> . boolean?)]
@@ -148,14 +157,16 @@
                   [rbtree-member? 
                    ((any/c any/c . -> . boolean?) rbtree? any/c
                                                   . -> . boolean?)]
-                  
-                  [rbtree-lookup 
-                   ((any/c any/c . -> . boolean?) rbtree? any/c 
-                                                  . -> . (or/c false/c (list/c any/c any/c)))]
 
-                  [rbtree-ref
-                   ((any/c any/c . -> . boolean?) rbtree? any/c (-> any/c)
-                                                  . -> . any/c)]
+                  ;; Contracts off for rbtree-lookup because of performance reasons.
+                  ;[rbtree-lookup 
+                  ; ((any/c any/c . -> . boolean?) rbtree? any/c 
+                  ;                                . -> . (or/c false/c (list/c any/c any/c)))]
+
+                  ;; Contracts off for rbtree-ref because of performance reasons.
+                  ;[rbtree-ref
+                  ; ((any/c any/c . -> . boolean?) rbtree? any/c (-> any/c)
+                  ;                                . -> . any/c)]
                   
                   [rbtree->list
                    (rbtree? . -> . (listof (list/c any/c any/c)))]

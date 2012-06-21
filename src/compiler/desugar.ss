@@ -28,10 +28,11 @@
 
 ;; syntax-env-lookup: syntax-env symbol -> (or false/c syntax-binding)
 (define (syntax-env-lookup a-syntax-env an-id)
-  (rbtree-ref symbol< 
-              (syntax-env-entries a-syntax-env)
-              an-id
-              (lambda () false)))
+  (begin
+    (rbtree-ref symbol< 
+                (syntax-env-entries a-syntax-env)
+                an-id
+                (lambda () false))))
 
 ;; syntax-env-add: syntax-env symbol syntax-binding -> syntax-env
 (define (syntax-env-add a-syntax-env an-id a-binding)
