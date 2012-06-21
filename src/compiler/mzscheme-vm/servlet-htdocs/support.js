@@ -9107,6 +9107,10 @@ var ExnFailContractDivisionByZero = makeStructureType('exn:fail:contract:divisio
 types.exnFailContractDivisionByZero = ExnFailContractDivisionByZero.constructor;
 types.isExnFailContractDivisionByZero = ExnFailContractDivisionByZero.predicate;
 
+var ExnFailContractArityWithPosition = makeStructureType('exn:fail:contract:arity:position', ExnFailContractArity, 1, 0, false, false);
+types.exnFailContractArityWithPosition = ExnFailContractArityWithPosition.constructor;
+types.isExnFailContractArityWithPosition = ExnFailContractArityWithPosition.predicate;
+
 
 ///////////////////////////////////////
 // World-specific exports
@@ -20304,15 +20308,15 @@ var selectProcedureByArity = function(n, procValue, operands) {
 	    return procValue;
 	} else {
 	    helpers.raise(types.incompleteExn(
-		types.exnFailContractArity,
-		helpers.format("~a: expects ~a ~a argument~a, given ~s~a",
+		types.exnFailContractArityWithPosition,
+		helpers.format("FIIIXME ~a: expects ~a ~a argument~a, given ~s~a",
 			       [(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>"),
 			        (procValue.isRest ? 'at least' : ''),
 				procValue.numParams,
 				(procValue.numParams == 1) ? '' : 's',
 				n,
 				getArgStr()]),
-		[]));
+		["???"]));
 	}
     }
 };

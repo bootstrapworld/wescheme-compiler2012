@@ -2175,6 +2175,10 @@ var ExnFailContractDivisionByZero = makeStructureType('exn:fail:contract:divisio
 types.exnFailContractDivisionByZero = ExnFailContractDivisionByZero.constructor;
 types.isExnFailContractDivisionByZero = ExnFailContractDivisionByZero.predicate;
 
+var ExnFailContractArityWithPosition = makeStructureType('exn:fail:contract:arity:position', ExnFailContractArity, 1, 0, false, false);
+types.exnFailContractArityWithPosition = ExnFailContractArityWithPosition.constructor;
+types.isExnFailContractArityWithPosition = ExnFailContractArityWithPosition.predicate;
+
 
 ///////////////////////////////////////
 // World-specific exports

@@ -879,15 +879,15 @@ var selectProcedureByArity = function(n, procValue, operands) {
 	    return procValue;
 	} else {
 	    helpers.raise(types.incompleteExn(
-		types.exnFailContractArity,
-		helpers.format("~a: expects ~a ~a argument~a, given ~s~a",
+		types.exnFailContractArityWithPosition,
+		helpers.format("FIIIXME ~a: expects ~a ~a argument~a, given ~s~a",
 			       [(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>"),
 			        (procValue.isRest ? 'at least' : ''),
 				procValue.numParams,
 				(procValue.numParams == 1) ? '' : 's',
 				n,
 				getArgStr()]),
-		[]));
+		["???"]));
 	}
     }
 };
