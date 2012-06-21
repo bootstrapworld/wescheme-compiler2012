@@ -673,34 +673,37 @@
 ;; Given an expression, compute the set of free variable occcurances
 (define (free-variables expr env)
   (sort-and-unique (let loop ([expr expr]
-                              [env env])
+                              [env env]
+                              [acc '()])
                      (cond
                        ;; (if test consequent alternative)
                        [(stx-begins-with? expr 'if)
                         (local [(define test (second (stx-e expr)))
                                 (define consequent (third (stx-e expr)))
                                 (define alternative (fourth (stx-e expr)))]
-                          (append (loop test env)
-                                  (loop consequent env)
-                                  (loop alternative env)))]
+                               (loop alternative env
+                                     (loop consequent env
+                                           (loop test env acc))))]
                        
                        
                        ;; (begin ...)
                        [(stx-begins-with? expr 'begin)
                         (local [(define exprs (rest (stx-e expr)))]
-                          (apply append
-                                 (map (lambda (e) (loop e env)) exprs)))]
+                               (foldl (lambda (e acc)
+                                        (loop e env acc))
+                                      acc
+                                      exprs))]
                        
                        
                        ;; Identifiers
                        [(symbol? (stx-e expr))
                         (match (env-lookup env (stx-e expr))
                           [(struct local-stack-reference (name boxed? depth))
-                           empty]
+                           acc]
                           [(struct global-stack-reference (name depth pos))
-                           empty]
+                           acc]
                           [(struct unbound-stack-reference (name))
-                           (list (stx-e expr))])]
+                           (cons (stx-e expr) acc)])]
                        
                        
                        ;; (local ([define ...] ...) body)
@@ -715,46 +718,40 @@
                                                          (env-push-local/boxed env (stx-e id)))
                                                        env 
                                                        (reverse defined-names))])
-                              (append 
-                               (loop body updated-env)
-                               (apply append (map (lambda (a-defn) 
-                                                    (case-analyze-definition a-defn
-                                                                             (lambda (id args body)
-                                                                               (loop body (foldl (lambda (id env)
-                                                                                                   (env-push-local env (stx-e id)))
-                                                                                                 updated-env
-                                                                                                 args)))
-                                                                             (lambda (id body)
-                                                                               (loop body updated-env))
-                                                                             (lambda (id fields)
-                                                                               empty)
-                                                                             (lambda (ids body)
-                                                                               (loop body updated-env))))
-                                                  defns)))))]
+                              (foldl (lambda (a-defn acc) 
+                                       (case-analyze-definition a-defn
+                                                                (lambda (id args body)
+                                                                  (loop body
+                                                                        (foldl (lambda (id env)
+                                                                                 (env-push-local env (stx-e id)))
+                                                                               updated-env
+                                                                               args)
+                                                                        acc))
+                                                                (lambda (id body)
+                                                                  (loop body updated-env acc))
+                                                                (lambda (id fields)
+                                                                  acc)
+                                                                (lambda (ids body)
+                                                                  (loop body updated-env acc))))
+                                     (loop body updated-env acc)
+                                     defns)))]
                               
                               
-
-                       
-                       
-                       ;; (set! identifier value)
-                       ;; Attention: it's evaluation doesn't produce an Object
-                       #;[(stx-begins-with? expr 'set!)
-                          (local [(define id (second (stx-e expr)))
-                                  (define value (third (stx-e expr)))]
-                            ...)]
                        
                        ;; (and exprs ...)
                        [(stx-begins-with? expr 'and)
-                        (apply append (map (lambda (x)
-                                             (loop x env))
-                                           (rest (stx-e expr))))]
+                        (foldl (lambda (x acc)
+                                 (loop x env acc))
+                               acc
+                               (rest (stx-e expr)))]
                        
                        ;; (or exprs ...)
                        [(stx-begins-with? expr 'or)
-                        (apply append (map (lambda (x)
-                                             (loop x env))
-                                           (rest (stx-e expr))))]
-                       
+                        (foldl (lambda (x acc)
+                                 (loop x env acc))
+                               acc
+                               (rest (stx-e expr)))]
+                     
                        ;; (lambda (args ...) body)
                        [(stx-begins-with? expr 'lambda)
                         (let ([args (map stx-e (stx-e (second (stx-e expr))))]
@@ -762,37 +759,39 @@
                           (loop body (foldl (lambda (id env)
                                               (env-push-local env id))
                                             env
-                                            (reverse args))))]
+                                            (reverse args))
+                                acc))]
                        
                        
                        ;; Quoted datums
                        [(stx-begins-with? expr 'quote)
-                        empty]
+                        acc]
                        
                        ;; Function call/primitive operation call
                        [(pair? (stx-e expr))
-                        (apply append (map (lambda (x)
-                                             (loop x env))
-                                           (stx-e expr)))]
+                        (foldl (lambda (x acc)
+                                 (loop x env acc))
+                               acc
+                               (stx-e expr))]
                        
                        ;; Numbers
                        [(number? (stx-e expr))
-                        empty]
+                        acc]
                        
                        ;; Strings
                        [(string? (stx-e expr))
-                        empty]
+                        acc]
                        
                        ;; Literal booleans
                        [(boolean? (stx-e expr))
-                        empty]
+                        acc]
                        
                        ;; Characters
                        [(char? (stx-e expr))
-                        empty]
+                        acc]
                        [else
-                        (error 'free-variables (format "~s" (stx-e expr)))]))
-                   
+                        (error 'free-variables (format "~s" (stx-e expr)))]))                   
+
                    (lambda (x y)
                      (string<? (symbol->string x) (symbol->string y)))
                    
