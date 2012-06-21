@@ -651,7 +651,7 @@ CallControl.prototype.invoke = function(state) {
 
 
 var callProcedure = function(aState, procValue, n, operandValues) {
-    procValue = selectProcedureByArity(n, procValue, operandValues);
+    procValue = selectProcedureByArity(aState, n, procValue, operandValues);
     if (primitive.isPrimitive(procValue)) {
 	callPrimitiveProcedure(aState, procValue, n, operandValues);
     } else if (procValue instanceof types.ClosureValue) {
@@ -802,8 +802,8 @@ var callContinuationProcedure = function(state, procValue, n, operandValues) {
 
 
 
-// selectProcedureByArity: (CaseLambdaValue | CasePrimitive | Continuation | Closure | Primitive) -> (Continuation | Closure | Primitive)
-var selectProcedureByArity = function(n, procValue, operands) {
+// selectProcedureByArity: state (CaseLambdaValue | CasePrimitive | Continuation | Closure | Primitive) -> (Continuation | Closure | Primitive)
+var selectProcedureByArity = function(aState, n, procValue, operands) {
     var getArgStr = function() {
 	var argStr = '';
 	if (operands.length > 0) {
@@ -878,6 +878,11 @@ var selectProcedureByArity = function(n, procValue, operands) {
 	    (n > procValue.numParams && procValue.isRest)) {
 	    return procValue;
 	} else {
+	    var positionStack = 
+		state.captureCurrentContinuationMarks(aState).ref(
+		    types.symbol('moby-application-position-key'));
+
+	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
 		helpers.format("FIIIXME ~a: expects ~a ~a argument~a, given ~s~a",
@@ -887,7 +892,7 @@ var selectProcedureByArity = function(n, procValue, operands) {
 				(procValue.numParams == 1) ? '' : 's',
 				n,
 				getArgStr()]),
-		["???"]));
+		[positionStack[positionStack.length - 1]]));
 	}
     }
 };

@@ -534,10 +534,12 @@
   (let-values ([(an-app pinfo-2)
                 (compile-application-expression operator operands env pinfo-1)])
     (values (bcode:make-with-cont-mark MOBY-APPLICATION-POSITION-KEY 
-                                       (cons (loc->vec (stx-loc operator))
-                                             (map (lambda (rand)
-                                                    (loc->vec (stx-loc rand)))
-                                                  operands))            
+                                     ;  (cons (stx->datum expr)
+                                             (cons 
+                                              (loc->vec (stx-loc operator))
+                                              (map (lambda (rand)
+                                                     (loc->vec (stx-loc rand)))
+                                                   operands));)
                                        (bcode:make-with-cont-mark
                                         MOBY-STACK-RECORD-CONTINUATION-MARK-KEY
                                         (loc->vec (stx-loc expr))
