@@ -1,8 +1,8 @@
-#lang scheme/base
-(require scheme/string
-         scheme/list
-         scheme/contract
-         scheme/match
+#lang racket/base
+(require racket/string
+         racket/list
+         racket/contract
+         racket/match
          "jsexp.ss")
 
 (provide/contract [jsexp->js (jsexp? . -> . string?)]
@@ -32,37 +32,58 @@
 (define VOID "types.VOID")
 
 
-;; jsexp->js: jsexp -> string
+;; -jsexp->js: jsexp -> string
 (define (jsexp->js a-jsexp)
+  (define op (open-output-string))
+  (jsexp->js/port a-jsexp op)
+  (get-output-string op))
+
+
+;; jsexp->js/port: jsexp -> void
+(define (jsexp->js/port a-jsexp op)
   (match a-jsexp
     [(struct ht (name pairs))
-     (string-append "{"
-                    (string-join (map key-value->js 
-                                      (cons `($ ,(make-lit (symbol->string name)))
-                                            pairs))
-                                 " ,")
-                    "\n"
-                    "}")]
+     (display "{" op)
+     (port-for-each/comma-separate key-value->js
+                                   (cons `($ ,(make-lit (symbol->string name)))
+                                         pairs)
+                                   op)
+     (display "}" op)]
     [(struct vec (items))
-     (string-append "[" 
-                    (string-join (map jsexp->js items) " ,")
-                    "\n"
-                    "]")]
+     (display "[" op)
+     (port-for-each/comma-separate jsexp->js/port items op)
+     (display "]" op)]
     [(struct int (v))
-     (number->string v)]
+     (display (number->string v) op)]
     [(struct lit (v))
-     (sexp->js v)]))
+     (display (sexp->js v) op)]))
   
 
-;; key-value->js: (list symbol jsval) -> string
-(define (key-value->js a-key-value)
+;; key-value->js: (list symbol jsval) port -> void
+(define (key-value->js a-key-value op)
   (let ([key (first a-key-value)]
         [value (second a-key-value)])
-    (string-append (sexp->js (symbol->string key))
-                   ":"
-                   (jsexp->js value))))
+    (display (sexp->js (symbol->string key)) op)
+    (display ":" op)
+    (jsexp->js/port value op)))
 
-      
+
+;; apply a for-each across a list of elements, printing the separator into the
+;; port between each element.
+(define (port-for-each/comma-separate f elts op #:separator [separator ","])
+  (cond [(empty? elts)
+         (void)]
+        [else
+         (let loop ([elts elts])
+           (cond
+            [(empty? (rest elts))
+             (f (first elts) op)]
+            [else
+             (f (first elts) op)
+             (display separator op)
+             (loop (rest elts))]))]))
+
+
 
 
 ;; sexp->js: any -> string
