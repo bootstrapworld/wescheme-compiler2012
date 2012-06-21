@@ -33,22 +33,23 @@
          (list (rbtree-key t) (rbtree-value t))]))
 
 
-;; rbtree-ref: (X X -> boolean) (treeof X Y) X (-> Z) -> (or/c Y Z)
-(define (rbtree-ref lt? t k on-failure)
-  (cond [(rbtree-empty? t) 
-         (on-failure)]
-        [(lt? k (rbtree-key t)) 
-         (rbtree-ref lt?
-                     (rbtree-lkid t)
-                     k
-                     on-failure)]
-        [(lt? (rbtree-key t) k)
-         (rbtree-ref lt?
-                     (rbtree-rkid t)
-                     k
-                     on-failure)]
-        [else 
-         (rbtree-value t)]))
+;; rbtree-ref: (X X -> boolean) (treeof X Y) X Z -> (or/c Y Z)
+(define (rbtree-ref lt? t k default-val)
+  (letrec ([loop
+            (lambda (t)
+              (cond [(rbtree-empty? t) 
+                     default-val]
+                    [else
+                     (let ([key (rbtree-key t)])
+                       (cond [(lt? k key) 
+                              (loop (rbtree-lkid t))]
+
+                             [(lt? key k)
+                              (loop (rbtree-rkid t))]
+                             
+                             [else 
+                              (rbtree-value t)]))]))])
+    (loop t)))
 
 
 

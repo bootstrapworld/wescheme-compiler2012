@@ -138,7 +138,7 @@
                                  (rbtree-ref symbol< 
                                              (pinfo-defined-names a-pinfo) 
                                              (stx-e (second (stx-e a-clause)))
-                                             (lambda () #f))))
+                                             #f)))
                      (raise (make-moby-error (stx-loc a-clause)
                                              (make-moby-error-type:provided-structure-not-structure
                                               (stx-e (second (stx-e a-clause)))))))

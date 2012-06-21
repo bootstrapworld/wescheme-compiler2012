@@ -32,7 +32,7 @@
     (rbtree-ref symbol< 
                 (syntax-env-entries a-syntax-env)
                 an-id
-                (lambda () false))))
+                #f)))
 
 ;; syntax-env-add: syntax-env symbol syntax-binding -> syntax-env
 (define (syntax-env-add a-syntax-env an-id a-binding)
