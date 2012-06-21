@@ -295,7 +295,7 @@
     [(pair? (stx-e expr))
      (local [(define operator (first (stx-e expr)))
              (define operands (rest (stx-e expr)))]
-       (compile-application-expression/stack-record (stx-loc expr)
+       (compile-application-expression/stack-record expr
                                                     operator
                                                     operands env a-pinfo))]
     
@@ -517,19 +517,32 @@
 (define MOBY-STACK-RECORD-CONTINUATION-MARK-KEY
   'moby-stack-record-continuation-mark-key)
 
+(define MOBY-APPLICATION-POSITION-KEY 
+  'moby-application-position-key)
 
-(define (compile-application-expression/stack-record a-loc operator operands env pinfo)
-  (let-values ([(an-app pinfo)
-                (compile-application-expression operator operands env pinfo)])
-    (values (bcode:make-with-cont-mark
-             MOBY-STACK-RECORD-CONTINUATION-MARK-KEY
-             (vector (Loc-id a-loc)
-                     (Loc-offset a-loc)
-                     (Loc-line a-loc)
-                     (Loc-column a-loc)
-                     (Loc-span a-loc))
-             an-app)
-            pinfo)))
+
+(define (loc->vec a-loc)
+  (vector (Loc-id a-loc)
+          (Loc-offset a-loc)
+          (Loc-line a-loc)
+          (Loc-column a-loc)
+          (Loc-span a-loc)))
+
+;; compile-appliaction-expression/stack-record: location expression (listof expression) env pinfo -> (values expr pinfo)
+
+(define (compile-application-expression/stack-record expr operator operands env pinfo-1)
+  (let-values ([(an-app pinfo-2)
+                (compile-application-expression operator operands env pinfo-1)])
+    (values (bcode:make-with-cont-mark MOBY-APPLICATION-POSITION-KEY 
+                                       (cons (loc->vec (stx-loc operator))
+                                             (map (lambda (rand)
+                                                    (loc->vec (stx-loc rand)))
+                                                  operands))            
+                                       (bcode:make-with-cont-mark
+                                        MOBY-STACK-RECORD-CONTINUATION-MARK-KEY
+                                        (loc->vec (stx-loc expr))
+                                        an-app))
+            pinfo-2)))
 
 ;; compile-application-expression: expr (listof expr) env pinfo -> (values expression-form pinfo)
 (define (compile-application-expression operator operands env pinfo)
