@@ -885,7 +885,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		helpers.format("FIIIXME ~a: expects ~a ~a argument~a, given ~s~a",
+		helpers.format("~a: expects ~a ~a argument~a, given ~s~a",
 			       [(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>"),
 			        (procValue.isRest ? 'at least' : ''),
 				procValue.numParams,
