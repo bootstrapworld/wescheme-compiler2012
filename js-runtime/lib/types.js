@@ -1652,8 +1652,9 @@ EofValue.prototype.toString = function() {
 var EOF_VALUE = new EofValue();
 
 
-var ClosureValue = function(name, numParams, paramTypes, isRest, closureVals, body) {
+var ClosureValue = function(name, locs, numParams, paramTypes, isRest, closureVals, body) {
     this.name = name;
+    this.locs = locs;
     this.numParams = numParams;
     this.paramTypes = paramTypes;
     this.isRest = isRest;

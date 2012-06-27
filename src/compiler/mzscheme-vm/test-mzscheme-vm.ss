@@ -48,6 +48,7 @@
 
 (check-expect (c (lambda () 42))
               (make-lam '()
+                        #f
                         '()
                         0
                         '()
@@ -59,7 +60,8 @@
 
 
 (check-expect (c (lambda (x y) x))
-              (make-lam '() 
+              (make-lam '()
+                        #f
                         '() 
                         2 
                         '(val val) 
@@ -71,7 +73,8 @@
 
 
 (check-expect (c (lambda (x y z) z))
-              (make-lam '() 
+              (make-lam '()
+                        #f
                         '() 
                         3 
                         '(val val val) 
@@ -84,7 +87,8 @@
 
 (check-expect (c (lambda (x y) 
                    (lambda (z) x)))
-              (make-lam '() 
+              (make-lam '()
+                        #f
                         '() 
                         2 
                         '(val val) 
@@ -92,7 +96,8 @@
                         #() 
                         '() 
                         0
-                        (make-lam '() 
+                        (make-lam '()
+                                  #f
                                   '() 
                                   1 
                                   '(val) 
@@ -111,7 +116,8 @@
 
 (check-expect (c (lambda (x y) 
                    (lambda (z) z)))
-              (make-lam '() 
+              (make-lam '()
+                        #f
                         '() 
                         2 
                         '(val val) 
@@ -119,7 +125,8 @@
                         #() 
                         '() 
                         0
-                        (make-lam '() 
+                        (make-lam '()
+                                  #f
                                   '() 
                                   1 
                                   '(val) 
@@ -133,7 +140,8 @@
 
 (check-expect (c (lambda (x y) 
                    (lambda (z) y)))
-              (make-lam '() 
+              (make-lam '()
+                        #f
                         '() 
                         2 
                         '(val val) 
@@ -141,7 +149,8 @@
                         #() 
                         '() 
                         0
-                        (make-lam '() 
+                        (make-lam '()
+                                  #f
                                   '() 
                                   1 
                                   '(val) 
@@ -165,6 +174,7 @@
 
 (check-expect (c (lambda (x y) (x y y)))
               (make-lam '()
+                        #f
                         '()
                         2
                         '(val val)
@@ -312,6 +322,7 @@
                               0
                               #t
                               (make-lam 'f
+                                        #f
                                         '()
                                         1
                                         '(val)

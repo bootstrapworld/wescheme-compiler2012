@@ -193,6 +193,7 @@ var loadBranch = function(state, nextCode) {
 var loadLam = function(state, nextCode) {
     var result =  new control.LamControl(
 	{ name: nextCode['name'],
+          locs: nextCode['locs'],
 	  numParams: nextCode['num-params'],
 	  paramTypes: nextCode['param-types'],
 	  isRest: nextCode['rest?'],

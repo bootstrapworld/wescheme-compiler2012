@@ -461,6 +461,7 @@ PrimvalControl.prototype.invoke = function(aState) {
 
 var LamControl = function(params) {
     this.name = params.name;
+    this.locs = params.locs;
     this.numParams = params.numParams;
     this.paramTypes = params.paramTypes;
     this.isRest = params.isRest;
@@ -472,6 +473,7 @@ var LamControl = function(params) {
 
 LamControl.prototype.invoke = function(state) {
     state.v = new types.ClosureValue(this.name,
+                                     this.locs,
 				     this.numParams, 
 				     this.paramTypes, 
 				     this.isRest, 

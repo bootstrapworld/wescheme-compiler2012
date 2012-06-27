@@ -8584,8 +8584,9 @@ EofValue.prototype.toString = function() {
 var EOF_VALUE = new EofValue();
 
 
-var ClosureValue = function(name, numParams, paramTypes, isRest, closureVals, body) {
+var ClosureValue = function(name, locs, numParams, paramTypes, isRest, closureVals, body) {
     this.name = name;
+    this.locs = locs;
     this.numParams = numParams;
     this.paramTypes = paramTypes;
     this.isRest = isRest;
@@ -19890,6 +19891,7 @@ PrimvalControl.prototype.invoke = function(aState) {
 
 var LamControl = function(params) {
     this.name = params.name;
+    this.locs = params.locs;
     this.numParams = params.numParams;
     this.paramTypes = params.paramTypes;
     this.isRest = params.isRest;
@@ -19901,6 +19903,7 @@ var LamControl = function(params) {
 
 LamControl.prototype.invoke = function(state) {
     state.v = new types.ClosureValue(this.name,
+                                     this.locs,
 				     this.numParams, 
 				     this.paramTypes, 
 				     this.isRest, 
@@ -20314,7 +20317,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		helpers.format("FIIIXME ~a: expects ~a ~a argument~a, given ~s~a",
+		helpers.format("~a: expects ~a ~a argument~a, given ~s~a",
 			       [(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>"),
 			        (procValue.isRest ? 'at least' : ''),
 				procValue.numParams,
@@ -20990,6 +20993,7 @@ var loadBranch = function(state, nextCode) {
 var loadLam = function(state, nextCode) {
     var result =  new control.LamControl(
 	{ name: nextCode['name'],
+          locs: nextCode['locs'],
 	  numParams: nextCode['num-params'],
 	  paramTypes: nextCode['param-types'],
 	  isRest: nextCode['rest?'],

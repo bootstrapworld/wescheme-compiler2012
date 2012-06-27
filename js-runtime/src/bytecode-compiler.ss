@@ -308,10 +308,12 @@
 ;; compile-lam: lam -> jsexp
 (define (compile-lam a-lam)
   (match a-lam
-    [(struct lam (name flags num-params param-types 
+    [(struct lam (name operator+rands-locs
+                       flags num-params param-types 
                        rest? closure-map closure-types 
                        max-let-depth body))
      (make-ht 'lam `((name ,(make-lit name))
+                     (locs ,(make-vec (map make-lit operator+rands-locs)))
 		     (flags ,(make-vec (map make-lit flags)))
                      (num-params ,(make-int num-params))
                      (param-types ,(make-vec (map make-lit param-types)))

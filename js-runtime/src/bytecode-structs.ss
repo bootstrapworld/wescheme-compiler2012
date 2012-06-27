@@ -107,6 +107,13 @@
                                 [internal-context (or/c #f #t stx?)]))
 
 (define-form-struct (lam expr) ([name (or/c symbol? vector? empty?)]
+                                ;; modification: operator+rand-locs
+                                ;; includes a list of vectors
+                                ;; corresponding to the location of
+                                ;; the operator, operands, etc if we
+                                ;; can pick them out.  If we can't get
+                                ;; this information, it's #f.
+                                [operator+rand-locs (or/c #f (listof any/c))]
                                 [flags (listof (or/c 'preserves-marks 'is-method 'single-result))]
                                 [num-params integer?] ; should be exact-nonnegative-integer?
                                 [param-types (listof (or/c 'val 'ref 'flonum))]
