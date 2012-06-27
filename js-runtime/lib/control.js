@@ -816,11 +816,13 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	return argStr;
     }
     
-    var getArgColoredParts = function() {
+    var getArgColoredParts = function(locations) {
 	var argColoredParts = [];
+	var locs = locations;
 	if (operands.length > 0) {
 		for (var i = 0; i < operands.length; i++) {
-			argColoredParts.push(new types.ColoredPart(operands[i]) );
+			argColoredParts.push(new types.ColoredPart(operands[i], locs.first()));
+			locs = locs.rest();
 		}
 	}
 	return argColoredParts;
@@ -892,21 +894,23 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 		state.captureCurrentContinuationMarks(aState).ref(
 		    types.symbol('moby-application-position-key'));
 	    
-	    var argColoredParts = getArgColoredParts();
+	   
+	    var locationList = positionStack[positionStack.length - 1];
+	    var argColoredParts = getArgColoredParts(locationList.rest());
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart(''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")),locationList.first()),
 			": expects ", 
 			''+(procValue.isRest ? 'at least' : ''),
 		        " ",
-			new types.ColoredPart(procValue.numParams + " argument" + 
-                                                ((procValue.numParams == 1) ? '' : 's')),
+			new types.ColoredPart((procValue.numParams + " argument" + 
+                                                ((procValue.numParams == 1) ? '' : 's')), locationList.first()),
   		         " given ",
 			n ,
-			": "
-			/*new types.ColoredPart(getArgStr())*/].concat(argColoredParts)),
-		[positionStack[positionStack.length - 1]]));
+			": ", 
+			new types.GradientPart(argColoredParts)]),
+		[]));
 	}
     }
 };

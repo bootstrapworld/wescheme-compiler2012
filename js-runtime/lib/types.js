@@ -1939,12 +1939,21 @@ var isMessage = function(o) {
   return o instanceof Message;
 };
 
-var ColoredPart = function(text) {
+var ColoredPart = function(text, location) {
   this.text = text;
+  this.location = location;
 };
 
 var isColoredPart = function(o) {
   return o instanceof ColoredPart;
+};
+
+var GradientPart = function(coloredParts) {
+    this.coloredParts = coloredParts;
+};
+
+var isGradientPart = function(o) {
+  return o instanceof GradientPart;
 };
 
 ColoredPart.prototype.toString = function() {
@@ -1953,7 +1962,7 @@ ColoredPart.prototype.toString = function() {
 
 
 
-
+/*
 var Ref = function(text, location) {
     this.text = text;
     this.location = location;
@@ -1973,7 +1982,7 @@ var isDocLink = function(o) {
 }
 
 
-
+*/
 
 
 //////////////////////////////////////////////////////////////////////
@@ -2291,7 +2300,8 @@ types.ColoredPart = ColoredPart;
 types.Message = Message;
 types.isColoredPart = isColoredPart;
 types.isMessage = isMessage;
-
+types.GradientPart = GradientPart;
+types.isGradientPart = isGradientPart;
 
 
 })();
