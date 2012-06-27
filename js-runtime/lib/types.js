@@ -1918,6 +1918,63 @@ CasePrimitive.prototype.toDisplayedString = function(cache) {
 
 
 
+/////////////////////////////////////////////////////////////////////
+// Colored Error Message Support
+
+var Message = function(args) {
+  this.args = args;
+};
+
+Message.prototype.toString = function() {
+  var toReturn = [];
+  
+  for(var i = 0; i < args.length; i++) {
+      toReturn.push(''+args[i]);
+  }
+  
+  return toReturn.join("");
+};
+
+var isMessage = function(o) {
+  return o instanceof Message;
+};
+
+var ColoredPart = function(text) {
+  this.text = text;
+};
+
+var isColoredPart = function(o) {
+  return o instanceof ColoredPart;
+};
+
+ColoredPart.prototype.toString = function() {
+    return this.text+'';
+};
+
+
+
+
+var Ref = function(text, location) {
+    this.text = text;
+    this.location = location;
+}
+
+var DocLink = function(text, name) {
+    this.text = text;
+    this.name = name;
+}
+
+var isRef = function(o) {
+    return o instanceof Ref;
+}
+
+var isDocLink = function(o) {
+    return o instanceof DocLink;
+}
+
+
+
+
 
 //////////////////////////////////////////////////////////////////////
 
@@ -2132,7 +2189,7 @@ types.isIncompleteExn = function(x) { return x instanceof IncompleteExn; };
 
 var Exn = makeStructureType('exn', false, 2, 0, false,
 		function(k, msg, contMarks, name) {
-			helpers.check(msg, isString, name, 'string', 1, [msg, contMarks]);
+			// helpers.check(msg, isString, name, 'string', 1, [msg, contMarks]);
 			helpers.check(contMarks, types.isContinuationMarkSet, name, 'continuation mark set', 2);
 			k( new ValuesWrapper([msg, contMarks]) );
 		});
@@ -2179,6 +2236,8 @@ var ExnFailContractArityWithPosition = makeStructureType('exn:fail:contract:arit
 types.exnFailContractArityWithPosition = ExnFailContractArityWithPosition.constructor;
 types.isExnFailContractArityWithPosition = ExnFailContractArityWithPosition.predicate;
 
+types.exnFailContractArityWithPositionLocations = function(exn) { return ExnFailContractArityWithPosition.accessor(exn, 0); };
+
 
 ///////////////////////////////////////
 // World-specific exports
@@ -2222,6 +2281,17 @@ types.isRenderEffect = RenderEffect.predicate;
 //types.renderEffectDomNode = function(x) { return RenderEffect.accessor(x, 0); };
 //types.renderEffectEffects = function(x) { return RenderEffect.accessor(x, 1); };
 //types.setRenderEffectEffects = function(x, v) { RenderEffect.mutator(x, 1, v); };
+
+
+
+
+
+
+types.ColoredPart = ColoredPart;
+types.Message = Message;
+types.isColoredPart = isColoredPart;
+types.isMessage = isMessage;
+
 
 
 })();

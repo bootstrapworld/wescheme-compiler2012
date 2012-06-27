@@ -1269,7 +1269,7 @@ PRIMITIVES['exn-message'] =
 		 false, false,
 		 function(exn) {
 		 	check(exn, types.isExn, 'exn-message', 'exn', 1, [exn]);
-			return types.exnMessage(exn);
+			return ''+types.exnMessage(exn);
 		 });
 
 

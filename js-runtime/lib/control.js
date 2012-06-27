@@ -815,6 +815,16 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	}
 	return argStr;
     }
+    
+    var getArgColoredParts = function() {
+	var argColoredParts = [];
+	if (operands.length > 0) {
+		for (var i = 0; i < operands.length; i++) {
+			argColoredParts.push(new types.ColoredPart(operands[i]) );
+		}
+	}
+	return argColoredParts;
+    }
 
     if ( !types.isFunction(procValue) ) {
 	    var argStr = getArgStr('; arguments were:');
@@ -881,22 +891,27 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    var positionStack = 
 		state.captureCurrentContinuationMarks(aState).ref(
 		    types.symbol('moby-application-position-key'));
-
+	    
+	    var argColoredParts = getArgColoredParts();
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		helpers.format("~a: expects ~a ~a argument~a, given ~s~a",
-			       [(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>"),
-			        (procValue.isRest ? 'at least' : ''),
-				procValue.numParams,
-				(procValue.numParams == 1) ? '' : 's',
-				n,
-				getArgStr()]),
+		new types.Message([new types.ColoredPart(''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")),
+			": expects ", 
+			''+(procValue.isRest ? 'at least' : ''),
+		        " ",
+			new types.ColoredPart(procValue.numParams + " argument" + 
+                                                ((procValue.numParams == 1) ? '' : 's')),
+  		         " given ",
+			n ,
+			": "
+			/*new types.ColoredPart(getArgStr())*/].concat(argColoredParts)),
 		[positionStack[positionStack.length - 1]]));
 	}
     }
 };
 
+// var ColoredPart = types.ColoredPart;
 
 
 

@@ -86,7 +86,7 @@ var helpers = {};
 			reporter(e);
 		} else if ( types.isSchemeError(e) ) {
 			if ( types.isExn(e.val) ) {
-				reporter( types.exnMessage(e.val) );
+				reporter( ''+types.exnMessage(e.val) );
 			}
 			else {
 				reporter(e.val);

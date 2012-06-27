@@ -69,7 +69,8 @@ var reportError = function(exn) {
 			     ", span " + stacktrace[i].span));
     };
     if(types.isExnFailContractArityWithPosition(exn.val)) {
-      domElt.appendChild(document.createTextNode(types.toDisplayedString(exn.val._fields[2])));
+      domElt.appendChild(document.createTextNode(types.toDisplayedString(
+						  types.exnFailContractArityWithPositionLocations(exn.val))));
     }
     writeToInteractions(domElt);
 };
