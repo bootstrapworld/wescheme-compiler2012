@@ -208,7 +208,8 @@
   (let*-values ([(compiled-fun-name a-pinfo)
                  (compile-expression fun-name env a-pinfo)]
                 [(compiled-lambda a-pinfo)
-                 (compile-lambda-expression (stx-e fun-name)
+                 (compile-lambda-expression #f
+                                            fun-name
                                             args
                                             body
                                             env 
@@ -268,7 +269,9 @@
     [(stx-begins-with? expr 'lambda)
      (local [(define args (stx-e (second (stx-e expr))))
              (define body (third (stx-e expr)))]
-       (compile-lambda-expression empty args body env a-pinfo))]
+       (compile-lambda-expression #t
+                                  (first (stx-e expr))
+                                  args body env a-pinfo))]
     
     
     ;; (local ([define ...] ...) body)
@@ -403,10 +406,10 @@
 
 
 
-;; compile-lambda-expression: (or symbol empty) (listof symbol-stx) expr env pinfo -> (values lam pinfo)
+;; compile-lambda-expression: boolean (or syntax empty) (listof symbol-stx) expr env pinfo -> (values lam pinfo)
 ;; Compile a lambda expression.  The lambda must close its free variables over the
 ;; environment.
-(define (compile-lambda-expression name args body env pinfo)
+(define (compile-lambda-expression unnamed-lambda? name args body env pinfo)
   (let*-values ([(free-vars) 
                  (free-variables body 
                                  (foldl (lambda (var env) (env-push-local env (stx-e var)))
@@ -418,7 +421,11 @@
                 [(compiled-body pinfo-1) 
                  (compile-expression body extended-env pinfo)])
     
-    (values (bcode:make-lam name 
+    (values (bcode:make-lam (if unnamed-lambda? '() (stx-e name))
+                            (cons (loc->vec (stx-loc name))
+                                  (map (lambda (e)
+                                         (loc->vec (stx-loc e)))
+                                       args))
                             '()
                             (length args)
                             (build-list (length args) (lambda (i)
@@ -589,8 +596,9 @@
                        
                        (lambda (id args body)
                          (let*-values ([(lambda-rhs pinfo)
-                                        (compile-lambda-expression 
-                                         (stx-e id)
+                                        (compile-lambda-expression
+                                         #f
+                                         id
                                          args body 
                                          env-with-boxed-names pinfo)]
                                        [(new-body pinfo)

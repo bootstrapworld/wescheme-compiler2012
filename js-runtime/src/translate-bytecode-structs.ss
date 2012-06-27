@@ -375,7 +375,7 @@
   (match a-lam
     [(struct internal:lam 
              (name flags num-params param-types rest? closure-map closure-types max-let-depth body))
-     (make-lam name flags num-params param-types rest? closure-map closure-types max-let-depth (translate-at-expression-position body))]))
+     (make-lam name #f flags num-params param-types rest? closure-map closure-types max-let-depth (translate-at-expression-position body))]))
                       
 
 (define (translate-primval a-primval)
