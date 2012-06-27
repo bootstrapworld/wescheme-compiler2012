@@ -473,7 +473,7 @@ var LamControl = function(params) {
 
 LamControl.prototype.invoke = function(state) {
     state.v = new types.ClosureValue(this.name,
-                                     this.locs,
+				     this.locs,
 				     this.numParams, 
 				     this.paramTypes, 
 				     this.isRest, 
@@ -823,7 +823,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	var locs = locations;
 	if (operands.length > 0) {
 		for (var i = 0; i < operands.length; i++) {
-			argColoredParts.push(new types.ColoredPart(operands[i], locs.first()));
+			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
 			locs = locs.rest();
 		}
 	}
@@ -900,14 +900,22 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    var locationList = positionStack[positionStack.length - 1];
 	    var argColoredParts = getArgColoredParts(locationList.rest());
 	    
+	    console.log(locationList);
+	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")),locationList.first()),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), 
+							 locationList.first()),
 			": expects ", 
 			''+(procValue.isRest ? 'at least' : ''),
 		        " ",
-			new types.ColoredPart((procValue.numParams + " argument" + 
-                                                ((procValue.numParams == 1) ? '' : 's')), locationList.first()),
+			((procValue.locs != undefined) ? new types.ColoredPart((procValue.numParams + " argument" + 
+							  ((procValue.numParams == 1) ? '' : 's')), 
+							  procValue.locs[1])
+							:
+							(procValue.numParams + " argument" + 
+							  ((procValue.numParams == 1) ? '' : 's')))
+					      ,
   		         " given ",
 			n ,
 			": ", 
