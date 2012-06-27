@@ -165,7 +165,7 @@ var helpers = {};
 					   helpers.format(errorFormatStr, details),
 					   []) );
 	};
-
+	//HACK HACK HACK
 	var check = function(x, f, functionName, typeName, position, args) {
 		if ( !f(x) ) {
 			throwCheckError([functionName,

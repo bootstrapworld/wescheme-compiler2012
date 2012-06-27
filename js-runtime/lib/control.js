@@ -909,9 +909,9 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 			": expects ", 
 			''+(procValue.isRest ? 'at least' : ''),
 		        " ",
-			((procValue.locs != undefined) ? new types.ColoredPart((procValue.numParams + " argument" + 
+			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')), 
-							  procValue.locs[1])
+							  procValue.locs.slice(1))
 							:
 							(procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')))

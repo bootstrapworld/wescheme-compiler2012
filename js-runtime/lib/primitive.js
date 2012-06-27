@@ -1382,8 +1382,8 @@ PRIMITIVES['=~'] =
 PRIMITIVES['/'] =
     new PrimProc('/',
 		 1,
-		 true, false,
-		 function(x, args) {
+		 true, true,
+		 function(aState, x, args) {
 		 	var allArgs = [x].concat(args);
 		 	check(x, isNumber, '/', 'number', 1, allArgs);
 		 	arrayEach(args, function(y, i) {check(y, isNumber, '/', 'number', i+2, allArgs);});
@@ -1392,7 +1392,8 @@ PRIMITIVES['/'] =
 				if ( jsnums.equals(x, 0) ) {
 					raise( types.incompleteExn(types.exnFailContractDivisionByZero, '/: division by zero', []) );
 				}	
-				return jsnums.divide(1, x);
+				state.v = jsnums.divide(1, x);
+				return;
 			}
 
 		 	var res = x;
@@ -1402,7 +1403,7 @@ PRIMITIVES['/'] =
 				}	
 				res = jsnums.divide(res, args[i]);
 		 	}
-		 	return res;
+		 	state.v = res;
 		 });
 
 

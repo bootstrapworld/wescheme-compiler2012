@@ -1957,6 +1957,15 @@ var isGradientPart = function(o) {
   return o instanceof GradientPart;
 };
 
+var MultiPart = function(text, locations) {
+    this.text = text;
+    this.locations = locations;
+};
+
+var isMultiPart = function(o) {
+  return o instanceof MultiPart;
+};
+
 ColoredPart.prototype.toString = function() {
     return this.text+'';
 };
@@ -2303,6 +2312,9 @@ types.isColoredPart = isColoredPart;
 types.isMessage = isMessage;
 types.GradientPart = GradientPart;
 types.isGradientPart = isGradientPart;
+types.MultiPart = MultiPart;
+types.isMultiPart = isMultiPart;
+
 
 
 })();
