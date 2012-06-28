@@ -832,12 +832,26 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 
     if ( !types.isFunction(procValue) ) {
 	    var argStr = getArgStr('; arguments were:');
+       var positionStack = 
+        state.captureCurrentContinuationMarks(aState).ref(
+            types.symbol('moby-application-position-key'));
+        
+       
+        var locationList = positionStack[positionStack.length - 1];
+        var argColoredParts = getArgColoredParts(locationList.rest());
+
+
+
 	    helpers.raise(
 		types.incompleteExn(types.exnFailContract,
-				    helpers.format("procedure application: expected procedure, given: ~s~a",
-						   [procValue,
-						    (operands.length == 0) ? ' (no arguments)' : '; arguments were' + getArgStr()]),
-				    []));
+
+        new types.Message(["procedure application: expected procedure, given: ",
+                            new types.ColoredPart(procValue, locationList.first()),
+                            ((operands.length == 0) ? ' (no arguments)' : '; arguments were '),
+                            ((operands.length != 0) ? new types.GradientPart(argColoredParts) : ''),
+                            ]),
+                             []));
+
     }
 
     if (procValue instanceof types.CaseLambdaValue) {
@@ -852,13 +866,25 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	for (var i = 0; i < procValue.closures.length; i++) {
 	    acceptableParameterArity.push(procValue.closures[i].numParams + '');
 	}
+
+    var positionStack = 
+        state.captureCurrentContinuationMarks(aState).ref(
+            types.symbol('moby-application-position-key'));
+        
+       
+        var locationList = positionStack[positionStack.length - 1];
+        var argColoredParts = getArgColoredParts(locationList.rest());
+
+
+//unable to test
 	helpers.raise(types.incompleteExn(
 		types.exnFailContractArity,
-		helpers.format("~a: expects [~a] arguments, given ~s~a",
-			       [(procValue.name ? procValue.name : "#<case-lambda-procedure>"),
-			        acceptableParameterArity.join(', '),
-				n,
-				getArgStr()]),
+		new types.Message([new types.ColoredPart(procValue.name ? procValue.name : "#<case-lambda-procedure>", locationList.first()),
+                           ": expects [",
+                           acceptableParameterArity.join(', '),
+                           "] arguments, given ",
+                           n,
+                           new types.GradientPart(argColoredParts)]),	
 		[]));
     } else if (procValue instanceof primitive.CasePrimitive) {
 	for (var j = 0; j < procValue.cases.length; j++) {
@@ -872,10 +898,23 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	for (var i = 0; i < procValue.cases.length; i++) {
 	    acceptableParameterArity.push(procValue.cases[i].numParams + '');
 	}
+    var positionStack = 
+        state.captureCurrentContinuationMarks(aState).ref(
+            types.symbol('moby-application-position-key'));
+        
+       
+        var locationList = positionStack[positionStack.length - 1];
+        var argColoredParts = getArgColoredParts(locationList.rest());
+
 	helpers.raise(types.incompleteExn(
 		types.exnFailContractArity,
-		helpers.format("~a: expects [~a] arguments, given ~s~a",
-			       [procValue.name, acceptableParameterArity.join(', '), n, getArgStr()]),
+		new types.Message([new types.ColoredPart(procValue.name, locationList.first()),
+                ": expects ",
+                "[", acceptableParameterArity.join(', '), "] ", 
+                "arguments, given ",
+                n,
+                ": ",
+                new types.GradientPart(argColoredParts)]),
 		[]));
     }
 
@@ -899,8 +938,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	   
 	    var locationList = positionStack[positionStack.length - 1];
 	    var argColoredParts = getArgColoredParts(locationList.rest());
-	    
-	    console.log(locationList);
+	   
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,

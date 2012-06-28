@@ -1246,7 +1246,7 @@ var makeEffectType = function(name, superType, initFieldCnt, impl, guard, caller
 	newType.type.prototype.invokeEffect = function(changeWorld, k) {
 		var schemeChangeWorld = new PrimProc('update-world', 1, false, true,
 			function(aState, worldUpdater) {
-				helpers.check(worldUpdater, helpers.procArityContains(1),
+				helpers.check(aState, worldUpdater, helpers.procArityContains(1),
 					      'update-world', 'procedure (arity 1)', 1);
 				
 				changeWorld(function(w, k2) { interpret.call(aState,
@@ -2061,7 +2061,7 @@ var Posn = makeStructureType('posn', false, 2, 0, false, false);
 var Color = makeStructureType('color', false, 4, 0, false, false);
 var ArityAtLeast = makeStructureType('arity-at-least', false, 1, 0, false,
 		function(k, n, name) {
-			helpers.check(n, function(x) { return ( jsnums.isExact(x) &&
+			helpers.check(undefined, n, function(x) { return ( jsnums.isExact(x) &&
 								jsnums.isInteger(x) &&
 								jsnums.greaterThanOrEqual(x, 0) ); },
 				      name, 'exact non-negative integer', 1);
@@ -2209,7 +2209,7 @@ types.isIncompleteExn = function(x) { return x instanceof IncompleteExn; };
 var Exn = makeStructureType('exn', false, 2, 0, false,
 		function(k, msg, contMarks, name) {
 			// helpers.check(msg, isString, name, 'string', 1, [msg, contMarks]);
-			helpers.check(contMarks, types.isContinuationMarkSet, name, 'continuation mark set', 2);
+			helpers.check(undefined, contMarks, types.isContinuationMarkSet, name, 'continuation mark set', 2);
 			k( new ValuesWrapper([msg, contMarks]) );
 		});
 types.exn = Exn.constructor;
