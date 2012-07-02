@@ -726,7 +726,7 @@ PRIMITIVES['check-expect'] =
 							 [actual, expected]);
 			        aState.getDisplayHook()(msg);
 			    var stackTrace = state.getStackTraceFromContinuationMarks(
-				state.captureCurrentContinuationMarks(aState));
+									state.captureCurrentContinuationMarks(aState));
 			    for (var i = 0; i < stackTrace.length; i++) {
 			        aState.getPrintHook()(helpers.makeLocationDom(stackTrace[i]));
 			    }
@@ -4788,8 +4788,8 @@ new PrimProc('square',
 			 false, true,
 			 function(aState, l, s, c) {
 			 check(aState, l, isNonNegativeReal, "square", "non-negative number", 1, arguments);
-			 check(aState, s, isMode, "square", "style", 3, arguments);
-			 check(aState, c, isColor, "square", "color", 4, arguments);
+			 check(aState, s, isMode, "square", "style", 2, arguments);
+			 check(aState, c, isColor, "square", "color", 3, arguments);
 			 
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);

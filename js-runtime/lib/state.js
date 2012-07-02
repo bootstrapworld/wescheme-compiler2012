@@ -64,6 +64,11 @@ var State = function() {
     this.breakRequestedListeners = [];
 };
 
+var isState = function(o) {
+  return o instanceof State;
+};
+
+
 
 // clearForEval: -> void
 // Clear out the value register, the vstack, and the cstack.
@@ -393,6 +398,7 @@ var isEqualHash = function(hash1, hash2) {
 
 
 state.State = State;
+state.isState = isState;
 state.captureCurrentContinuationMarks = captureCurrentContinuationMarks;
 state.getStackTraceFromContinuationMarks = getStackTraceFromContinuationMarks;
 

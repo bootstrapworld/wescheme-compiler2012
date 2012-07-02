@@ -845,7 +845,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    helpers.raise(
 		types.incompleteExn(types.exnFailContract,
 
-        new types.Message(["procedure application: expected procedure, given: ",
+        new types.Message(["function application: expected function, given: ",
                             new types.ColoredPart(procValue, locationList.first()),
                             ((operands.length == 0) ? ' (no arguments)' : '; arguments were '),
                             ((operands.length != 0) ? new types.GradientPart(argColoredParts) : ''),
@@ -906,12 +906,14 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
         var locationList = positionStack[positionStack.length - 1];
         var argColoredParts = getArgColoredParts(locationList.rest());
 
+
+        //textchange
 	helpers.raise(types.incompleteExn(
 		types.exnFailContractArity,
 		new types.Message([new types.ColoredPart(procValue.name, locationList.first()),
                 ": expects ",
-                "[", acceptableParameterArity.join(', '), "] ", 
-                "arguments, given ",
+                acceptableParameterArity.join(' or '),
+                " arguments, given ",
                 n,
                 ": ",
                 new types.GradientPart(argColoredParts)]),
