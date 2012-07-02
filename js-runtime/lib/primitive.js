@@ -3436,7 +3436,7 @@ PRIMITIVES['string->list'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string->list', 'string', 1);
+		 	check(aState, str, isString, 'string->list', 'string', 1);
 
 			var lst = types.EMPTY;
 			for (var i = str.length-1; i >= 0; i--) {
@@ -3467,7 +3467,7 @@ PRIMITIVES['string-copy'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string-copy', 'string', 1);
+		 	check(aState, str, isString, 'string-copy', 'string', 1);
 			aState.v =  types.string(str.toString());
 		 });
 
@@ -3478,7 +3478,7 @@ PRIMITIVES['string->symbol'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string->symbol', 'string', 1);
+		 	check(aState, str, isString, 'string->symbol', 'string', 1);
 			aState.v =  types.symbol(str.toString());
 		 });
 
@@ -3488,7 +3488,7 @@ PRIMITIVES['symbol->string'] =
 		 1,
 		 false, true,
 		 function(aState, symb) {
-		 	check(aState, aState, symb, isSymbol, 'symbol->string', 'symbol', 1);
+		 	check(aState, symb, isSymbol, 'symbol->string', 'symbol', 1);
 			aState.v =  types.string(symb.toString());
 		 });
 
@@ -3496,7 +3496,7 @@ PRIMITIVES['symbol->string'] =
 PRIMITIVES['format'] =
     new PrimProc('format', 1, true, true,
 		 function(aState, formatStr, args) {
-		 	check(aState, aState, formatStr, isString, 'format', 'string', 1, [formatStr].concat(args));
+		 	check(aState, formatStr, isString, 'format', 'string', 1, [formatStr].concat(args));
 			aState.v =  types.string( helpers.format(formatStr, args, 'format') );
 		 });
 
@@ -3504,7 +3504,7 @@ PRIMITIVES['format'] =
 PRIMITIVES['printf'] =
     new PrimProc('printf', 1, true, true,
 		 function(state, formatStr, args) {
-		 	check(aState, aState, formatStr, isString, 'printf', 'string', 1, [formatStr].concat(args));
+		 	check(aState, formatStr, isString, 'printf', 'string', 1, [formatStr].concat(args));
 			var msg = helpers.format(formatStr, args, 'printf');
 			state.getDisplayHook()(msg);
 			state.v = types.VOID;
@@ -3516,7 +3516,7 @@ PRIMITIVES['string->int'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, function(s) {return isString(s) && s.length == 1;},
+		 	check(aState, str, function(s) {return isString(s) && s.length == 1;},
 			      'string->int', '1-letter string', 1);
 			aState.v =  str.charCodeAt(0);
 		 });
@@ -3527,7 +3527,7 @@ PRIMITIVES['int->string'] =
 		 1,
 		 false, true,
 		 function(aState, num) {
-		 	check(aState, aState, num, function(x) {
+		 	check(aState, num, function(x) {
 					if ( !isInteger(x) ) {
 						return false;
 					}
@@ -3548,7 +3548,7 @@ PRIMITIVES['explode'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'explode', 'string', 1);
+		 	check(aState, str, isString, 'explode', 'string', 1);
 			var ret = types.EMPTY;
 			for (var i = str.length-1; i >= 0; i--) {
 				ret = types.cons( types.string(str.charAt(i)), ret );
@@ -3577,7 +3577,7 @@ PRIMITIVES['string-alphabetic?'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string-alphabetic?', 'string', 1);
+		 	check(aState, str, isString, 'string-alphabetic?', 'string', 1);
 			aState.v =  isAlphabeticString(str);
 		 });
 
@@ -3587,8 +3587,8 @@ PRIMITIVES['string-ith'] =
 		 2,
 		 false, true,
 		 function(aState, str, num) {
-		 	check(aState, aState, str, isString, 'string-ith', 'string', 1, arguments);
-			check(aState, aState, num, function(x) { return isNatural(x) && jsnums.lessThan(x, str.length); }, 'string-ith',
+		 	check(aState, str, isString, 'string-ith', 'string', 1, arguments);
+			check(aState, num, function(x) { return isNatural(x) && jsnums.lessThan(x, str.length); }, 'string-ith',
 			      'exact integer in [0, length of the given string minus 1 (' + (str.length-1) + ')]', 2, arguments);
 			aState.v =  types.string( str.charAt(jsnums.toFixnum(num)) );
 		 });
@@ -3599,7 +3599,7 @@ PRIMITIVES['string-lower-case?'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string-lower-case?', 'string', 1);
+		 	check(aState, str, isString, 'string-lower-case?', 'string', 1);
 			var primStr = str.toString();
 			aState.v =  isAlphabeticString(str) && primStr.toLowerCase() === primStr;
 		 });
@@ -3610,7 +3610,7 @@ PRIMITIVES['string-numeric?'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string-numeric?', 'string', 1);
+		 	check(aState, str, isString, 'string-numeric?', 'string', 1);
 			aState.v =  isNumericString(str);
 		 });
 
@@ -3620,7 +3620,7 @@ PRIMITIVES['string-upper-case?'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string-upper-case?', 'string', 1);
+		 	check(aState, str, isString, 'string-upper-case?', 'string', 1);
 			var primStr = str.toString();
 			aState.v =  isAlphabeticString(str) && primStr.toUpperCase() === primStr;
 		 });
@@ -3631,7 +3631,7 @@ PRIMITIVES['string-whitespace?'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string-whitespace?', 'string', 1);
+		 	check(aState, str, isString, 'string-whitespace?', 'string', 1);
 			aState.v =  isWhitespaceString(str);
 		 });
 
@@ -3641,8 +3641,8 @@ PRIMITIVES['build-string'] =
 		 2,
 		 false, true,
 		 function(aState, num, f) {
-		 	check(aState, aState, num, isNatural, 'build-string', 'non-negative exact integer', 1, arguments);
-			check(aState, aState, f, isFunction, 'build-string', 'procedure', 2, arguments);
+		 	check(aState, num, isNatural, 'build-string', 'non-negative exact integer', 1, arguments);
+			check(aState, f, isFunction, 'build-string', 'procedure', 2, arguments);
 
 			var buildStringHelp = function(n, acc) {
 				if ( jsnums.greaterThanOrEqual(n, num) ) {
@@ -3651,7 +3651,7 @@ PRIMITIVES['build-string'] =
 
 				return CALL(f, [n],
 					function(res) {
-						check(aState, aState, res, isChar, 'build-string',
+						check(aState, res, isChar, 'build-string',
 						      'procedure that returns a char', 2);
 						return buildStringHelp(n+1, acc.push(res.val));
 					});
@@ -3665,7 +3665,7 @@ PRIMITIVES['string->immutable-string'] =
 		 1,
 		 false, true,
 		 function(aState, str) {
-		 	check(aState, aState, str, isString, 'string->immutable-string', 'string', 1);
+		 	check(aState, str, isString, 'string->immutable-string', 'string', 1);
 			aState.v =  str.toString();
 		 });
 
@@ -3675,10 +3675,10 @@ PRIMITIVES['string-set!'] =
 		 3,
 		 false, true,
 		 function(aState, str, k, c) {
-		 	check(aState, aState, str, function(x) { return isString(x) && typeof x != 'string'; },
+		 	check(aState, str, function(x) { return isString(x) && typeof x != 'string'; },
 			      'string-set!', 'mutable string', 1, arguments);
-			check(aState, aState, k, isNatural, 'string-set!', 'non-negative exact integer', 2, arguments);
-			check(aState, aState, c, isChar, 'string-set!', 'char', 3, arguments);
+			check(aState, k, isNatural, 'string-set!', 'non-negative exact integer', 2, arguments);
+			check(aState, c, isChar, 'string-set!', 'char', 3, arguments);
 
 			if ( jsnums.greaterThanOrEqual(k, str.length) ) {
 				var msg = ('string-set!: index ' + n + ' out of range ' +
@@ -3696,9 +3696,9 @@ PRIMITIVES['string-fill!'] =
 		 2,
 		 false, true,
 		 function(aState, str, c) {
-		 	check(aState, aState, str, function(x) { return isString(x) && typeof x != 'string'; },
+		 	check(aState, str, function(x) { return isString(x) && typeof x != 'string'; },
 			      'string-fill!', 'mutable string', 1, arguments);
-			check(aState, aState, c, isChar, 'string-fill!', 'char', 2, arguments);
+			check(aState, c, isChar, 'string-fill!', 'char', 2, arguments);
 
 			for (var i = 0; i < str.length; i++) {
 				str.set(i, c.val);
@@ -3719,7 +3719,7 @@ PRIMITIVES['make-bytes'] =
 		      1,
 		      false, false,
 		      function(k) {
-			  check(aState, aState, k, isNatural, 'make-bytes', 'non-negative exact integer', 1);
+			  check(aState, k, isNatural, 'make-bytes', 'non-negative exact integer', 1);
 			  
 			  var ret = [];
 			  for (var i = 0; i < jsnums.toFixnum(k); i++) {
@@ -3731,8 +3731,8 @@ PRIMITIVES['make-bytes'] =
 		      2,
 		      false, false,
 		      function(k, b) {
-			  check(aState, aState, k, isNatural, 'make-bytes', 'non-negative exact integer', 1, arguments);
-			  check(aState, aState, b, isByte, 'make-bytes', 'byte', 2, arguments);
+			  check(aState, k, isNatural, 'make-bytes', 'non-negative exact integer', 1, arguments);
+			  check(aState, b, isByte, 'make-bytes', 'byte', 2, arguments);
 
 			  var ret = [];
 			  for (var i = 0; i < jsnums.toFixnum(k); i++) {
@@ -3747,7 +3747,7 @@ PRIMITIVES['bytes'] =
 		 0,
 		 true, true,
 		 function(aState, args) {
-		 	arrayEach(args, function(b, i) {check(aState, aState, b, isByte, 'bytes', 'byte', i+1, args);});
+		 	arrayEach(args, function(b, i) {check(aState, b, isByte, 'bytes', 'byte', i+1, args);});
 			aState.v =  types.bytes(args, true);
 		 });
 
@@ -3757,7 +3757,7 @@ PRIMITIVES['bytes->immutable-bytes'] =
 		 1,
 		 false, true,
 		 function(aState, bstr) {
-		 	check(aState, aState, bstr, isByteString, 'bytes->immutable-bytes', 'byte string', 1);
+		 	check(aState, bstr, isByteString, 'bytes->immutable-bytes', 'byte string', 1);
 			if ( bstr.mutable ) {
 				aState.v =  bstr.copy(false);
 				return;
@@ -3773,7 +3773,7 @@ PRIMITIVES['bytes-length'] =
 		 1,
 		 false, true,
 		 function(aState, bstr) {
-		 	check(aState, aState, bstr, isByteString, 'bytes-length', 'byte string', 1);
+		 	check(aState, bstr, isByteString, 'bytes-length', 'byte string', 1);
 			aState.v =  bstr.length();
 		 });
 
@@ -3783,8 +3783,8 @@ PRIMITIVES['bytes-ref'] =
 		 2,
 		 false, true,
 		 function(aState, bstr, num) {
-		 	check(aState, aState, bstr, isByteString, 'bytes-ref', 'byte string', 1, arguments);
-			check(aState, aState, num, isNatural, 'bytes-ref', 'non-negative exact integer', 2, arguments);
+		 	check(aState, bstr, isByteString, 'bytes-ref', 'byte string', 1, arguments);
+			check(aState, num, isNatural, 'bytes-ref', 'non-negative exact integer', 2, arguments);
 
 			var n = jsnums.toFixnum(num);
 			if ( n >= bstr.length() ) {
@@ -3802,10 +3802,10 @@ PRIMITIVES['bytes-set!'] =
 		 3,
 		 false, true,
 		 function(aState, bstr, num, b) {
-		 	check(aState, aState, bstr, function(x) { return isByteString(x) && x.mutable; },
+		 	check(aState, bstr, function(x) { return isByteString(x) && x.mutable; },
 			      'bytes-set!', 'mutable byte string', 1, arguments);
-			check(aState, aState, num, isNatural, 'bytes-set!', 'non-negative exact integer', 2, arguments);
-			check(aState, aState, b, isByte, 'bytes-set!', 'byte', 3, arguments);
+			check(aState, num, isNatural, 'bytes-set!', 'non-negative exact integer', 2, arguments);
+			check(aState, b, isByte, 'bytes-set!', 'byte', 3, arguments);
 
 			var n = jsnums.toFixnum(num);
 			if ( n >= bstr.length() ) {
@@ -3825,8 +3825,8 @@ PRIMITIVES['subbytes'] =
 		      2,
 		      false, true,
 		      function(aState, bstr, theStart) {
-		          	check(aState, aState, bstr, isByteString, 'subbytes', 'bytes string', 1, arguments);
-			  		check(aState, aState, theStart, isNatural, 'subbytes', 'non-negative exact integer', 2, arguments);
+		          	check(aState, bstr, isByteString, 'subbytes', 'bytes string', 1, arguments);
+			  		check(aState, theStart, isNatural, 'subbytes', 'non-negative exact integer', 2, arguments);
 			  
 			  var start = jsnums.toFixnum(theStart);
 			  if (start > bstr.length()) {
@@ -3843,9 +3843,9 @@ PRIMITIVES['subbytes'] =
 		      3,
 		      false, true,
 		      function(aState, bstr, theStart, theEnd) {
-		          check(aState, aState, bstr, isByteString, 'subbytes', 'byte string', 1, arguments);
-			  check(aState, aState, theStart, isNatural, 'subbytes', 'non-negative exact integer', 2, arguments);
-			  check(aState, aState, theEnd, isNatural, 'subbytes', 'non-negative exact integer', 3, arguments);
+		          check(aState, bstr, isByteString, 'subbytes', 'byte string', 1, arguments);
+			  check(aState, theStart, isNatural, 'subbytes', 'non-negative exact integer', 2, arguments);
+			  check(aState, theEnd, isNatural, 'subbytes', 'non-negative exact integer', 3, arguments);
 
 			  var start = jsnums.toFixnum(theStart);
 			  var end = jsnums.toFixnum(theEnd);
@@ -3872,7 +3872,7 @@ PRIMITIVES['bytes-copy'] =
 		 1,
 		 false, true,
 		 function(aState, bstr) {
-		 	check(aState, aState, bstr, isByteString, 'bytes-copy', 'byte string', 1);
+		 	check(aState, bstr, isByteString, 'bytes-copy', 'byte string', 1);
 			aState.v =  bstr.copy(true);
 		 });
 
@@ -3882,9 +3882,9 @@ PRIMITIVES['bytes-fill!'] =
 		 2,
 		 false, true,
 		 function(aState, bstr, b) {
-		 	check(aState, aState, bstr, function(x) { return isByteString(x) && x.mutable; },
+		 	check(aState, bstr, function(x) { return isByteString(x) && x.mutable; },
 			      'bytes-fill!', 'mutable byte string', 1, arguments);
-			check(aState, aState, b, isByte, 'bytes-fill!', 'byte', 2, arguments);
+			check(aState, b, isByte, 'bytes-fill!', 'byte', 2, arguments);
 			
 			for (var i = 0; i < bstr.length(); i++) {
 				bstr.set(i, b);
@@ -3898,7 +3898,7 @@ PRIMITIVES['bytes-append'] =
 		 0,
 		 true, true,
 		 function(aState, args) {
-		  	arrayEach(args, function(x, i) { check(aState, aState, x, isByteString, 'bytes-append', 'byte string', i+1, args); });
+		  	arrayEach(args, function(x, i) { check(aState, x, isByteString, 'bytes-append', 'byte string', i+1, args); });
 
 			var ret = [];
 			for (var i = 0; i < args.length; i++) {

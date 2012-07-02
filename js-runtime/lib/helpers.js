@@ -173,8 +173,6 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
-
-
        		var getArgColoredParts = function(locations) {
 				var argColoredParts = [];
 				var locs = locations;
@@ -182,6 +180,7 @@ var helpers = {};
 					for (var i = 0; i < args.length; i++) {
 						if(i != pos -1) { 
 							argColoredParts.push(new types.ColoredPart(args[i]+" ", locs.first()));  //LOCATIONS OFF!!!
+							//locs = locs.rest();
 						}
 						locs = locs.rest();
 					}
@@ -190,40 +189,51 @@ var helpers = {};
 			}
 			var getLocation = function(pos) {
 				var locs = locationList;
-				var toReturn;
-				for(var i = 0; i < args.length; i++) {
-					if(i === pos){
-						toReturn = locs.first();
-					} 
+
+				for(var i = 0; i < pos; i++){
 					locs = locs.rest();
 				}
-				return toReturn;
+				return locs.first();
 			}
 
-			var argColoredParts = getArgColoredParts(locationList);
 
+			if(args){
+				var argColoredParts = getArgColoredParts(locationList.rest());
 
-			raise( types.incompleteExn(types.exnFailContract,
-						   new types.Message([
-						   		new types.ColoredPart(details[0], locationList.first()),
-						   		": expects type <",
-						   		details[1],
-						   		"> as ",
-						   		details[2], 
-						   		" argument, given: ",
-						   		new types.ColoredPart(details[3], getLocation(pos)),
-						   		"; other arguments were: ",
-						   		new types.GradientPart(argColoredParts)
-						   	]),
-						   []) );
-
+				raise( types.incompleteExn(types.exnFailContract,
+							   new types.Message([
+							   		new types.ColoredPart(details[0], locationList.first()),
+							   		": expects type <",
+							   		details[1],
+							   		"> as ",
+							   		details[2], 
+							   		" argument, given: ",
+							   		new types.ColoredPart(details[3], getLocation(pos)),
+							   		"; other arguments were: ",
+							   		new types.GradientPart(argColoredParts)
+							   	]),
+							   []) );
+			}
+			else {
+				raise( types.incompleteExn(types.exnFailContract,
+							   new types.Message([
+							   		new types.ColoredPart(details[0], locationList.first()),
+							   		": expects type <",
+							   		details[1],
+							   		"> as ",
+							   		details[2], 
+							   		" argument, given: ",
+							   		new types.ColoredPart(details[3], getLocation(pos)),
+							   	]),
+							   []) );
+			}
 
 
 		}
 	};
 	//HACK HACK HACK
 	var check = function(aState, x, f, functionName, typeName, position, args) {
-		console.log("aState:", aState, ", x:", x, ", f:" , f);
+		console.log("aState:", aState, ", x:", x, ", f:" , f, ", functionName:", functionName, ", typeName:", typeName, ", position:", position, ", args:", args);
 		if ( !f(x) ) {
 			throwCheckError(aState, 
 					[functionName,
