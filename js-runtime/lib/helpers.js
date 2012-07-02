@@ -233,7 +233,6 @@ var helpers = {};
 	};
 	//HACK HACK HACK
 	var check = function(aState, x, f, functionName, typeName, position, args) {
-		console.log("aState:", aState, ", x:", x, ", f:" , f, ", functionName:", functionName, ", typeName:", typeName, ", position:", position, ", args:", args);
 		if ( !f(x) ) {
 			throwCheckError(aState, 
 					[functionName,

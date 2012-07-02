@@ -1400,8 +1400,6 @@ PRIMITIVES['/'] =
        
        		var locationList = positionStack[positionStack.length - 1];
 
-       		console.log(locationList);
-
 
 			if (args.length == 0) {
 				if ( jsnums.equals(x, 0) ) {
@@ -3336,8 +3334,6 @@ PRIMITIVES['substring'] =
         
        
        		  var locationList = positionStack[positionStack.length - 1];
-
-       		//  console.log(locationList);
 
 			  var start = jsnums.toFixnum(theStart);
 			  if (start > str.length) {
