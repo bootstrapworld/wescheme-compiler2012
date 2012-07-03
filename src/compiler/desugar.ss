@@ -742,7 +742,8 @@
                             (raise (make-moby-error (stx-loc a-clause)
                                                     
                                                     (make-Message 
-                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr)))) ": "
+                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr)))) 
+                                                     ": "
                                                      "Inside a cond branch, I expect to see a "
                                                      "question and an answer, "
                                                      "but I see "
