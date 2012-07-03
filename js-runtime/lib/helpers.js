@@ -224,10 +224,10 @@ var helpers = {};
 
 
 			if(args){
-				console.log("locationlist.rest() is ", locationList.rest());
-				console.log("args is ", args, "and is it an array? ", (args instanceof Array));
+				//console.log("locationlist.rest() is ", locationList.rest());
+				//console.log("args is ", args, "and is it an array? ", (args instanceof Array));
 				var argColoredParts = getArgColoredParts(locationList.rest());
-				console.log("argColoredParts is ", argColoredParts);
+				//console.log("argColoredParts is ", argColoredParts);
 
 
 				raise( types.incompleteExn(types.exnFailContract,

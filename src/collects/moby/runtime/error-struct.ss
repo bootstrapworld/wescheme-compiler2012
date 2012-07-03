@@ -8,6 +8,8 @@
 
 (define-struct Message (parts))
 (define-struct ColoredPart (text loc))
+(define-struct GradientPart (parts))
+(define-struct MultiPart (text locs))
 
 
 
@@ -220,7 +222,9 @@
 
 
 (provide [struct-out Message]
-         [struct-out ColoredPart])
+         [struct-out ColoredPart]
+         [struct-out GradientPart]
+         [struct-out MultiPart])
 
 
 (provide/contract

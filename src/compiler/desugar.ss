@@ -733,21 +733,25 @@
          (for-each (lambda (a-clause)
                      (cond [(not (list? (stx-e a-clause)))
                             (raise (make-moby-error (stx-loc a-clause)
-                                                    (make-moby-error-type:conditional-malformed-clause 
-                                                     (stx-loc a-clause))))]
+                                                    (make-Message 
+                                                     "Inside a "
+                                                     (make-ColoredPart "cond branch" (stx-loc (first (stx-e an-expr))))        
+                                                     "I expect a question and an answer, but I don't see both things here.")))]
                            [(< (length (stx-e a-clause)) 2)
                             (raise (make-moby-error (stx-loc a-clause)
-                                                    (make-moby-error-type:conditional-clause-too-few-elements)))]
+                                                    (make-Message 
+                                                     "Inside a "
+                                                     (make-ColoredPart "cond branch" (stx-loc (first (stx-e an-expr))))        
+                                                     "I expect a question and an answer, but I don't see both.")))]                 
                            [(> (length (stx-e a-clause)) 2)
                             (raise (make-moby-error (stx-loc a-clause)
-                                                    
                                                     (make-Message 
                                                      (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr)))) 
                                                      ": "
                                                      "Inside a cond branch, I expect to see a "
                                                      "question and an answer, "
                                                      "but I see "
-                                                     (make-ColoredPart "more than two things" (map stx-loc cond-clauses))
+                                                     (make-MultiPart "more than two things" (map stx-loc cond-clauses))
                                                      " here.")
                                                     ))]
                            [else
@@ -775,7 +779,9 @@
       (cond
         [(empty? cond-clauses)
          (raise (make-moby-error (stx-loc an-expr)
-                                 (make-moby-error-type:conditional-missing-question-answer)))]
+                                 (make-Message "After "
+                                               (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
+                                               "I expect to see at least one question-answer branch, but I don't see anything"))]
         [else
          (begin
            (check-clause-structures!)
