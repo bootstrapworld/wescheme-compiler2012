@@ -232,12 +232,14 @@
        
        [(moby-error-type:conditional-missing-question-answer? error-type)
         `(span ((class "Error-ConditionalMissingQuestionAnswer"))
-               "After cond, I expect at least one question-answer branch, but I don't see anything.")]       
+               ,(make-Message (list "TESTING TESTING FIXME After cond, I expect at least "
+                                    (make-ColoredPart "one question-answer branch" "FIXME")
+                                    ", but I don't see anything.")))]       
        
        [(moby-error-type:conditional-malformed-clause? error-type)
         `(span ((class "Error-ConditionalMalformedClause"))
-               "Inside a cond branch, I expect a question and an answer, but I don't "
-               "see both things here.")]
+               ,(make-Message (list "Inside a cond branch, I expect a question and an answer, but I don't "
+                                    "see both things here.")))]
        
        [(moby-error-type:conditional-clause-too-few-elements? error-type)
         `(span ((class "Error-ConditionalClauseTooFewElements"))

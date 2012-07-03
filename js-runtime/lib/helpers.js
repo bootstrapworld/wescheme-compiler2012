@@ -194,7 +194,7 @@ var helpers = {};
 
 
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				//and when there's a state, it's apparently not an array, so .splice(1) doesn't work
+				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
 				if(state.isState(args[0])){
 					for(var i = 1; i < args.length; i++){
 						if(i != pos) {

@@ -1,5 +1,8 @@
 #lang scheme/base
 
+(require "../../../../src/collects/moby/runtime/stx.ss")
+(require "../../../../src/collects/moby/runtime/error-struct.ss")
+
 ;; NOTE: this is a fork of
 ;;
 ;; (planet dherman/json:3:0))
@@ -47,6 +50,15 @@ string?
      (scheme:write json port)]
     [(boolean? json) (scheme:write (if json 'true 'false) port)]
     [(null-jsexpr? json) (scheme:write 'null port)]
+    [(Message? json)
+     (for ([part (Message-parts json)]
+           [i (in-naturals)])
+       (when (> i 0)
+         (display ", " port))
+       (cond [(string? part)
+              (scheme:write part port)]
+             [(ColoredPart? part)
+              (scheme:write (ColoredPart-text part) port)]))]
     [else (error 'json "bad json value: ~v" json)]))
 
 (define (read-json [port (current-input-port)])

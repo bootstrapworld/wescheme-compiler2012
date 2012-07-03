@@ -5,6 +5,13 @@
 
 (define-struct moby-error (location error-type))
 
+
+(define-struct Message (parts))
+(define-struct ColoredPart (text loc))
+
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The parser errors:
 ;; A lexical token hasn't been closed (e.g. a string literal without closing quote)
@@ -47,7 +54,7 @@
 (define-struct moby-error-type:conditional-missing-question-answer ())
 (define-struct moby-error-type:conditional-malformed-clause ())
 (define-struct moby-error-type:conditional-clause-too-few-elements ())
-(define-struct moby-error-type:conditional-clause-too-many-elements ())
+(define-struct moby-error-type:conditional-clause-too-many-elements (cond-keyword clause))
 (define-struct moby-error-type:conditional-exhausted ())
 
 (define-struct moby-error-type:branch-value-not-boolean (observed))
@@ -212,6 +219,9 @@
 
 
 
+(provide [struct-out Message]
+         [struct-out ColoredPart])
+
 
 (provide/contract
  [struct moby-error ([location Loc?]
@@ -251,9 +261,13 @@
  [struct moby-error-type:redefinition-not-allowed ([id symbol?])]
  
  [struct moby-error-type:conditional-missing-question-answer ()] ;; missing clauses
- [struct moby-error-type:conditional-malformed-clause ()]           ;; a clause which isn't an [question answer]
+ [struct moby-error-type:conditional-malformed-clause ([clause-stx stx?])]           ;; a clause which isn't an [question answer]
  [struct moby-error-type:conditional-clause-too-few-elements ()]  ;; a clause without a question or an answer
- [struct moby-error-type:conditional-clause-too-many-elements ()] ;; a clause with too many answer values
+
+ ;; a clause with too many answer values.   stx stx
+ [struct moby-error-type:conditional-clause-too-many-elements ([cond-keyword stx?]
+                                                               [clause stx?])]
+ 
  [struct moby-error-type:conditional-exhausted ()]             ;; runtime: no answer was true
  
  [struct moby-error-type:branch-value-not-boolean ([observed any/c])]

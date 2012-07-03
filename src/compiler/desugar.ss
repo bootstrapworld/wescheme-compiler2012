@@ -733,13 +733,22 @@
          (for-each (lambda (a-clause)
                      (cond [(not (list? (stx-e a-clause)))
                             (raise (make-moby-error (stx-loc a-clause)
-                                                    (make-moby-error-type:conditional-malformed-clause)))]
+                                                    (make-moby-error-type:conditional-malformed-clause 
+                                                     (stx-loc a-clause))))]
                            [(< (length (stx-e a-clause)) 2)
                             (raise (make-moby-error (stx-loc a-clause)
                                                     (make-moby-error-type:conditional-clause-too-few-elements)))]
                            [(> (length (stx-e a-clause)) 2)
                             (raise (make-moby-error (stx-loc a-clause)
-                                                    (make-moby-error-type:conditional-clause-too-many-elements)))]
+                                                    
+                                                    (make-Message 
+                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr)))) ": "
+                                                     "Inside a cond branch, I expect to see a "
+                                                     "question and an answer, "
+                                                     "but I see "
+                                                     (make-ColoredPart "more than two things" (map stx-loc cond-clauses))
+                                                     " here.")
+                                                    ))]
                            [else
                             (void)]))
                    cond-clauses))
