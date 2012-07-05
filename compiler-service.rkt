@@ -157,7 +157,8 @@
     (make-hash `(("type" . "moby-failure")
                  ("dom-message" . 
                                 ,(dom->jsexpr 
-                                  (error-struct->dom-sexp failure-val #f))))))
+                                  (error-struct->dom-sexp failure-val #f)))
+                 ("structured-error" . ,(jsexpr->json (error-struct->jsexpr failure-val))))))
   (cond
     [(exn:fail:read? an-exn)
      (let ([translated-srclocs 

@@ -1,7 +1,7 @@
 #lang scheme/base
 
-(require "../../../../src/collects/moby/runtime/stx.ss")
-(require "../../../../src/collects/moby/runtime/error-struct.ss")
+;(require "../../../../src/collects/moby/runtime/stx.ss")
+;(require "../../../../src/collects/moby/runtime/error-struct.ss")
 
 ;; NOTE: this is a fork of
 ;;
@@ -50,7 +50,7 @@ string?
      (scheme:write json port)]
     [(boolean? json) (scheme:write (if json 'true 'false) port)]
     [(null-jsexpr? json) (scheme:write 'null port)]
-    [(Message? json)
+    #;[(Message? json)
      (for ([part (Message-parts json)]
            [i (in-naturals)])
        (when (> i 0)

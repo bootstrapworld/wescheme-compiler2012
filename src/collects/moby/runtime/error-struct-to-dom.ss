@@ -14,6 +14,42 @@
 
 
 
+(define (loc->jsexpr a-loc)
+  (make-hash `((offset . ,(number->string (Loc-offset a-loc)))
+               (line . ,(number->string (Loc-line a-loc)))
+               (column . ,(number->string (Loc-column a-loc)))
+               (span . ,(number->string (Loc-span a-loc)))
+               (id . ,(Loc-id a-loc)))))
+                   
+
+(define (error-struct->jsexpr an-error)
+  (define error-type (moby-error-error-type an-error))
+  (cond
+   [(Message? error-type)    
+    (let loop ([parts (Message-parts error-type)])
+      (apply append (map (lambda (part)
+                           (cond
+                            [(list? part)
+                             (apply append (map loop part))]
+                            [(string? part)
+                             (list part)]
+                            [(ColoredPart? part)
+                             (list (make-hash `((type . "ColoredPart")
+                                                (text . ,(ColoredPart-text part))
+                                                (loc . ,(loc->jsexpr (ColoredPart-loc part))))))]
+                            [(GradientPart? part)
+                             (list (make-hash `((type . "GradientPart")
+                                                (parts . ,(map loop (GradientPart-parts part))))))]
+                            [(MultiPart? part)
+                             (list (make-hash) `((type . "MultiPart")
+                                                 (text . ,(MultiPart-text part))
+                                                 (locs . ,(map loc->jsexpr (MultiPart-locs part)))))]))
+                         parts)))]
+   [else
+    #f]))
+
+
+
 ;; error-struct-to-dom-sexp: dom (dom-parameters | false) -> sexp
 ;; Convert an error structure to a dom-sexp.  Optionally provide a dom-parameters
 ;; that defines custom dom converters.
@@ -29,7 +65,24 @@
     
     (add-toplevel-dom-error-wrapper
      (cond
-       [(moby-error-type:unclosed-lexical-token? error-type)
+      [(Message? error-type)
+       `(span ((class "Message"))
+              ,@(let loop ([parts (Message-parts error-type)])
+                  (apply append (map (lambda (part)
+                                       (cond
+                                        [(list? part)
+                                         (apply append (map loop part))]
+                                        [(string? part)
+                                         (list part)]
+                                        [(ColoredPart? part)
+                                         (list (ColoredPart-text part))]
+                                        [(GradientPart? part)
+                                         (apply append (map loop (GradientPart-parts part)))]
+                                        [(MultiPart? part)
+                                         (list (MultiPart-text part))]))
+                                     parts))))]
+
+      [(moby-error-type:unclosed-lexical-token? error-type)
         `(span ((class "Error-UnclosedLexicalToken"))
                (span ((class "Error.reason"))
                      "I saw "
@@ -471,7 +524,9 @@
                      ,(moby-error-type:generic-read-error-message error-type))
                (span ((class "Error-GenericReadError.locations"))
                      ,@(map Loc->dom-sexp
-                            (moby-error-type:generic-read-error-locations error-type))))]))))
+                            (moby-error-type:generic-read-error-locations error-type))))]
+       [else
+        (error 'error-struct-to-dom "Could not convert ~a" error-type)]))))
   
 
 
@@ -652,4 +707,5 @@
     
 
 (provide/contract 
- [error-struct->dom-sexp (any/c (or/c false/c dom-parameters?) . -> . any)])
+ [error-struct->dom-sexp (any/c (or/c false/c dom-parameters?) . -> . any)]
+ [error-struct->jsexpr (any/c . -> . any)])

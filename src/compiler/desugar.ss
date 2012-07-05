@@ -785,7 +785,7 @@
          (raise (make-moby-error (stx-loc an-expr)  ;;conditional-missing-question-answer
                                  (make-Message "After "
                                                (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
-                                               "expected at least one question-answer branch, but nothing was found")))]
+                                               " expected at least one question-answer branch, but nothing was found")))]
         [else
          (begin
            (check-clause-structures!)

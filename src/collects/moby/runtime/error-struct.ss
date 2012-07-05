@@ -6,6 +6,8 @@
 (define-struct moby-error (location error-type))
 
 
+
+;; The following provides colored message support.  A Message is a kind of moby-error-type.
 (define-struct Message (parts))
 (define-struct ColoredPart (text loc))
 (define-struct GradientPart (parts)) ;; (listof ColoredPart)
@@ -111,7 +113,8 @@
 ;; moby-error-type: any -> boolean
 ;; Produces true if x is a moby-error-type.
 (define (moby-error-type? x)
-  (or (moby-error-type:unclosed-lexical-token? x)
+  (or (Message? x)
+      (moby-error-type:unclosed-lexical-token? x)
       (moby-error-type:unrecognized-lexical-token? x)
       (moby-error-type:unsupported-lexical-token? x)
       (moby-error-type:unsupported-expression-form? x)
@@ -219,9 +222,12 @@
           moby-expected:something?)))
       
 
+(define (-make-Message . args)
+  (make-Message args))
 
 
-(provide [struct-out Message]
+(provide [rename-out [-make-Message make-Message]]
+         Message? Message-parts
          [struct-out ColoredPart]
          [struct-out GradientPart]
          [struct-out MultiPart])
