@@ -219,9 +219,12 @@
           moby-expected:something?)))
       
 
+(define (-make-Message . args)
+  (make-Message args))
 
 
-(provide [struct-out Message]
+(provide [rename-out [-make-Message make-Message]]
+         Message? Message-parts
          [struct-out ColoredPart]
          [struct-out GradientPart]
          [struct-out MultiPart])
