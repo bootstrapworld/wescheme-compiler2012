@@ -15,11 +15,11 @@
 
 
 (define (loc->jsexpr a-loc)
-  (make-hash `((offset ,(number->string (Loc-offset a-loc)))
-               (line ,(number->string (Loc-line a-loc)))
-               (column ,(number->string (Loc-column a-loc)))
-               (span ,(number->string (Loc-span a-loc)))
-               (id ,(Loc-id a-loc)))))
+  (make-hash `((offset . ,(number->string (Loc-offset a-loc)))
+               (line . ,(number->string (Loc-line a-loc)))
+               (column . ,(number->string (Loc-column a-loc)))
+               (span . ,(number->string (Loc-span a-loc)))
+               (id . ,(Loc-id a-loc)))))
                    
 
 (define (error-struct->jsexpr an-error)
