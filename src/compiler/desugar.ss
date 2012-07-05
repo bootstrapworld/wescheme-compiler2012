@@ -781,7 +781,7 @@
          (raise (make-moby-error (stx-loc an-expr)
                                  (make-Message "After "
                                                (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
-                                               "I expect to see at least one question-answer branch, but I don't see anything")))]
+                                               " I expect to see at least one question-answer branch, but I don't see anything")))]
         [else
          (begin
            (check-clause-structures!)
