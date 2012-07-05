@@ -8,7 +8,7 @@
 
 (define-struct Message (parts))
 (define-struct ColoredPart (text loc))
-(define-struct GradientPart (parts))
+(define-struct GradientPart (parts)) ;; (listof ColoredPart)
 (define-struct MultiPart (text locs))
 
 

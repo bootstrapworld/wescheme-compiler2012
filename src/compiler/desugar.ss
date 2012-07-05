@@ -406,11 +406,15 @@
                            (stx-loc expr))
                (second desugared-exprs+pinfo)))]
       [(< (length (stx-e expr)) 4)
-       (raise (make-moby-error (stx-loc expr)
-                               (make-moby-error-type:if-too-few-elements)))]
+       (raise (make-moby-error (stx-loc expr)   ;;make-moby-error-type:if-too-few-elements
+                               (make-Message (make-ColoredPart "if" (stx-loc (first (stx-e expr))))
+                                             ":expected a test, a consequence, and an alternative, but all three were not found.")))]
       [(> (length (stx-e expr)) 4)
-       (raise (make-moby-error (stx-loc expr)
-                               (make-moby-error-type:if-too-many-elements)))])))
+       (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:if-too-many-element
+                               (make-Message  (make-ColoredPart "if" stx-loc (first (stx-e expr))) 
+                                              ": expected only a test, a consequence, and an alternative, "
+                                              "but found "
+                                              (make-MultiPart "more than three of these." (map stx-loc (rest (stx-e expr)))))))])))
 
 
 
@@ -732,25 +736,25 @@
        (define (check-clause-structures!)
          (for-each (lambda (a-clause)
                      (cond [(not (list? (stx-e a-clause)))
-                            (raise (make-moby-error (stx-loc a-clause)
+                            (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
                                                     (make-Message 
-                                                     "Inside a "
+                                                     "Inside a "    
                                                      (make-ColoredPart "cond branch" (stx-loc (first (stx-e an-expr))))        
-                                                     "I expect a question and an answer, but I don't see both things here.")))]
+                                                     "expected a question and an answer, but both things were not found.")))]
                            [(< (length (stx-e a-clause)) 2)
-                            (raise (make-moby-error (stx-loc a-clause)
+                            (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                     (make-Message 
                                                      "Inside a "
                                                      (make-ColoredPart "cond branch" (stx-loc (first (stx-e an-expr))))        
-                                                     "I expect a question and an answer, but I don't see both.")))]                 
+                                                     "expected a question and an answer, but both were not found.")))]                 
                            [(> (length (stx-e a-clause)) 2)
-                            (raise (make-moby-error (stx-loc a-clause)
+                            (raise (make-moby-error (stx-loc a-clause) ;;conditional-clause-too-many-elements
                                                     (make-Message 
                                                      (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr)))) 
                                                      ": "
-                                                     "Inside a cond branch, I expect to see a "
+                                                     "Inside a cond branch, expected to see a "
                                                      "question and an answer, "
-                                                     "but I see "
+                                                     "but found "
                                                      (make-MultiPart "more than two things" (map stx-loc cond-clauses))
                                                      " here.")
                                                     ))]
@@ -778,10 +782,10 @@
                         (stx-loc an-expr))]))]
       (cond
         [(empty? cond-clauses)
-         (raise (make-moby-error (stx-loc an-expr)
+         (raise (make-moby-error (stx-loc an-expr)  ;;conditional-missing-question-answer
                                  (make-Message "After "
                                                (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
-                                               "I expect to see at least one question-answer branch, but I don't see anything")))]
+                                               "expected at least one question-answer branch, but nothing was found")))]
         [else
          (begin
            (check-clause-structures!)
@@ -841,9 +845,11 @@
          [(stx-begins-with? (first clauses) 'else)
           (if (not (empty? (rest clauses)))
               (raise (make-moby-error (stx-loc (first clauses))
-                                      (make-moby-error-type:generic-syntactic-error
-                                       "else clause should be the last, but there's another clause after it" 
-                                       (list)
+                                      (make-Message 
+                                       (make-ColoredPart "else clause" (stx-loc (first (stx-e clauses)))) ;clauses?
+                                       "should be the last, but there's " 
+                                       (make-ColoredPart "another clause" (stx-loc (second (stx-e clauses)))) ;;second is a guess
+                                       "after it"                                      
                                        )))
               (f (reverse questions/rev) 
                  (reverse answers/rev) 
@@ -1140,11 +1146,14 @@
                                       `(quote i-am-a-symbol)))
     (cond
       [(< (length (stx-e expr)) 2)
-       (raise (make-moby-error (stx-loc expr)
-                               (make-moby-error-type:quote-too-few-elements)))]
+       (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:quote-too-few-elements
+                               (make-Message (make-ColoredPart "quote" (stx-loc (first (stx-e expr))))
+                                             ": expected a single argument, but did not find one.")))]
       [(> (length (stx-e expr)) 2)
-       (raise (make-moby-error (stx-loc expr)
-                               (make-moby-error-type:quote-too-many-elements)))]
+       (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:quote-too-many-elements
+                               (make-Message (make-ColoredPart "quote" (stx-loc (first (stx-e expr))))
+                                              ": expected a single argument, but found "
+                                              (make-MultiPart "more than one."))))]
       [else
        (list expr pinfo)])))
 

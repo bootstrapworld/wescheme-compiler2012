@@ -45,6 +45,10 @@
             out)))
 
 
+;; get-program-text: request -> string
+;; Returns the textual content of the program.
+(define (get-program-text request)
+  (extract-binding/single 'program (request-bindings request)))
 
 
 ;; Web service consuming programs and producing bytecode.
@@ -60,7 +64,7 @@
                    (string->symbol
                     (extract-binding/single 'name (request-bindings request)))]
                   [(program-text) 
-                   (extract-binding/single 'program (request-bindings request))]
+                   (get-program-text request)]
                   [(program-input-port) (open-input-string program-text)])
       ;; To support JSONP:
       (cond [(jsonp-request? request)
@@ -138,7 +142,7 @@
      (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")])
        (let ([payload
               (format "~a(~a);\n" (extract-binding/single 'on-error (request-bindings request))
-                      (jsexpr->json (exn->json-structured-output exn)))])
+                      (jsexpr->json (exn->json-structured-output request exn)))])
          (fprintf output-port "~a" payload)
          (close-output-port output-port)
          response))]))
@@ -148,7 +152,7 @@
 ;; exn->structured-output: exception -> jsexpr
 ;; Given an exception, tries to get back a jsexpr-structured value that can be passed back to
 ;; the user.
-(define (exn->json-structured-output an-exn)
+(define (exn->json-structured-output request an-exn)
   (define (on-moby-failure-val failure-val)
     (make-hash `(("type" . "moby-failure")
                  ("dom-message" . 
@@ -245,7 +249,7 @@
                     #"application/octet-stream"
                     (list)
                     (list (string->bytes/utf-8 
-                           (jsexpr->json (exn->json-structured-output exn)))))]))
+                           (jsexpr->json (exn->json-structured-output request exn)))))]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
