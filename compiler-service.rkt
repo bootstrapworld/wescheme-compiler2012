@@ -7,6 +7,7 @@
          scheme/match
          scheme/list
          racket/cmdline
+         "find-paren-loc.rkt"
          ;; profile
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
@@ -44,6 +45,11 @@
                      (loop))))))
             out)))
 
+
+;; has-program-text?: request -> boolean
+;; returns true if the request includes program text.
+(define (has-program-text? request)
+  (exists-binding? 'program (request-bindings request)))
 
 ;; get-program-text: request -> string
 ;; Returns the textual content of the program.
@@ -161,6 +167,9 @@
                  ("structured-error" . ,(jsexpr->json (error-struct->jsexpr failure-val))))))
   (cond
     [(exn:fail:read? an-exn)
+     (define program (get-program-text request))
+     (define input-port (open-input-string program))
+     
      (let ([translated-srclocs 
             (map srcloc->Loc (exn:fail:read-srclocs an-exn))])
        (on-moby-failure-val

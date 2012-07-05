@@ -41,9 +41,9 @@
                              (list (make-hash `((type . "GradientPart")
                                                 (parts . ,(map loop (GradientPart-parts part))))))]
                             [(MultiPart? part)
-                             (list (make-hash) `((type . "MultiPart")
-                                                 (text . ,(MultiPart-text part))
-                                                 (locs . ,(map loc->jsexpr (MultiPart-locs part)))))]))
+                             (list (make-hash `((type . "MultiPart")
+						(text . ,(MultiPart-text part))
+						(locs . ,(map loc->jsexpr (MultiPart-locs part))))))]))
                          parts)))]
    [else
     #f]))
