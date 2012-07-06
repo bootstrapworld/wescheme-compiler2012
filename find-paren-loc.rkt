@@ -39,7 +39,10 @@
     [(string=? p ")") "("]
     [(string=? p "]") "["]
     [(string=? p "}") "{"]
-    [else "blah"]))
+     [(string=? p "(") ")"]
+    [(string=? p "{") "}"]
+    [(string=? p "[") "]"]
+    [else " "]))
 
 
 (check-equal? (paren-problem (open-input-string "(foo")) (list (make-paren "(" 'parenthesis '|(| 1 2)))

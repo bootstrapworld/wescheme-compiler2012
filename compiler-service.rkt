@@ -193,18 +193,27 @@
                              ;; we'd better not die here.
                              (make-Loc 0 1 0 0 "")
                              (first translated-srclocs))
-;                         (make-moby-error-type:generic-read-error
-;                          (exn-message an-exn)
-;                          (if (empty? translated-srclocs) 
-;                              empty
-;                              (rest translated-srclocs)))
-                         (make-Message "read: expected a "
-                                       (get-match (paren-text (first parens)))
-                                       " to close "
-                                       (make-ColoredPart (paren-text (first parens)) (paren->loc (first parens)))
-                                      )     ;;loc - offset line column span id)
-                         )))]
-    
+                         (cond [(empty? parens)
+                                
+                                (make-moby-error-type:generic-read-error
+                                 (exn-message an-exn)
+                                 (if (empty? translated-srclocs) 
+                                     empty
+                                     (rest translated-srclocs)))]
+                               [else
+                                (make-Message "read: expected a "
+                                              (get-match (paren-text (first parens)))
+                                              
+                                              (if (or (string=? (get-match (paren-text (first parens))) ")")  
+                                                      (string=? (get-match (paren-text (first parens))) "}") 
+                                                      (string=? (get-match (paren-text (first parens))) "]"))      
+                                                  " to close "
+                                                  " to open "
+                                                  )
+                                              (make-ColoredPart (paren-text (first parens)) (paren->loc (first parens)))
+                                              )     ;;loc - offset line column span id)
+                                ]))))]
+
     [(moby-failure? an-exn)
      (on-moby-failure-val (moby-failure-val an-exn))]
     
