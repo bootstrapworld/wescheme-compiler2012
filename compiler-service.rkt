@@ -153,8 +153,21 @@
          (close-output-port output-port)
          response))]))
      
+;;paren->loc: paren -> loc
+;;converts a paren to a loc
+(define (paren->loc p)
+  (match p
+    [(struct paren (text type paren-type p-start p-end))
+     (make-Loc p-start 0 0 (- p-end p-start) "<definitions>")]))
 
 
+;;paren->oppParen: paren -> string
+;;takes in a paren and outputs the opposite paren as a string
+(define (paren->oppParen p)
+  (match p
+    [(struct paren (text type paren-type p-start p-end))
+    (get-match text)]))
+     
 ;; exn->structured-output: exception -> jsexpr
 ;; Given an exception, tries to get back a jsexpr-structured value that can be passed back to
 ;; the user.
@@ -169,6 +182,7 @@
     [(exn:fail:read? an-exn)
      (define program (get-program-text request))
      (define input-port (open-input-string program))
+     (define parens (paren-problem input-port))       ;;assuming that it is a paren problem 
      
      (let ([translated-srclocs 
             (map srcloc->Loc (exn:fail:read-srclocs an-exn))])
@@ -179,11 +193,17 @@
                              ;; we'd better not die here.
                              (make-Loc 0 1 0 0 "")
                              (first translated-srclocs))
-                         (make-moby-error-type:generic-read-error
-                          (exn-message an-exn)
-                          (if (empty? translated-srclocs) 
-                              empty
-                              (rest translated-srclocs))))))]
+;                         (make-moby-error-type:generic-read-error
+;                          (exn-message an-exn)
+;                          (if (empty? translated-srclocs) 
+;                              empty
+;                              (rest translated-srclocs)))
+                         (make-Message "read: expected a "
+                                       (get-match (paren-text (first parens)))
+                                       " to close "
+                                       (make-ColoredPart (paren-text (first parens)) (paren->loc (first parens)))
+                                      )     ;;loc - offset line column span id)
+                         )))]
     
     [(moby-failure? an-exn)
      (on-moby-failure-val (moby-failure-val an-exn))]

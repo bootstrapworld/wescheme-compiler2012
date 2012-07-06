@@ -39,7 +39,7 @@
     [(string=? p ")") "("]
     [(string=? p "]") "["]
     [(string=? p "}") "{"]
-    [else ""]))
+    [else "blah"]))
 
 
 (check-equal? (paren-problem (open-input-string "(foo")) (list (make-paren "(" 'parenthesis '|(| 1 2)))
@@ -53,3 +53,11 @@
 (check-equal? (paren-problem (open-input-string "({]")) (list (make-paren "{" 'parenthesis '|{| 2 3)
                                                               (make-paren "]" 'parenthesis '|]| 3 4)))
 
+
+(provide/contract [struct paren  ([text string?]
+                                 [type symbol?]
+                                 [paren-type symbol?]
+                                 [start number?]
+                                 [end number?])]
+                  [paren-problem (input-port? . -> . (listof paren?))]
+                  [get-match (string? . -> . string?)])

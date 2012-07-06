@@ -411,7 +411,7 @@
                                              ":expected a test, a consequence, and an alternative, but all three were not found.")))]
       [(> (length (stx-e expr)) 4)
        (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:if-too-many-element
-                               (make-Message  (make-ColoredPart "if" stx-loc (first (stx-e expr))) 
+                               (make-Message  (make-ColoredPart "if" (stx-loc (first (stx-e expr)))) 
                                               ": expected only a test, a consequence, and an alternative, "
                                               "but found "
                                               (make-MultiPart "more than three of these." (map stx-loc (rest (stx-e expr)))))))])))
@@ -738,15 +738,18 @@
                      (cond [(not (list? (stx-e a-clause)))
                             (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
                                                     (make-Message 
-                                                     "Inside a "    
-                                                     (make-ColoredPart "cond branch" (stx-loc (first (stx-e an-expr))))        
-                                                     "expected a question and an answer, but both things were not found.")))]
+                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))  
+                                                     ": Inside a cond branch"    
+                                                     " expected a question and an answer, but "
+                                                     (make-MultiPart "both things" (map stx-loc (stx-e a-clause)))
+                                                     " were not found.")))]
                            [(< (length (stx-e a-clause)) 2)
                             (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                     (make-Message 
-                                                     "Inside a "
-                                                     (make-ColoredPart "cond branch" (stx-loc (first (stx-e an-expr))))        
-                                                     "expected a question and an answer, but both were not found.")))]                 
+                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))  
+                                                     ": Inside a cond branch, expected a question and an answer, but "
+                                                     (make-MultiPart "both" (map stx-loc (stx-e a-clause)))
+                                                     " were not found.")))]                 
                            [(> (length (stx-e a-clause)) 2)
                             (raise (make-moby-error (stx-loc a-clause) ;;conditional-clause-too-many-elements
                                                     (make-Message 
@@ -755,7 +758,7 @@
                                                      "Inside a cond branch, expected to see a "
                                                      "question and an answer, "
                                                      "but found "
-                                                     (make-MultiPart "more than two things" (map stx-loc cond-clauses))
+                                                     (make-MultiPart "more than two things" (map stx-loc (stx-e a-clause)))
                                                      " here.")
                                                     ))]
                            [else
