@@ -211,8 +211,9 @@
                                                   " to open "
                                                   )
                                               (make-ColoredPart (paren-text (first parens)) (paren->loc (first parens)))
-                                              )     ;;loc - offset line column span id)
-                                ]))))]
+                                              (if (not (empty? (rest parens))) " but found a " "")
+                                              (if (not (empty? (rest parens))) (make-ColoredPart (paren-text (second parens)) (paren->loc (second parens))) "")
+                                              )]))))]
 
     [(moby-failure? an-exn)
      (on-moby-failure-val (moby-failure-val an-exn))]
