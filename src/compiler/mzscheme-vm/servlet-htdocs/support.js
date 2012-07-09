@@ -8958,7 +8958,7 @@ var Message = function(args) {
 Message.prototype.toString = function() {
   var toReturn = [];
   
-  for(var i = 0; i < args.length; i++) {
+  for(var i = 0; i < this.args.length; i++) {
       toReturn.push(''+args[i]);
   }
   

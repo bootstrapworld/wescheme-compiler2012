@@ -229,8 +229,12 @@
 (provide [rename-out [-make-Message make-Message]]
          Message? Message-parts
          [struct-out ColoredPart]
-         [struct-out GradientPart]
-         [struct-out MultiPart])
+         [struct-out GradientPart])
+
+
+(provide/contract
+ [struct MultiPart ([text string?]
+                    [locs (listof Loc?)])])
 
 
 (provide/contract

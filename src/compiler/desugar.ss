@@ -171,7 +171,7 @@
                                                                                        (symbol->string (stx-e field))))
                                                                 (make-struct-field-accessor ,ref-stx ,i ',(stx-e field)))
                                                              (stx-loc a-defn)))
-                                              fields))
+                                               fields))
                                        ;; FIXME: add bindings to the mutators too.
                                        ]
                                  (list (cons def-values-stx selector-stxs) a-pinfo)))
@@ -321,9 +321,9 @@
                                     (make-moby-error-type:generic-syntactic-error
                                      (format "local expects only definitions, but hasn't received a collection of them and instead received ~s."
                                              an-stx)
-                                             
+                                     
                                      (list)))))
-
+          
           (define (raise-error an-stx a-loc)
             (raise (make-moby-error a-loc
                                     (make-moby-error-type:generic-syntactic-error
@@ -340,8 +340,8 @@
       [else
        (raise-error (first defns)
                     (stx-loc (first defns)))])))
-  
-  
+
+
 
 ;; desugar-application: expr pinfo -> (list expr pinfo)
 ;; Desugars function application.
@@ -521,8 +521,8 @@
     
     ;; Check for list of identifiers 
     (check-list-of-identifiers! (second (stx-e expr))
-                               (first (stx-e expr))
-                               (stx-loc expr))
+                                (first (stx-e expr))
+                                (stx-loc expr))
     (check-duplicate-identifiers! (stx-e (second (stx-e expr))))
     
     (local [(define lambda-symbol-stx (first (stx-e expr)))
@@ -696,7 +696,8 @@
                                               [(7)
                                                'ok])))
       (desugar-expression/expr+pinfo
-       (deconstruct-clauses-with-else (rest (rest (stx-e an-expr)))
+       (deconstruct-clauses-with-else an-expr
+                                      (rest (rest (stx-e an-expr)))
                                       (lambda (else-stx)
                                         else-stx)
                                       (lambda (questions answers question-last answer-last)
@@ -732,37 +733,58 @@
                                                 [(odd? 42) 'huh?])))
     (local
       [(define cond-clauses (rest (stx-e an-expr)))
-       
+       (define expr-locs (list (stx-loc (first (stx-e an-expr)))
+                               (make-Loc (Loc-offset (stx-loc an-expr))
+                                         (Loc-line (stx-loc an-expr))
+                                         (Loc-column (stx-loc an-expr))
+                                         1
+                                         (Loc-id (stx-loc an-expr)))
+                               (make-Loc (+ (Loc-offset (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                         (Loc-line (stx-loc an-expr))
+                                         (+ (Loc-column (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                         1
+                                         (Loc-id (stx-loc an-expr)))))
        (define (check-clause-structures!)
          (for-each (lambda (a-clause)
-                     (cond [(not (list? (stx-e a-clause)))
-                            (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
-                                                    (make-Message 
-                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))  
-                                                     ": Inside a cond branch"    
-                                                     " expected a question and an answer, but "
-                                                     (make-MultiPart "both things" (map stx-loc (stx-e a-clause)))
-                                                     " were not found.")))]
-                           [(< (length (stx-e a-clause)) 2)
-                            (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
-                                                    (make-Message 
-                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))  
-                                                     ": Inside a cond branch, expected a question and an answer, but "
-                                                     (make-MultiPart "both" (map stx-loc (stx-e a-clause)))
-                                                     " were not found.")))]                 
-                           [(> (length (stx-e a-clause)) 2)
-                            (raise (make-moby-error (stx-loc a-clause) ;;conditional-clause-too-many-elements
-                                                    (make-Message 
-                                                     (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr)))) 
-                                                     ": "
-                                                     "Inside a cond branch, expected to see a "
-                                                     "question and an answer, "
-                                                     "but found "
-                                                     (make-MultiPart "more than two things" (map stx-loc (stx-e a-clause)))
-                                                     " here.")
-                                                    ))]
-                           [else
-                            (void)]))
+                     (let ((cond-branch-locs (list (make-Loc (Loc-offset (stx-loc a-clause))
+                                                             (Loc-line (stx-loc a-clause))
+                                                             (Loc-column (stx-loc a-clause))
+                                                             1
+                                                             (Loc-id (stx-loc a-clause)))
+                                                   (make-Loc (+ (Loc-offset (stx-loc a-clause)) (Loc-span (stx-loc a-clause)) -1)
+                                                             (Loc-line (stx-loc a-clause))
+                                                             (+ (Loc-column (stx-loc a-clause)) (Loc-span (stx-loc a-clause)) -1)
+                                                             1
+                                                             (Loc-id (stx-loc a-clause))))))
+                       (cond [(not (list? (stx-e a-clause)))
+                              (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
+                                                      (make-Message 
+                                                       (make-MultiPart "cond" expr-locs) 
+                                                       ": Inside a "
+                                                       (make-MultiPart "cond branch" cond-branch-locs)    
+                                                       " expected a question and an answer, but "
+                                                       "both things"
+                                                       " were not found.")))]
+                             [(< (length (stx-e a-clause)) 2)
+                              (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
+                                                      (make-Message 
+                                                       (make-MultiPart "cond" expr-locs)  
+                                                       ": Inside a "
+                                                       (make-MultiPart "cond branch" cond-branch-locs)
+                                                       ", expected a question and an answer, but "
+                                                       (make-MultiPart "both" (map stx-loc (stx-e a-clause)))
+                                                       " were not found.")))]                 
+                             [(> (length (stx-e a-clause)) 2)
+                              
+                              (raise (make-moby-error (stx-loc a-clause) ;;conditional-clause-too-many-elements
+                                                      (make-Message 
+                                                       (make-MultiPart "cond" expr-locs) 
+                                                       ": expected a clause with a question and an answer, but found " 
+                                                       (make-MultiPart "a clause" cond-branch-locs)
+                                                       " with "
+                                                       (make-MultiPart (string-append (number->string (length (stx-e a-clause))) " parts") (map stx-loc (stx-e a-clause))))))]
+                             [else
+                              (void)])))
                    cond-clauses))
        
        
@@ -793,7 +815,8 @@
          (begin
            (check-clause-structures!)
            (desugar-expression/expr+pinfo
-            (deconstruct-clauses-with-else cond-clauses
+            (deconstruct-clauses-with-else an-expr
+                                           cond-clauses
                                            (lambda (else-stx)
                                              (datum->stx #f 'true (stx-loc else-stx)))
                                            (lambda (questions answers question-last answer-last)
@@ -837,23 +860,35 @@
    'moby/runtime/kernel/misc))
 
 
-;; deconstruct-clauses-with-else: (listof stx) (stx -> stx) ((listof stx) (listof stx) stx stx -> X) -> X
+;; deconstruct-clauses-with-else: (listof stx) (listof stx) (stx -> stx) ((listof stx) (listof stx) stx stx -> X) -> X
 ;; Helper for functions that need to destruct a list of 
 ;; clauses of the form ([question answer] ... [else answer-last]).
-(define (deconstruct-clauses-with-else clauses else-replacement-f f)
+(define (deconstruct-clauses-with-else an-expr clauses else-replacement-f f)
   (local 
     [;; process-clauses: (listof stx) (listof stx) (listof stx) -> X
      (define (process-clauses clauses questions/rev answers/rev)
        (cond
          [(stx-begins-with? (first clauses) 'else)
           (if (not (empty? (rest clauses)))
-              (raise (make-moby-error (stx-loc (first clauses))
+              (let ((expr-locs (list (stx-loc (first (stx-e an-expr)))
+                               (make-Loc (Loc-offset (stx-loc an-expr))
+                                         (Loc-line (stx-loc an-expr))
+                                         (Loc-column (stx-loc an-expr))
+                                         1
+                                         (Loc-id (stx-loc an-expr)))
+                               (make-Loc (+ (Loc-offset (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                         (Loc-line (stx-loc an-expr))
+                                         (+ (Loc-column (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                         1
+                                         (Loc-id (stx-loc an-expr))))))
+                (raise (make-moby-error (stx-loc (first clauses))
                                       (make-Message 
-                                       (make-ColoredPart "else clause" (stx-loc (first (stx-e clauses)))) ;clauses?
+                                       (make-MultiPart "cond" expr-locs) ": " 
+                                       (make-ColoredPart "else clause " (stx-loc (first clauses))) 
                                        "should be the last, but there's " 
-                                       (make-ColoredPart "another clause" (stx-loc (second (stx-e clauses)))) ;;second is a guess
-                                       "after it"                                      
-                                       )))
+                                       (make-ColoredPart "another clause" (stx-loc (second clauses))) 
+                                       " after it"                                      
+                                       ))))
               (f (reverse questions/rev) 
                  (reverse answers/rev) 
                  (else-replacement-f (first (stx-e (first clauses))))
@@ -927,9 +962,9 @@
                             (not (= (length (stx-e maybe-kv-stx)) 2))
                             (not (symbol? (stx-e (first (stx-e maybe-kv-stx))))))
                         (raise (make-moby-error (stx-loc maybe-kv-stx)
-                             (make-moby-error-type:generic-syntactic-error 
-                              (format "Expected a key/value pair, but received ~s" (stx->datum maybe-kv-stx))
-                              empty)))]
+                                                (make-moby-error-type:generic-syntactic-error 
+                                                 (format "Expected a key/value pair, but received ~s" (stx->datum maybe-kv-stx))
+                                                 empty)))]
                        [else
                         (void)]))
                (stx-e stx))]))
@@ -1155,8 +1190,8 @@
       [(> (length (stx-e expr)) 2)
        (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:quote-too-many-elements
                                (make-Message (make-ColoredPart "quote" (stx-loc (first (stx-e expr))))
-                                              ": expected a single argument, but found "
-                                              (make-MultiPart "more than one."))))]
+                                             ": expected a single argument, but found "
+                                             (make-MultiPart "more than one."))))]
       [else
        (list expr pinfo)])))
 
