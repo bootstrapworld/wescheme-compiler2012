@@ -762,21 +762,6 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
-       		/*var getArgColoredParts = function(locations) {
-				var argColoredParts = [];
-				var locs = locations;
-				if (args.length > 0) {
-					for (var i = 0; i < args.length; i++) {
-						if(! (locs.isEmpty())){
-							if(i != pos -1) { 
-								argColoredParts.push(new types.ColoredPart(args[i]+" ", locs.first())); 
-							}
-							locs = locs.rest();
-						}
-					}
-				}
-				return argColoredParts;
-			}*/
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
 				var locs = locations;
