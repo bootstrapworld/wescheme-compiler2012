@@ -100,3 +100,22 @@ var mainPageLoad = function() {
     var executeButton = document.getElementById('executeButton');
     unblockInput();
 };
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////
+// If we're in the context of an iframe, provide an easyXDM interface to the compiler.
+if (window.top !== window) {
+    new easyXDM.Rpc({ protocol: "1" }, {
+        local: {
+            compileProgram: {
+                method: function(name, programText, fn, fnError){
+                    evaluator.compileProgram(name, programText, fn, fnError);
+                }
+            }
+        }
+    });
+}

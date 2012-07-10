@@ -222,11 +222,11 @@ var Evaluator = (function() {
     Evaluator.prototype.executeProgram = function(programName, code,
 						  onDone,
 						  onDoneError) {
-	if (! this._isScriptRequestPossible(programName, code)) {
+	// if (! this._isScriptRequestPossible(programName, code)) {
 	    this._executeProgramWithAjax(programName, code, onDone, onDoneError);
-	} else {
-	    this._executeProgramWithScript(programName, code, onDone, onDoneError);
-	}
+	// } else {
+	//     this._executeProgramWithScript(programName, code, onDone, onDoneError);
+	// }
     };
 
     // _executeProgramWithScript: string string (-> void) (exn -> void) -> void
@@ -245,9 +245,27 @@ var Evaluator = (function() {
     };
 
 
+
     // _executeProgramWithAjax: string string (-> void) (exn -> void) -> void
     Evaluator.prototype._executeProgramWithAjax = function(programName, code,
 							   onDone, onDoneError) {
+	var that = this;
+        this.compileProgram(programName, code,
+                            function(responseText) {
+		                that._onCompilationSuccess(eval('(' + responseText + ')'), 
+					                   onDone, onDoneError);
+                            },
+                            function(responseErrorText) {
+		                that._onCompilationFailure(JSON.parse(responseErrorText),
+					                   onDoneError);
+                            })
+    };
+    
+
+
+    // compileProgram: string string (string -> any) (string -> any) -> void
+    // Runs the compiler on the given program.
+    Evaluator.prototype.compileProgram = function(programName, code, onDone, onDoneError) {
 	var that = this;
 	var params = encodeUrlParameters({'name': programName,
 					  'program': code,
@@ -256,11 +274,9 @@ var Evaluator = (function() {
 	xhr.onreadystatechange = function() {
 	    if (xhr.readyState == 4) {
 		if (xhr.status === 200) {
-		    that._onCompilationSuccess(eval('(' + xhr.responseText + ')'), 
-					       onDone, onDoneError);
+                    onDone(xhr.responseText);
 		} else {
-		    that._onCompilationFailure(xhr.responseText, 
-					       onDoneError);
+                    onDoneError(xhr.responseText);
 		}
 	    }
 	};
@@ -268,6 +284,10 @@ var Evaluator = (function() {
 	xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhr.send(params);
     };
+
+
+
+
 
     
 

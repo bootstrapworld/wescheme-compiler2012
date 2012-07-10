@@ -24,6 +24,7 @@
           (define (add-toplevel-dom-error-wrapper a-dom)
             `(span ((class "Error"))
                    ,a-dom
+                   (br () "")
                    (span ((class "Error.location"))
                          ,(Loc->dom-sexp embedded-location))))]
     
