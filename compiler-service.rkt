@@ -22,6 +22,9 @@
 (define-runtime-path htdocs "src/compiler/mzscheme-vm/servlet-htdocs")
 (define-runtime-path compat 
   "js-runtime/lib/compat")
+(define-runtime-path easyxdm "support/easyXDM")
+
+
 
 
 ;; make-port-response: (values response/incremental output-port)
@@ -297,7 +300,7 @@
 (serve/servlet start 
                #:port port
                #:servlet-path "/servlets/standalone.ss"
-               #:extra-files-paths (list htdocs compat)
+               #:extra-files-paths (list htdocs compat easyxdm)
                #:launch-browser? #f
                #:listen-ip #f)
 
