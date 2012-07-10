@@ -832,24 +832,30 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 
     if ( !types.isFunction(procValue) ) {
 	    var argStr = getArgStr('; arguments were:');
-       var positionStack = 
-        state.captureCurrentContinuationMarks(aState).ref(
-            types.symbol('moby-application-position-key'));
+        var positionStack = state.captureCurrentContinuationMarks(aState).ref(types.symbol('moby-application-position-key'));
         
        
         var locationList = positionStack[positionStack.length - 1];
+        var exprLoc = positionStack[0].first().elts;
         var argColoredParts = getArgColoredParts(locationList.rest());
 
+        var openParen = [exprLoc[0], exprLoc[1], exprLoc[2], exprLoc[3], 1];
 
+        var closeParen = [exprLoc[0], exprLoc[1] + exprLoc[4] - 1, exprLoc[2], exprLoc[3] + exprLoc[4] - 1, 1];
+
+        var op = new Vector();
+        op.elts = openParen;
+        var cp = new Vector();
+        cp.elts = closeParen;
 
 	    helpers.raise(
 		types.incompleteExn(types.exnFailContract,
-
-        new types.Message(["function application: expected function, given: ",
-                            new types.ColoredPart(procValue, locationList.first()),
-                            ((operands.length == 0) ? ' (no arguments)' : '; arguments were '),
-                            ((operands.length != 0) ? new types.GradientPart(argColoredParts) : ''),
-                            ]),
+            new types.Message([new types.MultiPart("function call", [op, cp]),
+                                ": expected function, given: ",
+                                new types.ColoredPart(procValue, locationList.first())
+                                //((operands.length == 0) ? ' (no arguments)' : '; arguments were '),
+                               // ((operands.length != 0) ? new types.GradientPart(argColoredParts) : ''),
+                                ]),
                              []));
 
     }

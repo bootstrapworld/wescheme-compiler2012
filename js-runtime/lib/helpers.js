@@ -238,7 +238,7 @@ var helpers = {};
 							   		" as ",
 							   		details[2], 
 							   		" argument, given: ",
-							   		new types.ColoredPart(details[3], getLocation(pos)),
+							   		new types.ColoredPart(details[3], getLocation(pos))
 							   	]),
 							   []) );
 			}
