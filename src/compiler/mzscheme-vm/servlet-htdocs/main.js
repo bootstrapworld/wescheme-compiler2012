@@ -105,11 +105,11 @@ var mainPageLoad = function() {
 
 
 
-
 //////////////////////////////////////////////////////////////////////
 // If we're in the context of an iframe, provide an easyXDM interface to the compiler.
 if (window.top !== window) {
-    new easyXDM.Rpc({ lazy: true }, {
+
+    new easyXDM.Rpc({}, {
         local: {
             compileProgram: {
                 method: function(name, programText, fn, fnError){
