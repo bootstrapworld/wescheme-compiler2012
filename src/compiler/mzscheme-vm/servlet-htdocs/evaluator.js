@@ -214,6 +214,14 @@ var Evaluator = (function() {
 
 
 
+    // Under environments that need to customize the compiler, we provide a setter
+    // for compileProgram:
+    Evaluator.prototype.setCompileProgram = function(compileProgram) {
+        this.compileProgram = compileProgram;
+    };
+
+
+    // The default value for it is:
     // compileProgram: string string (string -> any) (string -> any) -> void
     // Runs the compiler on the given program.
     Evaluator.prototype.compileProgram = function(programName, code, onDone, onDoneError) {
