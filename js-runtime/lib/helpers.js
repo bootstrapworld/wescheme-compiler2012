@@ -145,8 +145,7 @@ var helpers = {};
 		}
 	};
 
-	var throwCheckError = function(aState, details, pos, args) {
-		if(aState === undefined) {
+	var throwUncoloredCheckError = function(aState, details, pos, args){
 			var errorFormatStr;
 			if (args && args.length > 1) {
 				var errorFormatStrBuffer = ['~a: expects type ~a as ~a arguments, given: ~s; other arguments were:'];
@@ -156,18 +155,21 @@ var helpers = {};
 					}
 				}
 				errorFormatStr = errorFormatStrBuffer.join(' ');
+				raise( types.incompleteExn(types.exnFailContract,
+						   helpers.format(errorFormatStr, [details.functionName, details.typeName, details.ordinalPosition, details.actualValue]),
+						   []) );
 			}
 			else {
 				errorFormatStr = "~a: expects argument of type ~a, given: ~s";
-				details.splice(2, 1);
-			}
+				raise( types.incompleteExn(types.exnFailContract,
+						   helpers.format(errorFormatStr, [details.functionName, details.typeName , details.actualValue]),
+						   []));
 
-			raise( types.incompleteExn(types.exnFailContract,
-						   helpers.format(errorFormatStr, details),
-						   []) );
-		}
-		else {
-			var positionStack = 
+			}
+	};
+
+	var throwColoredCheckError = function(aState, details, pos, args){
+		var positionStack = 
         		state.captureCurrentContinuationMarks(aState).ref(
             		types.symbol('moby-application-position-key'));
         
@@ -198,6 +200,8 @@ var helpers = {};
 				}
 				return coloredParts;
 			}
+
+			// listRef for locationList.
 			var getLocation = function(pos) {
 				var locs = locationList;
 
@@ -217,13 +221,13 @@ var helpers = {};
 
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
-							   		new types.ColoredPart(details[0], locationList.first()),
+							   		new types.ColoredPart(details.functionName, locationList.first()),
 							   		": expects type ",
-							   		details[1],
+							   		details.typeName,
 							   		" as ",
-							   		details[2], 
+							   		details.ordinalPosition, 
 							   		" argument, given: ",
-							   		new types.ColoredPart(details[3], getLocation(pos)),
+							   		new types.ColoredPart(details.actualValue, getLocation(pos)),
 							   		"; other arguments were: ",
 							   		new types.GradientPart(argColoredParts)
 							   	]),
@@ -232,43 +236,40 @@ var helpers = {};
 			else {
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
-							   		new types.ColoredPart(details[0], locationList.first()),
+							   		new types.ColoredPart(details.functionName, locationList.first()),
 							   		": expects type ",
-							   		details[1],
+							   		details.typeName,
 							   		" as ",
-							   		details[2], 
+							   		details.ordinalPosition, 
 							   		" argument, given: ",
-							   		new types.ColoredPart(details[3], getLocation(pos))
+							   		new types.ColoredPart(details.actualValue, getLocation(pos))
 							   	]),
 							   []) );
 			}
 
 
+	};
+
+	var throwCheckError = function(aState, details, pos, args) {
+		if(aState === undefined) {
+			throwUncoloredCheckError(aState, details, pos, args);
+		}
+		else {
+			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
 	//HACK HACK HACK
 	var check = function(aState, x, f, functionName, typeName, position, args) {
 		if ( !f(x) ) {
 			throwCheckError(aState, 
-					[functionName,
-					 typeName,
-					 helpers.ordinalize(position),
-					 x],
+					{ functionName: functionName,
+					  typeName: typeName,
+					  ordinalPosition: helpers.ordinalize(position),
+					  actualValue: x },
 					position,
 					args);
 		}
 	};
-
-        var isList = function(x) {
-	    if (x === types.EMPTY) { return true; }
-	    while (types.isPair(x)) {
-		x = x.rest();
-	    }
-	    return (x === types.EMPTY);
-	};
-
-
-
 
     var isList = function(x) {
         var tortoise, hare;

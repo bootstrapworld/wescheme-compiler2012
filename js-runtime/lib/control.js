@@ -819,15 +819,15 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     }
     
     var getArgColoredParts = function(locations) {
-	var argColoredParts = [];
-	var locs = locations;
-	if (operands.length > 0) {
-		for (var i = 0; i < operands.length; i++) {
-			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
-			locs = locs.rest();
-		}
-	}
-	return argColoredParts;
+    	var argColoredParts = [];
+    	var locs = locations;
+    	if (operands.length > 0) {
+    		for (var i = 0; i < operands.length; i++) {
+    			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
+    			locs = locs.rest();
+    		}
+    	}
+    	return argColoredParts;
     }
 
     if ( !types.isFunction(procValue) ) {
@@ -843,10 +843,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 
         var closeParen = [exprLoc[0], exprLoc[1] + exprLoc[4] - 1, exprLoc[2], exprLoc[3] + exprLoc[4] - 1, 1];
 
-        var op = new Vector();
-        op.elts = openParen;
-        var cp = new Vector();
-        cp.elts = closeParen;
+        var op = types.vector(openParen);
+        var cp = types.vector(closeParen);
 
 	    helpers.raise(
 		types.incompleteExn(types.exnFailContract,
@@ -950,8 +948,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), 
-							 locationList.first()),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
 			": expects ", 
 			''+(procValue.isRest ? 'at least' : ''),
 		        " ",
@@ -970,9 +967,6 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	}
     }
 };
-
-// var ColoredPart = types.ColoredPart;
-
 
 
 var prepareClosureArgumentsOnStack = function(state, procValue, operandValues, n) {

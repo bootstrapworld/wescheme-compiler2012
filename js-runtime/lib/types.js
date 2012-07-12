@@ -1949,12 +1949,26 @@ var isColoredPart = function(o) {
   return o instanceof ColoredPart;
 };
 
+ColoredPart.prototype.toString = function() {
+    return this.text+'';
+};
+
 var GradientPart = function(coloredParts) {
     this.coloredParts = coloredParts;
 };
 
 var isGradientPart = function(o) {
   return o instanceof GradientPart;
+};
+
+GradientPart.prototype.toString = function() {
+	var i;
+	var resultArray = [];
+	for(i = 0; i < this.parts.length; i++){
+		resultArray.push(this.parts[i].text+'');
+	}
+	return resultArray.join("");
+
 };
 
 var MultiPart = function(text, locations) {
@@ -1966,33 +1980,10 @@ var isMultiPart = function(o) {
   return o instanceof MultiPart;
 };
 
-ColoredPart.prototype.toString = function() {
-    return this.text+'';
+MultiPart.prototype.toString = function() {
+	return this.text;
 };
 
-
-
-/*
-var Ref = function(text, location) {
-    this.text = text;
-    this.location = location;
-}
-
-var DocLink = function(text, name) {
-    this.text = text;
-    this.name = name;
-}
-
-var isRef = function(o) {
-    return o instanceof Ref;
-}
-
-var isDocLink = function(o) {
-    return o instanceof DocLink;
-}
-
-
-*/
 
 
 //////////////////////////////////////////////////////////////////////
