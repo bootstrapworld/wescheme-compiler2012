@@ -171,6 +171,14 @@
     [(struct paren (text type paren-type p-start p-end))
     (get-match text)]))
      
+;;parenCheck takes as input a string, and outputs a boolean.
+;;The string that is input should be either ) } or ], which will return true. Else, false.
+(define (parenCheck paren)
+  (or (string=? paren ")")  
+      (string=? paren "}") 
+      (string=? paren "]")))
+
+
 ;; exn->structured-output: exception -> jsexpr
 ;; Given an exception, tries to get back a jsexpr-structured value that can be passed back to
 ;; the user.
@@ -206,13 +214,12 @@
                                [else
                                 (make-Message "read: expected a "
                                               (get-match (paren-text (first parens)))
-                                              
-                                              (if (or (string=? (get-match (paren-text (first parens))) ")")  
-                                                      (string=? (get-match (paren-text (first parens))) "}") 
-                                                      (string=? (get-match (paren-text (first parens))) "]"))      
+                                      
+                                              (if (parenCheck (get-match (paren-text (first parens))))    
                                                   " to close "
                                                   " to open "
                                                   )
+
                                               (make-ColoredPart (paren-text (first parens)) (paren->loc (first parens)))
                                               (if (not (empty? (rest parens))) " but found a " "")
                                               (if (not (empty? (rest parens))) (make-ColoredPart (paren-text (second parens)) (paren->loc (second parens))) "")
