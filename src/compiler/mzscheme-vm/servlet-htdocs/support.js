@@ -18231,8 +18231,8 @@ PRIMITIVES['image-url'] =
 		 function(aState, path) {
 		     check(aState, path, isString, "image-url", "string", 1);
 		     var originalPath = path.toString();
-		     if (state.getImageProxyHook()) {
-			 path = (state.getImageProxyHook() +
+		     if (aState.getImageProxyHook()) {
+			 path = (aState.getImageProxyHook() +
 				 "?url=" + encodeURIComponent(path.toString()));
 		     } else {
 			 path = path.toString();
@@ -19168,13 +19168,13 @@ PRIMITIVES['js-big-bang'] =
 			 var onBreak = function() {
 			     bigBangController.breaker();
 			 }
-			 state.addBreakRequestedListener(onBreak);
+			 aState.addBreakRequestedListener(onBreak);
 			 bigBangController = jsworld.MobyJsworld.bigBang(initW, 
-						     state.getToplevelNodeHook()(),
+						     aState.getToplevelNodeHook()(),
 						     unwrappedConfigs,
 						     caller, 
 						     function(v) {
-							 state.removeBreakRequestedListener(onBreak);
+							 aState.removeBreakRequestedListener(onBreak);
 							 restarter(v);
 						     });
 		     })
