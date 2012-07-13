@@ -13994,8 +13994,8 @@ PRIMITIVES['make-struct-field-accessor'] =
 	    'make-struct-field-accessor',
 	    2,
 	    [false],
-	    false,
-	    function(userArgs, accessor, fieldPos, fieldName) {
+	    true,
+	    function(aState, userArgs, accessor, fieldPos, fieldName) {
 	    	check(aState, accessor, function(x) { return x instanceof StructAccessorProc && x.numParams > 1; },
 		      'make-struct-field-accessor', 'accessor procedure that requires a field index', 1, userArgs);
 		check(aState, fieldPos, isNatural, 'make-struct-field-accessor', 'exact non-negative integer', 2, userArgs);
@@ -14005,7 +14005,7 @@ PRIMITIVES['make-struct-field-accessor'] =
 	    	var procName = accessor.typeName + '-'
 			+ (fieldName ? fieldName.toString() : 'field' + fixnumPos);
 
-		return new StructAccessorProc(accessor.typeName, procName, 1, false, false,
+		aState.v = new StructAccessorProc(accessor.typeName, procName, 1, false, false,
 					      function(x) {
 						  return accessor.impl(x, fixnumPos);
 					      });
