@@ -182,6 +182,7 @@ var makeStructureType = function(theName, parentType, initFieldCnt, autoFieldCnt
     var aStruct = parentType.type.extend({
 	init: function(name, initArgs) {
 		// if there's no guard, construct a default one
+
 		if (!guard) {
 			guard = function(k) {
 				if (arguments.length == 3) {
@@ -189,7 +190,8 @@ var makeStructureType = function(theName, parentType, initFieldCnt, autoFieldCnt
 				}
 				else {
 					var args = [];
-					for(var i = 1; i < arguments.length-1; i++) {
+					var i;
+					for(i = 1; i < arguments.length-1; i++) {
 						args.push(arguments[i]);
 					}
 					k(new ValuesWrapper(args));
@@ -252,9 +254,10 @@ var Struct = Class.extend({
 	toWrittenString: function(cache) { 
 	    //    cache.put(this, true);
 	    var buffer = [];
+	    var i;
 	    buffer.push("(");
 	    buffer.push(this._constructorName);
-	    for(var i = 0; i < this._fields.length; i++) {
+	    for(i = 0; i < this._fields.length; i++) {
 		buffer.push(" ");
 		buffer.push(toWrittenString(this._fields[i], cache));
 	    }
@@ -267,9 +270,10 @@ var Struct = Class.extend({
 	toDomNode: function(cache) {
 	    //    cache.put(this, true);
 	    var node = document.createElement("div");
+	    var i;
 	    node.appendChild(document.createTextNode("("));
 	    node.appendChild(document.createTextNode(this._constructorName));
-	    for(var i = 0; i < this._fields.length; i++) {
+	    for(i = 0; i < this._fields.length; i++) {
 		node.appendChild(document.createTextNode(" "));
 		appendChild(node, toDomNode(this._fields[i], cache));
 	    }
@@ -1928,8 +1932,8 @@ var Message = function(args) {
 
 Message.prototype.toString = function() {
   var toReturn = [];
-  
-  for(var i = 0; i < this.args.length; i++) {
+  var i;
+  for(i = 0; i < this.args.length; i++) {
       toReturn.push(''+args[i]);
   }
   
@@ -1994,7 +1998,8 @@ MultiPart.prototype.toString = function() {
 
 var makeList = function(args) {
     var result = Empty.EMPTY;
-    for(var i = args.length-1; i >= 0; i--) {
+    var i;
+    for(i = args.length-1; i >= 0; i--) {
 	result = Cons.makeInstance(args[i], result);
     }
     return result;

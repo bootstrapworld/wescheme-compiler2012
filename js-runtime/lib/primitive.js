@@ -248,7 +248,8 @@ var compare = function(args, comp) {
 
 // isAlphabeticString: string -> boolean
 var isAlphabeticString = function(s) {
-	for(var i = 0; i < s.length; i++) {
+	var i;
+	for(i = 0; i < s.length; i++) {
 		if (! ((s.charAt(i) >= "a" && s.charAt(i) <= "z") ||
 		       (s.charAt(i) >= "A" && s.charAt(i) <= "Z"))) {
 			return false;
@@ -258,7 +259,8 @@ var isAlphabeticString = function(s) {
 }
 
 var isNumericString = function(s) {
-	for (var i = 0; i < s.length; i++) {
+	var i;
+	for (i = 0; i < s.length; i++) {
 		if ( ! (s.charAt(i) >= '0' && s.charAt(i) <= '9') ) {
 			return false;
 		}
@@ -1310,7 +1312,8 @@ PRIMITIVES['*'] =
 		     arrayEach(args, function(x, i) {check(aState, x, isNumber, '*', 'number', i+1, args);});
 
 		     var result = types.rational(1);
-		     for(var i = 0; i < args.length; i++) {
+		     var i;
+		     for(i = 0; i < args.length; i++) {
 			  result = jsnums.multiply(args[i], result);
 		     }
 		     aState.v =  result;
@@ -3190,7 +3193,8 @@ PRIMITIVES['string-ci=?'] =
 		 	strs.unshift(str2);
 			strs.unshift(str1);
 
-			for(var i = 0; i < strs.length; i++) {
+			var i;
+			for(i = 0; i < strs.length; i++) {
 				check(aState, strs[i], isString, 'string-ci=?', 'string', i+1, strs);
 				strs[i] = strs[i].toString().toLowerCase();
 			}

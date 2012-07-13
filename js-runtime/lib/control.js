@@ -130,7 +130,8 @@ var ModControl = function(prefix, body) {
 ModControl.prototype.invoke = function(state) {
     processPrefix(state, this.prefix);
     var cmds = [];
-    for(var i = 0; i < this.body.length; i++) {
+    var i;
+    for(i = 0; i < this.body.length; i++) {
 	cmds.push(this.body[i]);
     }
     state.pushManyControls(cmds);
@@ -973,17 +974,18 @@ var prepareClosureArgumentsOnStack = function(state, procValue, operandValues, n
     var argCount = 0;
     if (procValue.isRest) {
 	var restArg = types.EMPTY;
-	for (var i = 0; i < n - procValue.numParams ; i++) {
+    var i;
+	for (i = 0; i < n - procValue.numParams ; i++) {
 	    restArg = types.cons(operandValues.pop(), restArg);
 	}
 	state.pushValue(restArg);
 	argCount++;
     }	
-    for (var i = operandValues.length -1; i >= 0; i--) {
+    for (i = operandValues.length -1; i >= 0; i--) {
 	state.pushValue(operandValues[i]);
 	argCount++;
     }
-    for(var i = procValue.closureVals.length-1; i >= 0; i--) {
+    for(i = procValue.closureVals.length-1; i >= 0; i--) {
 	state.pushValue(procValue.closureVals[i]);
 	argCount++;
     }
@@ -1004,13 +1006,14 @@ var preparePrimitiveArguments = function(state, primitiveValue, operandValues, n
 //	throw new Error("arity error: expected at least "
 //			+ primitiveValue.numParams + " arguments, but "
 //			+ "received " + n + " arguments instead.");
+    var i;
     }
     if (primitiveValue.isRest) {
-	for(var i = 0; i < primitiveValue.numParams; i++) {
+	for(i = 0; i < primitiveValue.numParams; i++) {
 	    args.push(operandValues.shift());
 	}
 	var restArgs = [];
-	for(var i = 0; i < n - primitiveValue.numParams; i++) {
+	for(i = 0; i < n - primitiveValue.numParams; i++) {
 	    restArgs.push(operandValues.shift());
 	}
 	args.push(restArgs);
@@ -1020,7 +1023,7 @@ var preparePrimitiveArguments = function(state, primitiveValue, operandValues, n
 //			    + primitiveValue.numParams 
 //			    + " but received " + n);
 	}
-	for(var i = 0; i < primitiveValue.numParams; i++) {
+	for(i = 0; i < primitiveValue.numParams; i++) {
 	    args.push(operandValues.shift());
 	}
     }
@@ -1123,9 +1126,10 @@ var ApplyValuesAppControl = function(procVal) {
 ApplyValuesAppControl.prototype.invoke = function(state) {
     var exprValue = state.v;
     state.v = this.procVal;
+    var i;
     if (exprValue instanceof types.ValuesWrapper) {
 	var elts = exprValue.elts;
-	for(var i = elts.length - 1; i >= 0; i--) {
+	for(i = elts.length - 1; i >= 0; i--) {
 	    state.pushValue(elts[i]);
 	}
 	state.pushControl(new CallControl(elts.length));

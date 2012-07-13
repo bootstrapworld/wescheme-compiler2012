@@ -19164,19 +19164,19 @@ PRIMITIVES['js-big-bang'] =
 			 	     },
 				     handlers);
 		     aState.v = PAUSE(function(restarter, caller) {
-			 var bigBangController;
-			 var onBreak = function() {
-			     bigBangController.breaker();
-			 }
-			 aState.addBreakRequestedListener(onBreak);
-			 bigBangController = jsworld.MobyJsworld.bigBang(initW, 
-						     aState.getToplevelNodeHook()(),
-						     unwrappedConfigs,
-						     caller, 
-						     function(v) {
-							 aState.removeBreakRequestedListener(onBreak);
-							 restarter(v);
-						     });
+				 var bigBangController;
+				 var onBreak = function() {
+				     bigBangController.breaker();
+				 }
+				 aState.addBreakRequestedListener(onBreak);
+				 bigBangController = jsworld.MobyJsworld.bigBang(initW, 
+							     aState.getToplevelNodeHook()(),
+							     unwrappedConfigs,
+							     caller, 
+							     function(v) {
+								 aState.removeBreakRequestedListener(onBreak);
+								 restarter(v);
+							     });
 		     })
 		 });
 
