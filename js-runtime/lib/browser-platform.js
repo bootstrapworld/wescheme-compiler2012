@@ -74,16 +74,12 @@ var assert = {};
 
 assert.equal = function(x, y) {
 	if (x !== y) {
-		alert('AssertError: ' + x + ' equal ' + y);
 		throw new Error('AssertError: ' + x + ' equal ' + y);
 	}
 }
 
 assert.deepEqual = function(x, y) {
 	if ( !deepEqual(x, y) ) {
-		alert('AssertError: ' + x + ' deepEqual ' + y);
-            console.log(x);
-            console.log(y);
 		throw new Error('AssertError: ' + x + ' deepEqual ' + y);
 	}
 }
@@ -91,7 +87,6 @@ assert.deepEqual = function(x, y) {
 
 assert.ok = function(x) {
 	if (!x) {
-		alert('AssertError: not ok: ' + x);
 		throw new Error('AssertError: not ok: ' + x );
 	}
 }
