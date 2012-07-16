@@ -329,7 +329,8 @@
     ;; (define (id args ...) body)
     [(and (stx-begins-with? a-definition 'define)
           (= (length (stx-e a-definition)) 3)
-          (stx-list-of-symbols? (second (stx-e a-definition))))
+          (stx-list-of-symbols? (second (stx-e a-definition)))
+          (not (empty? (stx-e (second (stx-e a-definition))))))
      (local [(define id (first (stx-e (second (stx-e a-definition)))))
              (define args (rest (stx-e (second (stx-e a-definition)))))
              (define body (third (stx-e a-definition)))]
@@ -381,12 +382,20 @@
     
     ;; FIXME: add more error productions as necessary to get
     ;; reasonable error messages.
+    
     [(stx-begins-with? a-definition 'define)
-     (raise (make-moby-error 
-             (stx-loc a-definition)
-             (make-moby-error-type:generic-syntactic-error
-              "define expects either an identifier and a body: (define answer 42), or a function header and body: (define (double x ) (* x 2))"
-              (list))))]
+     (if (define-var? a-definition)
+         (find-defn-var-error a-definition)
+         (find-defn-func-error a-definition))]
+    
+    
+    
+    
+    ;(raise (make-moby-error 
+    ;       (stx-loc a-definition)
+    ;      (make-moby-error-type:generic-syntactic-error
+    ;      "define expects either an identifier and a body: (define answer 42), or a function header and body: (define (double x ) (* x 2))"
+    ;     (list))))]
     
     [(stx-begins-with? a-definition 'define-struct)
      (raise (make-moby-error
@@ -403,6 +412,65 @@
               (list))))]
     
     ))
+
+
+;;define-function?: definition -> boolean
+(define (define-var? a-definition) 
+  (and (> (length  (stx-e a-definition)) 2) (symbol? (second  (stx-e a-definition)))))
+
+
+;;find-first-non-symbol: (listof stx) -> non-symbol 
+;;called when we are certain there is a non symbol present
+(define (find-first-non-symbol los)
+  (cond
+    [(not (symbol? (first los))) (first los)]
+    [else (find-first-non-symbol (rest los))]))
+
+
+;;find-defn-func-error: definition -> ?????
+(define (find-defn-func-error a-definition) 
+  (let ((parts (stx-e a-definition)))
+    (cond
+      [(= (length parts) 1) (raise (make-moby-error (stx-loc a-definition)
+                                                    (make-Message
+                                                     (make-ColoredPart "define" (stx-loc (first parts)))
+                                                     ": expected a variable but found nothing")))]
+      [(= (length (stx-e (second parts))) 0)
+       (raise (make-moby-error (stx-loc a-definition)
+                               (make-Message 
+                                (make-ColoredPart "define" (stx-loc (first parts)))
+                                ": expected a name for the function, but found nothing " 
+                                (make-ColoredPart "there" (stx-loc (second parts))))))]
+      
+      
+      [(not (stx-list-of-symbols? (second parts)))    (raise (make-moby-error (stx-loc a-definition)
+                                                                              (make-Message
+                                                                               (make-ColoredPart "define" (stx-loc (first parts)))
+                                                                               ": expected a variable but found "
+                                                                               (make-ColoredPart "something else" (stx-loc (find-first-non-symbol (stx-e (second parts))))))))]
+      [(= (length (stx-e (second parts))) 1)
+       (raise (make-moby-error (stx-loc a-definition)
+                               (make-Message 
+                                (make-ColoredPart "define" (stx-loc (first parts)))
+                                ": expected at least one variable after the " 
+                                (make-ColoredPart "function name" (stx-loc (first (stx-e (second parts)))))
+                                ", but found none")))]
+      
+      [(> (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  ;;?????
+                                                    (make-Message 
+                                                     (make-ColoredPart "define" (stx-loc (first parts)))
+                                                     ": expected only one expression for the function body, but found " 
+                                                     (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  (map stx-loc (rest (rest (rest parts))))))))]
+      [(< (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
+                                                    (make-Message
+                                                     (make-ColoredPart "define" (stx-loc (first parts)))
+                                                     ": expected an expression for the function body, but nothing's there")))]
+      
+      )))
+
+;;find-defn-var-error: definition -> ?????
+(define (find-defn-var-error a-definition) "hi")
+
 
 
 

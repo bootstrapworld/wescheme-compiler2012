@@ -1018,7 +1018,7 @@ PRIMITIVES['make-struct-type'] =
 		aState.v = getMakeStructTypeReturns(aStructType);
 	    });
 			    
-			   
+/*			   
 PRIMITIVES['make-struct-field-accessor'] =
 	makeOptionPrimitive(
 	    'make-struct-field-accessor',
@@ -1040,6 +1040,29 @@ PRIMITIVES['make-struct-field-accessor'] =
 						  return accessor.impl(x, fixnumPos);
 					      });
 	    });
+*/
+PRIMITIVES['make-struct-field-accessor'] =
+	makeOptionPrimitive(
+	    'make-struct-field-accessor',
+	    2,
+	    [false],
+	    false,
+	    function(userArgs, accessor, fieldPos, fieldName) {
+	    	check(undefined, accessor, function(x) { return x instanceof StructAccessorProc && x.numParams > 1; },
+		      'make-struct-field-accessor', 'accessor procedure that requires a field index', 1, userArgs);
+		check(undefined, fieldPos, isNatural, 'make-struct-field-accessor', 'exact non-negative integer', 2, userArgs);
+		check(undefined, fieldName, function(x) { return x === false || isSymbol(x); },
+		      'make-struct-field-accessor', 'symbol or #f', 3, userArgs);
+	    	var fixnumPos = jsnums.toFixnum(fieldPos);
+	    	var procName = accessor.typeName + '-'
+			+ (fieldName ? fieldName.toString() : 'field' + fixnumPos);
+
+		return new StructAccessorProc(accessor.typeName, procName, 1, false, false,
+					      function(x) {
+						  return accessor.impl(x, fixnumPos);
+					      });
+	    });
+
 
 
 
@@ -5254,7 +5277,7 @@ new PrimProc('text/font',
 											  "normal", "Optimer","","",false);
                              }
 			 });
-
+/*
 PRIMITIVES['bitmap/url'] = 
 PRIMITIVES['image-url'] =
     new PrimProc('image-url',
@@ -5286,7 +5309,40 @@ PRIMITIVES['image-url'] =
 			 };
 			 rawImage.src = path;
 		     });
+		 });*/
+PRIMITIVES['bitmap/url'] = 
+PRIMITIVES['image-url'] =
+    new PrimProc('image-url',
+		 1,
+		 false, true,
+		 function(state, path) {
+		     check(undefined, path, isString, "image-url", "string", 1);
+		     var originalPath = path.toString();
+		     if (state.getImageProxyHook()) {
+			 path = (state.getImageProxyHook() +
+				 "?url=" + encodeURIComponent(path.toString()));
+		     } else {
+			 path = path.toString();
+		     }
+
+		     return PAUSE(function(restarter, caller) {
+			 var rawImage = new Image();
+			 rawImage.onload = function() {
+			     world.Kernel.fileImage(
+				 path,
+				 rawImage,
+			         restarter);
+			 };
+			 rawImage.onerror = function(e) {
+			     restarter(types.schemeError(types.incompleteExn(
+					types.exnFail,
+					" (unable to load: " + originalPath + ")",
+					[])));
+			 };
+			 rawImage.src = path;
+		     });
 		 });
+
 
 PRIMITIVES['open-image-url'] = PRIMITIVES['image-url'];
 
@@ -6173,7 +6229,7 @@ PRIMITIVES['js-select'] =
 	 new PrimProc('js-select', 3, false, false, jsSelect)]);
 
 
-
+/*
 PRIMITIVES['big-bang'] =
 PRIMITIVES['js-big-bang'] =
     new PrimProc('js-big-bang',
@@ -6211,6 +6267,47 @@ PRIMITIVES['js-big-bang'] =
 							     });
 		     })
 		 });
+*/
+PRIMITIVES['big-bang'] =
+PRIMITIVES['js-big-bang'] =
+    new PrimProc('js-big-bang',
+		 1,
+		 true, true,
+		 function(state, initW, handlers) {
+		 	arrayEach(handlers,
+				function(x, i) {
+					check(undefined, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
+					      'js-big-bang', 'handler or attribute list', i+2);
+				});
+		     var unwrappedConfigs = 
+			 helpers.map(function(x) {
+					if ( isWorldConfigOption(x) ) {
+						return function(config) { return x.configure(config); };
+					}
+					else {
+						return x;
+					}
+			 	     },
+				     handlers);
+		     return PAUSE(function(restarter, caller) {
+			 var bigBangController;
+			 var onBreak = function() {
+			     bigBangController.breaker();
+			 }
+			 state.addBreakRequestedListener(onBreak);
+			 bigBangController = jsworld.MobyJsworld.bigBang(initW, 
+						     state.getToplevelNodeHook()(),
+						     unwrappedConfigs,
+						     caller, 
+						     function(v) {
+							 state.removeBreakRequestedListener(onBreak);
+							 restarter(v);
+						     });
+		     })
+		 });
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////
