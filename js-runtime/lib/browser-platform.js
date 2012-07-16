@@ -95,13 +95,11 @@ assert.ok = function(x) {
 }
 
 
-// assert.throws = function(f) {
-// 	try {
-// 		f.apply(null, []);
-// 	} catch (e) {
-// 		return;
-// 	}
-// 	throw new Error('AssertError: Throw expected, none received.');
-// }
-
-
+assert.throwsExn = function(f) {
+	try {
+		f.apply(null, []);
+	} catch (e) {
+		return;
+	}
+	throw new Error('AssertError: Throw expected, none received.');
+}

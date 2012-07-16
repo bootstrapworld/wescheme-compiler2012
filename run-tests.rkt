@@ -25,6 +25,7 @@
          "js-runtime/src/sexp.ss")
 
 (define-runtime-path test-htdocs "tests/test-htdocs")
+(define-runtime-path misc-runtime "js-runtime/lib")
 (define-runtime-path htdocs "servlet-htdocs")
 (define-runtime-path compat 
   "js-runtime/lib/compat")
@@ -307,6 +308,6 @@
                #:port port
                #:servlet-path "/"
                #:servlet-regexp #px"^/servlets/standalone.ss"
-               #:extra-files-paths (list test-htdocs htdocs compat easyxdm)
+               #:extra-files-paths (list test-htdocs misc-runtime htdocs compat easyxdm)
                #:launch-browser? #t
                #:listen-ip #f)

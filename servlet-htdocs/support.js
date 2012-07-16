@@ -95,16 +95,14 @@ assert.ok = function(x) {
 }
 
 
-// assert.throws = function(f) {
-// 	try {
-// 		f.apply(null, []);
-// 	} catch (e) {
-// 		return;
-// 	}
-// 	throw new Error('AssertError: Throw expected, none received.');
-// }
-
-
+assert.throwsExn = function(f) {
+	try {
+		f.apply(null, []);
+	} catch (e) {
+		return;
+	}
+	throw new Error('AssertError: Throw expected, none received.');
+}
 /*
     http://www.JSON.org/json2.js
     2010-03-20
