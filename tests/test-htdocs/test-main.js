@@ -9,23 +9,6 @@ $(document).ready(function() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var lowLevelTests = function() {
     //////////////////////////////////////////////////////////////////////
 
@@ -42,7 +25,7 @@ var lowLevelTests = function() {
 
     //////////////////////////////////////////////////////////////////////
 
-    var EXIT_ON_FIRST_ERROR = true;
+    var EXIT_ON_FIRST_ERROR = false;
 
 
     //////////////////////////////////////////////////////////////////////
@@ -264,7 +247,8 @@ var lowLevelTests = function() {
         try {
 	    thunk();
         } catch(e) {
-	    sys.print(" FAIL\n");
+            $(document.body).append($("<span/>").text(" FAIL").css("color", "red"));
+	    sys.print("\n");
 	    sys.print(e);
 	    if (EXIT_ON_FIRST_ERROR) {
 	        if (typeof(console) !== 'undefined' && console.log && e.stack) {
@@ -275,7 +259,9 @@ var lowLevelTests = function() {
                 //		}
                 //		sys.print(sys.inspect(e) + '\n');
 	        throw e;
-	    }
+	    } else {
+                return;
+            }
         }
         sys.print(" ok\n")
         

@@ -1315,8 +1315,9 @@ var toWrittenString = function(x, cache) {
     if (typeof(x) == 'object') {
 	    if (cache.containsKey(x)) {
 		    return "...";
-	    }
-	    cache.put(x, true);
+	    } else {
+	        cache.put(x, true);
+            }
     }
 
     if (x == undefined || x == null) {
