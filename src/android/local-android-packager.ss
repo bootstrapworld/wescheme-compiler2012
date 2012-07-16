@@ -23,7 +23,7 @@
 
 (define-runtime-path icon-path "support/icons/icon.png")
 (define-runtime-path support-path "support/js")
-(define-runtime-path evaluator-path "../compiler/mzscheme-vm/servlet-htdocs/evaluator.js")
+(define-runtime-path evaluator-path "../../servlet-htdocs/evaluator.js")
 (define-runtime-path javascript-main-template "support/js/main.js.template")
 
 

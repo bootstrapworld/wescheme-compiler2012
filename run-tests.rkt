@@ -1,6 +1,11 @@
 #!/usr/bin/env racket
 #lang racket/base
 
+;; This script is almost exactly like compiler-service, but is only meant
+;; to be used to run the test suite.
+
+
+
 (require web-server/servlet
          web-server/servlet-env
          scheme/runtime-path
@@ -19,6 +24,7 @@
          "src/collects/moby/runtime/stx.ss"
          "js-runtime/src/sexp.ss")
 
+(define-runtime-path test-htdocs "tests/test-htdocs")
 (define-runtime-path htdocs "servlet-htdocs")
 (define-runtime-path compat 
   "js-runtime/lib/compat")
@@ -299,8 +305,8 @@
 
 (serve/servlet start 
                #:port port
-               #:servlet-path "/servlets/standalone.ss"
-               #:extra-files-paths (list htdocs compat easyxdm)
-               #:launch-browser? #f
+               #:servlet-path "/"
+               #:servlet-regexp #px"^/servlets/standalone.ss"
+               #:extra-files-paths (list test-htdocs htdocs compat easyxdm)
+               #:launch-browser? #t
                #:listen-ip #f)
-
