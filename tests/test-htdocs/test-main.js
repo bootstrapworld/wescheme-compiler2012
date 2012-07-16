@@ -1,15 +1,12 @@
 $(document).ready(function() {
     $(document.body).append("<p>This is the test suite.</p>");
-    lowLevelTests();
+    runTests();
 });
 
 
 
 
-
-
-
-var lowLevelTests = function() {
+var runTests = function() {
     //////////////////////////////////////////////////////////////////////
 
 
@@ -242,7 +239,7 @@ var lowLevelTests = function() {
 
     //////////////////////////////////////////////////////////////////////
 
-    var runTest = function(name, thunk) {
+    var runRawTest = function(name, thunk) {
         sys.print("running " + name + "... ");
         try {
 	    thunk();
@@ -264,15 +261,57 @@ var lowLevelTests = function() {
             }
         }
         sys.print(" ok\n")
-        
     };
+
+    var asyncTests = [];
+
+
+    var queueAsyncTest = function(name, f) {
+        asyncTests.push({name: name, f: f});
+    };
+
+
+    var runAsyncTests = function(i, k) {
+        if (i < asyncTests.length) {
+            runAsyncTest(asyncTests.name,
+                         asyncTests.f,
+                         function() {
+                             setTimeout(function() {
+                                 runAsyncTests(i+1, k);
+                             }, 10);
+                         });
+        } else {
+            k();
+        }
+    };
+
+    var runAsyncTest = function(name, f, k) {
+        sys.print("running " + name + "... ");
+        var success = function() {
+            sys.print(" ok\n")
+            k();
+        };
+        var fail = function(e) {
+            $(document.body).append($("<span/>").text(" FAIL").css("color", "red"));
+	    sys.print("\n");
+	    sys.print(e);
+        };
+        try {
+            f(succeed, fail);
+        } catch(e) {
+            fail(e);
+        }
+    };
+
+
+
 
     //////////////////////////////////////////////////////////////////////
 
 
     sys.print("START TESTS\n\n");
 
-    runTest("simple empty state",
+    runRawTest("simple empty state",
 	    // Simple running should just terminate, and always be at the "stuck" state.
 	    function() { 
 	        var state = new runtime.State();
@@ -284,7 +323,7 @@ var lowLevelTests = function() {
 
 
     // Numeric constants should just evaluate through.
-    runTest("Numeric constant", 
+    runRawTest("Numeric constant", 
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeConstant(42));
@@ -298,7 +337,7 @@ var lowLevelTests = function() {
 
 
     // String constant.
-    runTest("String constant",
+    runRawTest("String constant",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeConstant("hello world"));
@@ -311,7 +350,7 @@ var lowLevelTests = function() {
 
 
     // boolean constant.
-    runTest("Boolean constant", 
+    runRawTest("Boolean constant", 
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeConstant(true));
@@ -323,7 +362,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("external call",
+    runRawTest("external call",
 	    function() {
 	        var state = new runtime.State();
 	        interpret.call(state, 
@@ -335,7 +374,7 @@ var lowLevelTests = function() {
 
 
     // Simple branch to true
-    runTest("Simple boolean branch to true",
+    runRawTest("Simple boolean branch to true",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeBranch(makeConstant(true),
@@ -347,7 +386,7 @@ var lowLevelTests = function() {
 
 
     // Simple branch to false
-    runTest("Simple boolean branch to false",
+    runRawTest("Simple boolean branch to false",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeBranch(makeConstant(false),
@@ -363,7 +402,7 @@ var lowLevelTests = function() {
 
 
     // (if (if true false true) "apple" "pie") --> "pie"
-    runTest("nested booleans",
+    runRawTest("nested booleans",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeBranch(makeBranch(makeConstant(true), makeConstant(false), makeConstant(true)),
@@ -378,7 +417,7 @@ var lowLevelTests = function() {
 
 
     // Sequences
-    runTest("Sequences",
+    runRawTest("Sequences",
 	    function() {
 	        var state1 = new runtime.State();
 	        state1.pushControl(makeSeq(makeConstant(3),
@@ -399,7 +438,7 @@ var lowLevelTests = function() {
 
 
     // Module prefix
-    runTest("module prefix",
+    runRawTest("module prefix",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeMod(makePrefix(3),
@@ -411,7 +450,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("toplevel lookup",
+    runRawTest("toplevel lookup",
 	    // toplevel lookup
 	    function() {
 	        var state = new runtime.State();
@@ -435,7 +474,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("define-values",
+    runRawTest("define-values",
 	    // define-values
 	    function() {
 	        var state = new runtime.State();
@@ -455,7 +494,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("lambda",
+    runRawTest("lambda",
 	    // lambda
 	    function() {
 	        var state = new runtime.State();
@@ -479,7 +518,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("primval (current-print)",
+    runRawTest("primval (current-print)",
 	    // primval
 	    function() {
 	        var state = new runtime.State();
@@ -489,7 +528,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("primval on bad primitive should throw error",
+    runRawTest("primval on bad primitive should throw error",
 	    // primval on unknowns should throw error
 	    function() {
 	        var state = new runtime.State();
@@ -498,7 +537,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("Primval on *",
+    runRawTest("Primval on *",
 	    // primval on *
 	    // primval
 	    function() {
@@ -509,7 +548,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("My own list function",
+    runRawTest("My own list function",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeApplication(makeLamWithRest(0, [], makeLocalRef(0)),
@@ -522,7 +561,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("primitive application",
+    runRawTest("primitive application",
 	    // primitive application.
 	    function() {
 	        var state = new runtime.State();
@@ -535,7 +574,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("primitive application, no arguments",
+    runRawTest("primitive application, no arguments",
 	    // primitive application with no arguments.
 	    function() {
 	        var state = new runtime.State();
@@ -547,7 +586,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("primitive application, nested application",
+    runRawTest("primitive application, nested application",
 	    // primitive application, with nesting
 	    function() {
 	        var state = new runtime.State();
@@ -564,7 +603,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("primitive appliation, nesting, testing non-commutativity",
+    runRawTest("primitive appliation, nesting, testing non-commutativity",
 	    // primitive application, with nesting, testing order
 	    function() {
 	        var state = new runtime.State();
@@ -580,7 +619,7 @@ var lowLevelTests = function() {
 	        assert.equal(state.vstack.length, 0);
 	    });
 
-    runTest("primitive application, subtraction",
+    runRawTest("primitive application, subtraction",
 	    // subtraction
 	    function() {
 	        var state = new runtime.State();
@@ -596,7 +635,7 @@ var lowLevelTests = function() {
 	        assert.equal(state.vstack.length, 0);
 	    });
 
-    runTest("primitive application, unary subtraction (negation)", 
+    runRawTest("primitive application, unary subtraction (negation)", 
 	    // Checking negation.
 	    function() {
 	        var state = new runtime.State();
@@ -609,7 +648,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("closure application",
+    runRawTest("closure application",
 	    // Closure application
 	    // lambda will just return a constant value
 	    function() {
@@ -630,7 +669,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("closure application, defining square",
+    runRawTest("closure application, defining square",
 	    // Closure application
 	    // lambda will square its argument
 	    function() {
@@ -654,7 +693,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("closure application, testing tail calls",
+    runRawTest("closure application, testing tail calls",
 	    // Checking tail calling behavior
 	    // The standard infinite loop should consume bounded control stack.
 	    // (define (f) (f)) (begin (f)) --> infinite loop, but with bounded control stack.
@@ -680,7 +719,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("closure application, testing tail calls with even/odd",
+    runRawTest("closure application, testing tail calls with even/odd",
 	    // Checking tail calling behavior
 	    // The standard infinite loop should consume bounded control stack.
 	    // (define (even? x) (if (zero? x) true (odd? (sub1 x))))
@@ -737,7 +776,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("factorial",
+    runRawTest("factorial",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeMod(makePrefix(1), []));
@@ -780,7 +819,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("apply on a primitive *",
+    runRawTest("apply on a primitive *",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeApplication(
@@ -796,7 +835,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("apply on a primitive -",
+    runRawTest("apply on a primitive -",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeApplication(
@@ -810,7 +849,7 @@ var lowLevelTests = function() {
 	        assert.equal(state.vstack.length, 0);
 	    });
 
-    runTest("apply on a primitive -, three arguments",
+    runRawTest("apply on a primitive -, three arguments",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeApplication(
@@ -826,7 +865,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("values",
+    runRawTest("values",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeApplication(
@@ -844,7 +883,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("values with no arguments",
+    runRawTest("values with no arguments",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeApplication(
@@ -858,7 +897,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("current-inexact-milliseconds",
+    runRawTest("current-inexact-milliseconds",
 	    function() {
 	        var state = new runtime.State();
 	        for (var i = 0; i < 2000; i++) {
@@ -877,7 +916,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("values with def-values",
+    runRawTest("values with def-values",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeMod(makePrefix(2), []));
@@ -899,7 +938,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("apply-values",
+    runRawTest("apply-values",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeMod(makePrefix(2), []));
@@ -924,7 +963,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("apply-values, testing no stack usage",
+    runRawTest("apply-values, testing no stack usage",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeMod(makePrefix(2), []));
@@ -944,7 +983,7 @@ var lowLevelTests = function() {
 	        assert.equal(state.vstack.length, 1);
 	    });
 
-    runTest("let-one, trivial",
+    runRawTest("let-one, trivial",
 	    function() {
 	        var state = new runtime.State();
 	        assert.equal(state.vstack.length, 0);
@@ -962,7 +1001,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("let-one, different body",
+    runRawTest("let-one, different body",
 	    function() {
 	        var state = new runtime.State();
 	        assert.equal(state.vstack.length, 0);
@@ -980,7 +1019,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("let-void, no boxes",
+    runRawTest("let-void, no boxes",
 	    function() {
 	        var state = new runtime.State();
 	        var body = makeConstant("blah");
@@ -998,7 +1037,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("let-void, with boxes",
+    runRawTest("let-void, with boxes",
 	    function() {
 	        var state = new runtime.State();
 	        var body = makeConstant("blah");
@@ -1016,7 +1055,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("beg0 with just one argument should immediately reduce to its argument",
+    runRawTest("beg0 with just one argument should immediately reduce to its argument",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeBeg0(makeConstant("first post")));
@@ -1030,7 +1069,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("beg0, more general",
+    runRawTest("beg0, more general",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeBeg0(makeConstant("first post"),
@@ -1050,7 +1089,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("boxenv",
+    runRawTest("boxenv",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeLet1(makeConstant("foo"),
@@ -1062,7 +1101,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("install-value, without boxes",
+    runRawTest("install-value, without boxes",
 	    function() {
 	        var state = new runtime.State();
 	        var aBody = makeConstant("peep");
@@ -1091,7 +1130,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("install-value, with boxes",
+    runRawTest("install-value, with boxes",
 	    function() {
 	        var state = new runtime.State();
 	        var aBody = makeConstant("peep");
@@ -1119,7 +1158,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("assign",
+    runRawTest("assign",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeMod(makePrefix(1), 
@@ -1132,7 +1171,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("varref",
+    runRawTest("varref",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeMod(makePrefix(1),
@@ -1149,7 +1188,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("closure",
+    runRawTest("closure",
 	    function() {
 	        var state = new runtime.State();
 	        state.heap['some-closure'] = 42;
@@ -1160,7 +1199,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("with-cont-mark", 
+    runRawTest("with-cont-mark", 
 	    function() {
 	        var state = new runtime.State();
 	        var aBody = makeConstant("peep");
@@ -1183,7 +1222,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("closure application, testing tail calls in the presence of continuation marks",
+    runRawTest("closure application, testing tail calls in the presence of continuation marks",
 	    // Checking tail calling behavior
 	    // The standard infinite loop should consume bounded control stack.
 	    // (define (f) (call-with-continuation-marks 'x 1 (f))) (begin (f)) --> infinite loop, but with bounded control stack.
@@ -1212,7 +1251,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("case-lambda, with a function that consumes one or two values",
+    runRawTest("case-lambda, with a function that consumes one or two values",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl
@@ -1237,7 +1276,7 @@ var lowLevelTests = function() {
 
 
 
-    // runTest("factorial again, testing the accumulation of continuation marks",
+    // runRawTest("factorial again, testing the accumulation of continuation marks",
     // 	//
     // 	// (define marks #f)
     // 	// (define (f x)
@@ -1251,7 +1290,7 @@ var lowLevelTests = function() {
     // 	});
 
 
-    runTest("let-rec",
+    runRawTest("let-rec",
 	    function() {
 	        var state = new runtime.State();
 	        state.pushControl(makeLetVoid(2,
@@ -1298,32 +1337,32 @@ var lowLevelTests = function() {
      *** Primitive String Function Tests ***
      ***************************************/
 
-    runTest('symbol?',
+    runRawTest('symbol?',
 	    function() {
 		testPrim('symbol?', runtime.symbol, ['hi'], true);
 		testPrim('symbol?', runtime.rational, [1], false);
 	    });
 
-    runTest('symbol=?',
+    runRawTest('symbol=?',
 	    function() {
 		testPrim('symbol=?', runtime.symbol, ['abc', 'abd'], false);
 		testPrim('symbol=?', runtime.symbol, ['cdf', 'cdf'], true);
 	    });
 
-    runTest('string->symbol',
+    runRawTest('string->symbol',
 	    function() {
 		testPrim('string->symbol', id, ['hello!'], runtime.symbol('hello!'));
 		testPrim('string->symbol', runtime.string, [' world'], runtime.symbol(' world'));
 	    });
 
 
-    runTest('symbol->string',
+    runRawTest('symbol->string',
 	    function() {
 		testPrim('symbol->string', runtime.symbol, ['hello!'], runtime.string('hello!'));
 	    });
 
 
-    runTest('number->string',
+    runRawTest('number->string',
 	    function() {
 		testPrim('number->string', runtime.rational, [5], runtime.string('5'));
 		testPrim('number->string', id, [runtime.complex(0, 2)], runtime.string('0+2i'));
@@ -1331,7 +1370,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('stinrg->number',
+    runRawTest('stinrg->number',
 	    function() {
 		testPrim('string->number', runtime.string, ['abc'], false);
 		testPrim('string->number', id, ['123'], 123);
@@ -1339,7 +1378,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string?',
+    runRawTest('string?',
 	    function() {
 		testPrim('string?', id, [runtime.symbol('hello!')], false);
 		testPrim('string?', id, ['string'], true);
@@ -1347,34 +1386,34 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('make-string',
+    runRawTest('make-string',
 	    function() {
 		testPrim('make-string', id, [0, runtime.char('A')], runtime.string(""));
 		testPrim('make-string', id, [runtime.rational(3), runtime.char('b')], runtime.string('bbb'));
 	    });
 
 
-    runTest('string',
+    runRawTest('string',
 	    function() {
 		testPrim('string', id, [], runtime.string(''));
 		testPrim('string', runtime.char, ['a', 'b'], runtime.string('ab'));
 	    });
 
-    runTest('string-length',
+    runRawTest('string-length',
 	    function() {
 		testPrim('string-length', runtime.string, [''], 0);
 		testPrim('string-length', id, ['5'], 1);
 		testPrim('string-length', runtime.string, ['antidisestablishmentarianism'], 28);
 	    });
 
-    runTest('string-ref',
+    runRawTest('string-ref',
 	    function() {
 		testPrim('string-ref', id, ['world', 3], runtime.char('l'));
 		testPrim('string-ref', id, [runtime.string('abcd'), 1], runtime.char('b'));
 		testPrim('string-ref', id, [runtime.string('asdfasdf'), 4], runtime.char('a'));
 	    });
 
-    runTest('string=?',
+    runRawTest('string=?',
 	    function() {
 		testPrim('string=?', id, ['asdf', 'Asdf'], false);
 		testPrim('string=?', id, ['asdf', runtime.string('asdf')], true);
@@ -1385,7 +1424,7 @@ var lowLevelTests = function() {
 		testPrim('string=?', runtime.string, ['1', '1', '2'], false);
 	    });
 
-    runTest('string-ci=?',
+    runRawTest('string-ci=?',
 	    function() {
 		testPrim('string-ci=?', id, ['asdf', 'Asdf'], true);
 		testPrim('string-ci=?', id, ['asdf', runtime.string('asdf')], true);
@@ -1396,7 +1435,7 @@ var lowLevelTests = function() {
 		testPrim('string-ci=?', runtime.string, ['1', '1', '2'], false);
 	    });
 
-    runTest('string<?',
+    runRawTest('string<?',
 	    function() {
 		testPrim('string<?', id, ["", "a"], true);
 		testPrim('string<?', runtime.string, ['abc', 'ab'], false);
@@ -1406,7 +1445,7 @@ var lowLevelTests = function() {
 		testPrim('string<?', runtime.string, ['a', 'b', 'c', 'd', 'dd', 'e'], true);
 	    });
 
-    runTest('string>?',
+    runRawTest('string>?',
 	    function() {
 		testPrim('string>?', id, ["", "a"], false);
 		testPrim('string>?', runtime.string, ['abc', 'ab'], true);
@@ -1416,7 +1455,7 @@ var lowLevelTests = function() {
 		testPrim('string>?', runtime.string, ['e', 'd', 'cc', 'c', 'b', 'a'], true);
 	    });
 
-    runTest('string<=?',
+    runRawTest('string<=?',
 	    function() {
 		testPrim('string<=?', id, ["", "a"], true);
 		testPrim('string<=?', runtime.string, ['abc', 'ab'], false);
@@ -1427,7 +1466,7 @@ var lowLevelTests = function() {
 		testPrim('string<=?', runtime.string, ['a', 'b', 'b', 'd', 'dd', 'e'], true);
 	    });
 
-    runTest('string>=?',
+    runRawTest('string>=?',
 	    function() {
 		testPrim('string>=?', id, ["", "a"], false);
 		testPrim('string>=?', runtime.string, ['abc', 'ab'], true);
@@ -1438,7 +1477,7 @@ var lowLevelTests = function() {
 		testPrim('string>=?', runtime.string, ['e', 'e', 'cc', 'c', 'b', 'a'], true);
 	    });
 
-    runTest('string-ci<?',
+    runRawTest('string-ci<?',
 	    function() {
 		testPrim('string-ci<?', id, ["", "a"], true);
 		testPrim('string-ci<?', id, [runtime.string('Abc'), 'ab'], false);
@@ -1447,7 +1486,7 @@ var lowLevelTests = function() {
 		testPrim('string-ci<?', runtime.string, ['a', 'b', 'C', 'd', 'dd', 'e'], true);
 	    });
 
-    runTest('string-ci>?',
+    runRawTest('string-ci>?',
 	    function() {
 		testPrim('string-ci>?', id, ["", "a"], false);
 		testPrim('string-ci>?', id, [runtime.string('Abc'), 'ab'], true);
@@ -1456,7 +1495,7 @@ var lowLevelTests = function() {
 		testPrim('string-ci>?', runtime.string, ['e', 'D', 'cc', 'c', 'b', 'a'], true);
 	    });
 
-    runTest('string-ci<=?',
+    runRawTest('string-ci<=?',
 	    function() {
 		testPrim('string-ci<=?', id, ["", "a"], true);
 		testPrim('string-ci<=?', runtime.string, ['Abc', 'ab'], false);
@@ -1466,7 +1505,7 @@ var lowLevelTests = function() {
 		testPrim('string-ci<=?', runtime.string, ['a', 'b', 'b', 'D', 'dd', 'e'], true);
 	    });
 
-    runTest('string-ci>=?',
+    runRawTest('string-ci>=?',
 	    function() {
 		testPrim('string-ci>=?', id, ["", "a"], false);
 		testPrim('string-ci>=?', runtime.string, ['Abc', 'ab'], true);
@@ -1477,7 +1516,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('substring',
+    runRawTest('substring',
 	    function() {
 		testPrim('substring', id, ['abc', 1], runtime.string('bc'));
 		testPrim('substring', id, [runtime.string('abc'), 0], runtime.string('abc'));
@@ -1487,7 +1526,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string-append',
+    runRawTest('string-append',
 	    function() {
 		testPrim('string-append', runtime.string, [], runtime.string(''));
 		testPrim('string-append', id, ['a', runtime.string('b'), 'c'], runtime.string('abc'));
@@ -1495,7 +1534,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string->list',
+    runRawTest('string->list',
 	    function() {
 		testPrim('string->list', runtime.string, [''], runtime.EMPTY);
 		testPrim('string->list', id, ['one'], runtime.list([runtime.char('o'), runtime.char('n'), runtime.char('e')]));
@@ -1504,7 +1543,7 @@ var lowLevelTests = function() {
 										runtime.char('o')]));
 	    });
 
-    runTest('list->string',
+    runRawTest('list->string',
 	    function() {
 		testPrim('list->string', id, [runtime.EMPTY], runtime.string(''));
 		testPrim('list->string', id,
@@ -1517,7 +1556,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string-copy',
+    runRawTest('string-copy',
 	    function() {
 		testPrim('string-copy', runtime.string, [''], runtime.string(''));
 		testPrim('string-copy', id, ['had'], runtime.string('had'));
@@ -1532,7 +1571,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('format',
+    runRawTest('format',
 	    function() {
 		testPrim('format', runtime.string, ['hello'], runtime.string('hello'));
 		testPrim('format', id, ['hello~n'], runtime.string('hello\n'));
@@ -1560,7 +1599,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('explode',
+    runRawTest('explode',
 	    function() {
 		testPrim('explode', id, [''], runtime.EMPTY);
 		testPrim('explode', runtime.string, ['hello'], runtime.list([runtime.string('h'),
@@ -1571,7 +1610,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('implode',
+    runRawTest('implode',
 	    function() {
 		testPrim('implode', id, [runtime.EMPTY], runtime.string(''));
 		testPrim('implode', runtime.list, [[runtime.string('h'),
@@ -1583,21 +1622,21 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string->int',
+    runRawTest('string->int',
 	    function() {
 		testPrim('string->int', runtime.string, ['0'], 48);
 		testPrim('string->int', runtime.string, ['\n'], 10);
 	    });
 
 
-    runTest('int->string',
+    runRawTest('int->string',
 	    function() {
 		testPrim('int->string', id, [50], runtime.string('2'));
 		testPrim('int->string', id, [10], runtime.string('\n'));
 	    });
 
 
-    runTest('string-alphabetic?',
+    runRawTest('string-alphabetic?',
 	    function() {
 		testPrim('string-alphabetic?', id, ['abcd'], true);
 		testPrim('string-alphabetic?', runtime.string, ['AbCZ'], true);
@@ -1606,14 +1645,14 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string-ith',
+    runRawTest('string-ith',
 	    function() {
 		testPrim('string-ith', id, ['abcde', 2], runtime.string('c'));
 		testPrim('string-ith', id, [runtime.string('12345'), 0], runtime.string('1'));
 	    });
 
 
-    runTest('string-lower-case?',
+    runRawTest('string-lower-case?',
 	    function() {
 		testPrim('string-lower-case?', runtime.string, ['abcd'], true);
 		testPrim('string-lower-case?', id, ['abc1'], false);
@@ -1621,7 +1660,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string-numeric?',
+    runRawTest('string-numeric?',
 	    function() {
 		testPrim('string-numeric?', id, ['1234'], true);
 		testPrim('string-numeric?', runtime.string, ['5432'], true);
@@ -1630,7 +1669,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string-upper-case?',
+    runRawTest('string-upper-case?',
 	    function() {
 		testPrim('string-upper-case?', id, ['ABCD'], true);
 		testPrim('string-upper-case?', runtime.string, ['ADF'], true);
@@ -1639,7 +1678,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string-whitespace?',
+    runRawTest('string-whitespace?',
 	    function() {
 		testPrim('string-whitespace?', runtime.string, ['a b c'], false);
 		testPrim('string-whitespace?', id, [' \n '], true);
@@ -1647,7 +1686,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('replicate',
+    runRawTest('replicate',
 	    function() {
 		testPrim('replicate', id, [3, runtime.string('ab')], runtime.string('ababab'))
 		testPrim('replicate', id, [0, 'hi'], runtime.string(''));
@@ -1655,14 +1694,14 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string->immutable-string',
+    runRawTest('string->immutable-string',
 	    function() {
 		testPrim('string->immutable-string', id, ['hello'], 'hello');
 		testPrim('string->immutable-string', runtime.string, ['world'], 'world');
 	    });
 
 
-    runTest('string-set!',
+    runRawTest('string-set!',
 	    function() {
 		var str1 = runtime.string('hello');
 		testPrim('string-set!', id, [str1, 2, runtime.char('w')], runtime.VOID);
@@ -1674,7 +1713,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('string-fill!',
+    runRawTest('string-fill!',
 	    function() {
 		var str1 = runtime.string('lawl');
 		testPrim('string-fill!', id, [str1, runtime.char('q')], runtime.VOID);
@@ -1692,7 +1731,7 @@ var lowLevelTests = function() {
      *************************************/
 
 
-    runTest("zero?",
+    runRawTest("zero?",
 	    function() {
 		testPrim('zero?', runtime.rational, [0], true);
 		testPrim('zero?', runtime.rational, [1], false);
@@ -1701,21 +1740,21 @@ var lowLevelTests = function() {
 
 
 
-    runTest("sub1",
+    runRawTest("sub1",
 	    function() {
 		testPrim('sub1', runtime.rational, [25], runtime.rational(24));
 		testPrim('sub1', id, [runtime.complex(3, 5)], runtime.complex(2, 5));
 	    });
 
 
-    runTest("add1",
+    runRawTest("add1",
 	    function() {
 		testPrim('add1', runtime.rational, [25], runtime.rational(26));
 		testPrim('add1', id, [runtime.complex(3, 5)], runtime.complex(4, 5));
 	    });
 
 
-    runTest("+",
+    runRawTest("+",
 	    function() {
 		testPrim('+', runtime.rational, [], runtime.rational(0));
 		testPrim('+', runtime.rational, [2], runtime.rational(2));
@@ -1724,7 +1763,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("-",
+    runRawTest("-",
 	    function() {
 		testPrim('-', runtime.rational, [2], runtime.rational(-2));
 		testPrim('-', runtime.rational, [1, 2], runtime.rational(-1));
@@ -1732,7 +1771,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("*",
+    runRawTest("*",
 	    function() {
 		testPrim('*', runtime.rational, [], runtime.rational(1));
 		testPrim('*', runtime.rational, [2], runtime.rational(2));
@@ -1741,7 +1780,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest("/",
+    runRawTest("/",
 	    function() {
 		testPrim('/', runtime.rational, [2], runtime.rational(1, 2));
 		testPrim('/', runtime.rational, [1, 3], runtime.rational(1, 3));
@@ -1749,7 +1788,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('abs',
+    runRawTest('abs',
 	    function() {
 		testPrim('abs', runtime.rational, [2], runtime.rational(2));
 		testPrim('abs', runtime.rational, [0], runtime.rational(0));
@@ -1757,25 +1796,25 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('quotient',
+    runRawTest('quotient',
 	    function() {
 		testPrim('quotient', runtime.rational, [5, 3], runtime.rational(1));
 	    });
 
 
-    runTest('remainder',
+    runRawTest('remainder',
 	    function() {
 		testPrim('remainder', runtime.rational, [5, 3], runtime.rational(2));
 	    });
 
 
-    runTest('modulo',
+    runRawTest('modulo',
 	    function() {
 	        testPrim('modulo', runtime.rational, [-5, 3], runtime.rational(1));
 	    });
 
 
-    runTest('=',
+    runRawTest('=',
 	    function() {
 	        testPrim('=', runtime.rational, [2, 3], false);
 	        testPrim('=', runtime.rational, [2, 2, 2, 2], true);
@@ -1783,7 +1822,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('<',
+    runRawTest('<',
 	    function() {
 	        testPrim('<', runtime.rational, [1, 2], true);
 	        testPrim('<', runtime.rational, [2, 2], false);
@@ -1794,7 +1833,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('>',
+    runRawTest('>',
 	    function() {
 	        testPrim('>', runtime.rational, [1, 2], false);
 	        testPrim('>', runtime.rational, [2, 2], false);
@@ -1805,7 +1844,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('<=',
+    runRawTest('<=',
 	    function() {
 	        testPrim('<=', runtime.rational, [1, 2], true);
 	        testPrim('<=', runtime.rational, [2, 2], true);
@@ -1816,7 +1855,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('>=',
+    runRawTest('>=',
 	    function() {
 	        testPrim('>=', runtime.rational, [1, 2], false);
 	        testPrim('>=', runtime.rational, [2, 2], true);
@@ -1827,7 +1866,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('positive?',
+    runRawTest('positive?',
 	    function() {
 		testPrim('positive?', runtime.rational, [-1], false);
 		testPrim('positive?', runtime.rational, [0], false);
@@ -1835,7 +1874,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('negative?',
+    runRawTest('negative?',
 	    function() {
 		testPrim('negative?', runtime.rational, [-1], true);
 		testPrim('negative?', runtime.rational, [0], false);
@@ -1843,7 +1882,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('max',
+    runRawTest('max',
 	    function() {
 		testPrim('max', runtime.rational, [1], runtime.rational(1));
 		testPrim('max', runtime.rational, [1, 2], runtime.rational(2));
@@ -1851,7 +1890,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('min',
+    runRawTest('min',
 	    function() {
 		testPrim('min', runtime.rational, [1], runtime.rational(1));
 		testPrim('min', runtime.rational, [1, 2], runtime.rational(1));
@@ -1859,7 +1898,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('=~',
+    runRawTest('=~',
 	    function() {
 		testPrim('=~', id, [1, 2, 2], true);
 		testPrim('=~', id, [1, 2, runtime.float(0.5)], false);
@@ -1868,14 +1907,14 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('conjugate',
+    runRawTest('conjugate',
 	    function() {
 		testPrim('conjugate', id, [1], 1);
 		testPrim('conjugate', id, [runtime.complex(3, 3)], runtime.complex(3, -3));
 	    });
 
 
-    runTest('magnitude',
+    runRawTest('magnitude',
 	    function() {
 		testPrim('magnitude', id, [4], 4);
 		testPrim('magnitude', id, [runtime.complex(3, 4)], 5);
@@ -1885,7 +1924,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('number?',
+    runRawTest('number?',
 	    function() {
 		testPrim('number?', id, [5], true);
 		testPrim('number?', runtime.rational, [10], true);
@@ -1896,7 +1935,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('complex?',
+    runRawTest('complex?',
 	    function() {
 		testPrim('complex?', id, [5], true);
 		testPrim('complex?', runtime.rational, [10], true);
@@ -1907,7 +1946,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('real?',
+    runRawTest('real?',
 	    function() {
 		testPrim('real?', id, [5], true);
 		testPrim('real?', runtime.rational, [10], true);
@@ -1918,7 +1957,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('rational?',
+    runRawTest('rational?',
 	    function() {
 		testPrim('rational?', id, [5], true);
 		testPrim('rational?', runtime.rational, [10], true);
@@ -1930,7 +1969,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('integer?',
+    runRawTest('integer?',
 	    function() {
 		testPrim('integer?', id, [5], true);
 		testPrim('integer?', runtime.rational, [10], true);
@@ -1942,7 +1981,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('exact?',
+    runRawTest('exact?',
 	    function() {
 		testPrim('exact?', id, [5], true);
 		testPrim('exact?', id, [runtime.rational(4, 3)], true);
@@ -1952,7 +1991,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('inexact?',
+    runRawTest('inexact?',
 	    function() {
 		testPrim('inexact?', id, [5], false);
 		testPrim('inexact?', id, [runtime.rational(4, 3)], false);
@@ -1962,7 +2001,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('odd? and even?',
+    runRawTest('odd? and even?',
 	    function() {
 		testPrim('odd?', id, [5], true);
 		testPrim('odd?', runtime.float, [10.0], false);
@@ -1971,7 +2010,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('gcd and lcm',
+    runRawTest('gcd and lcm',
 	    function() {
 		testPrim('gcd', id, [1001, 98], 7);
 		testPrim('gcd', id, [6, 10, 15], 1);
@@ -1980,7 +2019,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('floor, ceiling, and round',
+    runRawTest('floor, ceiling, and round',
 	    function() {
 		testPrim('floor', id, [14], 14);
 		testPrim('floor', runtime.float, [12.56], 12);
@@ -1993,7 +2032,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('numerator and denominator',
+    runRawTest('numerator and denominator',
 	    function() {
 		testPrim('numerator', id, [30], 30);
 		testPrim('numerator', id, [runtime.rational(10, -2)], -5);
@@ -2007,7 +2046,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('exp and log',
+    runRawTest('exp and log',
 	    function() {
 		testPrim('exp', id, [0], 1);
 		testPrim('exp', runtime.float, [0], runtime.float(1));
@@ -2018,7 +2057,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('sin, cos, tan, asin, acos, atan',
+    runRawTest('sin, cos, tan, asin, acos, atan',
 	    function() {
 		testPrim('sin', id, [20], runtime.float(Math.sin(20)));
 		testPrim('sin', id, [0], runtime.float(0));
@@ -2033,7 +2072,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('sqrt, integer-sqrt, and expt',
+    runRawTest('sqrt, integer-sqrt, and expt',
 	    function() {
 		testPrim('sqrt', id, [25], 5);
 		testPrim('sqrt', runtime.float, [1.44], runtime.float(1.2));
@@ -2051,7 +2090,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('make-rectangular, make-polar, real-part, imag-part, angle',
+    runRawTest('make-rectangular, make-polar, real-part, imag-part, angle',
 	    function() {
 		testPrim('make-rectangular', id, [5, 3], runtime.complex(5, 3));
 		testPrim('make-rectangular', id, [5, runtime.float(4)],
@@ -2086,7 +2125,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('exact->inexact and inexact->exact',
+    runRawTest('exact->inexact and inexact->exact',
 	    function() {
 		testPrim('exact->inexact', id, [5], runtime.float(5));
 		testPrim('exact->inexact', runtime.float, [5.2], runtime.float(5.2));
@@ -2102,7 +2141,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('first, second, third, fourth, fifth, sixth, seventh, eighth',
+    runRawTest('first, second, third, fourth, fifth, sixth, seventh, eighth',
 	    function() {
 		var testList1 = runtime.list([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
 		var testList2 = runtime.list([runtime.list([1, 2]),
@@ -2148,7 +2187,7 @@ var lowLevelTests = function() {
      *************************************/
 
 
-    runTest('cons, car, and cdr',
+    runRawTest('cons, car, and cdr',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('car'),
@@ -2173,7 +2212,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('list?',
+    runRawTest('list?',
 	    function() {
 		testPrim('list?', id, [runtime.EMPTY], true);
 		testPrim('list?', id, [runtime.pair(1, runtime.EMPTY)], true);
@@ -2183,7 +2222,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('list',
+    runRawTest('list',
 	    function() {
 		testPrim('list', runtime.rational, [], runtime.EMPTY);
 		testPrim('list', runtime.rational, [1], runtime.pair(runtime.rational(1), runtime.EMPTY));
@@ -2193,7 +2232,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('list*',
+    runRawTest('list*',
 	    function() {
 		testPrim('list*', id, [runtime.EMPTY], runtime.EMPTY);
 		testPrim('list*', id, [runtime.rational(1), runtime.pair(runtime.rational(2), runtime.EMPTY)],
@@ -2202,7 +2241,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('length',
+    runRawTest('length',
 	    function() {
 		testPrim('length', id, [runtime.EMPTY], 0);
 		testPrim('length', runtime.list, [[1]], 1);
@@ -2210,7 +2249,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('append',
+    runRawTest('append',
 	    function() {
 		testPrim('append', runtime.list, [], runtime.EMPTY);
 		testPrim('append', runtime.list, [[1]], runtime.list([1]));
@@ -2223,7 +2262,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('reverse',
+    runRawTest('reverse',
 	    function() {
 		testPrim('reverse', id, [runtime.EMPTY], runtime.EMPTY);
 		testPrim('reverse', id, [runtime.list([1])], runtime.list([1]));
@@ -2231,7 +2270,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('list-ref',
+    runRawTest('list-ref',
 	    function() {
 		var testList = runtime.list([runtime.rational(1),
 					     runtime.rational(1),
@@ -2245,7 +2284,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('memq',
+    runRawTest('memq',
 	    function() {
 		testPrim('memq', id, [0, runtime.list([1, 2, 3])], false);
 		testPrim('memq', id, [2, runtime.list([1, 2, 3])], runtime.list([2, 3]));
@@ -2273,7 +2312,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('memv',
+    runRawTest('memv',
 	    function() {
 		testPrim('memv', id, [0, runtime.list([1, 2, 3])], false);
 		testPrim('memv', id, [2, runtime.list([1, 2, 3])], runtime.list([2, 3]));
@@ -2301,7 +2340,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('member',
+    runRawTest('member',
 	    function() {
 		testPrim('member', id, [0, runtime.list([1, 2, 3])], false);
 		testPrim('member', id, [2, runtime.list([1, 2, 3])], runtime.list([2, 3]));
@@ -2329,7 +2368,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('remove',
+    runRawTest('remove',
 	    function() {
 		testPrim('remove', id, [3, runtime.list([1, 2, 3, 4, 5])], runtime.list([1, 2, 4, 5]));
 		testPrim('remove', id, [1, runtime.list([1, 2, 1, 2])], runtime.list([2, 1, 2]));
@@ -2355,7 +2394,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest('map',
+    runRawTest('map',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('map'),
@@ -2364,7 +2403,7 @@ var lowLevelTests = function() {
 		assert.deepEqual(run(state), runtime.list([2, 3, 4]));
 	    });
 
-    runTest('filter',
+    runRawTest('filter',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('filter'),
@@ -2384,7 +2423,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('foldl',
+    runRawTest('foldl',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('foldl'),
@@ -2401,7 +2440,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('foldr',
+    runRawTest('foldr',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('foldr'),
@@ -2419,7 +2458,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest('build-list',
+    runRawTest('build-list',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('build-list'),
@@ -2436,7 +2475,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('argmax',
+    runRawTest('argmax',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('argmax'),
@@ -2454,7 +2493,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('argmin',
+    runRawTest('argmin',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('argmin'),
@@ -2472,7 +2511,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('quicksort',
+    runRawTest('quicksort',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('quicksort'),
@@ -2494,7 +2533,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('compose',
+    runRawTest('compose',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makeApplication(makePrimval('compose'),
@@ -2518,7 +2557,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('caar, cadr, cdar, cddr, etc.',
+    runRawTest('caar, cadr, cdar, cddr, etc.',
 	    function() {
 		var deepArrayToList = function(a) {
 		    if ( !(a instanceof Array) ) {
@@ -2579,14 +2618,14 @@ var lowLevelTests = function() {
      ***************************/
 
 
-    runTest('box',
+    runRawTest('box',
 	    function() {
 		testPrim('box', id, [1], runtime.box(1));
 		testPrim('box', runtime.string, ['abc'], runtime.box(runtime.string('abc')));
 	    });
 
 
-    runTest('box?',
+    runRawTest('box?',
 	    function() {
 		testPrim('box?', runtime.box, [1], true);
 		testPrim('box?', runtime.char, ['a'], false);
@@ -2594,14 +2633,14 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('unbox',
+    runRawTest('unbox',
 	    function() {
 		testPrim('unbox', runtime.box, [2], 2);
 		testPrim('unbox', runtime.box, [runtime.char('a')], runtime.char('a'));
 	    });
 
 
-    runTest('set-box!',
+    runRawTest('set-box!',
 	    function() {
 		var testBox1 = runtime.box(1);
 		var testBox2 = runtime.box(runtime.string('hello'));
@@ -2620,7 +2659,7 @@ var lowLevelTests = function() {
      ****************************/
 
 
-    runTest('hash?',
+    runRawTest('hash?',
 	    function() {
 		testPrim('hash?', id, [1], false);
 		testPrim('hash?', runtime.vector, [[1, 2, 3]], false);
@@ -2631,13 +2670,13 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('str',
+    runRawTest('str',
 	    function() {
 	        assert.equal(typeof(runtime.string('a')), 'object');
 	    });
 
 
-    runTest('make-hash',
+    runRawTest('make-hash',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('make-hash'), []));
@@ -2669,7 +2708,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('make-hasheq',
+    runRawTest('make-hasheq',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('make-hasheq'), []));
@@ -2705,7 +2744,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('hash-set!',
+    runRawTest('hash-set!',
 	    function() {
 		var testHash = runtime.hash(runtime.list([runtime.pair(1, 1), runtime.pair(2, 3)]));
 		
@@ -2729,7 +2768,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('hash-ref',
+    runRawTest('hash-ref',
 	    function() {
 		var hash1 = runtime.hash(runtime.list([runtime.pair(1, 2),
 						       runtime.pair(runtime.string('hello'),
@@ -2766,7 +2805,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('hash-remove!',
+    runRawTest('hash-remove!',
 	    function() {
 		var hash1 = runtime.hash(runtime.list([runtime.pair(1, 2),
 						       runtime.pair(2, 3),
@@ -2787,7 +2826,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('hash-map',
+    runRawTest('hash-map',
 	    function() {
 		var str1 = runtime.string('hello');
 		var str2 = str1.copy();
@@ -2815,7 +2854,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('hash-for-each',
+    runRawTest('hash-for-each',
 	    function() {
 		var hash1 = runtime.hash(runtime.list([runtime.pair(1, 2),
 						       runtime.pair(2, 3),
@@ -2842,7 +2881,7 @@ var lowLevelTests = function() {
      ******************************/
 
 
-    runTest('vector?',
+    runRawTest('vector?',
 	    function() {
 		testPrim('vector?', id, [1], false);
 		testPrim('vector?', runtime.list, [[1, 2, 3]], false);
@@ -2850,35 +2889,35 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('make-vector',
+    runRawTest('make-vector',
 	    function() {
 		testPrim('make-vector', id, [0, runtime.char('a')], runtime.vector([]));
 		testPrim('make-vector', id, [3, 5], runtime.vector([5, 5, 5]));
 	    });
 
 
-    runTest('vector',
+    runRawTest('vector',
 	    function() {
 		testPrim('vector', id, [1, 2, 3, 4], runtime.vector([1, 2, 3, 4]));
 		testPrim('vector', id, [], runtime.vector([]));
 	    });
 
 
-    runTest('vector-length',
+    runRawTest('vector-length',
 	    function() {
 		testPrim('vector-length', runtime.vector, [[]], 0);
 		testPrim('vector-length', runtime.vector, [[1, 2, 3]], 3);
 	    });
 
 
-    runTest('vector-ref',
+    runRawTest('vector-ref',
 	    function() {
 		testPrim('vector-ref', id, [runtime.vector([1, 2]), 1], 2);
 		testPrim('vector-ref', id, [runtime.vector([3, 2, 1]), 0], 3);
 	    });
 
 
-    runTest('vector-set!',
+    runRawTest('vector-set!',
 	    function() {
 		testPrim('vector-set!', id, [runtime.vector([1, 2, 3]), 0, runtime.char('a')], types.VOID);
 
@@ -2906,7 +2945,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('vector->list',
+    runRawTest('vector->list',
 	    function() {
 		testPrim('vector->list', runtime.vector, [[]], runtime.EMPTY);
 		testPrim('vector->list', runtime.vector, [[1, 2, 3]], runtime.list([1, 2, 3]));
@@ -2921,7 +2960,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest('char?',
+    runRawTest('char?',
 	    function() {
 		testPrim('char?', id, [runtime.symbol('hello!')], false);
 		testPrim('char?', runtime.string, ['string'], false);
@@ -2929,7 +2968,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char=?',
+    runRawTest('char=?',
 	    function() {
 		testPrim('char=?', runtime.char, ['a', 's', 'D'], false);
 		testPrim('char=?', runtime.char, ['f', 'F'], false);
@@ -2937,7 +2976,7 @@ var lowLevelTests = function() {
 		testPrim('char=?', runtime.char, ['1', '1', '2'], false);
 	    });
 
-    runTest('char-ci=?',
+    runRawTest('char-ci=?',
 	    function() {
 		testPrim('char-ci=?', runtime.char, ['a', 's', 'D'], false);
 		testPrim('char-ci=?', runtime.char, ['f', 'F'], true);
@@ -2945,7 +2984,7 @@ var lowLevelTests = function() {
 		testPrim('char-ci=?', runtime.char, ['1', '1', '2'], false);
 	    });
 
-    runTest('char<?',
+    runRawTest('char<?',
 	    function() {
 		testPrim('char<?', runtime.char, ['A', 'a'], true);
 		testPrim('char<?', runtime.char, ['a', 'b'], true);
@@ -2955,7 +2994,7 @@ var lowLevelTests = function() {
 		testPrim('char<?', runtime.char, ['a', 'b', 'c', 'd', 'e'], true);
 	    });
 
-    runTest('char>?',
+    runRawTest('char>?',
 	    function() {
 		testPrim('char>?', runtime.char, ['A', 'a'], false);
 		testPrim('char>?', runtime.char, ['a', 'b'], false);
@@ -2965,7 +3004,7 @@ var lowLevelTests = function() {
 		testPrim('char>?', runtime.char, ['e', 'd', 'c', 'b', 'a'], true);
 	    });
 
-    runTest('char<=?',
+    runRawTest('char<=?',
 	    function() {
 		testPrim('char<=?', runtime.char, ['A', 'a'], true);
 		testPrim('char<=?', runtime.char, ['a', 'b'], true);
@@ -2975,7 +3014,7 @@ var lowLevelTests = function() {
 		testPrim('char<=?', runtime.char, ['a', 'b', 'c', 'd', 'e'], true);
 	    });
 
-    runTest('char>=?',
+    runRawTest('char>=?',
 	    function() {
 		testPrim('char>=?', runtime.char, ['A', 'a'], false);
 		testPrim('char>=?', runtime.char, ['a', 'b'], false);
@@ -2985,7 +3024,7 @@ var lowLevelTests = function() {
 		testPrim('char>=?', runtime.char, ['e', 'd', 'c', 'b', 'a'], true);
 	    });
 
-    runTest('char-ci<?',
+    runRawTest('char-ci<?',
 	    function() {
 		testPrim('char-ci<?', runtime.char, ['A', 'a'], false);
 		testPrim('char-ci<?', runtime.char, ['a', 'b'], true);
@@ -2995,7 +3034,7 @@ var lowLevelTests = function() {
 		testPrim('char-ci<?', runtime.char, ['a', 'B', 'c', 'd', 'e'], true);
 	    });
 
-    runTest('char-ci>?',
+    runRawTest('char-ci>?',
 	    function() {
 		testPrim('char-ci>?', runtime.char, ['a', 'A'], false);
 		testPrim('char-ci>?', runtime.char, ['a', 'b'], false);
@@ -3005,7 +3044,7 @@ var lowLevelTests = function() {
 		testPrim('char-ci>?', runtime.char, ['e', 'd', 'C', 'b', 'a'], true);
 	    });
 
-    runTest('char-ci<=?',
+    runRawTest('char-ci<=?',
 	    function() {
 		testPrim('char-ci<=?', runtime.char, ['a', 'A'], true);
 		testPrim('char-ci<=?', runtime.char, ['a', 'B'], true);
@@ -3015,7 +3054,7 @@ var lowLevelTests = function() {
 		testPrim('char-ci<=?', runtime.char, ['a', 'b', 'C', 'd', 'e'], true);
 	    });
 
-    runTest('char-ci>=?',
+    runRawTest('char-ci>=?',
 	    function() {
 		testPrim('char-ci>=?', runtime.char, ['A', 'a'], true);
 		testPrim('char-ci>=?', runtime.char, ['a', 'b'], false);
@@ -3026,7 +3065,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char-alphabetic?',
+    runRawTest('char-alphabetic?',
 	    function() {
 		testPrim('char-alphabetic?', runtime.char, ['a'], true);
 		testPrim('char-alphabetic?', runtime.char, ['Z'], true);
@@ -3037,7 +3076,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char-numeric?',
+    runRawTest('char-numeric?',
 	    function() {
 		testPrim('char-numeric?', runtime.char, ['a'], false);
 		testPrim('char-numeric?', runtime.char, ['Z'], false);
@@ -3048,7 +3087,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char-whitespace?',
+    runRawTest('char-whitespace?',
 	    function() {
 		testPrim('char-whitespace?', runtime.char, ['a'], false);
 		testPrim('char-whitespace?', runtime.char, ['Z'], false);
@@ -3060,7 +3099,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char-upper-case?',
+    runRawTest('char-upper-case?',
 	    function() {
 		testPrim('char-upper-case?', runtime.char, ['a'], false);
 		testPrim('char-upper-case?', runtime.char, ['Z'], true);
@@ -3071,7 +3110,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char-lower-case?',
+    runRawTest('char-lower-case?',
 	    function() {
 		testPrim('char-lower-case?', runtime.char, ['a'], true);
 		testPrim('char-lower-case?', runtime.char, ['Z'], false);
@@ -3082,21 +3121,21 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char->integer',
+    runRawTest('char->integer',
 	    function() {
 		testPrim('char->integer', runtime.char, ['0'], 48);
 		testPrim('char->integer', runtime.char, ['\n'], 10);
 	    });
 
 
-    runTest('integer->char',
+    runRawTest('integer->char',
 	    function() {
 		testPrim('integer->char', id, [48], runtime.char('0'));
 		testPrim('integer->char', id, [65], runtime.char('A'));
 	    });
 
 
-    runTest('char-upcase',
+    runRawTest('char-upcase',
 	    function() {
 		testPrim('char-upcase', runtime.char, ['a'], runtime.char('A'));
 		testPrim('char-upcase', runtime.char, ['B'], runtime.char('B'));
@@ -3105,7 +3144,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char-downcase',
+    runRawTest('char-downcase',
 	    function() {
 		testPrim('char-downcase', runtime.char, ['a'], runtime.char('a'));
 		testPrim('char-downcase', runtime.char, ['B'], runtime.char('b'));
@@ -3114,7 +3153,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('char print formatting',
+    runRawTest('char print formatting',
 	    function() {
 		testPrim('format', id, ['~s', runtime.char('\n')], runtime.string('#\\newline'));
 		testPrim('format', id, ['~s', runtime.char('\0')], runtime.string('#\\nul'));
@@ -3145,14 +3184,14 @@ var lowLevelTests = function() {
     ///////////////////////////////////////////////////////////////////////
 
 
-    runTest('values',
+    runRawTest('values',
 	    function() {
 		testPrim('values', id, [], new runtime.ValuesWrapper([]));
 		testPrim('values', id, [1, 2, 3, 4], new runtime.ValuesWrapper([1, 2, 3, 4]));
 		testPrim('values', id, [1], 1);
 	    });
 
-    runTest('call-with-values',
+    runRawTest('call-with-values',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('call-with-values'),
@@ -3175,7 +3214,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('not',
+    runRawTest('not',
 	    function() {
 		testPrim('not', id, [false], true);
 		testPrim('not', id, [0], false);
@@ -3184,7 +3223,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('boolean?',
+    runRawTest('boolean?',
 	    function() {
 		testPrim('boolean?', id, [false], true);
 		testPrim('boolean?', id, [true], true);
@@ -3194,7 +3233,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('eq?',
+    runRawTest('eq?',
 	    function() {
 		var testStr = runtime.string('hello');
 		var testChar = runtime.char('H');
@@ -3209,7 +3248,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('eqv?',
+    runRawTest('eqv?',
 	    function() {
 		var testStr = runtime.string('hello');
 		var testChar = runtime.char('H');
@@ -3224,7 +3263,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('equal?',
+    runRawTest('equal?',
 	    function() {
 		var testStr = runtime.string('hello');
 		var testChar = runtime.char('H');
@@ -3239,7 +3278,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('equal~?',
+    runRawTest('equal~?',
 	    function() {
 		testPrim('equal~?', id, [runtime.string('h'), runtime.string('h'), 5], true);
 		testPrim('equal~?', id, [5, 4, 0], false);
@@ -3249,7 +3288,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('struct?',
+    runRawTest('struct?',
 	    function() {
 		testPrim('struct?', runtime.string, ['a'], false);
 		testPrim('struct?', id, [1], false);
@@ -3259,7 +3298,7 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('procedure-arity',
+    runRawTest('procedure-arity',
 	    function() {
 		var state = new runtime.State();
 		state.pushControl(makeApplication(makePrimval('procedure-arity'), [makePrimval('+')]));
@@ -3300,40 +3339,40 @@ var lowLevelTests = function() {
 	    });
 
 
-    runTest('identity',
+    runRawTest('identity',
 	    function() {
 		testPrim('identity', id, [5], 5);
 		testPrim('identity', runtime.string, ['hello'], runtime.string('hello'));
 	    });
 
 
-    runTest('make-posn',
+    runRawTest('make-posn',
 	    function() {
 		testPrim('make-posn', id, [4, 5], runtime.posn(4, 5));
 		testPrim('make-posn', runtime.char, ['a', 'B'], runtime.posn(runtime.char('a'), runtime.char('B')));
 	    });
 
-    runTest('posn?',
+    runRawTest('posn?',
 	    function() {
 		testPrim('posn?', id, [4], false);
 		testPrim('posn?', runtime.box, [4], false);
 		testPrim('posn?', id, [runtime.posn(5, 4)], true);
 	    });
 
-    runTest('posn-x',
+    runRawTest('posn-x',
 	    function() {
 		testPrim('posn-x', id, [runtime.posn(5, 4)], 5);
 		testPrim('posn-x', id, [runtime.posn(runtime.char('a'), runtime.char('b'))], runtime.char('a'));
 	    });
 
-    runTest('posn-y',
+    runRawTest('posn-y',
 	    function() {	
 		testPrim('posn-y', id, [runtime.posn(5, 4)], 4);
 		testPrim('posn-y', id, [runtime.posn(runtime.char('a'), runtime.char('b'))], runtime.char('b'));
 	    });
 
 
-    runTest('structure equality',
+    runRawTest('structure equality',
 	    function() {
 		var ParentType = types.makeStructureType('parent', false, 2, 0, false, false);
 		var makeParent = ParentType.constructor;
@@ -3354,7 +3393,7 @@ var lowLevelTests = function() {
 
 
     /*
-      runTest('get-js-object',
+      runRawTest('get-js-object',
       function() {
       testPrim('get-js-object', id, ['setInterval'], types.jsObject('setInterval', setInterval));
       testPrim('get-js-object', id, [types.jsObject('types', types), 'box'],
@@ -3379,7 +3418,7 @@ var lowLevelTests = function() {
       });
 
 
-      runTest('js-call',
+      runRawTest('js-call',
       function() {
       testPrim('js-call', id, [types.jsObject('jsnums.greaterThan', jsnums.greaterThan), 4, runtime.rational(3, 2)], true);
       testPrim('js-call', id, [types.jsObject('types.hash', types.hash), runtime.EMPTY], types.hash(runtime.EMPTY));
@@ -3403,7 +3442,7 @@ var lowLevelTests = function() {
 
 
 
-    runTest("topsyntax",
+    runRawTest("topsyntax",
 	    function() {
 	        sys.print("!Not implemented yet!  ");
 	    });
@@ -3411,49 +3450,52 @@ var lowLevelTests = function() {
 
 
 
+    sys.print("Running asynchronous tests...\n");
+    runAsyncTests(0, function(){
 
 
 
+        /**
+           This next test is special and should be last.  It'll run an infinite loop, and
+           schedule a break.
+
+           Only after the interpreter breaks do we print "END TESTS".
+        */
+        runRawTest("closure application, testing break",
+	           // (define (f) (f)) (begin (f)) --> infinite loop, but with bounded control stack.
+	           function() {
+	               var state = new runtime.State();
+	               state.pushControl(makeMod(makePrefix(1), []));
+	               run(state);   
+	               state.pushControl(makeApplication(makeToplevel(0, 0), []));
+	               state.pushControl(makeDefValues([makeToplevel(0, 0)],
+					               makeLam(0, [0],
+						               makeApplication(makeToplevel(0, 0),
+								               []))));
+	               var isTerminated = false;
+	               interpret.run(state,
+			             function() {
+			             }, 
+			             function(err) {
+			                 assert.ok(types.isSchemeError(err));
+			                 assert.ok(types.isExnBreak(err.val));
+			                 isTerminated = true;
+			             });
+	               var waitTillBreak = function() {
+		           if (isTerminated) {
+		               sys.print("\nEND TESTS\n")
+		               return;
+		           } else {
+		               state.breakRequested = true;
+		               setTimeout(waitTillBreak, 10);
+		           }
+	               };
+	               waitTillBreak();
+	           });
 
 
+    });
 
 
-
-    /**
-       This next test is special and should be last.  It'll run an infinite loop, and
-       schedule a break.
-
-       Only after the interpreter breaks do we print "END TESTS".
-    */
-    runTest("closure application, testing break",
-	    // (define (f) (f)) (begin (f)) --> infinite loop, but with bounded control stack.
-	    function() {
-	        var state = new runtime.State();
-	        state.pushControl(makeMod(makePrefix(1), []));
-	        run(state);   
-	        state.pushControl(makeApplication(makeToplevel(0, 0), []));
-	        state.pushControl(makeDefValues([makeToplevel(0, 0)],
-					        makeLam(0, [0],
-						        makeApplication(makeToplevel(0, 0),
-								        []))));
-	        var isTerminated = false;
-	        interpret.run(state,
-			      function() {
-			      }, 
-			      function(err) {
-			          assert.ok(types.isSchemeError(err));
-			          assert.ok(types.isExnBreak(err.val));
-			          isTerminated = true;
-			      });
-	        var waitTillBreak = function() {
-		    if (isTerminated) {
-		        sys.print("\nEND TESTS\n")
-		        return;
-		    } else {
-		        state.breakRequested = true;
-		        setTimeout(waitTillBreak, 10);
-		    }
-	        };
-	        waitTillBreak();
-	    });
 };
+

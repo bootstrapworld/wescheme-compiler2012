@@ -55,13 +55,13 @@ var deepEqual = function (obj1, obj2) {
 	}
 
 	for (var i in obj1) {
-		if ( obj1.hasOwnProperty(i) ) {
+		if ( obj1.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
 			if ( !(obj2.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
 				return false;
 		}
 	}
 	for (var i in obj2) {
-		if ( obj2.hasOwnProperty(i) ) {
+		if ( obj2.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
 			if ( !(obj1.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
 				return false;
 		}
@@ -82,6 +82,8 @@ assert.equal = function(x, y) {
 assert.deepEqual = function(x, y) {
 	if ( !deepEqual(x, y) ) {
 		alert('AssertError: ' + x + ' deepEqual ' + y);
+            console.log(x);
+            console.log(y);
 		throw new Error('AssertError: ' + x + ' deepEqual ' + y);
 	}
 }
