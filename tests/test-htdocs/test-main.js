@@ -239,14 +239,20 @@ var runTests = function() {
 
     //////////////////////////////////////////////////////////////////////
 
+    var noteRedFailure = function() {
+        $(document.body).append($("<span/>").text(" FAIL").css("color", "red"));
+        $(document.body).css("background-color", "#eeaaaa");
+    };
+
     var runRawTest = function(name, thunk) {
         sys.print("running " + name + "... ");
         try {
 	    thunk();
         } catch(e) {
-            $(document.body).append($("<span/>").text(" FAIL").css("color", "red"));
+            noteRedFailure();
 	    sys.print("\n");
 	    sys.print(e);
+            sys.print('\n');
 	    if (EXIT_ON_FIRST_ERROR) {
 	        if (typeof(console) !== 'undefined' && console.log && e.stack) {
 		    console.log(e.stack);
@@ -292,9 +298,10 @@ var runTests = function() {
             k();
         };
         var fail = function(e) {
-            $(document.body).append($("<span/>").text(" FAIL").css("color", "red"));
+            noteRedFailure();
 	    sys.print("\n");
 	    sys.print(e);
+            sys.print('\n');
         };
         try {
             f(succeed, fail);
