@@ -423,7 +423,7 @@
 ;;called when we are certain there is a non symbol present
 (define (find-first-non-symbol los)
   (cond
-    [(not (symbol? (first los))) (first los)]
+    [(not (symbol? (stx-e (first los)))) (first los)]
     [else (find-first-non-symbol (rest los))]))
 
 
