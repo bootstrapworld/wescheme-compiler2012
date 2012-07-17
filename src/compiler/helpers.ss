@@ -456,7 +456,7 @@
                                 (make-ColoredPart "function name" (stx-loc (first (stx-e (second parts)))))
                                 ", but found none")))]
       
-      [(> (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  ;;?????
+      [(> (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
                                                      ": expected only one expression for the function body, but found " 
@@ -464,13 +464,31 @@
       [(< (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
                                                     (make-Message
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
-                                                     ": expected an expression for the function body, but nothing's there")))]
-      
-      )))
+                                                     ": expected an expression for the function body, but nothing's there")))])))
 
 ;;find-defn-var-error: definition -> ?????
-(define (find-defn-var-error a-definition) "hi")
-
+(define (find-defn-var-error a-definition) 
+  (let ((parts (stx-e a-definition)))
+    (cond
+      [(not (symbol? (stx-e (second parts)))) (raise (make-moby-error (stx-loc a-definition)  
+                                                    (make-Message 
+                                                     (make-ColoredPart "define" (stx-loc (first parts)))
+                                                     ": expected an variable name but found "
+                                                     (make-ColoredPart "something else"   (stx-loc (second parts))))))] 
+      [(< (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  
+                                                    (make-Message 
+                                                     (make-ColoredPart "define" (stx-loc (first parts)))
+                                                     ": expected an expression after the variable name "
+                                                     (make-ColoredPart (symbol->string (stx->datum (second parts)))   (stx-loc (second parts)))
+                                                     "but nothing's there")))]
+      [(> (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  
+                                                    (make-Message 
+                                                     (make-ColoredPart "define" (stx-loc (first parts)))
+                                                     ": expected only one expression after the variable name " 
+                                                     (make-ColoredPart (symbol->string (stx->datum (second parts)))   (stx-loc (second parts)))
+                                                     ", but found "
+                                                     (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  
+                                                                     (map stx-loc (rest (rest (rest parts))))))))])))
 
 
 
