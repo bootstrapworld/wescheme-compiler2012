@@ -414,9 +414,9 @@
     ))
 
 
-;;define-function?: definition -> boolean
+;;define-var?: definition -> boolean
 (define (define-var? a-definition) 
-  (and (> (length  (stx-e a-definition)) 1) (symbol? (stx-e (second  (stx-e a-definition))))))
+  (and (> (length  (stx-e a-definition)) 1) (not (list? (stx-e (second  (stx-e a-definition)))))))
 
 
 ;;find-first-non-symbol: (listof stx) -> non-symbol 
