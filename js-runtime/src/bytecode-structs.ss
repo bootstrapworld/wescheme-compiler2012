@@ -38,8 +38,8 @@
 (define-form-struct module-variable ([modidx module-path-index?] 
                                      [sym symbol?] 
                                      [pos exact-integer?] 
-                                     [phase (or/c 0 1)])) ; direct access to exported id
-
+                                     [phase (or/c 0 1)] ; direct access to exported id
+				     ))
 ;; Syntax object
 (define-form-struct wrap ())
 (define-form-struct wrapped ([datum any/c] 
@@ -73,7 +73,8 @@
 (define-form-struct (toplevel expr) ([depth exact-nonnegative-integer?] 
                                      [pos exact-nonnegative-integer?] 
                                      [const? boolean?] 
-                                     [ready? boolean?]))  ; access binding via prefix array (which is on stack)
+                                     [ready? boolean?]; access binding via prefix array (which is on stack)
+				     [loc (or/c #f any/c)]))  ;; dyoo: extension: remember the source location
 
 (define-form-struct (seq form) ([forms (listof (or/c form? indirect? any/c))])) ; `begin'
 

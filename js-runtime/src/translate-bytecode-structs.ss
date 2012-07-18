@@ -218,7 +218,7 @@
 (define (translate-toplevel a-toplevel)
   (match a-toplevel
     [(struct internal:toplevel (depth pos const? ready?))
-     (make-toplevel depth pos const? ready?)]))
+     (make-toplevel depth pos const? ready? #f)]))
 
 
 (define (translate-at-expression-position x)

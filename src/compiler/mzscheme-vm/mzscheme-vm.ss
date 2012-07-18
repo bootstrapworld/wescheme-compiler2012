@@ -200,7 +200,7 @@
   ;; FIXME: I should be doing some kind of module resolution here.
   (values (bcode:make-req
            (datum->syntax #f (stx->datum (second (stx-e a-require))))
-           (bcode:make-toplevel 0 0 #f #f))
+           (bcode:make-toplevel 0 0 #f #f #f))
           a-pinfo))
 
 
@@ -384,7 +384,7 @@
                (bcode:make-localref boxed? depth #f #f #f)]
               
               [(struct global-stack-reference (name depth pos))
-               (bcode:make-toplevel depth pos #f #f)]
+               (bcode:make-toplevel depth pos #f #f (loc->vec (stx-loc expr)))]
               
               [(struct unbound-stack-reference (name))
                (error 'compile-identifier-expression 
