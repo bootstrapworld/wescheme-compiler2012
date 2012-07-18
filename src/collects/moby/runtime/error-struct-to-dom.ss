@@ -138,7 +138,7 @@
                       (style "display:none"))
                      ,(stx->dom-sexp (moby-error-type:unsupported-expression-form-expr error-type)
                                        maybe-dom-parameters)))]
-       
+       ;;fixme: is this ever called?
        [(moby-error-type:unclosed-parentheses? error-type)
         `(span ((class "Error-UnclosedParentheses"))
                (span ((class "Error.reason"))
@@ -155,7 +155,7 @@
                (span ((class "Error-UnclosedParentheses.closer")
                       (style "display:none"))
                      ,(symbol->string (moby-error-type:unclosed-parentheses-closer error-type))))]
-       
+       ;;fixme: is this ever called?
        [(moby-error-type:unbalanced-parentheses? error-type)
         `(span ((class "Error-UnbalancedParentheses"))
                "I saw "
@@ -189,7 +189,7 @@
                  maybe-dom-parameters)
                ".")]
        
-        
+       ;;fixme: is this ever called? 
        [(moby-error-type:closing-parenthesis-before-opener? error-type)
         `(span ((class "Error-ClosingParenthesisBeforeOpener"))
                "I saw "
@@ -202,7 +202,7 @@
        [(moby-error-type:duplicate-identifier? error-type)
         `(span ((class "Error-DuplicateIdentifier"))
                (span ((class "Error.reason"))
-                     "The identifier "
+                     "The variable "
                      ,(scheme-value->dom-sexp (moby-error-type:duplicate-identifier-id error-type)
                                               maybe-dom-parameters)
                      " has been duplicated.")
@@ -213,7 +213,7 @@
        [(moby-error-type:expected-identifier? error-type)
         `(span ((class "Error-ExpectedIdentifier"))
                (span ((class "Error.reason"))
-                     "I expected an identifier but received "
+                     "I expected a variable but received "
                      ,(stx->dom-sexp (moby-error-type:expected-identifier-observed error-type)
                                        maybe-dom-parameters)
                      " instead."))]
@@ -273,17 +273,9 @@
                      ,(scheme-value->dom-sexp (moby-error-type:unknown-module-path error-type)
                                               maybe-dom-parameters)
                      ", but I don't yet know what this module is."))]
-
        
-              [(moby-error-type:unknown-module? error-type)
-        `(span ((class "Error-UnknownModule"))
-               (span ((class "Error.reason"))
-                     "I see a require of the module "
-                     ,(scheme-value->dom-sexp (moby-error-type:unknown-module-path error-type)
-                                              maybe-dom-parameters)
-                     ", but I don't yet know what this module is."))]
-
        
+       ;;the next four are not called any more- delete them
        [(moby-error-type:conditional-missing-question-answer? error-type)
         `(span ((class "Error-ConditionalMissingQuestionAnswer"))
                "After cond, I expect at least one question-answer branch, but I don't see anything.")]       
@@ -315,7 +307,7 @@
                  (moby-error-type:branch-value-not-boolean-observed error-type)
                  maybe-dom-parameters)
                ".")]
-       
+       ;;the next two are also not used any more
        [(moby-error-type:if-too-few-elements? error-type)
         `(span ((class "Error-IfTooFewElements"))
                "I expected a test, a consequence, and an alternative, "
