@@ -86,7 +86,7 @@
       [(moby-error-type:unclosed-lexical-token? error-type)
         `(span ((class "Error-UnclosedLexicalToken"))
                (span ((class "Error.reason"))
-                     "I saw "
+                     "Found "
                      ,(scheme-value->dom-sexp (moby-error-type:unclosed-lexical-token-opener error-type)
                                               maybe-dom-parameters)
                      " to start a "
@@ -110,10 +110,10 @@
        [(moby-error-type:unrecognized-lexical-token? error-type)
         `(span ((class "Error-UnrecognizedLexicalToken"))
                (span ((class "Error.reason"))
-                     "I saw "
+                     "Found "
                      ,(scheme-value->dom-sexp (moby-error-type:unrecognized-lexical-token-token error-type)
                                               maybe-dom-parameters)
-                     " which I don't recognize as a program element.")
+                     " which is not recognized as a program element.")
                (span ((class "Error-UnrecognizedLexicalToken.token")
                       (style "display:none"))
                      ,(symbol->string (moby-error-type:unrecognized-lexical-token-token error-type))))]
@@ -142,7 +142,7 @@
        [(moby-error-type:unclosed-parentheses? error-type)
         `(span ((class "Error-UnclosedParentheses"))
                (span ((class "Error.reason"))
-                     "I saw "
+                     "Found "
                      ,(scheme-value->dom-sexp (moby-error-type:unclosed-parentheses-opener error-type)
                                               maybe-dom-parameters)
                      " to start an expression, but no "
@@ -158,7 +158,7 @@
        ;;fixme: is this ever called?
        [(moby-error-type:unbalanced-parentheses? error-type)
         `(span ((class "Error-UnbalancedParentheses"))
-               "I saw "
+               "Found "
                ,(scheme-value->dom-sexp 
                  (moby-error-type:unbalanced-parentheses-opener error-type)
                  maybe-dom-parameters)
@@ -168,7 +168,7 @@
                  (moby-error-type:unbalanced-parentheses-closer error-type)
                  maybe-dom-parameters)
 
-               ", but instead I see "
+               ", but instead found "
                
                ,(scheme-value->dom-sexp 
                  (moby-error-type:unbalanced-parentheses-observed error-type)
@@ -179,7 +179,7 @@
         
        [(moby-error-type:syntax-not-applied? error-type)
         `(span ((class "Error-SyntaxNotApplied"))
-               "I saw "
+               "Found "
                ,(stx->dom-sexp (moby-error-type:syntax-not-applied-keyword error-type)
                                maybe-dom-parameters)
                ", which isn't supposed to be used as a bare expression.  "
@@ -192,7 +192,7 @@
        ;;fixme: is this ever called? 
        [(moby-error-type:closing-parenthesis-before-opener? error-type)
         `(span ((class "Error-ClosingParenthesisBeforeOpener"))
-               "I saw "
+               "Found "
                ,(scheme-value->dom-sexp 
                  (moby-error-type:closing-parenthesis-before-opener-closer error-type)
                  maybe-dom-parameters)
@@ -213,7 +213,7 @@
        [(moby-error-type:expected-identifier? error-type)
         `(span ((class "Error-ExpectedIdentifier"))
                (span ((class "Error.reason"))
-                     "I expected a variable but received "
+                     "Expected a variable but received "
                      ,(stx->dom-sexp (moby-error-type:expected-identifier-observed error-type)
                                        maybe-dom-parameters)
                      " instead."))]
@@ -225,7 +225,7 @@
                                   (stx->dom-sexp 
                                    (moby-error-type:expected-list-of-identifiers-who error-type)
                                    maybe-dom-parameters))
-                     ", I expected a list of identifiers but received "
+                     ", expected a list of identifiers but received "
                      ,(stx->dom-sexp (moby-error-type:expected-list-of-identifiers-observed error-type)
                                        maybe-dom-parameters)
                      " instead."))]
@@ -233,10 +233,9 @@
        [(moby-error-type:undefined-identifier? error-type)
         `(span ((class "Error-UndefinedIdentifier"))
                (span ((class "Error.reason"))
-                     "I don't know what "
                      ,(scheme-value->dom-sexp (moby-error-type:undefined-identifier-id error-type)
                                               maybe-dom-parameters)
-                     " is; it's not defined as an input or a primitive."))]
+                     " is unknown; it's not defined as an input or a primitive."))]
 
        
        [(moby-error-type:structure-identifier-not-expression? error-type)
@@ -269,44 +268,26 @@
        [(moby-error-type:unknown-module? error-type)
         `(span ((class "Error-UnknownModule"))
                (span ((class "Error.reason"))
-                     "I see a require of the module "
+                     "Found require of the module "
                      ,(scheme-value->dom-sexp (moby-error-type:unknown-module-path error-type)
                                               maybe-dom-parameters)
-                     ", but I don't yet know what this module is."))]
-       
-       
-       ;;the next four are not called any more- delete them
-       [(moby-error-type:conditional-missing-question-answer? error-type)
-        `(span ((class "Error-ConditionalMissingQuestionAnswer"))
-               "After cond, I expect at least one question-answer branch, but I don't see anything.")]       
-       
-       [(moby-error-type:conditional-malformed-clause? error-type)
-        `(span ((class "Error-ConditionalMalformedClause"))
-               "Inside a cond branch, I expect a question and an answer, but I don't "
-                                    "see both things here.")]
-       
-       [(moby-error-type:conditional-clause-too-few-elements? error-type)
-        `(span ((class "Error-ConditionalClauseTooFewElements"))
-               "Inside a cond branch, I expect a question and an answer, but I don't see both.")]
-
-       [(moby-error-type:conditional-clause-too-many-elements? error-type)
-        `(span ((class "Error-ConditionalClauseTooManyElements"))
-               "Inside a cond branch, I expect to see a question and an answer, "
-               "but I see more than two things here.")]
+                     ", but this module is unknown."))]
        
        [(moby-error-type:branch-value-not-boolean? error-type)
         `(span ((class "Error-BranchValueNotBoolean"))
-               "I expected the question's value to be a boolean expression, "
+               "Expected the question's value to be a boolean expression, "
                "(" 
                ,(scheme-value->dom-sexp true maybe-dom-parameters)
                " or " 
                ,(scheme-value->dom-sexp false maybe-dom-parameters)
                "), "
-               "but instead I see "
+               "but instead found "
                ,(scheme-value->dom-sexp 
                  (moby-error-type:branch-value-not-boolean-observed error-type)
                  maybe-dom-parameters)
                ".")]
+       
+       ;;--------------------------------------------------------------------------
        ;;the next two are also not used any more
        [(moby-error-type:if-too-few-elements? error-type)
         `(span ((class "Error-IfTooFewElements"))
@@ -318,76 +299,78 @@
                "I expected only a test, a consequence, and an alternative, "
                "but I see more than three of these.")]
        
+       ;;---------------------------------------------------------------------------
+       
        [(moby-error-type:begin-body-empty? error-type)
         `(span ((class "Error-BeginBodyEmpty"))
-               "Inside a begin, I expect to see a body, but I don't see anything.")]
+               "Inside a begin, expected to find a body, but nothing was found.")]
 
        [(moby-error-type:boolean-chain-too-few-elements? error-type)
         `(span ((class "Error-BooleanChainTooFewElements"))
                "Inside a " 
                ,(scheme-value->dom-sexp (moby-error-type:boolean-chain-too-few-elements-id error-type)
                                         maybe-dom-parameters)
-               ", I expect to see at least two expressions, but I don't see them both.")]
+               ", expected to see at least two expressions, but both were not found.")]
 
        [(moby-error-type:lambda-too-few-elements? error-type)
         `(span ((class "Error-LambdaTooFewElements"))
-               "Inside a lambda, I expect to see a list of arguments and a single body, "
-               "but I don't see both of these.")]
+               "Inside a lambda, expected to see a list of arguments and a single body, "
+               "but both of these were not found.")]
        
        [(moby-error-type:lambda-too-many-elements? error-type)
         `(span ((class "Error-LambdaTooManyElements"))
-               "Inside a lambda, I expect to see a list of arguments and a single body, "
-               "but I see more than these two.")]
+               "Inside a lambda, expected to see a list of arguments and a single body, "
+               "more than two of these were found.")]
 
        [(moby-error-type:missing-expression-following-quote? error-type)
         `(span ((class "Error-MissingExpressionFollowingQuote"))
                "After a " 
                ,(stx->dom-sexp (moby-error-type:missing-expression-following-quote-quote-stx error-type)
                                maybe-dom-parameters)
-               ", I expected to see another expression immediately following it, but I don't see one.")]
+               ", expected to see another expression immediately following it, but none was found.")]
        
        [(moby-error-type:quote-too-few-elements? error-type)
         `(span ((class "Error-QuoteTooFewElements"))
-               "Inside a quote, I expect to see a single argument, but I don't see one.")]
+               "Inside a quote, expected to see a single argument, but none was found.")]
        
        [(moby-error-type:quote-too-many-elements? error-type)
         `(span ((class "Error-QuoteTooManyElements"))
-               "Inside a quote, I expect to single a single element, but I see more than one.")]
+               "Inside a quote, expected to single a single element, but more than one was found.")]
 
        [(moby-error-type:quasiquote-too-few-elements? error-type)
         `(span ((class "Error-QuasiquoteTooFewElements"))
-               "Inside a quasiquote, I expect to see a single argument, but I don't see one.")]
+               "Inside a quasiquote, expected to find a single argument, but none was found.")]
        
        [(moby-error-type:quasiquote-too-many-elements? error-type)
         `(span ((class "Error-QuasiquoteTooManyElements"))
-               "Inside a quasiquote, I expect to single a single element, but I see more than one.")]
+               "Inside a quasiquote, expected find a single element, but more than one were found.")]
 
        [(moby-error-type:unquote-too-few-elements? error-type)
         `(span ((class "Error-UnquoteTooFewElements"))
-               "Inside an unquote, I expect to see a single argument, but I don't see one.")]
+               "Inside an unquote, expected to find a single argument, but none was found.")]
        
        [(moby-error-type:unquote-too-many-elements? error-type)
         `(span ((class "Error-UnquoteTooManyElements"))
-               "Inside a unquote, I expect to single a single element, but I see more than one.")]
+               "Inside a unquote, expected to find a single element, but more than one were found.")]
 
        [(moby-error-type:unquote-splicing-too-few-elements? error-type)
         `(span ((class "Error-UnquoteTooFewElements"))
-               "Inside an unquote-splicing, I expect to see a single argument, but I don't see one.")]
+               "Inside an unquote-splicing, expected to find a single argument, but none was found.")]
        
        [(moby-error-type:unquote-splicing-too-many-elements? error-type)
         `(span ((class "Error-UnquoteTooManyElements"))
-               "Inside a unquote-splicing, I expect to single a single element, but I see more than one.")]
+               "Inside a unquote-splicing, expected to single a single element, but more than one were found.")]
 
        
        [(moby-error-type:when-no-body? error-type)
         `(span ((class "Error-WhenNoBody"))
                "Inside a " (scheme-value->dom-sexp 'when maybe-dom-parameters)
-               ", I expect to see a body, but I don't see one.")]
+               ", expected to find a body, but none was found.")]
        
        [(moby-error-type:unless-no-body? error-type)
         `(span ((class "Error-WhenNoBody"))
                "Inside an " (scheme-value->dom-sexp 'unless maybe-dom-parameters) 
-               ", I expect to see a body, but I don't see one.")]
+               ", expected to find a body, but none was found.")]
 
        
        [(moby-error-type:check-expect? error-type)
@@ -424,9 +407,9 @@
        
        [(moby-error-type:check-error-no-error? error-type)
         `(span ((class "Error-CheckErrorNoError"))
-               "I expected an the expected error "
+               "Expected the error "
                ,(scheme-value->dom-sexp (moby-error-type:check-error-no-error-expected error-type) maybe-dom-parameters)
-               " but instead I received the value "
+               " but instead received the value "
                ,(scheme-value->dom-sexp (moby-error-type:check-error-no-error-observed error-type) maybe-dom-parameters))]
        
        [(moby-error-type:application-arity? error-type)
@@ -436,7 +419,7 @@
                      ,(scheme-value->dom-sexp (moby-error-type:application-arity-who error-type) maybe-dom-parameters)
                      " expects "
                      ,(arity-to-dom-sexp (moby-error-type:application-arity-expected error-type))
-                     " inputs, but instead I see "
+                     " inputs, but instead found "
                      ,(number->string (moby-error-type:application-arity-observed error-type))
                      " inputs."))]
 
@@ -468,7 +451,7 @@
                      ,(number->string
                        (moby-error-type:type-mismatch-position error-type))
                      ,(ordinal-ending (moby-error-type:type-mismatch-position error-type))
-                     " argument, but instead I see "
+                     " argument, but instead found "
                      ,(scheme-value->dom-sexp 
                        (moby-error-type:type-mismatch-observed error-type)
                        maybe-dom-parameters)
