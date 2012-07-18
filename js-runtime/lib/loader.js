@@ -141,7 +141,8 @@ var loadApplyValues = function(state, nextCode) {
 
 var loadToplevel = function(state, nextCode) {
     return new control.ToplevelControl(nextCode['depth'],
-				       nextCode['pos']);
+				       nextCode['pos'],
+				       nextCode['loc']);
     // FIXME: use isConst and isReady
     //    isConst: nextCode['const?']
     //    isReady: nextCode['ready?'];

@@ -1732,7 +1732,7 @@ PrefixValue.prototype.addSlot = function(v) {
     }
 };
 
-PrefixValue.prototype.ref = function(n) {
+PrefixValue.prototype.ref = function(n, srcloc) {
     if (this.slots[n] instanceof GlobalBucket) {
 	if (this.definedMask[n]) {
 	    return this.slots[n].value;

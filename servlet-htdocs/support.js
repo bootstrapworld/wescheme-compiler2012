@@ -8637,7 +8637,7 @@ ContinuationClosureValue.prototype.toString = function() {
 
 
 var PrefixValue = function() {
-    this.slots = [];
+    this.slots = [];  // arrayof toplevel
     this.definedMask = [];
 };
 
@@ -8659,11 +8659,12 @@ PrefixValue.prototype.addSlot = function(v) {
     }
 };
 
-PrefixValue.prototype.ref = function(n) {
+PrefixValue.prototype.ref = function(n, srcloc) {
     if (this.slots[n] instanceof GlobalBucket) {
 	if (this.definedMask[n]) {
 	    return this.slots[n].value;
 	} else {
+	    console.log(srcloc);
 	    helpers.raise(types.incompleteExn(
 			types.exnFailContractVariable,
 			"reference to an identifier before its definition: " + this.slots[n].name,
@@ -9393,8 +9394,8 @@ State.prototype.setn = function(depth, v) {
 
 
 // Reference an element of a prefix on the value stack.
-State.prototype.refPrefix = function(depth, pos) {
-    var value = this.vstack[this.vstack.length-1 - depth].ref(pos);
+State.prototype.refPrefix = function(depth, pos, srcloc) {
+    var value = this.vstack[this.vstack.length-1 - depth].ref(pos, srcloc);
     if (value instanceof types.ModuleVariableRecord) {
 	if (this.invokedModules[value.resolvedModuleName]) {
 	    var moduleRecord =  this.invokedModules[value.resolvedModuleName];
@@ -9402,7 +9403,6 @@ State.prototype.refPrefix = function(depth, pos) {
 		!== 'undefined') {
 		return moduleRecord.providedValues[value.variableName];
 	    }
-	    
 	    throw types.schemeError(
 		types.exnFailContractVariable(
 		    "reference to an identifier before its definition: " +
@@ -19833,14 +19833,15 @@ Beg0RestControl.prototype.invoke = function(state) {
 //////////////////////////////////////////////////////////////////////
 // Toplevel variable lookup
 
-var ToplevelControl = function(depth, pos) {
+var ToplevelControl = function(depth, pos, loc) {
     this.depth = depth;
     this.pos = pos;
+    this.loc = loc;
     // FIXME: use isConst and isReady 
 };
 
 ToplevelControl.prototype.invoke = function(state) {
-    state.v = state.refPrefix(this.depth, this.pos);
+    state.v = state.refPrefix(this.depth, this.pos, this.loc);
 };
 
 
@@ -20934,7 +20935,8 @@ var loadApplyValues = function(state, nextCode) {
 
 var loadToplevel = function(state, nextCode) {
     return new control.ToplevelControl(nextCode['depth'],
-				       nextCode['pos']);
+				       nextCode['pos'],
+				       nextCode['loc']);
     // FIXME: use isConst and isReady
     //    isConst: nextCode['const?']
     //    isReady: nextCode['ready?'];

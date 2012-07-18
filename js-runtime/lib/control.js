@@ -408,14 +408,15 @@ Beg0RestControl.prototype.invoke = function(state) {
 //////////////////////////////////////////////////////////////////////
 // Toplevel variable lookup
 
-var ToplevelControl = function(depth, pos) {
+var ToplevelControl = function(depth, pos, loc) {
     this.depth = depth;
     this.pos = pos;
+    this.loc = loc;
     // FIXME: use isConst and isReady 
 };
 
 ToplevelControl.prototype.invoke = function(state) {
-    state.v = state.refPrefix(this.depth, this.pos);
+    state.v = state.refPrefix(this.depth, this.pos, this.loc);
 };
 
 
