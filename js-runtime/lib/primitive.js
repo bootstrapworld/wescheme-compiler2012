@@ -196,44 +196,45 @@ var foldHelp = function(f, acc, args) {
 		function(result) {
 			return foldHelp(f, result, argsRest);
 		});
-}
+};
+
 
 var quicksort = function(functionName) {
-	return function(initList, comp) {
-		checkList(initList, functionName, 1, arguments);
-		check(undefined, comp, procArityContains(2), functionName, 'procedure (arity 2)', 2, arguments);
+    return function(aState, initList, comp) {
+	checkList(initList, functionName, 1, arguments);
+	check(undefined, comp, procArityContains(2), functionName, 'procedure (arity 2)', 2, arguments);
 	
-		var quicksortHelp = function(lst) {
-			if ( lst.isEmpty() ) {
-				return types.EMPTY;
-			}
-	
-			var compYes = new PrimProc('compYes', 1, false, false,
-					function(x) { return CALL(comp, [x, lst.first()], id); });
-			var compNo = new PrimProc('compNo', 1, false, false,
-					function(x) { return CALL(comp, [x, lst.first()],
-								  function(res) { return !res; });
+	var quicksortHelp = function(aState, lst) {
+	    if ( lst.isEmpty() ) {
+		return types.EMPTY;
+	    }
+	    
+	    var compYes = new PrimProc('compYes', 1, false, false,
+				       function(aState, x) { return CALL(comp, [x, lst.first()], id); });
+	    var compNo = new PrimProc('compNo', 1, false, false,
+				      function(aState, x) { return CALL(comp, [x, lst.first()],
+								        function(res) { return !res; });
+					                  });
+	    var recCallProc = new PrimProc('quicksort', 1, false, false, quicksortHelp);
+	    return CALL(PRIMITIVES['filter'], [compYes, lst.rest()],
+			function(half1) {
+			    return CALL(recCallProc, [half1],
+					function(sorted1) {
+					    return CALL(PRIMITIVES['filter'], [compNo, lst.rest()],
+							function(half2) {
+							    return CALL(recCallProc, [half2],
+									function(sorted2) {
+									    return append([sorted1,
+											   types.list([lst.first()]),
+											   sorted2]);
+									});
+							});
 					});
-			var recCallProc = new PrimProc('quicksort', 1, false, false, quicksortHelp);
-			return CALL(PRIMITIVES['filter'], [compYes, lst.rest()],
-				function(half1) {
-					return CALL(recCallProc, [half1],
-						function(sorted1) {
-							return CALL(PRIMITIVES['filter'], [compNo, lst.rest()],
-								function(half2) {
-									return CALL(recCallProc, [half2],
-										function(sorted2) {
-											return append([sorted1,
-												       types.list([lst.first()]),
-												       sorted2]);
-										});
-								});
-						});
-				});
-		}
-		return quicksortHelp(initList);
-	};
-}
+			});
+	}
+	return quicksortHelp(aState, initList);
+    };
+};
 
 var compare = function(args, comp) {
 	var curArg = args[0];
@@ -324,7 +325,7 @@ var isWorldConfigOption = function(x) { return x instanceof WorldConfigOption; }
 var onEvent = function(funName, inConfigName, numArgs) {
     return function(handler) {
 	return onEventBang(funName, inConfigName)(handler,
-						  new PrimProc('', numArgs, false, false, function() { return types.EMPTY; }));
+						  new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
     };
 };
 
@@ -668,7 +669,7 @@ PRIMITIVES['verify-boolean-branch-value'] =
 		     2,
 		     false,
 		     false,
-		     function(x, aLoc) { 
+		     function(aState, x, aLoc) { 
 			 if (x !== true && x !== false) {
 			     // FIXME: should throw structure
 			     // make-moby-error-type:branch-value-not-boolean
@@ -683,7 +684,7 @@ PRIMITIVES['throw-cond-exhausted-error'] =
 		     1,
 		     false,
 		     false,
-		     function(aLoc) {
+		     function(aState, aLoc) {
 			     // FIXME: should throw structure
 			     // make-moby-error-type:conditional-exhausted
 			     // instead.
@@ -696,18 +697,18 @@ PRIMITIVES['print-values'] =
 		 0,
 		 true,
 		 true,
-		 function(state, values) {
+		 function(aState, values) {
 		     var printed = false;
 		     for (var i = 0; i < values.length; i++) {
 			 if (values[i] !== types.VOID) {
-			     state.getPrintHook()(values[i]);
+			     aState.getPrintHook()(values[i]);
 			     printed = true;
 			 }
 		     }
 		     if (printed) {
-			 state.getDisplayHook()("\n");
+			 aState.getDisplayHook()("\n");
 		     }
-		     state.v = types.VOID;
+		     aState.v = types.VOID;
 		 });
 
 
@@ -717,7 +718,7 @@ PRIMITIVES['print-values'] =
 PRIMITIVES['check-expect'] =
     new PrimProc('check-expect',
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, actual, expected) {
 		 	if ( isFunction(actual) || isFunction(expected) ) {
 				var msg = 'check-expect cannot compare functions';
@@ -733,7 +734,7 @@ PRIMITIVES['check-expect'] =
 			        aState.getPrintHook()(helpers.makeLocationDom(stackTrace[i]));
 			    }
 			}
-			aState.v = types.VOID;
+			return types.VOID;
 		});
 PRIMITIVES['EXAMPLE'] = PRIMITIVES['check-expect'];
 
@@ -741,7 +742,7 @@ PRIMITIVES['EXAMPLE'] = PRIMITIVES['check-expect'];
 PRIMITIVES['check-within'] =
     new PrimProc('check-within',
 		 3,
-		 false, true,
+		 false, false,
 		 function(aState, actual, expected, range) {
 		 	if ( !isNonNegativeReal(range) ) {
 				var msg = helpers.format('check-within requires a non-negative real number for range, given ~s.',
@@ -767,7 +768,7 @@ PRIMITIVES['check-within'] =
 			        aState.getPrintHook()(helpers.makeLocationDom(stackTrace[i]));
 			    }
 			}
-			aState.v = types.VOID;
+			return types.VOID;
 		});
 				
 
@@ -778,18 +779,18 @@ var defaultPrint =
     new PrimProc('print', 
 		 1, 
 		 false, 
-		 true, 
+		 false, 
 		 function(state, x) {
 		     state.getPrintHook()(types.toWrittenString(x));
-		     state.v = types.VOID;
+		     return types.VOID;
 		 });
 
 
 PRIMITIVES['write'] =
     new CasePrimitive('write',
-	[new PrimProc('write', 1, false, true, function(aState, x) {
+	[new PrimProc('write', 1, false, false, function(aState, x) {
 			aState.getPrintHook()(x);
-			aState.v = types.VOID;
+			return types.VOID;
 		}),
 	 new PrimProc('write', 2, false, true, function(aState, x, port) {
 		 	throw types.internalError('write to a port not implemented yet.', false);
@@ -799,9 +800,9 @@ PRIMITIVES['write'] =
 
 PRIMITIVES['display'] = 
 	new CasePrimitive('display',
-		      [new PrimProc('display', 1, false, true, function(state, x) {
+		      [new PrimProc('display', 1, false, false, function(aState, x) {
 			  state.getDisplayHook()(types.toDisplayedString(x));
-			  state.v = types.VOID;
+			  return types.VOID;
 	}),
 			  new PrimProc('display', 2, false, true, function(state, x, port) {
 	     // FIXME
@@ -813,10 +814,10 @@ PRIMITIVES['display'] =
 PRIMITIVES['newline'] = 
 	new CasePrimitive('newline',
 	[new PrimProc('newline', 0, false, true, function(state) {
-		    state.getDisplayHook()('\n');
+	    state.getDisplayHook()('\n');
 	    state.v = types.VOID;
 	}),
-	 new PrimProc('newline', 1, false, false, function(port) {
+	 new PrimProc('newline', 1, false, false, function(state, port) {
 	     // FIXME
 	     throw types.internalError("newline to a port not implemented yet.", false);
 	 } )]);
@@ -827,7 +828,7 @@ PRIMITIVES['current-print'] =
     new PrimProc('current-print', 
 		 0, 
 		 false, false,
-		 function() {
+		 function(aState) {
 		     return defaultPrint;
 		 });
 
@@ -859,49 +860,47 @@ PRIMITIVES['continuation-mark-set->list'] =
 
 
 PRIMITIVES['for-each'] =
-    new PrimProc('for-each', 
-		 2, 
-		 true, true,
-		 function(aState, f, firstArg, arglists) {
-		 	var allArgs = [f, firstArg].concat(arglists);
-		 	arglists.unshift(firstArg);
-			check(aState, f, isFunction, 'for-each', 'procedure', 1, allArgs);
-			arrayEach(arglists, function(lst, i) {checkList(lst, 'for-each', i+2, allArgs);});
-			checkAllSameLength(arglists, 'for-each', allArgs);
+        new PrimProc('for-each', 
+		     2, 
+		     true, false,
+		     function(aState, f, firstArg, arglists) {
+		 	 var allArgs = [f, firstArg].concat(arglists);
+		 	 arglists.unshift(firstArg);
+			 check(aState, f, isFunction, 'for-each', 'procedure', 1, allArgs);
+			 arrayEach(arglists, function(lst, i) {checkList(lst, 'for-each', i+2, allArgs);});
+			 checkAllSameLength(arglists, 'for-each', allArgs);
 
-			var forEachHelp = function(args) {
-				if (args[0].isEmpty()) {
-					aState.v =  types.VOID;
-					return;
-				}
+			 var forEachHelp = function(args) {
+			     if (args[0].isEmpty()) {
+				 return types.VOID;
+			     }
 
-				var argsFirst = [];
-				var argsRest = [];
-				for (var i = 0; i < args.length; i++) {
-					argsFirst.push(args[i].first());
-					argsRest.push(args[i].rest());
-				}
+			     var argsFirst = [];
+			     var argsRest = [];
+			     for (var i = 0; i < args.length; i++) {
+				 argsFirst.push(args[i].first());
+				 argsRest.push(args[i].rest());
+			     }
 
-				aState.v =  CALL(f, argsFirst,
-					function(result) {return forEachHelp(argsRest);});
-				return;
-			}
+			     return CALL(f, argsFirst,
+					 function(result) {return forEachHelp(argsRest);});
+			 }
 
-			aState.v =  forEachHelp(arglists);
-		 });
+			 return forEachHelp(arglists);
+		     });
 
 
 PRIMITIVES['make-thread-cell'] = 
 	new CasePrimitive('make-thread-cell', [
 	new PrimProc("make-thread-cell",
 		     1, false, false,
-		     function(x) {
+		     function(aState, x) {
 			  return new types.ThreadCell(x, false);
 		     }
 		    ),
 	new PrimProc("make-thread-cell",
 		     2, false, false,
-		     function(x, y) {
+		     function(aState, x, y) {
 			  return new types.ThreadCell(x, y);
 		     }
 		    )]);
@@ -913,13 +912,13 @@ PRIMITIVES['make-continuation-prompt-tag'] =
 			  [
 	new PrimProc("make-continuation-prompt-tag",
 		     0, false, false,
-		     function() {
+		     function(aState) {
 			  return new types.ThreadCell();
 		     }
 		    ),
 	new PrimProc("make-continuation-prompt-tag",
 		     1, false, false,
-		     function(x) {
+		     function(aState, x) {
 			  return new types.ThreadCell(x);
 		     }
 		    )]);
@@ -936,15 +935,14 @@ var makeOptionPrimitive = function(name,
 			     numArgs + n,
 			     false,
 			     assignsToValueRegister,
-			     function() {
-				 var expectedNumArgs = numArgs + n + (assignsToValueRegister ? 1 : 0);
-				 assert.equal(arguments.length,
-					      expectedNumArgs);
+			     function(aState) {
+				 var expectedNumArgs = numArgs + n + 1;
+				 assert.equal(arguments.length, expectedNumArgs);
 				 var args = [arguments];
 				 for (var i = 0; i < arguments.length; i++) {
 				     args.push(arguments[i]);
 				 }
-				 var startDefaults = i - numArgs - (assignsToValueRegister ? 1 : 0);
+				 var startDefaults = i - numArgs - 1;
 				 return bodyF.apply(
 				     bodyF,
 				     args.concat(defaultVals.slice(startDefaults)));
@@ -1089,33 +1087,34 @@ PRIMITIVES['make-struct-field-mutator'] =
 	    });
 
 
-PRIMITIVES['struct-type?'] = new PrimProc('struct-type?', 1, false, false, types.isStructType);
+PRIMITIVES['struct-type?'] = new PrimProc('struct-type?', 1, false, false, function(aState, x) { return types.isStructType(x); });
 
 PRIMITIVES['struct-constructor-procedure?'] =
     new PrimProc('struct-constructor-procedure?', 1, false, false,
-		 function(x) { return x instanceof StructConstructorProc; });
+		 function(aState, x) { return x instanceof StructConstructorProc; });
 
 PRIMITIVES['struct-predicate-procedure?'] =
     new PrimProc('struct-predicate-procedure?', 1, false, false,
-		 function(x) { return x instanceof StructPredicateProc; });
+		 function(aState, x) { return x instanceof StructPredicateProc; });
 
 PRIMITIVES['struct-accessor-procedure?'] =
     new PrimProc('struct-accessor-procedure?', 1, false, false,
-		 function(x) { return x instanceof StructAccessorProc; });
+		 function(aState, x) { return x instanceof StructAccessorProc; });
 
 PRIMITIVES['struct-mutator-procedure?'] =
     new PrimProc('struct-mutator-procedure?', 1, false, false,
-		 function(x) { return x instanceof StructMutatorProc; });
+		 function(aState, x) { return x instanceof StructMutatorProc; });
 
 
 
-PRIMITIVES['procedure-arity'] = new PrimProc('procedure-arity', 1, false, false, procedureArity);
+PRIMITIVES['procedure-arity'] = new PrimProc('procedure-arity', 1, false, false, 
+                                             function(aState, proc){ return procedureArity(proc); });
 
 
 PRIMITIVES['apply'] =
     new PrimProc('apply',
 		 2,
-		 true, true,
+		 true, false,
 		 function(aState, f, firstArg, args) {
 		 	var allArgs = [f, firstArg].concat(args);
 		 	check(aState, f, isFunction, 'apply', 'procedure', 1, allArgs);
@@ -1125,7 +1124,7 @@ PRIMITIVES['apply'] =
 			checkList(lastArg, 'apply', args.length+2, allArgs);
 			var args = args.concat(helpers.schemeListToArray(lastArg));
 
-			aState.v =  CALL(f, args, id);
+			return  CALL(f, args, id);
 		 });
 
 
@@ -1133,7 +1132,7 @@ PRIMITIVES['values'] =
     new PrimProc('values',
 		 0,
 		 true, false,
-		 function(args) {
+		 function(aState, args) {
 		 	if (args.length === 1) {
 				return args[0];
 			}
@@ -1144,12 +1143,11 @@ PRIMITIVES['values'] =
 PRIMITIVES['call-with-values'] =
     new PrimProc('call-with-values',
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, g, r) {
 		 	check(aState, g, procArityContains(0), 'call-with-values', 'procedure (arity 0)', 1, arguments);
 			check(aState, r, isFunction, 'call-with-values', 'procedure', 2, arguments);
-
-			aState.v =  CALL(g, [],
+			return CALL(g, [],
 				function(res) {
 					return callWithValues(r, res);
 				});
@@ -1159,7 +1157,7 @@ PRIMITIVES['call-with-values'] =
 PRIMITIVES['compose'] =
     new PrimProc('compose',
 		 0,
-		 true, true,
+		 true, false,
 		 function(aState, procs) {
 		 	arrayEach(procs, function(p, i) {check(aState, p, isFunction, 'compose', 'procedure', i+1, procs);});
 
@@ -1175,7 +1173,7 @@ PRIMITIVES['compose'] =
 				}
 
 				return CALL(new PrimProc('', 1, false, false,
-						         function(args) {
+						         function(aState, args) {
 							     return callWithValues(fList.first(), args);
 							 }),
 					    [x],
@@ -1183,8 +1181,8 @@ PRIMITIVES['compose'] =
 						return composeHelp(result, fList.rest());
 					    });
 			}
-			aState.v =  new PrimProc('', 0, true, false,
-					    function(args) {
+			return  new PrimProc('', 0, true, false,
+					     function(aState, args) {
 						if (args.length === 1) {
 							return composeHelp(args[0], funList);
 						}
@@ -1197,7 +1195,7 @@ PRIMITIVES['current-inexact-milliseconds'] =
     new PrimProc('current-inexact-milliseconds',
 		 0,
 		 false, false,
-		 function() {
+		 function(aState) {
 			return jsnums.makeFloat((new Date()).valueOf());
 		 });
 
@@ -1206,7 +1204,7 @@ PRIMITIVES['current-seconds'] =
     new PrimProc('current-seconds',
 		 0,
 		 false, false,
-		 function() {
+		 function(aState) {
 		 	return Math.floor( (new Date()).getTime() / 1000 );
 		 });
 
@@ -1215,14 +1213,14 @@ PRIMITIVES['not'] =
     new PrimProc('not',
 		 1,
 		 false, false,
-		 function(x) {
+		 function(aState, x) {
 		 	return x === false;
 		 });
 
 
 PRIMITIVES['void'] =
     new PrimProc('void', 0, true, false,
-		 function(args) {
+		 function(aState, args) {
 		 	return types.VOID;
 		 });
 
@@ -1230,9 +1228,9 @@ PRIMITIVES['void'] =
 PRIMITIVES['random'] =
 	new CasePrimitive('random',
 	[new PrimProc('random', 0, false, false,
-		      function() {return types['float'](Math.random());}),
+		      function(aState) {return types['float'](Math.random());}),
 	 new PrimProc('random', 1, false, false,
-		      function(n) {
+		      function(aState, n) {
 			  check(undefined, n, isNatural, 'random', 'non-negative exact integer', 1, arguments);
 			  return Math.floor(Math.random() * jsnums.toFixnum(n));
 		      }) ]);
@@ -1240,11 +1238,11 @@ PRIMITIVES['random'] =
 
 PRIMITIVES['sleep'] =
     new CasePrimitive('sleep',
-	[new PrimProc('sleep', 0, false, false, function() { return types.VOID; }),
+	[new PrimProc('sleep', 0, false, false, function(aState) { return types.VOID; }),
 	 new PrimProc('sleep',
 		      1,
 		      false, false,
-		      function(secs) {
+		      function(aState, secs) {
 			  check(undefined, secs, isNonNegativeReal, 'sleep', 'non-negative real number', 1);
 			  
 			  var millisecs = jsnums.toFixnum(jsnums.multiply(secs, 1000) );
@@ -1255,10 +1253,10 @@ PRIMITIVES['sleep'] =
 		      }) ]);
 
 
-PRIMITIVES['identity'] = new PrimProc('identity', 1, false, false, id);
+PRIMITIVES['identity'] = new PrimProc('identity', 1, false, false, function(aState, s) { return x; });
 
 
-PRIMITIVES['raise'] = new PrimProc('raise', 1, false, false, raise);
+PRIMITIVES['raise'] = new PrimProc('raise', 1, false, false, function(aState, v) { return raise(v);} );
 
 PRIMITIVES['error'] =
     new PrimProc('error',
@@ -1289,36 +1287,39 @@ PRIMITIVES['error'] =
 		 });
 
 
-PRIMITIVES['make-exn'] = new PrimProc('make-exn', 2, false, false, types.exn);
+PRIMITIVES['make-exn'] = new PrimProc('make-exn', 2, false, false, function(aState, msg, marks){ return types.exn(msg, marks); } );
 
 PRIMITIVES['exn-message'] =
     new PrimProc('exn-message',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, exn) {
 		 	check(aState, exn, types.isExn, 'exn-message', 'exn', 1, [exn]);
-			aState.v =  ''+types.exnMessage(exn);
+			return ''+types.exnMessage(exn);
 		 });
 
 
 PRIMITIVES['exn-continuation-marks'] =
     new PrimProc('exn-continuation-marks',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, exn) {
 		 	check(aState, exn, types.isExn, 'exn-continuation-marks', 'exn', 1, [exn]);
-			aState.v =  types.exnContMarks(exn);
+			return types.exnContMarks(exn);
 		 });
 
 
-PRIMITIVES['make-exn:fail'] = new PrimProc('make-exn:fail', 2, false, false, types.exnFail);
+PRIMITIVES['make-exn:fail'] = new PrimProc('make-exn:fail', 2, false, false,
+                                           function(aState, msg, marks) { return types.exnFail(msg, marks); });
+                                     
 
-
-PRIMITIVES['make-exn:fail:contract'] = new PrimProc('make-exn:fail:contract', 2, false, false, types.exnFailContract);
+PRIMITIVES['make-exn:fail:contract'] = new PrimProc('make-exn:fail:contract', 2, false, false,
+                                                    function(aState, msg, marks) { return types.exnFailContract(msg, marks); });
 
 
 PRIMITIVES['make-exn:fail:contract:division-by-zero'] =
-    new PrimProc('make-exn:fail:contract:division-by-zero', 2, false, false, types.exnFailContractDivisionByZero);
+    new PrimProc('make-exn:fail:contract:division-by-zero', 2, false, false,
+                 function(aState, msg, marks) { return types.exnFailContractDivisionByZero(msg, marks); });
 
 
 
@@ -1330,7 +1331,7 @@ PRIMITIVES['make-exn:fail:contract:division-by-zero'] =
 PRIMITIVES['*'] = 
     new PrimProc('*',
 		 0,
-		 true, true,
+		 true, false,
 		 function(aState, args) {
 		     arrayEach(args, function(x, i) {check(aState, x, isNumber, '*', 'number', i+1, args);});
 
@@ -1339,7 +1340,7 @@ PRIMITIVES['*'] =
 		     for(i = 0; i < args.length; i++) {
 			  result = jsnums.multiply(args[i], result);
 		     }
-		     aState.v =  result;
+		     return =  result;
 		 });
 
 
@@ -1347,73 +1348,71 @@ PRIMITIVES['*'] =
 PRIMITIVES['-'] = 
     new PrimProc("-",
 		 1,
-		 true, true,
+		 true, false,
 		 function(aState, x, args) {
 		     var allArgs = [x].concat(args);
 		     check(aState, x, isNumber, '-', 'number', 1, allArgs);
 		     arrayEach(args, function(y, i) {check(aState, y, isNumber, '-', 'number', i+2, allArgs);});
 
 		     if (args.length == 0) { 
-			  aState.v =  jsnums.subtract(0, x);
-			  return;
+			  return jsnums.subtract(0, x);
 		     }
 		     var result = x;
 		     for (var i = 0; i < args.length; i++) {
 			  result = jsnums.subtract(result, args[i]);
 		     }
-		     aState.v =  result;
+		     return result;
 		 });
 
 
 PRIMITIVES['+'] = 
     new PrimProc("+",
 		 0,
-		 true, true,
+		 true, false,
 		 function(aState, args) {
 		     arrayEach(args, function(x, i) {check(aState, x, isNumber, '+', 'number', i+1, args);});
 
 		     if (args.length == 0) { 
-			  aState.v =  0;
-			  return;
+			 return 0;
 		     }
 		     var result = args[0];
 		     for (var i = 1; i < args.length; i++) {
 			  result = jsnums.add(result, args[i]);
 		     }
-		     aState.v =  result;
+		     return result;
 		 });
 
 
 PRIMITIVES['='] = 
     new PrimProc("=",
 		 2,
-		 true, true,
+		 true, false,
 		 function(aState, x, y, args) {
 		 	args.unshift(y);
 		 	args.unshift(x);
 		 	arrayEach(args, function(z, i) {check(aState, z, isNumber, '=', 'number', i+1, args);});
 
-		 	aState.v =  compare(args, jsnums.equals);
+		 	return compare(args, jsnums.equals);
 		 });
 
 
 PRIMITIVES['=~'] =
     new PrimProc('=~',
 		 3,
-		 false, true,
+		 false, false,
 		 function(aState, x, y, range) {
 		 	check(aState, x, isReal, '=~', 'real', 1, arguments);
 			check(aState, y, isReal, '=~', 'real', 2, arguments);
 			check(aState, range, isNonNegativeReal, '=~', 'non-negative-real', 3, arguments);
 
-			aState.v =  jsnums.lessThanOrEqual(jsnums.abs(jsnums.subtract(x, y)), range);
+			return jsnums.lessThanOrEqual(jsnums.abs(jsnums.subtract(x, y)), range);
 		 });
 
 
 PRIMITIVES['/'] =
     new PrimProc('/',
 		 1,
-		 true, true,
+		 true, false,
 		 function(aState, x, args) {
 		 	var allArgs = [x].concat(args);
 		 	check(aState, x, isNumber, '/', 'number', 1, allArgs);
@@ -1435,8 +1434,7 @@ PRIMITIVES['/'] =
 													new types.ColoredPart("zero", locationList.rest().rest().first())]),
 												[]) );
 				}	
-				aState.v = jsnums.divide(1, x);
-				return;
+				return jsnums.divide(1, x);
 			}
 
 		 	var res = x;
@@ -1454,7 +1452,7 @@ PRIMITIVES['/'] =
 				res = jsnums.divide(res, args[i]);
 				locationList = locationList.rest();
 		 	}
-		 	aState.v = res;
+		 	return res;
 		 });
 
  
@@ -1463,64 +1461,64 @@ PRIMITIVES['sub1'] =
     new PrimProc("sub1",
 		 1,
 		 false, false,
-		 sub1);
+		 function(aState, v){ return sub1(v); });
 
 PRIMITIVES['add1'] =
     new PrimProc("add1",
 		 1,
 		 false, false,
-		 add1);
+		 function(aState, v) { return add1(v); });
 
 
 PRIMITIVES['<'] = 
     new PrimProc('<',
 		 2,
-		 true, true,
+		 true, false,
 		 function(aState, x, y, args) {
 		 	args.unshift(y);
 		 	args.unshift(x);
 		 	arrayEach(args, function(z, i) {check(aState, z, isNumber, '<', 'number', i+1, args);});
 
-		 	aState.v =  compare(args, jsnums.lessThan);
+		 	return compare(args, jsnums.lessThan);
 		 });
 
 
 PRIMITIVES['>'] =
     new PrimProc('>',
 		 2,
-		 true, true,
+		 true, false,
 		 function(aState, x, y, args) {
 		 	args.unshift(y);
 		 	args.unshift(x);
 		 	arrayEach(args, function(z, i) {check(aState, z, isNumber, '>', 'number', i+1, args);});
 
-		 	aState.v =  compare(args, jsnums.greaterThan);
+		 	return compare(args, jsnums.greaterThan);
 		 });
 
 
 PRIMITIVES['<='] = 
     new PrimProc('<=',
 		 2,
-		 true, true,
+		 true, false,
 		 function(aState, x, y, args) {
 		 	args.unshift(y);
 		 	args.unshift(x);
 		 	arrayEach(args, function(z, i) {check(aState, z, isNumber, '<=', 'number', i+1, args);});
 
-		 	aState.v =  compare(args, jsnums.lessThanOrEqual);
+		 	return compare(args, jsnums.lessThanOrEqual);
 		 });
 
 
 PRIMITIVES['>='] =
     new PrimProc('>=',
 		 2,
-		 true, true,
+		 true, false,
 		 function(aState, x, y, args) {
 		 	args.unshift(y);
 		 	args.unshift(x);
 		 	arrayEach(args, function(z, i) {check(aState, z, isNumber, '>=', 'number', i+1, args);});
 
-		 	aState.v =  compare(args, jsnums.greaterThanOrEqual);
+		 	return compare(args, jsnums.greaterThanOrEqual);
 		 });
 
 
@@ -1529,53 +1527,53 @@ PRIMITIVES['>='] =
 PRIMITIVES['abs'] =
     new PrimProc('abs',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isReal, 'abs', 'real', 1);
-			aState.v =  jsnums.abs(x);
+			return jsnums.abs(x);
 		 });
 
 
 PRIMITIVES['quotient'] =
     new PrimProc('quotient',
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isInteger, 'quotient', 'integer', 1, arguments);
 			check(aState, y, isInteger, 'quotient', 'integer', 2, arguments);
 
-			aState.v =  jsnums.quotient(x, y);
+			return jsnums.quotient(x, y);
 		 });
 
 
 PRIMITIVES['remainder'] =
     new PrimProc('remainder',
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isInteger, 'remainder', 'integer', 1, arguments);
 			check(aState, y, isInteger, 'remainder', 'integer', 2, arguments);
 
-			aState.v =  jsnums.remainder(x, y);
+			return jsnums.remainder(x, y);
 		 });
 
 
 PRIMITIVES['modulo'] =
     new PrimProc('modulo',
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isInteger, 'modulo', 'integer', 1, arguments);
 			check(aState, y, isInteger, 'modulo', 'integer', 2, arguments);
 
-			aState.v =  jsnums.modulo(x, y);
+			return jsnums.modulo(x, y);
 		 });
 
 
 PRIMITIVES['max'] =
     new PrimProc('max',
 		 1,
-		 true, true,
+		 true, false,
 		 function(aState, x, args) {
 			args.unshift(x);
 //		 	check(aState, x, isReal, 'max', 'real', 1, allArgs);
@@ -1587,14 +1585,14 @@ PRIMITIVES['max'] =
 					curMax = args[i];
 				}
 			}
-			aState.v =  curMax;
+			return curMax;
 		 });
 
 
 PRIMITIVES['min'] =
     new PrimProc('min',
 		 1,
-		 true, true,
+		 true, false,
 		 function(aState, x, args) {
 		 	args.unshift(x);
 //		 	check(aState, x, isReal, 'min', 'real', 1);
@@ -1606,313 +1604,311 @@ PRIMITIVES['min'] =
 					curMin = args[i];
 				}
 			}
-			aState.v =  curMin;
+			return curMin;
 		 });
 
 
 PRIMITIVES['gcd'] =
     new PrimProc('gcd',
 		 1,
-		 true, true,
+		 true, false,
 		 function(aState, x, args) {
 		 	var allArgs = [x].concat(args);
 		 	check(aState, x, isInteger, 'gcd', 'integer', 1, allArgs);
 		 	arrayEach(args, function(y, i) {check(aState, y, isInteger, 'gcd', 'integer', i+2, allArgs);});
 
-		 	aState.v =  jsnums.gcd(x, args);
+		 	return jsnums.gcd(x, args);
 		 });
 
 PRIMITIVES['lcm'] =
     new PrimProc('lcm',
 		 1,
-		 true, true,
+		 true, false,
 		 function(aState, x, args) {
 		 	var allArgs = [x].concat(args);
 		 	check(aState, x, isInteger, 'lcm', 'integer', 1, allArgs);
 		 	arrayEach(args, function(y, i) {check(aState, y, isInteger, 'lcm', 'integer', i+2, allArgs);});
 
-		 	aState.v =  jsnums.lcm(x, args);
+		 	return jsnums.lcm(x, args);
 		 });
 
 
 PRIMITIVES['floor'] =
     new PrimProc('floor',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isReal, 'floor', 'real', 1);
-			aState.v =  jsnums.floor(x);
+			return jsnums.floor(x);
 		 });
 
 
 PRIMITIVES['ceiling'] =
     new PrimProc('ceiling',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isReal, 'ceiling', 'real', 1);
-			aState.v =  jsnums.ceiling(x);
+			return jsnums.ceiling(x);
 		 });
 
 
 PRIMITIVES['round'] =
     new PrimProc('round',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isReal, 'round', 'real', 1);
-			aState.v =  jsnums.round(x);
+			return jsnums.round(x);
 		 });
 
 
 PRIMITIVES['numerator'] =
     new PrimProc('numerator',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isRational, 'numerator', 'rational number', 1);
-			aState.v =  jsnums.numerator(x);
+			return jsnums.numerator(x);
 		 });
 
 
 PRIMITIVES['denominator'] =
     new PrimProc('denominator',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isRational, 'denominator', 'rational number', 1);
-			aState.v =  jsnums.denominator(x);
+			return jsnums.denominator(x);
 		 });
 
 
 PRIMITIVES['expt'] = 
     new PrimProc("expt",
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isNumber, 'expt', 'number', 1, arguments);
 			check(aState, y, isNumber, 'expt', 'number', 2, arguments);
-		 	aState.v =  jsnums.expt(x, y);
+		 	return jsnums.expt(x, y);
 		 });
 
 
 PRIMITIVES['exp'] =
     new PrimProc('exp',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'exp', 'number', 1);
-			aState.v =  jsnums.exp(x);
+			return jsnums.exp(x);
 		 });
 
 
 PRIMITIVES['log'] =
     new PrimProc('log',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'log', 'number', 1);
-			aState.v =  jsnums.log(x);
+			return jsnums.log(x);
 		 });
 
 
 PRIMITIVES['sin'] =
     new PrimProc('sin',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'sin', 'number', 1);
-			aState.v =  jsnums.sin(x);
+			return jsnums.sin(x);
 		 });
 
 
 PRIMITIVES['cos'] =
     new PrimProc('cos',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'cos', 'number', 1);
-			aState.v =  jsnums.cos(x);
+			return jsnums.cos(x);
 		 });
 
 
 PRIMITIVES['tan'] =
     new PrimProc('tan',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'tan', 'number', 1);
-			aState.v =  jsnums.tan(x);
+			return jsnums.tan(x);
 		 });
 
 
 PRIMITIVES['asin'] =
     new PrimProc('asin',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'asin', 'number', 1);
-			aState.v =  jsnums.asin(x);
+			return jsnums.asin(x);
 		 });
 
 
 PRIMITIVES['acos'] =
     new PrimProc('acos',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'acos', 'number', 1);
-			aState.v =  jsnums.acos(x);
+			return jsnums.acos(x);
 		 });
 
 
 PRIMITIVES['atan'] =
     new PrimProc('atan',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'atan', 'number', 1);
-			aState.v =  jsnums.atan(x);
+			return jsnums.atan(x);
 		 });
 
 
 PRIMITIVES['sinh'] =
     new PrimProc('sinh',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'sinh', 'number', 1);
-			aState.v =  jsnums.sinh(x);
+			return jsnums.sinh(x);
 		 });
 
 
 PRIMITIVES['cosh'] =
     new PrimProc('cosh',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'cosh', 'number', 1);
-			aState.v =  jsnums.cosh(x);
+			return jsnums.cosh(x);
 		 });
 
 
 PRIMITIVES['sqr'] =
     new PrimProc('sqr',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'sqr', 'number', 1);
-			aState.v =  jsnums.sqr(x);
+			return jsnums.sqr(x);
 		 });
 
 
 PRIMITIVES['sqrt'] =
     new PrimProc('sqrt',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'sqrt', 'number', 1);
-			aState.v =  jsnums.sqrt(x);
+			return jsnums.sqrt(x);
 		 });
 
 
 PRIMITIVES['integer-sqrt'] =
     new PrimProc('integer-sqrt',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isInteger, 'integer-sqrt', 'integer', 1);
-			aState.v =  jsnums.integerSqrt(x);
+			return jsnums.integerSqrt(x);
 		 });
 
 
 PRIMITIVES['make-rectangular'] =
     new PrimProc('make-rectangular',
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isReal, 'make-rectangular', 'real', 1, arguments);
 			check(aState, y, isReal, 'make-rectangular', 'real', 2, arguments);
-			aState.v =  types.complex(x, y);
+			return types.complex(x, y);
 		 });
 
 PRIMITIVES['make-polar'] =
     new PrimProc('make-polar',
 		 2,
-		 false, true,
+		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isReal, 'make-polar', 'real', 1, arguments);
 			check(aState, x, isReal, 'make-polar', 'real', 2, arguments);
-			aState.v =  jsnums.makeComplexPolar(x, y);
+			return jsnums.makeComplexPolar(x, y);
 		 });
 
 
 PRIMITIVES['real-part'] =
     new PrimProc('real-part',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'real-part', 'number', 1);
-			aState.v =  jsnums.realPart(x);
+			return jsnums.realPart(x);
 		 });
 
 
 PRIMITIVES['imag-part'] =
     new PrimProc('imag-part',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'imag-part', 'number', 1);
-			aState.v =  jsnums.imaginaryPart(x);
+			return jsnums.imaginaryPart(x);
 		 });
 
 
 PRIMITIVES['angle'] =
     new PrimProc('angle',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'angle', 'number', 1);
-			aState.v =  jsnums.angle(x);
+			return jsnums.angle(x);
 		 });
 
 
 PRIMITIVES['magnitude'] =
     new PrimProc('magnitude',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'magnitude', 'number', 1);
-			aState.v =  jsnums.magnitude(x);
+			return jsnums.magnitude(x);
 		 });
 
 
 PRIMITIVES['conjugate'] =
     new PrimProc('conjugate',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'conjugate', 'number', 1);
-			aState.v =  jsnums.conjugate(x);
+			return jsnums.conjugate(x);
 		 });
 
 
 PRIMITIVES['sgn'] =
     new PrimProc('sgn',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isReal, 'sgn', 'real number', 1);
 			if ( jsnums.greaterThan(x, 0) ) {
-				aState.v =  1;
-				return;
+				return 1;
 			}
 			else if ( jsnums.lessThan(x, 0) ) {
-				aState.v =  -1;
-				return;
+				return -1;
 			}
 			else {
-				aState.v =  0;
+				return 0;
 			}
 		 });
 
@@ -1920,12 +1916,11 @@ PRIMITIVES['sgn'] =
 PRIMITIVES['inexact->exact'] =
     new PrimProc('inexact->exact',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'inexact->exact', 'number', 1);
 			try {
-				aState.v =  jsnums.toExact(x);
-				return;
+			        return jsnums.toExact(x);
 			} catch(e) {
 				raise( types.exnFailContract('inexact->exact: no exact representation for '
 							     + types.toWrittenString(x),
@@ -1937,42 +1932,41 @@ PRIMITIVES['inexact->exact'] =
 PRIMITIVES['exact->inexact'] =
     new PrimProc('exact->inexact',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'exact->inexact', 'number', 1);
-			aState.v =  jsnums.toInexact(x);
+			return jsnums.toInexact(x);
 		 });
 
 
 PRIMITIVES['number->string'] =
     new PrimProc('number->string',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isNumber, 'number->string', 'number', 1);
-			aState.v =  types.string(x+'');
+			return types.string(x+'');
 		 });
 
 
 PRIMITIVES['string->number'] =
     new PrimProc('string->number',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, str) {
 		 	check(aState, str, isString, 'string->number', 'string', 1);
-			aState.v =  jsnums.fromString(str);
+			return jsnums.fromString(str);
 		 });
 
 
 PRIMITIVES['xml->s-exp'] =
     new PrimProc('xml->s-exp',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, str) {
 		 	check(aState, str, isString, 'xml->s-exp', 'string', 1);
 			if (str.length == 0) {
-				aState.v =  types.string('');
-				return;
+				return types.string('');
 			}
 
 			var xmlDoc;
@@ -2031,8 +2025,7 @@ PRIMITIVES['xml->s-exp'] =
 					return types.EMPTY;
 				}
 			};
-			var result = parse(xmlDoc.firstChild);
-			aState.v =  result;
+			return parse(xmlDoc.firstChild);
 		 });
 
 
@@ -2042,96 +2035,121 @@ PRIMITIVES['xml->s-exp'] =
  *** Predicates ***
  ******************/
 
-PRIMITIVES['procedure?'] = new PrimProc('procedure?', 1, false, false, isFunction);
+PRIMITIVES['procedure?'] = new PrimProc('procedure?', 1, false, false, 
+                                        function(aState, v) { return isFunction(v); });
 
-PRIMITIVES['pair?'] = new PrimProc('pair?', 1, false, false, isPair);
-PRIMITIVES['cons?'] = new PrimProc('cons?', 1, false, false, isPair);
-PRIMITIVES['empty?'] = new PrimProc('empty?', 1, false, false, isEmpty);
-PRIMITIVES['null?'] = new PrimProc('null?', 1, false, false, isEmpty);
+PRIMITIVES['pair?'] = new PrimProc('pair?', 1, false, false, 
+                                   function(aState, v) { return isPair(v); } );
+PRIMITIVES['cons?'] = new PrimProc('cons?', 1, false, false, 
+                                   function(aState, v) { return isPair(v); });
+PRIMITIVES['empty?'] = new PrimProc('empty?', 1, false, false,
+                                    function(aState, v) { return isEmpty(v); });
+PRIMITIVES['null?'] = new PrimProc('null?', 1, false, false,
+                                   function(aState, v) { return isEmpty(v); });
 
-PRIMITIVES['undefined?'] = new PrimProc('undefined?', 1, false, false, function(x) { return x === types.UNDEFINED; });
-PRIMITIVES['void?'] = new PrimProc('void?', 1, false, false, function(x) { return x === types.VOID; });
+PRIMITIVES['undefined?'] = new PrimProc('undefined?', 1, false, false, function(aState, x) { return x === types.UNDEFINED; });
+PRIMITIVES['void?'] = new PrimProc('void?', 1, false, false, function(aState, x) { return x === types.VOID; });
 
-PRIMITIVES['symbol?'] = new PrimProc('symbol?', 1, false, false, isSymbol);
-PRIMITIVES['string?'] = new PrimProc('string?', 1, false, false, isString);
-PRIMITIVES['char?'] = new PrimProc('char?', 1, false, false, isChar);
-PRIMITIVES['boolean?'] = new PrimProc('boolean?', 1, false, false, isBoolean);
-PRIMITIVES['vector?'] = new PrimProc('vector?', 1, false, false, isVector);
-PRIMITIVES['struct?'] = new PrimProc('struct?', 1, false, false, types.isStruct);
-PRIMITIVES['eof-object?'] = new PrimProc('eof-object?', 1, false, false, function(x) { return x === types.EOF; });
-PRIMITIVES['posn?'] = new PrimProc('posn?', 1, false, false, types.isPosn);
-PRIMITIVES['bytes?'] = new PrimProc('bytes?', 1, false, false, isByteString);
-PRIMITIVES['byte?'] = new PrimProc('byte?', 1, false, false, isByte);
+PRIMITIVES['symbol?'] = new PrimProc('symbol?', 1, false, false, 
+                                     function(aState, v) { return isSymbol(v); });
+PRIMITIVES['string?'] = new PrimProc('string?', 1, false, false,
+                                     function(aState, v) { return isString(v); });
+PRIMITIVES['char?'] = new PrimProc('char?', 1, false, false, 
+                                   function(aState, v){ return isChar(v); });
+PRIMITIVES['boolean?'] = new PrimProc('boolean?', 1, false, false, 
+                                      function(aState, v){ return isBoolean(v); });
+PRIMITIVES['vector?'] = new PrimProc('vector?', 1, false, false,
+                                     function(aState, v) { return isVector(v); });
+PRIMITIVES['struct?'] = new PrimProc('struct?', 1, false, false, 
+                                     function(aState, v) { return types.isStruct(v); });
+PRIMITIVES['eof-object?'] = new PrimProc('eof-object?', 1, false, false,
+                                         function(aState, x) { return x === types.EOF; });
+PRIMITIVES['posn?'] = new PrimProc('posn?', 1, false, false,
+                                   function(aState, v){ return types.isPosn(v); });
+PRIMITIVES['bytes?'] = new PrimProc('bytes?', 1, false, false, 
+                                    function(aState, v){ return isByteString(v); });
+PRIMITIVES['byte?'] = new PrimProc('byte?', 1, false, false,
+                                   function(aState, v) { return isByte(v); });
 
-PRIMITIVES['number?'] = new PrimProc('number?', 1, false, false, isNumber);
-PRIMITIVES['complex?'] = new PrimProc('complex?', 1, false, false, isComplex);
-PRIMITIVES['real?'] = new PrimProc('real?', 1, false, false, isReal);
-PRIMITIVES['rational?'] = new PrimProc('rational?', 1, false, false, isRational);
-PRIMITIVES['integer?'] = new PrimProc('integer?', 1, false, false, isInteger);
+PRIMITIVES['number?'] = new PrimProc('number?', 1, false, false, 
+                                     function(aState, v) { return isNumber(v); });
+PRIMITIVES['complex?'] = new PrimProc('complex?', 1, false, false, 
+                                      function(aState, v) { return isComplex(v); });
+PRIMITIVES['real?'] = new PrimProc('real?', 1, false, false,
+                                   function(aState, v) { return isReal(v); });
+PRIMITIVES['rational?'] = new PrimProc('rational?', 1, false, false, 
+                                       function(aState, v) { return isRational(v); });
+PRIMITIVES['integer?'] = new PrimProc('integer?', 1, false, false, 
+                                      function(aState, v) { return isInteger(v); });
 
 PRIMITIVES['exact?'] =
-    new PrimProc('exact?', 1, false, true,
+    new PrimProc('exact?', 1, false, false,
 		 function(aState, x) {
 			check(aState, x, isNumber, 'exact?', 'number', 1);
-			aState.v =  jsnums.isExact(x);
+			return jsnums.isExact(x);
 		 });
 PRIMITIVES['inexact?'] =
-    new PrimProc('inexact?', 1, false, true,
+    new PrimProc('inexact?', 1, false, false,
 		 function(aState, x) {
 			check(aState, x, isNumber, 'inexact?', 'number', 1);
-			aState.v =  jsnums.isInexact(x);
+			return jsnums.isInexact(x);
 		 });
 
 PRIMITIVES['odd?'] =
     new PrimProc('odd?',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 			check(aState, x, isInteger, 'odd?', 'integer', 1);
-			aState.v =  jsnums.equals(jsnums.modulo(x, 2), 1);
+			return jsnums.equals(jsnums.modulo(x, 2), 1);
 		 });
 PRIMITIVES['even?'] =
     new PrimProc('even?',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isInteger, 'even?', 'integer', 1);
-			aState.v =  jsnums.equals(jsnums.modulo(x, 2), 0);
+			return jsnums.equals(jsnums.modulo(x, 2), 0);
 		 });
 
 PRIMITIVES['zero?'] =
     new PrimProc("zero?",
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
-		     aState.v =  jsnums.equals(0, x)
+		     return jsnums.equals(0, x)
 		 });
 
 PRIMITIVES['positive?'] =
     new PrimProc('positive?',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isReal, 'positive?', 'real', 1);
-			aState.v =  jsnums.greaterThan(x, 0);
+			return jsnums.greaterThan(x, 0);
 		 });
 PRIMITIVES['negative?'] =
     new PrimProc('negative?',
 		 1,
-		 false, true,
+		 false, false,
 		 function(aState, x) {
 		 	check(aState, x, isReal, 'negative?', 'real', 1);
-			aState.v =  jsnums.lessThan(x, 0);
+			return jsnums.lessThan(x, 0);
 		 });
 
-PRIMITIVES['box?'] = new PrimProc('box?', 1, false, false, isBox);
+PRIMITIVES['box?'] = new PrimProc('box?', 1, false, false, 
+                                  function(aState, v) { return isBox(v); });
 
-PRIMITIVES['hash?'] = new PrimProc('hash?', 1, false, false, isHash);
+PRIMITIVES['hash?'] = new PrimProc('hash?', 1, false, false,
+                                   function(aState, v) { return isHash(v); });
 
 
-PRIMITIVES['eq?'] = new PrimProc('eq?', 2, false, false, isEq);
-PRIMITIVES['eqv?'] = new PrimProc('eqv?', 2, false, false, isEqv);
-PRIMITIVES['equal?'] = new PrimProc('equal?', 2, false, false, isEqual);
+PRIMITIVES['eq?'] = new PrimProc('eq?', 2, false, false, 
+                                 function(aState, x, y) { return isEq(x, y); } );
+PRIMITIVES['eqv?'] = new PrimProc('eqv?', 2, false, false, 
+                                  function(aState, x, y) { return isEqv(x, y); });
+PRIMITIVES['equal?'] = new PrimProc('equal?', 2, false, false, 
+                                    function(aState, x, y) { return isEqual(x, y); });
 PRIMITIVES['equal~?'] =
     new PrimProc('equal~?',
 		 3,
