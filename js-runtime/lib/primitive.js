@@ -385,8 +385,8 @@ var schemeProcToJs = function(aState, schemeProc) {
 
 
 // Struct Procedure types
-var StructProc = function(typeName, name, numParams, isRest, usesState, impl) {
-	PrimProc.call(this, name, numParams, isRest, usesState, impl);
+var StructProc = function(typeName, name, numParams, isRest, assignsToValueRegister, impl) {
+	PrimProc.call(this, name, numParams, isRest, assignsToValueRegister, impl);
 	this.typeName = typeName;
 };
 StructProc.prototype = PrimProc.prototype;
@@ -929,22 +929,22 @@ PRIMITIVES['make-continuation-prompt-tag'] =
 var makeOptionPrimitive = function(name,
 				   numArgs,
 				   defaultVals,
-				   usesState,
+				   assignsToValueRegister,
 				   bodyF) {
     var makeNthPrimitive = function(n) {
 	return new PrimProc(name,
 			     numArgs + n,
 			     false,
-			     usesState,
+			     assignsToValueRegister,
 			     function() {
-				 var expectedNumArgs = numArgs + n + (usesState ? 1 : 0);
+				 var expectedNumArgs = numArgs + n + (assignsToValueRegister ? 1 : 0);
 				 assert.equal(arguments.length,
 					      expectedNumArgs);
 				 var args = [arguments];
 				 for (var i = 0; i < arguments.length; i++) {
 				     args.push(arguments[i]);
 				 }
-				 var startDefaults = i - numArgs - (usesState ? 1 : 0);
+				 var startDefaults = i - numArgs - (assignsToValueRegister ? 1 : 0);
 				 return bodyF.apply(
 				     bodyF,
 				     args.concat(defaultVals.slice(startDefaults)));

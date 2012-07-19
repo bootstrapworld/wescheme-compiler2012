@@ -8883,11 +8883,11 @@ var defaultContinuationPrompt = new ContinuationPrompt();
 
 //////////////////////////////////////////////////////////////////////
 
-var PrimProc = function(name, numParams, isRest, usesState, impl) {
+var PrimProc = function(name, numParams, isRest, assignsToValueRegister, impl) {
     this.name = name;
     this.numParams = numParams;
     this.isRest = isRest;
-    this.usesState = usesState;
+    this.assignsToValueRegister = assignsToValueRegister;
     this.impl = impl;
 };
 
@@ -13357,8 +13357,8 @@ var schemeProcToJs = function(aState, schemeProc) {
 
 
 // Struct Procedure types
-var StructProc = function(typeName, name, numParams, isRest, usesState, impl) {
-	PrimProc.call(this, name, numParams, isRest, usesState, impl);
+var StructProc = function(typeName, name, numParams, isRest, assignsToValueRegister, impl) {
+	PrimProc.call(this, name, numParams, isRest, assignsToValueRegister, impl);
 	this.typeName = typeName;
 };
 StructProc.prototype = PrimProc.prototype;
@@ -13901,22 +13901,22 @@ PRIMITIVES['make-continuation-prompt-tag'] =
 var makeOptionPrimitive = function(name,
 				   numArgs,
 				   defaultVals,
-				   usesState,
+				   assignsToValueRegister,
 				   bodyF) {
     var makeNthPrimitive = function(n) {
 	return new PrimProc(name,
 			     numArgs + n,
 			     false,
-			     usesState,
+			     assignsToValueRegister,
 			     function() {
-				 var expectedNumArgs = numArgs + n + (usesState ? 1 : 0);
+				 var expectedNumArgs = numArgs + n + (assignsToValueRegister ? 1 : 0);
 				 assert.equal(arguments.length,
 					      expectedNumArgs);
 				 var args = [arguments];
 				 for (var i = 0; i < arguments.length; i++) {
 				     args.push(arguments[i]);
 				 }
-				 var startDefaults = i - numArgs - (usesState ? 1 : 0);
+				 var startDefaults = i - numArgs - (assignsToValueRegister ? 1 : 0);
 				 return bodyF.apply(
 				     bodyF,
 				     args.concat(defaultVals.slice(startDefaults)));
@@ -20482,7 +20482,6 @@ var callPrimitiveProcedure = function(state, procValue, n, operandValues) {
 					 operandValues,
 					 n);
     var result = procValue.impl.apply(procValue.impl, args);
-    if (procValue.usesState) { result = state.v; }
     processPrimitiveResult(state, result, procValue);
 };
 
@@ -20498,7 +20497,7 @@ var processPrimitiveResult = function(state, result, procValue) {
     } else if (result instanceof INTERNAL_PAUSE) {
 	throw new PauseException(result.onPause);
     } else {
-	if (! procValue.usesState) {
+	if (! procValue.assignsToValueRegister) {
 	    state.v = result;
 	}
     }
@@ -20802,9 +20801,7 @@ var prepareClosureArgumentsOnStack = function(state, procValue, operandValues, n
 var preparePrimitiveArguments = function(state, primitiveValue, operandValues, n) {
     var args = [];
 
-    if (primitiveValue.usesState) {
-	args.push(state);
-    }
+    args.push(state);
 
     if (n < primitiveValue.numParams) {
 //	throw new Error("arity error: expected at least "
