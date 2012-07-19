@@ -680,6 +680,7 @@ var callPrimitiveProcedure = function(state, procValue, n, operandValues) {
 					 operandValues,
 					 n);
     var result = procValue.impl.apply(procValue.impl, args);
+    if (procValue.usesState) { result = state.v; }
     processPrimitiveResult(state, result, procValue);
 };
 

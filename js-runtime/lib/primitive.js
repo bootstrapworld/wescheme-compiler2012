@@ -2102,8 +2102,8 @@ PRIMITIVES['even?'] =
 PRIMITIVES['zero?'] =
     new PrimProc("zero?",
 		 1,
-		 false, false,
-		 function(x) {
+		 false, true,
+		 function(aState, x) {
 		     aState.v =  jsnums.equals(0, x)
 		 });
 
