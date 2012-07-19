@@ -1252,7 +1252,7 @@ PRIMITIVES['sleep'] =
 		      }) ]);
 
 
-PRIMITIVES['identity'] = new PrimProc('identity', 1, false, false, function(aState, s) { return x; });
+PRIMITIVES['identity'] = new PrimProc('identity', 1, false, false, function(aState, x) { return x; });
 
 
 PRIMITIVES['raise'] = new PrimProc('raise', 1, false, false, function(aState, v) { return raise(v);} );
@@ -2196,7 +2196,7 @@ PRIMITIVES['cons'] =
     new PrimProc('cons',
 		 2,
 		 false, false,
-		 function(f, r) {
+		 function(aState, f, r) {
 //		 	checkList(r, "cons", 2);
 		 	return types.cons(f, r);
 		 });
