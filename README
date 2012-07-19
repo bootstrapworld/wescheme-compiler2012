@@ -26,6 +26,36 @@ under the Docs link.
     http://planet.plt-scheme.org/package-source/dyoo/moby.plt/2/30/planet-docs/manual/index.html
 
 
+----------------------------------------------------------------------
+
+Test suite information: we need to revive the test suite to be easy to
+run.
+
+
+Goal: we should be able to run the entire test suite on a running
+instance of the browser evaluator.
+
+Tests are currently scattered among:
+
+  src/test/basic.ss
+  src/test/sample-moby-programs/*
+  js-runtime/tests/unit-tests/tests.js
+  js-runtime/tests/unit-tests/struct-tests.js
+  js-runtime/tests/programs/*
+  
+and they test the evaluator at two different levels: at the level of
+the high-level runtime and the low-level evaluator.  But we should be
+able to run all the tests with a single command.  Anything more
+complicated than that and we're doomed.
+
+I want to be able to say:
+
+   ./run-tests --port 8000
+
+and have an instance of the evaluator running, using the compiler
+server running on the port 8000, that systematically drives the test
+suite.
+
 
 [1] http://world.cs.brown.edu/
 

@@ -31,7 +31,7 @@
 
 (define-runtime-path javascript-main-template "../support/js/main.js.template")
 (define-runtime-path evaluator-path 
-  "compiler/mzscheme-vm/servlet-htdocs/evaluator.js")
+  "../servlet-htdocs/evaluator.js")
 
 
 

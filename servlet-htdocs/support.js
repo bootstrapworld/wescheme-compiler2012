@@ -55,13 +55,13 @@ var deepEqual = function (obj1, obj2) {
 	}
 
 	for (var i in obj1) {
-		if ( obj1.hasOwnProperty(i) ) {
+		if ( obj1.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
 			if ( !(obj2.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
 				return false;
 		}
 	}
 	for (var i in obj2) {
-		if ( obj2.hasOwnProperty(i) ) {
+		if ( obj2.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
 			if ( !(obj1.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
 				return false;
 		}
@@ -74,14 +74,12 @@ var assert = {};
 
 assert.equal = function(x, y) {
 	if (x !== y) {
-		alert('AssertError: ' + x + ' equal ' + y);
 		throw new Error('AssertError: ' + x + ' equal ' + y);
 	}
 }
 
 assert.deepEqual = function(x, y) {
 	if ( !deepEqual(x, y) ) {
-		alert('AssertError: ' + x + ' deepEqual ' + y);
 		throw new Error('AssertError: ' + x + ' deepEqual ' + y);
 	}
 }
@@ -89,22 +87,19 @@ assert.deepEqual = function(x, y) {
 
 assert.ok = function(x) {
 	if (!x) {
-		alert('AssertError: not ok: ' + x);
 		throw new Error('AssertError: not ok: ' + x );
 	}
 }
 
 
-// assert.throws = function(f) {
-// 	try {
-// 		f.apply(null, []);
-// 	} catch (e) {
-// 		return;
-// 	}
-// 	throw new Error('AssertError: Throw expected, none received.');
-// }
-
-
+assert.throwsExn = function(f) {
+	try {
+		f.apply(null, []);
+	} catch (e) {
+		return;
+	}
+	throw new Error('AssertError: Throw expected, none received.');
+}
 /*
     http://www.JSON.org/json2.js
     2010-03-20
@@ -8334,8 +8329,9 @@ var toWrittenString = function(x, cache) {
     if (typeof(x) == 'object') {
 	    if (cache.containsKey(x)) {
 		    return "...";
-	    }
-	    cache.put(x, true);
+	    } else {
+	        cache.put(x, true);
+            }
     }
 
     if (x == undefined || x == null) {
@@ -8751,7 +8747,7 @@ PrefixValue.prototype.addSlot = function(v) {
     }
 };
 
-PrefixValue.prototype.ref = function(n) {
+PrefixValue.prototype.ref = function(n, srcloc) {
     if (this.slots[n] instanceof GlobalBucket) {
 	if (this.definedMask[n]) {
 	    return this.slots[n].value;
@@ -9574,8 +9570,8 @@ State.prototype.setn = function(depth, v) {
 
 
 // Reference an element of a prefix on the value stack.
-State.prototype.refPrefix = function(depth, pos) {
-    var value = this.vstack[this.vstack.length-1 - depth].ref(pos);
+State.prototype.refPrefix = function(depth, pos, srcloc) {
+    var value = this.vstack[this.vstack.length-1 - depth].ref(pos, srcloc);
     if (value instanceof types.ModuleVariableRecord) {
 	if (this.invokedModules[value.resolvedModuleName]) {
 	    var moduleRecord =  this.invokedModules[value.resolvedModuleName];
@@ -9583,7 +9579,6 @@ State.prototype.refPrefix = function(depth, pos) {
 		!== 'undefined') {
 		return moduleRecord.providedValues[value.variableName];
 	    }
-	    
 	    throw types.schemeError(
 		types.exnFailContractVariable(
 		    "reference to an identifier before its definition: " +
@@ -20216,14 +20211,15 @@ Beg0RestControl.prototype.invoke = function(state) {
 //////////////////////////////////////////////////////////////////////
 // Toplevel variable lookup
 
-var ToplevelControl = function(depth, pos) {
+var ToplevelControl = function(depth, pos, loc) {
     this.depth = depth;
     this.pos = pos;
+    this.loc = loc;
     // FIXME: use isConst and isReady 
 };
 
 ToplevelControl.prototype.invoke = function(state) {
-    state.v = state.refPrefix(this.depth, this.pos);
+    state.v = state.refPrefix(this.depth, this.pos, this.loc);
 };
 
 
@@ -21389,7 +21385,8 @@ var loadApplyValues = function(state, nextCode) {
 
 var loadToplevel = function(state, nextCode) {
     return new control.ToplevelControl(nextCode['depth'],
-				       nextCode['pos']);
+				       nextCode['pos'],
+				       nextCode['loc']);
     // FIXME: use isConst and isReady
     //    isConst: nextCode['const?']
     //    isReady: nextCode['ready?'];

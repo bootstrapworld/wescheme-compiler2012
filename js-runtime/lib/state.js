@@ -242,8 +242,8 @@ State.prototype.setn = function(depth, v) {
 
 
 // Reference an element of a prefix on the value stack.
-State.prototype.refPrefix = function(depth, pos) {
-    var value = this.vstack[this.vstack.length-1 - depth].ref(pos);
+State.prototype.refPrefix = function(depth, pos, srcloc) {
+    var value = this.vstack[this.vstack.length-1 - depth].ref(pos, srcloc);
     if (value instanceof types.ModuleVariableRecord) {
 	if (this.invokedModules[value.resolvedModuleName]) {
 	    var moduleRecord =  this.invokedModules[value.resolvedModuleName];
@@ -251,7 +251,6 @@ State.prototype.refPrefix = function(depth, pos) {
 		!== 'undefined') {
 		return moduleRecord.providedValues[value.variableName];
 	    }
-	    
 	    throw types.schemeError(
 		types.exnFailContractVariable(
 		    "reference to an identifier before its definition: " +

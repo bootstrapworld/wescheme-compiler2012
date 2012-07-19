@@ -368,11 +368,12 @@
 ;; compile-toplevel: toplevel -> jsexp
 (define (compile-toplevel a-toplevel)
   (match a-toplevel
-    [(struct toplevel (depth pos const? ready?))
+    [(struct toplevel (depth pos const? ready? loc))
      (make-ht 'toplevel `((depth ,(make-int depth))
                           (pos ,(make-int pos))
                           (const? ,(make-lit const?))
-                          (ready? ,(make-lit ready?))))]))
+                          (ready? ,(make-lit ready?))
+			  (loc ,(make-lit loc))))]))
 
 
 ;; compile-application: application -> jsexp

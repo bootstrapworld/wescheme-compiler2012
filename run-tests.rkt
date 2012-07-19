@@ -1,13 +1,17 @@
 #!/usr/bin/env racket
 #lang racket/base
 
+;; This script is almost exactly like compiler-service, but is only meant
+;; to be used to run the test suite.
+
+
+
 (require web-server/servlet
          web-server/servlet-env
          scheme/runtime-path
          scheme/match
          scheme/list
          racket/cmdline
-         "find-paren-loc.rkt"
          ;; profile
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
@@ -20,6 +24,8 @@
          "src/collects/moby/runtime/stx.ss"
          "js-runtime/src/sexp.ss")
 
+(define-runtime-path test-htdocs "tests/test-htdocs")
+(define-runtime-path misc-runtime "js-runtime/lib")
 (define-runtime-path htdocs "servlet-htdocs")
 (define-runtime-path compat 
   "js-runtime/lib/compat")
@@ -49,15 +55,6 @@
             out)))
 
 
-;; has-program-text?: request -> boolean
-;; returns true if the request includes program text.
-(define (has-program-text? request)
-  (exists-binding? 'program (request-bindings request)))
-
-;; get-program-text: request -> string
-;; Returns the textual content of the program.
-(define (get-program-text request)
-  (extract-binding/single 'program (request-bindings request)))
 
 
 ;; Web service consuming programs and producing bytecode.
@@ -73,7 +70,7 @@
                    (string->symbol
                     (extract-binding/single 'name (request-bindings request)))]
                   [(program-text) 
-                   (get-program-text request)]
+                   (extract-binding/single 'program (request-bindings request))]
                   [(program-input-port) (open-input-string program-text)])
       ;; To support JSONP:
       (cond [(jsonp-request? request)
@@ -151,50 +148,24 @@
      (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")])
        (let ([payload
               (format "~a(~a);\n" (extract-binding/single 'on-error (request-bindings request))
-                      (jsexpr->json (exn->json-structured-output request exn)))])
+                      (jsexpr->json (exn->json-structured-output exn)))])
          (fprintf output-port "~a" payload)
          (close-output-port output-port)
          response))]))
      
-;;paren->loc: paren -> loc
-;;converts a paren to a loc
-(define (paren->loc p)
-  (match p
-    [(struct paren (text type paren-type p-start p-end))
-     (make-Loc p-start 0 0 (- p-end p-start) "<definitions>")]))
-
-
-;;paren->oppParen: paren -> string
-;;takes in a paren and outputs the opposite paren as a string
-(define (paren->oppParen p)
-  (match p
-    [(struct paren (text type paren-type p-start p-end))
-    (get-match text)]))
-     
-;;parenCheck takes as input a string, and outputs a boolean.
-;;The string that is input should be either ) } or ], which will return true. Else, false.
-(define (parenCheck paren)
-  (or (string=? paren ")")  
-      (string=? paren "}") 
-      (string=? paren "]")))
 
 
 ;; exn->structured-output: exception -> jsexpr
 ;; Given an exception, tries to get back a jsexpr-structured value that can be passed back to
 ;; the user.
-(define (exn->json-structured-output request an-exn)
+(define (exn->json-structured-output an-exn)
   (define (on-moby-failure-val failure-val)
     (make-hash `(("type" . "moby-failure")
                  ("dom-message" . 
                                 ,(dom->jsexpr 
-                                  (error-struct->dom-sexp failure-val #f)))
-                 ("structured-error" . ,(jsexpr->json (error-struct->jsexpr failure-val))))))
+                                  (error-struct->dom-sexp failure-val #f))))))
   (cond
     [(exn:fail:read? an-exn)
-     (define program (get-program-text request))
-     (define input-port (open-input-string program))
-     (define parens (paren-problem input-port))       ;;assuming that it is a paren problem 
-     
      (let ([translated-srclocs 
             (map srcloc->Loc (exn:fail:read-srclocs an-exn))])
        (on-moby-failure-val
@@ -204,27 +175,12 @@
                              ;; we'd better not die here.
                              (make-Loc 0 1 0 0 "")
                              (first translated-srclocs))
-                         (cond [(empty? parens)
-                                
-                                (make-moby-error-type:generic-read-error
-                                 (exn-message an-exn)
-                                 (if (empty? translated-srclocs) 
-                                     empty
-                                     (rest translated-srclocs)))]
-                               [else
-                                (make-Message "read: expected a "
-                                              (get-match (paren-text (first parens)))
-                                      
-                                              (if (parenCheck (get-match (paren-text (first parens))))    
-                                                  " to close "
-                                                  " to open "
-                                                  )
-
-                                              (make-ColoredPart (paren-text (first parens)) (paren->loc (first parens)))
-                                              (if (not (empty? (rest parens))) " but found a " "")
-                                              (if (not (empty? (rest parens))) (make-ColoredPart (paren-text (second parens)) (paren->loc (second parens))) "")
-                                              )]))))]
-
+                         (make-moby-error-type:generic-read-error
+                          (exn-message an-exn)
+                          (if (empty? translated-srclocs) 
+                              empty
+                              (rest translated-srclocs))))))]
+    
     [(moby-failure? an-exn)
      (on-moby-failure-val (moby-failure-val an-exn))]
     
@@ -299,7 +255,7 @@
                     #"application/octet-stream"
                     (list)
                     (list (string->bytes/utf-8 
-                           (jsexpr->json (exn->json-structured-output request exn)))))]))
+                           (jsexpr->json (exn->json-structured-output exn)))))]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -350,8 +306,8 @@
 
 (serve/servlet start 
                #:port port
-               #:servlet-path "/servlets/standalone.ss"
-               #:extra-files-paths (list htdocs compat easyxdm)
-               #:launch-browser? #f
+               #:servlet-path "/"
+               #:servlet-regexp #px"^/servlets/standalone.ss"
+               #:extra-files-paths (list test-htdocs misc-runtime htdocs compat easyxdm)
+               #:launch-browser? #t
                #:listen-ip #f)
-
