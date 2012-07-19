@@ -16090,8 +16090,9 @@ PRIMITIVES['hash-for-each'] =
 		 function(aState, ht, f) {
 		 	check(aState, ht, isHash, 'hash-for-each', 'hash', 1, arguments);
 			check(aState, f, isFunction, 'hash-for-each', 'procedure', 2, arguments);
-		 	
+		     
 		 	var keys = ht.hash.keys();
+
 		 	var hashForEachHelp = function(i) {
 		 		if (i >= keys.length) {
 					return types.VOID;
