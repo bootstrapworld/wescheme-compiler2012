@@ -696,7 +696,7 @@ PRIMITIVES['print-values'] =
     new PrimProc('print-values',
 		 0,
 		 true,
-		 true,
+		 false,
 		 function(aState, values) {
 		     var printed = false;
 		     for (var i = 0; i < values.length; i++) {
@@ -708,7 +708,7 @@ PRIMITIVES['print-values'] =
 		     if (printed) {
 			 aState.getDisplayHook()("\n");
 		     }
-		     aState.v = types.VOID;
+		     return types.VOID;
 		 });
 
 
@@ -837,16 +837,16 @@ PRIMITIVES['current-continuation-marks'] =
     // FIXME: should be CasePrimitive taking either 0 or 1 arguments
     new PrimProc('current-continuation-marks',
 		 0,
-		 false, true,
+		 false, false,
 		 function(aState) {
-		     aState.v = state.captureCurrentContinuationMarks(aState);
+		     return state.captureCurrentContinuationMarks(aState);
 		 });
 
 PRIMITIVES['continuation-mark-set->list'] = 
     new PrimProc('continuation-mark-set->list',
 		 2,
 		 false,
-		 true,
+		 false,
 		 function(aState, markSet, keyV) {
 		     check(aState, markSet, 
 			   types.isContinuationMarkSet, 
@@ -854,7 +854,7 @@ PRIMITIVES['continuation-mark-set->list'] =
 			   'continuation-mark-set',
 			   1,
 			   [markSet, keyV]);
-		     aState.v = types.list(markSet.ref(keyV));
+		     return types.list(markSet.ref(keyV));
 		 });
 
 
@@ -969,7 +969,7 @@ PRIMITIVES['make-struct-type'] =
 	     false,
 	     types.EMPTY,
 	     false],
-	    true,
+	    false,
 	    function(userArgs,
 		     aState,
 		     name,
@@ -1013,7 +1013,7 @@ PRIMITIVES['make-struct-type'] =
 					    autoV,
 					    jsGuard);
 
-		aState.v = getMakeStructTypeReturns(aStructType);
+		return getMakeStructTypeReturns(aStructType);
 	    });
 			    
 /*			   
@@ -1162,8 +1162,7 @@ PRIMITIVES['compose'] =
 		 	arrayEach(procs, function(p, i) {check(aState, p, isFunction, 'compose', 'procedure', i+1, procs);});
 
 			if (procs.length == 0) {
-				aState.v =  PRIMITIVES['values'];
-				return;
+				return PRIMITIVES['values'];
 			}
 			var funList = types.list(procs).reverse();
 			
@@ -1340,7 +1339,7 @@ PRIMITIVES['*'] =
 		     for(i = 0; i < args.length; i++) {
 			  result = jsnums.multiply(args[i], result);
 		     }
-		     return =  result;
+		     return result;
 		 });
 
 
@@ -6253,8 +6252,8 @@ var jsSelect = function(optionList, updateF, attribList) {
 };
 PRIMITIVES['js-select'] =
     new CasePrimitive('js-select',
-        [new PrimProc('js-select', 2, false, false, function(aState, optionList, updateF) { return jsSelect(optionList, updateF); })),
-         new PrimProc('js-select', 3, false, false, function(aState, optionList, updateF, attribList) { return jsSelect(optionList, updateF, attribList); })]);
+                      [new PrimProc('js-select', 2, false, false, function(aState, optionList, updateF) { return jsSelect(optionList, updateF); }),
+                       new PrimProc('js-select', 3, false, false, function(aState, optionList, updateF, attribList) { return jsSelect(optionList, updateF, attribList); })]);
 
 
 /*
@@ -6409,7 +6408,7 @@ PRIMITIVES['make-effect-type'] =
 	    'make-effect-type',
 	    4,
 	    [false],
-	    true,
+	    false,
 	    function(userArgs, aState, name, superType, fieldCnt, impl, guard) {
 		check(aState, name, isSymbol, 'make-effect-type', 'string', 1, userArgs);
 		check(aState, superType, function(x) { return x === false || types.isEffectType(x) },
@@ -6455,7 +6454,7 @@ PRIMITIVES['make-effect-type'] =
 //							handlerIndices_js,
 							jsGuard,
 							makeCaller(aState));
-		aState.v = getMakeStructTypeReturns(anEffectType);
+		return getMakeStructTypeReturns(anEffectType);
 	    });
 
 
@@ -6473,7 +6472,7 @@ PRIMITIVES['make-render-effect-type'] =
 	    'make-render-effect-type',
 	    4,
 	    [false],
-	    true,
+	    false,
 	    function(userArgs, aState, name, superType, fieldCnt, impl, guard) {
 		check(aState, name, isSymbol, 'make-render-effect-type', 'string', 1, userArgs);
 		check(aState, superType, function(x) { return x === false || types.isEffectType(x) },
@@ -6499,7 +6498,7 @@ PRIMITIVES['make-render-effect-type'] =
 								   fieldCnt,
 								   impl,
 								   jsGuard);
-		aState.v = getMakeStructTypeReturns(aRenderEffectType);
+		return getMakeStructTypeReturns(aRenderEffectType);
 	    });
 
 
@@ -6615,7 +6614,7 @@ PRIMITIVES['prim-js->scheme'] =
 				return types['float'](x.obj);
 			}
 			else if ( typeof(x.obj) === 'string' || typeof(x.obj) === 'boolean' ) {
-				return = x.obj;
+				return x.obj;
 			}
 			else if ( typeof(x.obj) === 'function' ) {
 				return new PrimProc('', 0, true, false, function(args) { return x.obj.apply(null, args); });
