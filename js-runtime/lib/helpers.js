@@ -251,7 +251,7 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		if(aState === undefined) {
+		if(aState === undefined || ) {
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {

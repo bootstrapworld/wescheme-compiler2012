@@ -835,7 +835,7 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		if(aState === undefined) {
+		if(aState === undefined || ) {
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
@@ -14389,39 +14389,46 @@ PRIMITIVES['/'] =
 		 	check(aState, x, isNumber, '/', 'number', 1, allArgs);
 		 	arrayEach(args, function(y, i) {check(aState, y, isNumber, '/', 'number', i+2, allArgs);});
 			
-		 	var positionStack = 
-        		state.captureCurrentContinuationMarks(aState).ref(
-            		types.symbol('moby-application-position-key'));
+		 	
+
+
+       		var handleError = function(step) {
+       			var positionStack = 
+        			state.captureCurrentContinuationMarks(aState).ref(
+            			types.symbol('moby-application-position-key'));
         
        
-       		var locationList = positionStack[positionStack.length - 1];
+       			var locationList = positionStack[positionStack.length - 1];
+       			var func = locationList.first();
+       			locationList = locationList.rest().rest();
+       			var i;
 
+       			for(i = 0; i< step; i++) {
+       				locationList = locationList.rest();
+       			}
+
+       			raise( types.incompleteExn(types.exnFailContractDivisionByZero, 
+												new types.Message([new types.ColoredPart('/', func),
+													": division by ",
+													new types.ColoredPart("zero", locationList.first())]),
+												[]) );
+
+       		}
 
 			if (args.length == 0) {
 				if ( jsnums.equals(x, 0) ) {
-					raise( types.incompleteExn(types.exnFailContractDivisionByZero, 
-												new types.Message([new types.ColoredPart('/', locationList.first()),
-													": division by ",
-													new types.ColoredPart("zero", locationList.rest().rest().first())]),
-												[]) );
+					handleError(0);
 				}	
 				return jsnums.divide(1, x);
 			}
 
 		 	var res = x;
-		 	var func = locationList.first();
-
-		 	locationList = locationList.rest().rest(); //move along to align args and locationList
+		 	
 		 	for (var i = 0; i < args.length; i++) {
 				if ( jsnums.equals(args[i], 0) ) {
-					raise( types.incompleteExn(types.exnFailContractDivisionByZero, 
-												new types.Message([new types.ColoredPart('/', func),
-													": division by ",
-													new types.ColoredPart("zero", locationList.first())]),
-												[]) );
+					handleError(i);
 				}	
 				res = jsnums.divide(res, args[i]);
-				locationList = locationList.rest();
 		 	}
 		 	return res;
 		 });
@@ -16030,7 +16037,7 @@ PRIMITIVES['hash-ref'] =
 			  	var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
 			  	raise( types.incompleteExn(types.exnFailContract, msg, []) );
 			  }
-			  aState.v = obj.hash.get(key);
+			  return obj.hash.get(key);
 		      }),
 	 new PrimProc('hash-ref',
 		      3,
@@ -16047,7 +16054,7 @@ PRIMITIVES['hash-ref'] =
 				}
 				return defaultVal;
 			  }
-		      }) ]);
+		      })]);
 
 PRIMITIVES['hash-remove!'] =
     new PrimProc('hash-remove',
