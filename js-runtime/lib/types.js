@@ -1874,11 +1874,11 @@ var defaultContinuationPrompt = new ContinuationPrompt();
 
 //////////////////////////////////////////////////////////////////////
 
-var PrimProc = function(name, numParams, isRest, usesState, impl) {
+var PrimProc = function(name, numParams, isRest, assignsToValueRegister, impl) {
     this.name = name;
     this.numParams = numParams;
     this.isRest = isRest;
-    this.usesState = usesState;
+    this.assignsToValueRegister = assignsToValueRegister;
     this.impl = impl;
 };
 

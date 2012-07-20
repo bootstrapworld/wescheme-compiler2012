@@ -680,7 +680,6 @@ var callPrimitiveProcedure = function(state, procValue, n, operandValues) {
 					 operandValues,
 					 n);
     var result = procValue.impl.apply(procValue.impl, args);
-    if (procValue.usesState) { result = state.v; }
     processPrimitiveResult(state, result, procValue);
 };
 
@@ -696,7 +695,7 @@ var processPrimitiveResult = function(state, result, procValue) {
     } else if (result instanceof INTERNAL_PAUSE) {
 	throw new PauseException(result.onPause);
     } else {
-	if (! procValue.usesState) {
+	if (! procValue.assignsToValueRegister) {
 	    state.v = result;
 	}
     }
@@ -1000,9 +999,7 @@ var prepareClosureArgumentsOnStack = function(state, procValue, operandValues, n
 var preparePrimitiveArguments = function(state, primitiveValue, operandValues, n) {
     var args = [];
 
-    if (primitiveValue.usesState) {
-	args.push(state);
-    }
+    args.push(state);
 
     if (n < primitiveValue.numParams) {
 //	throw new Error("arity error: expected at least "
