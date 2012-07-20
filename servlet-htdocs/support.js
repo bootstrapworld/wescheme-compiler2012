@@ -835,14 +835,14 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		if(aState === undefined || ) {
+		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
 			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
-	//HACK HACK HACK
+
 	var check = function(aState, x, f, functionName, typeName, position, args) {
 		if ( !f(x) ) {
 			throwCheckError(aState, 
@@ -14399,14 +14399,19 @@ PRIMITIVES['/'] =
         
        
        			var locationList = positionStack[positionStack.length - 1];
-       			var func = locationList.first();
-       			locationList = locationList.rest().rest();
-       			var i;
 
+       			console.log("locationList is ", locationList);
+
+       			var func = locationList.first();
+       			if (step !== -1){
+       				console.log("step is ", step);
+       				locationList = locationList.rest().rest();
+       			}
+       			else locationList = locationList.rest();
+       			var i;
        			for(i = 0; i< step; i++) {
        				locationList = locationList.rest();
        			}
-
        			raise( types.incompleteExn(types.exnFailContractDivisionByZero, 
 												new types.Message([new types.ColoredPart('/', func),
 													": division by ",
@@ -14417,7 +14422,7 @@ PRIMITIVES['/'] =
 
 			if (args.length == 0) {
 				if ( jsnums.equals(x, 0) ) {
-					handleError(0);
+					handleError(-1);
 				}	
 				return jsnums.divide(1, x);
 			}
