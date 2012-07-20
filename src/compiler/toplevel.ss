@@ -9,7 +9,7 @@
   ;; fixme: use the language to limit what symbols get in the toplevel.
   (local [(define base-constants-env
             (foldl (lambda (id env)
-                     (env-extend-constant env id "moby/toplevel"))
+                     (env-extend-constant env id "moby/toplevel" false))
                    empty-env
                    '(null
                      empty
@@ -28,7 +28,8 @@
                                  a-name 
                                  "moby/toplevel"
                                  arity 
-                                 vararity?))
+                                 vararity?
+                                 false))
           
           ;; The core environment includes bindings to Javascript-written functions.
           (define core-env

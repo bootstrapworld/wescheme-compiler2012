@@ -1739,23 +1739,24 @@ PrefixValue.prototype.addSlot = function(v) {
 
 PrefixValue.prototype.ref = function(n, srcloc) {
     if (this.slots[n] instanceof GlobalBucket) {
-	if (this.definedMask[n]) {
-	    return this.slots[n].value;
-	} else {
-	    helpers.raise(types.incompleteExn(
-			types.exnFailContractVariable,
-			"reference to an identifier before its definition: " + this.slots[n].name,
-			[this.slots[n].name]));
-	}
-    } else {
-	if (this.definedMask[n]) {
-	    return this.slots[n];
-	} else {
-	    helpers.raise(types.incompleteExn(
-			types.exnFailContractVariable,
-			"variable has not been defined",
-			[false]));
-	}
+    	if (this.definedMask[n]) {
+    	    return this.slots[n].value;
+    	} else {
+    	    helpers.raise(types.incompleteExn(
+    			types.exnFailContractVariable,
+    			new Message([new ColoredPart(this.slots[n].name, srcloc),
+                            ": this variable is not defined"]),
+    			[this.slots[n].name]));
+    	}
+        } else {
+    	if (this.definedMask[n]) {
+    	    return this.slots[n];
+    	} else {
+    	    helpers.raise(types.incompleteExn(
+    			types.exnFailContractVariable,
+    			"variable has not been defined",
+    			[false]));
+    	}
     }
 };
 

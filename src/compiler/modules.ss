@@ -31,6 +31,7 @@
                               1
                               false
                               (list)
+                              false
                               false)
                              
                              
@@ -40,6 +41,7 @@
                               2
                               false
                               (list)
+                              false
                               false)
                              
                              (make-binding:function
@@ -48,6 +50,7 @@
                               3
                               false
                               (list)
+                              false
                               false)
                              
                              
@@ -57,6 +60,7 @@
                               0
                               true
                               (list)
+                              false
                               false))))
 
 
@@ -69,6 +73,7 @@
                               2
                               false
                               (list PERMISSION:FOREIGN-FUNCTION-INTERFACE)
+                              false
                               false))))
 
 
@@ -80,7 +85,7 @@
   (local [;; bf: symbol path number boolean string -> binding:function
           ;; Helper function.
           (define (bf name module-path arity vararity?)
-            (make-binding:function name module-path arity vararity? empty false))
+            (make-binding:function name module-path arity vararity? empty false false))
           
           (define module-path 
             "moby/world-effects")]
@@ -92,6 +97,7 @@
                                 'make-effect:beep module-path 0
                                 false 
                                 (list PERMISSION:VIBRATE)
+                                false
                                 false)
                                (bf 'make-effect:play-dtmf-tone module-path 2
                                    false)
@@ -99,13 +105,14 @@
                                (make-binding:function 
                                 'make-effect:send-sms module-path 2 false 
                                 (list PERMISSION:SEND-SMS)
-                                false)                               
+                                false false)                               
                                (make-binding:function
                                 'make-effect:play-sound
                                 module-path
                                 1
                                 false 
                                 (list PERMISSION:INTERNET)
+                                false
                                 false)
                                (bf 'make-effect:stop-sound module-path 1
                                    false)
@@ -123,6 +130,7 @@
                                (make-binding:function 'make-effect:set-wake-lock module-path 1
                                                       false 
                                                       (list PERMISSION:WAKE-LOCK) 
+                                                      false
                                                       false)
                                (make-binding:function
                                 'make-effect:release-wake-lock
@@ -130,6 +138,7 @@
                                 0
                                 false   
                                 (list PERMISSION:WAKE-LOCK)
+                                false
                                 false)
                                (bf 'make-effect:pick-playlist module-path 1 false)
                                (bf 'make-effect:pick-random module-path 2 false)
@@ -140,7 +149,7 @@
   (local [;; bf: symbol path number boolean string -> binding:function
           ;; Helper function.
           (define (bf name module-path arity vararity?)
-            (make-binding:function name module-path arity vararity? empty false))
+            (make-binding:function name module-path arity vararity? empty false false))
           (define module-path 
             "moby/world-handlers")]
     (make-module-binding 'world-config
@@ -234,7 +243,8 @@
                                                       image-url
                                                       open-image-url))
                                        (list PERMISSION:INTERNET)
-                                       empty)))]
+                                       empty)
+                                   false))]
    (make-module-binding 'world
                          module-path
                          (append (module-binding-bindings world-handlers-module)
@@ -331,7 +341,7 @@
   (local [;; bf: symbol path number boolean string -> binding:function
           ;; Helper function.
           (define (bf name module-path arity vararity?)
-            (make-binding:function name module-path arity vararity? empty false))
+            (make-binding:function name module-path arity vararity? empty false false))
           (define module-path
             "bootstrap/bootstrap-teachpack")
           ]
@@ -339,7 +349,7 @@
                          module-path
                          (list 
                           (bf 'START module-path 14 false)
-                          (make-binding:constant 'test-frame module-path empty)
+                          (make-binding:constant 'test-frame module-path empty false)
                           (bf 'sq module-path 1 false)
                           (bf 'sine module-path 1 false)
                           (bf 'cosine module-path 1 false)
@@ -350,7 +360,7 @@
   (local [;; bf: symbol path number boolean string -> binding:function
           ;; Helper function.
           (define (bf name module-path arity vararity?)
-            (make-binding:function name module-path arity vararity? empty false))
+            (make-binding:function name module-path arity vararity? empty false false))
           (define module-path
             "bootstrap/cage-teachpack")]
     (make-module-binding 'bootstrap/cage-teachpack
@@ -363,7 +373,7 @@
   (local [;; bf: symbol path number boolean string -> binding:function
           ;; Helper function.
           (define (bf name module-path arity vararity?)
-            (make-binding:function name module-path arity vararity? empty false))
+            (make-binding:function name module-path arity vararity? empty false false))
           (define module-path
             "bootstrap/function-teachpack")
           ]
@@ -384,6 +394,7 @@
           (define (bf name module-path arity vararity?)
             (make-binding:function name module-path arity vararity?
                                    (list PERMISSION:LOCATION)
+                                   false
                                    false))]
     (make-module-binding 'location
                          module-path
@@ -403,7 +414,8 @@
           (define (bf name arity vararity?)
             (make-binding:function name module-path arity vararity?
                                    (list PERMISSION:TILT)
-                                   true))]
+                                   true
+                                   false))]
     (make-module-binding 'tilt
                          module-path
                          (list (bf 'get-x-acceleration 0 false)
@@ -429,6 +441,7 @@
                                                       0 
                                                       false 
                                                       (list PERMISSION:TELEPHONY)
+                                                      false
                                                       false)))))
 
 
@@ -446,6 +459,7 @@
                                                       1 
                                                       false 
                                                       (list PERMISSION:INTERNET)
+                                                      false
                                                       false)))))
 
 (define parser-module
@@ -459,6 +473,7 @@
                                                       1 
                                                       false 
                                                       empty
+                                                      false
                                                       false)))))
 
 (define jsworld-module
@@ -466,7 +481,7 @@
             "moby/jsworld")
           
           (define (bf name arity)
-            (make-binding:function name module-path arity true empty false))]
+            (make-binding:function name module-path arity true empty false false))]
     (make-module-binding 'jsworld
                          module-path
                          (list (make-binding:function 
@@ -475,6 +490,7 @@
                                 1
                                 true
                                 empty
+                                false
                                 false)
 			       (make-binding:function 
                                 'big-bang
@@ -482,6 +498,7 @@
                                 1
                                 true
                                 empty
+                                false
                                 false)
                                
                                (make-binding:function 'js-text 
@@ -489,6 +506,7 @@
                                                       1 
                                                       false 
                                                       empty
+                                                      false
                                                       false)
                                
                                
@@ -507,11 +525,13 @@
 						      4
 						      false
 						      (list)
-						      false)
+						      false
+                                                      false)
 
 
                                (make-binding:function 'js-img module-path 1 true 
                                                       (list PERMISSION:INTERNET) 
+                                                      false
                                                       false)
                                (bf 'js-node 1)
                                (bf 'js-select 2)))))

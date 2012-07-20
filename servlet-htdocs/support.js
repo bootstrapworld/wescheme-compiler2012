@@ -8749,23 +8749,24 @@ PrefixValue.prototype.addSlot = function(v) {
 
 PrefixValue.prototype.ref = function(n, srcloc) {
     if (this.slots[n] instanceof GlobalBucket) {
-	if (this.definedMask[n]) {
-	    return this.slots[n].value;
-	} else {
-	    helpers.raise(types.incompleteExn(
-			types.exnFailContractVariable,
-			"reference to an identifier before its definition: " + this.slots[n].name,
-			[this.slots[n].name]));
-	}
-    } else {
-	if (this.definedMask[n]) {
-	    return this.slots[n];
-	} else {
-	    helpers.raise(types.incompleteExn(
-			types.exnFailContractVariable,
-			"variable has not been defined",
-			[false]));
-	}
+    	if (this.definedMask[n]) {
+    	    return this.slots[n].value;
+    	} else {
+    	    helpers.raise(types.incompleteExn(
+    			types.exnFailContractVariable,
+    			new Message([new ColoredPart(this.slots[n].name, srcloc),
+                            ": this variable is not defined"]),
+    			[this.slots[n].name]));
+    	}
+        } else {
+    	if (this.definedMask[n]) {
+    	    return this.slots[n];
+    	} else {
+    	    helpers.raise(types.incompleteExn(
+    			types.exnFailContractVariable,
+    			"variable has not been defined",
+    			[false]));
+    	}
     }
 };
 
@@ -9573,19 +9574,18 @@ State.prototype.setn = function(depth, v) {
 State.prototype.refPrefix = function(depth, pos, srcloc) {
     var value = this.vstack[this.vstack.length-1 - depth].ref(pos, srcloc);
     if (value instanceof types.ModuleVariableRecord) {
-	if (this.invokedModules[value.resolvedModuleName]) {
-	    var moduleRecord =  this.invokedModules[value.resolvedModuleName];
-	    if (typeof(moduleRecord.providedValues[value.variableName]) 
-		!== 'undefined') {
-		return moduleRecord.providedValues[value.variableName];
-	    }
-	    throw types.schemeError(
-		types.exnFailContractVariable(
-		    "reference to an identifier before its definition: " +
-			value.variableName,
-		    false,
-		    value.variableName));
-	}
+    	if (this.invokedModules[value.resolvedModuleName]) {
+    	    var moduleRecord =  this.invokedModules[value.resolvedModuleName];
+    	    if (typeof(moduleRecord.providedValues[value.variableName]) !== 'undefined') {
+    		    return moduleRecord.providedValues[value.variableName];
+    	    }
+    	   throw types.schemeError(
+    		types.exnFailContractVariable(
+    		    "reference to an identifier before its definition: " +
+    			value.variableName,
+    		    false,
+    		    value.variableName)); 
+    	}
     }
     return value;
 };
@@ -15525,11 +15525,11 @@ PRIMITIVES['reverse'] =
 PRIMITIVES['map'] =
     new PrimProc('map',
 		 2,
-		 true, true,
-		 function(aState, f, lst, arglists) {
+		 true, false,
+		 function(f, lst, arglists) {
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
-		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
+		 	check(undefined, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(x, 'map', i+2, allArgs);});
 			checkAllSameLength(arglists, 'map', allArgs);
 			
@@ -15550,7 +15550,7 @@ PRIMITIVES['map'] =
 					});
 				return result;
 			}
-			aState.v =  mapHelp(f, arglists, types.EMPTY);
+			return mapHelp(f, arglists, types.EMPTY);
 		});
 
 
@@ -16001,21 +16001,21 @@ PRIMITIVES['hash-ref'] =
 	new CasePrimitive('hash-ref',
 	[new PrimProc('hash-ref',
 		      2,
-		      false, false,
-		      function(obj, key) {
+		      false, true,
+		      function(aState, obj, key) {
 			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if ( !obj.hash.containsKey(key) ) {
 			  	var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
 			  	raise( types.incompleteExn(types.exnFailContract, msg, []) );
 			  }
-			  return obj.hash.get(key);
+			  aState.v = obj.hash.get(key);
 		      }),
 	 new PrimProc('hash-ref',
 		      3,
 		      false, false,
 		      function(obj, key, defaultVal) {
-			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
+			  check(undefined, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if (obj.hash.containsKey(key)) {
 				return obj.hash.get(key);

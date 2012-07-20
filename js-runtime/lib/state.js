@@ -245,19 +245,18 @@ State.prototype.setn = function(depth, v) {
 State.prototype.refPrefix = function(depth, pos, srcloc) {
     var value = this.vstack[this.vstack.length-1 - depth].ref(pos, srcloc);
     if (value instanceof types.ModuleVariableRecord) {
-	if (this.invokedModules[value.resolvedModuleName]) {
-	    var moduleRecord =  this.invokedModules[value.resolvedModuleName];
-	    if (typeof(moduleRecord.providedValues[value.variableName]) 
-		!== 'undefined') {
-		return moduleRecord.providedValues[value.variableName];
-	    }
-	    throw types.schemeError(
-		types.exnFailContractVariable(
-		    "reference to an identifier before its definition: " +
-			value.variableName,
-		    false,
-		    value.variableName));
-	}
+    	if (this.invokedModules[value.resolvedModuleName]) {
+    	    var moduleRecord =  this.invokedModules[value.resolvedModuleName];
+    	    if (typeof(moduleRecord.providedValues[value.variableName]) !== 'undefined') {
+    		    return moduleRecord.providedValues[value.variableName];
+    	    }
+    	   throw types.schemeError(
+    		types.exnFailContractVariable(
+    		    "reference to an identifier before its definition: " +
+    			value.variableName,
+    		    false,
+    		    value.variableName)); 
+    	}
     }
     return value;
 };

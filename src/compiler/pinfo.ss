@@ -264,6 +264,7 @@
               (pinfo-current-module-path a-pinfo)
               (pinfo-declared-permissions a-pinfo)))
 
+
                                             
 ;; pinfo-accumulate-defined-binding: binding pinfo loc -> pinfo
 ;; Adds a new defined binding to a pinfo's set.
@@ -271,9 +272,21 @@
   (cond
     [(and (not (pinfo-allow-redefinition? a-pinfo))
           (is-redefinition? (binding-id a-binding) a-pinfo))
-     (raise (make-moby-error a-loc
-                             (make-moby-error-type:redefinition-not-allowed
-                              (binding-id a-binding))))]
+     
+     (let ((prev-binding (env-lookup (pinfo-env a-pinfo) (binding-id a-binding))))
+       (if (not (boolean? (binding-loc prev-binding))) 
+           (raise (make-moby-error a-loc
+                             (make-Message 
+                              (make-ColoredPart (symbol->string (binding-id a-binding)) a-loc) 
+                              ": this name has a "
+                              (make-ColoredPart "previous definition" (binding-loc prev-binding))
+                              " and cannot be re-defined")))
+           (raise (make-moby-error a-loc
+                             (make-Message 
+                              (make-ColoredPart (symbol->string (binding-id a-binding)) a-loc) 
+                              ": this name has a "
+                              "previous definition"
+                              " and cannot be re-defined")))))]
     [else
      (make-pinfo (env-extend (pinfo-env a-pinfo) a-binding)
                  (pinfo-modules a-pinfo)
@@ -294,7 +307,7 @@
                  (pinfo-declared-permissions a-pinfo))]))
 
 
-;; is-redefinition?: symbol -> boolean
+;; is-redefinition?: symbol pinfo -> boolean
 (define (is-redefinition? a-name a-pinfo)
   (binding? (env-lookup (pinfo-env a-pinfo) a-name)))
 
@@ -594,8 +607,8 @@
                   [pinfo-used-bindings (pinfo? . -> . (listof binding?))]
                   [pinfo-accumulate-module (module-binding? pinfo? . -> . pinfo?)]
                   [pinfo-accumulate-binding-use (binding? pinfo? . -> . pinfo?)]
-                  [pinfo-accumulate-defined-binding (binding? pinfo? Loc? . -> . pinfo?)]
-                  [pinfo-accumulate-defined-bindings ((listof binding?) pinfo? Loc? . -> . pinfo?)]
+                  [pinfo-accumulate-defined-binding (binding? pinfo? (or/c false/c Loc?) . -> . pinfo?)]
+                  [pinfo-accumulate-defined-bindings ((listof binding?) pinfo? (or/c false/c Loc?) . -> . pinfo?)]
                   [pinfo-accumulate-module-bindings ((listof binding?) pinfo? . -> . pinfo?)]
                   [pinfo-accumulate-shared-expression (expression? string? pinfo? . -> . pinfo?)]
                   [pinfo-accumulate-free-variable-use (symbol? pinfo? . -> . pinfo?)]

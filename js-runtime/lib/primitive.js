@@ -2553,11 +2553,11 @@ PRIMITIVES['reverse'] =
 PRIMITIVES['map'] =
     new PrimProc('map',
 		 2,
-		 true, true,
-		 function(aState, f, lst, arglists) {
+		 true, false,
+		 function(f, lst, arglists) {
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
-		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
+		 	check(undefined, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(x, 'map', i+2, allArgs);});
 			checkAllSameLength(arglists, 'map', allArgs);
 			
@@ -2578,7 +2578,7 @@ PRIMITIVES['map'] =
 					});
 				return result;
 			}
-			aState.v =  mapHelp(f, arglists, types.EMPTY);
+			return mapHelp(f, arglists, types.EMPTY);
 		});
 
 
@@ -3029,21 +3029,21 @@ PRIMITIVES['hash-ref'] =
 	new CasePrimitive('hash-ref',
 	[new PrimProc('hash-ref',
 		      2,
-		      false, false,
-		      function(obj, key) {
+		      false, true,
+		      function(aState, obj, key) {
 			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if ( !obj.hash.containsKey(key) ) {
 			  	var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
 			  	raise( types.incompleteExn(types.exnFailContract, msg, []) );
 			  }
-			  return obj.hash.get(key);
+			  aState.v = obj.hash.get(key);
 		      }),
 	 new PrimProc('hash-ref',
 		      3,
 		      false, false,
 		      function(obj, key, defaultVal) {
-			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
+			  check(undefined, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if (obj.hash.containsKey(key)) {
 				return obj.hash.get(key);
