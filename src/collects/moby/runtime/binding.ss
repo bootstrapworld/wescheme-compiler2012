@@ -72,7 +72,7 @@
     [(binding:structure? a-binding)
      (binding:structure-module-source a-binding)]))
 
-;; binding-loc: binding -> symbol
+;; binding-loc: binding -> or Loc false 
 ;; Given a binding, produces its location.
 (define (binding-loc a-binding)
   (cond

@@ -59,15 +59,14 @@
 
 
 
-;; env-extend-constant: env (module-path | #f) symbol string Loc-> env
-;; fixme: is this contract right?
+;; env-extend-constant: env symbol (module-path | #f) Loc-> env
 ;; Extends the environment with a new constant binding.
 (define (env-extend-constant an-env id module-source loc)
   (env-extend an-env
               (make-binding:constant id module-source empty loc)))
 
 
-;; env-extend-function: env symbol (or/c string false) number boolean? string? -> env
+;; env-extend-function: env symbol (or/c string false) number boolean? Loc -> env
 ;; Extends the environment with a new function binding
 (define (env-extend-function an-env id module-source min-arity var-arity? loc)
   (env-extend an-env
@@ -80,7 +79,7 @@
                                      loc)))
 
 
-;; env-lookup/context: identifier-stx -> (binding | false)
+;; env-lookup/context: env identifier-stx -> (binding | false)
 ;; Lookup an identifier, taking into account the context of the identifier.  If it has no existing
 ;; context, look at the given an-env.
 ;; In either case, either return a binding, or false.

@@ -274,7 +274,7 @@
           (is-redefinition? (binding-id a-binding) a-pinfo))
      
      (let ((prev-binding (env-lookup (pinfo-env a-pinfo) (binding-id a-binding))))
-       (if (not (boolean? (binding-loc prev-binding))) 
+       (if (Loc? (binding-loc prev-binding)) 
            (raise (make-moby-error a-loc
                              (make-Message 
                               (make-ColoredPart (symbol->string (binding-id a-binding)) a-loc) 

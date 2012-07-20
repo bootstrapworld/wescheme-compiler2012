@@ -310,8 +310,8 @@
             (foldl (lambda (arg-id env) 
                      (env-extend env (make-binding:constant (stx-e arg-id)
                                                             #f
-                                                            empty
-                                                            false)))   ;;link to λ???
+                                                            empty                                                            
+                                                            (stx-loc arg-id))))
                    env-1
                    args))]
     (expression-analyze-uses body pinfo env-2)))
