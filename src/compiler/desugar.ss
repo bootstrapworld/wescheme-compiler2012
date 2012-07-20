@@ -760,20 +760,23 @@
                               (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs) 
-                                                       ": Inside a "
-                                                       (make-MultiPart "cond branch" cond-branch-locs)    
-                                                       " expected a question and an answer, but "
-                                                       "both things"
-                                                       " were not found.")))]
+                                                       ": Expected a clause with a question and an answer, but found "
+                                                       (make-ColoredPart "something else" (stx-loc a-clause)))))]
+                             [(= (length (stx-e a-clause)) 0)
+                              (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
+                                                      (make-Message 
+                                                       (make-MultiPart "cond" expr-locs)  
+                                                       ": Expected a "
+                                                       (make-MultiPart "clause" cond-branch-locs)
+                                                       " with a question and an answer, but found an empty part")))]
                              [(< (length (stx-e a-clause)) 2)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs)  
-                                                       ": Inside a "
-                                                       (make-MultiPart "cond branch" cond-branch-locs)
-                                                       ", expected a question and an answer, but "
-                                                       (make-MultiPart "both" (map stx-loc (stx-e a-clause)))
-                                                       " were not found.")))]                 
+                                                       ": Expected a clause with a question and an answer, but found a "
+                                                       (make-MultiPart "clause" cond-branch-locs)
+                                                       " with only   "
+                                                       (make-MultiPart "one part" (map stx-loc (stx-e a-clause))))))]                 
                              [(> (length (stx-e a-clause)) 2)
                               
                               (raise (make-moby-error (stx-loc a-clause) ;;conditional-clause-too-many-elements
@@ -810,7 +813,7 @@
          (raise (make-moby-error (stx-loc an-expr)  ;;conditional-missing-question-answer
                                  (make-Message "After "
                                                (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
-                                               " expected at least one question-answer branch, but nothing was found")))]
+                                               " expected a clause, but nothing was found")))]
         [else
          (begin
            (check-clause-structures!)
