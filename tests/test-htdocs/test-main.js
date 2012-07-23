@@ -24,6 +24,7 @@ var runTests = function() {
 	    }
 	}
         $(document.body).append($("<span>").text(e.message).css("white-space", "pre"));
+        noteRedFailure();
     };
 
 
@@ -405,6 +406,8 @@ var runTests = function() {
         forEachK(
             function(programName, k) {
                 jQuery.ajax({url : "/" + programName}).done(function(programText) {
+                    $(document.body).append("Running: " + programName);
+                    $(document.body).append("<br/>");
                     evaluator.executeProgram(programName,
                                              programText,
                                              k,
@@ -414,7 +417,7 @@ var runTests = function() {
             },
             listOfPrograms,
             function() {
-                runRestOfTests();
+                runLowLevelEvaluatorTests();
             });
     });
                  
@@ -426,7 +429,7 @@ var runTests = function() {
 
 
 
-    var runRestOfTests = function() {
+    var runLowLevelEvaluatorTests = function() {
 
 
         //////////////////////////////////////////////////////////////////////
@@ -434,7 +437,7 @@ var runTests = function() {
 
 
 
-        sys.print("START TESTS\n\n");
+        sys.print("running low-level evaluator tests...\n\n");
 
         runRawTest("simple empty state",
 	           // Simple running should just terminate, and always be at the "stuck" state.
