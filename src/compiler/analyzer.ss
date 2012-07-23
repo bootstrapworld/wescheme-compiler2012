@@ -169,8 +169,8 @@
 
 ;; bf: symbol path number boolean string -> binding:function
 ;; Helper function.
-(define (bf name module-path arity vararity?)
-  (make-binding:function name module-path arity vararity? empty false))
+(define (bf name module-path arity vararity? loc)
+  (make-binding:function name module-path arity vararity? empty false loc))
 
 
 ;; definition-analyze-collect-definitions: definition program-info -> program-info
@@ -184,7 +184,8 @@
      (pinfo-accumulate-defined-binding (bf (stx-e id)
                                            false
                                            (length args) 
-                                           false)
+                                           false
+                                           (stx-loc id))
                                        pinfo
                                        (stx-loc id)))
    
@@ -193,14 +194,15 @@
      (pinfo-accumulate-defined-binding (make-binding:constant 
                                         (stx-e id)
                                         #f
-                                        empty)
+                                        empty
+                                        (stx-loc id))
                                        pinfo
                                        (stx-loc id)))
    
    ;; For structure definitions
    (lambda (id fields)
-     (pinfo-accumulate-defined-bindings (struct-definition-bindings (stx-e id) 
-                                                                    (map stx-e fields))
+     (pinfo-accumulate-defined-bindings (struct-definition-bindings id 
+                                                                    fields)
                                         pinfo
                                         (stx-loc id)))
    
@@ -211,7 +213,8 @@
                (make-binding:constant
                 (stx-e id)
                 #f
-                empty)
+                empty
+                (stx-loc id))
                pinfo
                (stx-loc id)))
             pinfo
@@ -220,24 +223,27 @@
 
 
 
-;; struct-definition-bindings: (listof symbol) -> (listof binding)
+;; struct-definition-bindings: stx (listof stx) -> (listof binding)
 ;; Makes the bindings for the identifiers introduced by a structure definition.
-(define (struct-definition-bindings id fields)
-  (local [(define constructor-id 
+(define (struct-definition-bindings id-stx fields-stx)
+  (local [(define id (stx-e id))
+          (define fields (map stx-e fields))
+          (define loc (stx-loc id-stx))
+          (define constructor-id 
             (string->symbol (string-append "make-" (symbol->string id))))
           (define constructor-binding 
-            (bf constructor-id false (length fields) false))
+            (bf constructor-id false (length fields) false loc))
           (define predicate-id
             (string->symbol (string-append (symbol->string id) "?")))
           (define predicate-binding
-            (bf predicate-id false 1 false))
+            (bf predicate-id false 1 false loc))
           (define selector-ids
             (map (lambda (f)
                    (string->symbol (string-append (symbol->string id) "-" (symbol->string f))))
                  fields))
           (define selector-bindings
             (map (lambda (sel-id) 
-                   (bf sel-id false 1 false))
+                   (bf sel-id false 1 false loc))
                  selector-ids))
           (define mutator-ids
             (map (lambda (f)
@@ -245,7 +251,7 @@
                  fields))
           (define mutator-bindings
             (map (lambda (mut-id)
-                   (bf mut-id false 2 false))
+                   (bf mut-id false 2 false loc))
                  mutator-ids))
           
           (define structure-binding
@@ -255,7 +261,8 @@
                                     constructor-id
                                     predicate-id
                                     selector-ids
-                                    mutator-ids))]
+                                    mutator-ids
+                                    loc))]
     (append (list structure-binding)
             (list constructor-binding)
             (list predicate-binding)
@@ -291,7 +298,7 @@
 (define (function-definition-analyze-uses fun args body pinfo)
   (local [(define env-1 (pinfo-env pinfo))
           (define env-2 
-            (env-extend env-1 (bf (stx-e fun) false (length args) false)))]
+            (env-extend env-1 (bf (stx-e fun) false (length args) false (stx-loc fun))))]
     (lambda-expression-analyze-uses args body (pinfo-update-env pinfo env-2))))
 
 
@@ -303,7 +310,8 @@
             (foldl (lambda (arg-id env) 
                      (env-extend env (make-binding:constant (stx-e arg-id)
                                                             #f
-                                                            empty)))
+                                                            empty                                                            
+                                                            (stx-loc arg-id))))
                    env-1
                    args))]
     (expression-analyze-uses body pinfo env-2)))

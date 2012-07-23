@@ -51,16 +51,18 @@
   (match a-binding
     [(struct binding:constant (name
                                module-source 
-                               permissions))
-     (make-binding:constant name a-source permissions)]
+                               permissions
+                               loc))
+     (make-binding:constant name a-source permissions loc)]
  
     [(struct binding:function (name
                                module-source
                                min-arity 
                                var-arity? 
                                permissions 
-                               cps?))
-     (make-binding:function name a-source min-arity var-arity? permissions cps?)]
+                               cps?
+                               loc))
+     (make-binding:function name a-source min-arity var-arity? permissions cps? loc)]
              
     
     [(struct binding:structure (name 
@@ -70,8 +72,9 @@
                                 predicate 
                                 accessors
                                 mutators
-                                permissions))
-     (make-binding:structure name a-source fields constructor predicate accessors mutators permissions)]))
+                                permissions
+                                loc))
+     (make-binding:structure name a-source fields constructor predicate accessors mutators permissions loc)]))
     
          
  ;; read-syntaxes: input-port #:name symbol -> (listof stx)

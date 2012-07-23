@@ -2867,14 +2867,18 @@ var runTests = function() {
 						       runtime.pair(2, 3),
 						       runtime.pair(3, 4),
 						       runtime.pair(4, 5)]));
+                
 		var state = new runtime.State();
+                
 		var ret = [];
-		state.pushControl(makeApplication(makePrimval('hash-for-each'),
-						  [makeConstant(hash1),
-						   makeConstant(new runtime.Primitive('', 2, false, false,
-								                      function(key, val) {
-								  	                  ret.push( helpers.format('~s - ~s!~n', [key, val]) );
-								                      }))]));
+                
+		state.pushControl(
+                    makeApplication(makePrimval('hash-for-each'),
+				    [makeConstant(hash1),
+				     makeConstant(new runtime.Primitive('', 2, false, false,
+								        function(aState, key, val) {
+								  	    ret.push( helpers.format('~s - ~s!~n', [key, val]) );
+								        }))]));
 		assert.deepEqual(run(state), runtime.VOID);
 		assert.deepEqual(ret, ['1 - 2!\n', '2 - 3!\n', '3 - 4!\n', '4 - 5!\n']);
 	    });
@@ -3324,23 +3328,23 @@ var runTests = function() {
 		assert.deepEqual(run(state), runtime.list([2, 3]));
 
 		var testProc = new types.CaseLambdaValue('',
-			                                 [new runtime.Primitive('', 1, false, false, function() {}),
-			                                  new runtime.Primitive('', 2, true, false, function() {})]);
+			                                 [new runtime.Primitive('', 1, false, false, function(aState) {}),
+			                                  new runtime.Primitive('', 2, true, false, function(aState) {})]);
 		state.pushControl(makeApplication(makePrimval('procedure-arity'), [makeConstant(testProc)]));
 		assert.deepEqual(run(state), runtime.list([1, runtime.arityAtLeast(2)]));
 
 		var testProc2 = new types.CaseLambdaValue('',
-			                                  [new runtime.Primitive('', 1, false, false, function() {}),
-			                                   new runtime.Primitive('', 0, true, false, function() {})]);
+			                                  [new runtime.Primitive('', 1, false, false, function(aState) {}),
+			                                   new runtime.Primitive('', 0, true, false, function(aState) {})]);
 		state.pushControl(makeApplication(makePrimval('procedure-arity'), [makeConstant(testProc2)]));
 		assert.deepEqual(run(state), runtime.arityAtLeast(0));
 
 		var testProc3 = new types.CaseLambdaValue('',
-			                                  [new runtime.Primitive('', 1, false, false, function() {}),
-			                                   new runtime.Primitive('', 4, true, false, function() {}),
-			                                   new runtime.Primitive('', 0, false, false, function() {}),
-			                                   new runtime.Primitive('', 3, true, false, function() {}),
-			                                   new runtime.Primitive('', 3, false, false, function() {})]);
+			                                  [new runtime.Primitive('', 1, false, false, function(aState) {}),
+			                                   new runtime.Primitive('', 4, true, false, function(aState) {}),
+			                                   new runtime.Primitive('', 0, false, false, function(aState) {}),
+			                                   new runtime.Primitive('', 3, true, false, function(aState) {}),
+			                                   new runtime.Primitive('', 3, false, false, function(aState) {})]);
 		state.pushControl(makeApplication(makePrimval('procedure-arity'), [makeConstant(testProc3)]));
 		assert.deepEqual(run(state), runtime.list([0, 1, runtime.arityAtLeast(3)]));
 	    });

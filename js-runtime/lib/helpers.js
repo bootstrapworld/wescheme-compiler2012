@@ -251,14 +251,20 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		if(aState === undefined) {
+
+		var positionStack = 
+        		state.captureCurrentContinuationMarks(aState).ref(
+            		types.symbol('moby-application-position-key'));
+        
+
+		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
 			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
-	//HACK HACK HACK
+
 	var check = function(aState, x, f, functionName, typeName, position, args) {
 		if ( !f(x) ) {
 			throwCheckError(aState, 

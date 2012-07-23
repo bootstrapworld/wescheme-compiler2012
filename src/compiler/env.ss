@@ -59,26 +59,27 @@
 
 
 
-;; env-extend-constant: env (module-path | #f) symbol string -> env
+;; env-extend-constant: env symbol (module-path | #f) Loc-> env
 ;; Extends the environment with a new constant binding.
-(define (env-extend-constant an-env id module-source)
+(define (env-extend-constant an-env id module-source loc)
   (env-extend an-env
-              (make-binding:constant id module-source empty)))
+              (make-binding:constant id module-source empty loc)))
 
 
-;; env-extend-function: env symbol (or/c string false) number boolean? string? -> env
+;; env-extend-function: env symbol (or/c string false) number boolean? Loc -> env
 ;; Extends the environment with a new function binding
-(define (env-extend-function an-env id module-source min-arity var-arity?)
+(define (env-extend-function an-env id module-source min-arity var-arity? loc)
   (env-extend an-env
               (make-binding:function id 
                                      module-source
                                      min-arity 
                                      var-arity?
                                      empty
-                                     false)))
+                                     false
+                                     loc)))
 
 
-;; env-lookup/context: identifier-stx -> (binding | false)
+;; env-lookup/context: env identifier-stx -> (binding | false)
 ;; Lookup an identifier, taking into account the context of the identifier.  If it has no existing
 ;; context, look at the given an-env.
 ;; In either case, either return a binding, or false.
@@ -106,6 +107,6 @@
  [env-contains? (env? symbol? . -> . boolean?)]
  [env-keys (env? . -> . (listof symbol?))]
  
- [env-extend-constant (env? symbol? (or/c module-path? false/c) . -> . env?)]
- [env-extend-function (env? symbol? (or/c module-path? false/c) number? boolean? 
+ [env-extend-constant (env? symbol? (or/c module-path? false/c) (or/c Loc? false/c) . -> . env?)]
+ [env-extend-function (env? symbol? (or/c module-path? false/c) number? boolean? (or/c Loc? false/c)
                        . -> . env?)])

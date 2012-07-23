@@ -1,13 +1,15 @@
 #lang s-exp "../../../private/restricted-runtime-scheme.ss"
 
-(require "permission-struct.ss")
+(require "permission-struct.ss"
+         "stx.ss")
 
 
 ;; binding:constant records an id and its associated Java implementation.
 (define-struct binding:constant
   (name 
    module-source
-   permissions))
+   permissions
+   loc))
 
 
 ;; Function bindings try to record more information about the toplevel-bound
@@ -20,6 +22,7 @@
    var-arity?     ;; is this vararity?
    permissions    ;; what permissions do we need to call this function?
    cps?           ;; does the function respect CPS calling conventions?
+   loc            ;;the location of the definition 
    ))
 
 
@@ -33,6 +36,7 @@
    accessors   ;; (listof symbol)
    mutators    ;; (listof symbol)
    permissions ;; (listof permission)
+   loc         ;;the location of the definition 
    ))
 
 
@@ -67,6 +71,17 @@
      (binding:function-module-source a-binding)]
     [(binding:structure? a-binding)
      (binding:structure-module-source a-binding)]))
+
+;; binding-loc: binding -> or Loc false 
+;; Given a binding, produces its location.
+(define (binding-loc a-binding)
+  (cond
+    [(binding:constant? a-binding)
+     (binding:constant-loc a-binding)]
+    [(binding:function? a-binding)
+     (binding:function-loc a-binding)]
+    [(binding:structure? a-binding)
+     (binding:structure-loc a-binding)]))
 
 
 ;; binding->sexp: binding -> s-expr
@@ -106,19 +121,21 @@
 ;;
 ;; FIXME: we need to do this defensively, as the bindings are from the outside
 ;; world.
-(define (sexp->binding an-sexp)
+(define (sexp->binding an-sexp loc)
   (case (first an-sexp)
     [(binding:constant)
      (cond [(= (length an-sexp) 4)
             (make-binding:constant (list-ref an-sexp 1)
                                    "something"
                                    (list-ref an-sexp 2)
-                                   (map string->permission (list-ref an-sexp 3)))]
+                                   (map string->permission (list-ref an-sexp 3))
+                                   loc)]
            [else            
             (make-binding:constant (list-ref an-sexp 1)
                                    (list-ref an-sexp 2)
                                    (list-ref an-sexp 3)
-                                   (map string->permission (list-ref an-sexp 4)))])]
+                                   (map string->permission (list-ref an-sexp 4))
+                                   loc)])]
     [(binding:function)
      (make-binding:function (list-ref an-sexp 1)
                             (list-ref an-sexp 2)
@@ -126,7 +143,8 @@
                             (list-ref an-sexp 4)
                             (list-ref an-sexp 5)
                             (map string->permission (list-ref an-sexp 6))
-                            (list-ref an-sexp 7))]
+                            (list-ref an-sexp 7)
+                            loc)]
     [(binding:structure)
      (cond [(= (length an-sexp) 7)
             (make-binding:structure (list-ref an-sexp 1)
@@ -135,7 +153,8 @@
                                     (list-ref an-sexp 3)
                                     (list-ref an-sexp 4)
                                     (list-ref an-sexp 5)
-                                    (list-ref an-sexp 6))]
+                                    (list-ref an-sexp 6)
+                                    loc)]
            [else
             (make-binding:structure (list-ref an-sexp 1)
                                     (list-ref an-sexp 2)
@@ -143,7 +162,8 @@
                                     (list-ref an-sexp 4)
                                     (list-ref an-sexp 5)
                                     (list-ref an-sexp 6)
-                                    (list-ref an-sexp 7))])]))
+                                    (list-ref an-sexp 7)
+                                    loc)])]))
 
 
 ;; localize-binding-to-module: binding module-name -> binding
@@ -157,7 +177,8 @@
       (format "plt._MODULES[~s].EXPORTS[~s]"
               (symbol->string a-module-name)
               (symbol->string (binding:constant-name a-binding)))
-      (binding:constant-permissions a-binding))]
+      (binding:constant-permissions a-binding)
+      (binding:constant-loc a-binding))]
     [(binding:function? a-binding)
      (make-binding:function
       (binding:function-name a-binding)
@@ -168,7 +189,8 @@
               (symbol->string a-module-name)
               (symbol->string (binding:function-name a-binding)))
       (binding:function-permissions a-binding)
-      (binding:function-cps? a-binding))]
+      (binding:function-cps? a-binding)
+      (binding:function-loc a-binding))]
     [(binding:structure? a-binding)
      (make-binding:structure
       (binding:structure-name a-binding)
@@ -177,7 +199,8 @@
       (binding:structure-constructor a-binding)
       (binding:structure-predicate a-binding)
       (binding:structure-accessors a-binding)
-      (binding:structure-mutators a-binding))]))
+      (binding:structure-mutators a-binding)
+      (binding:structure-loc a-binding))]))
 
 
 
@@ -218,14 +241,16 @@
     [(binding:constant? a-binding)
      (make-binding:constant (binding:constant-name a-binding)
                             (binding:constant-module-source a-binding)
-                            permissions)]
+                            permissions
+                            (binding:constant-loc a-binding))]
     [(binding:function? a-binding)
      (make-binding:function (binding:function-name a-binding)
                             (binding:function-module-source a-binding)
                             (binding:function-min-arity a-binding)
                             (binding:function-var-arity? a-binding)
                             permissions
-                            (binding:function-cps? a-binding))]
+                            (binding:function-cps? a-binding)
+                            (binding:function-loc a-binding))]
     [(binding:structure? a-binding)
      (make-binding:structure (binding:structure-name a-binding)
                              (binding:structure-module-source a-binding)
@@ -234,7 +259,8 @@
                              (binding:structure-predicate a-binding)
                              (binding:structure-accessors a-binding)
                              (binding:structure-mutators a-binding)
-                             permissions)]))
+                             permissions
+                             (binding:structure-loc a-binding))]))
 
 
 (define (binding-permissions a-binding)
@@ -255,14 +281,16 @@
  
  [struct binding:constant ([name symbol?]
                            [module-source (or/c false/c module-path?)]
-                           [permissions (listof permission?)])]
+                           [permissions (listof permission?)]
+                           [loc (or/c false/c Loc?)])]
  
  [struct binding:function ([name symbol?]
                            [module-source (or/c false/c module-path?)]
                            [min-arity natural-number/c]
                            [var-arity? boolean?]
                            [permissions (listof permission?)]
-                           [cps? boolean?])]
+                           [cps? boolean?]
+                           [loc (or/c false/c Loc?)])]
  
  [struct binding:structure ([name symbol?]
                             [module-source (or/c false/c module-path?)]
@@ -271,15 +299,17 @@
                             [predicate symbol?]
                             [accessors (listof symbol?)]
                             [mutators (listof symbol?)]
-                            [permissions (listof permission?)])]
+                            [permissions (listof permission?)]
+                            [loc (or/c false/c Loc?)])]
  
  
  [binding? (any/c . -> . boolean?)] 
  [binding-id (binding? . -> . symbol?)]
+ [binding-loc (binding? . -> . (or/c Loc? false/c))]
  [binding->sexp (binding? . -> . any)]
  [binding-update-permissions (binding? (listof permission?) . -> . binding?)]
  [binding-permissions (binding? . -> . binding?)]
- [sexp->binding (any/c . -> . binding?)]
+ [sexp->binding (any/c (or/c Loc? false/c) . -> . binding?)]
  
  [localize-binding-to-module (binding? module-name? . -> . binding?)]
  
