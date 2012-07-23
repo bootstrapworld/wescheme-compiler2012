@@ -684,4 +684,5 @@
 
 (provide/contract 
  [error-struct->dom-sexp (any/c (or/c false/c dom-parameters?) . -> . any)]
- [error-struct->jsexpr (any/c . -> . any)])
+ [error-struct->jsexpr (any/c . -> . any)]
+ [loc->jsexpr (Loc? . -> . any)])

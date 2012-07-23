@@ -188,7 +188,9 @@
                  ("dom-message" . 
                                 ,(dom->jsexpr 
                                   (error-struct->dom-sexp failure-val #f)))
-                 ("structured-error" . ,(jsexpr->json (error-struct->jsexpr failure-val))))))
+                 ("structured-error" .
+                  ,(jsexpr->json (make-hash `(("location" . ,(loc->jsexpr (moby-error-location failure-val)))
+                                              ("message" . ,(error-struct->jsexpr failure-val)))))))))
   (cond
     [(exn:fail:read? an-exn)
      (define program (get-program-text request))
