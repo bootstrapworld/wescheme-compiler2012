@@ -298,8 +298,8 @@ var runTests = function() {
 
     var runAsyncTests = function(i, k) {
         if (i < asyncTests.length) {
-            runAsyncTest(asyncTests.name,
-                         asyncTests.f,
+            runAsyncTest(asyncTests[i].name,
+                         asyncTests[i].f,
                          function() {
                              setTimeout(function() {
                                  runAsyncTests(i+1, k);
@@ -323,7 +323,7 @@ var runTests = function() {
             sys.print('\n');
         };
         try {
-            f(succeed, fail);
+            f(success, fail);
         } catch(e) {
             fail(e);
         }
@@ -3576,6 +3576,38 @@ var runTests = function() {
 	           function() {
 	               sys.print("!Not implemented yet!  ");
 	           });
+
+
+
+
+        queueAsyncTest("test-map", function(success, fail) {
+
+            var checkOutput = function(err) {
+                if (evaluator.getMessageFromExn(err) === 
+                    'add1: expects argument of type <number>, given: "1"') {
+                    success();
+                } else {
+                    fail();
+                }
+            };
+
+            var evaluator = new Evaluator(
+                { write: function(x) {  },
+                  writeError: function(err) { },
+                  compilationServletUrl: "/servlets/standalone.ss",
+                  scriptCompilationServletUrl: "/servlets/standalone.ss"
+                });
+            
+            evaluator.setRootLibraryPath("/collects");
+            evaluator.executeProgram('test-map',
+                                     '(map add1 (list "1"))',
+                                     checkOutput,
+                                     checkOutput);
+        });
+
+
+
+
 
 
 
