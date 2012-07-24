@@ -1194,7 +1194,7 @@
        (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:quote-too-many-elements
                                (make-Message (make-ColoredPart "quote" (stx-loc (first (stx-e expr))))
                                              ": expected a single argument, but found "
-                                             (make-MultiPart "more than one."))))]
+                                             (make-MultiPart "more than one." (map stx-loc (rest (stx-e expr)))))))]
       [else
        (list expr pinfo)])))
 

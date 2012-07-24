@@ -234,7 +234,7 @@
 
 (provide/contract
  [struct MultiPart ([text string?]
-                    [locs (listof Loc?)])])
+                    [locs (non-empty-listof Loc?)])])
 
 
 (provide/contract
