@@ -3593,7 +3593,7 @@ var runTests = function() {
 
             var checkOutput = function(err) {
                 if (evaluator.getMessageFromExn(err) === 
-                    'add1: expects argument of type <number>, given: "1"') {
+                    'add1: expects types number as 1st argument, given: "1"') {
                     success();
                 } else {
                     fail();
