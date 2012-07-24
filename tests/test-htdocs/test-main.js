@@ -2150,13 +2150,13 @@ var runTests = function() {
         runRawTest('floor, ceiling, and round',
 	           function() {
 		       testPrim('floor', id, [14], 14);
-		       testPrim('floor', runtime.float, [12.56], 12);
+		       testPrim('floor', runtime.float, [12.56], runtime.float(12));
 		       testPrim('ceiling', id, [13], 13);
-		       testPrim('ceiling', runtime.float, [12.23], 13);
-		       testPrim('ceiling', runtime.float, [12.00], 12);
+		       testPrim('ceiling', runtime.float, [12.23], runtime.float(13));
+		       testPrim('ceiling', runtime.float, [12.00], runtime.float(12.0));
 		       testPrim('round', id, [124], 124);
-		       testPrim('round', runtime.float, [12.432], 12);
-		       testPrim('round', runtime.float, [12.543], 13);
+		       testPrim('round', runtime.float, [12.432], runtime.float(12));
+		       testPrim('round', runtime.float, [12.543], runtime.float(13));
 	           });
 
 
@@ -2188,8 +2188,8 @@ var runTests = function() {
         runRawTest('sin, cos, tan, asin, acos, atan',
 	           function() {
 		       testPrim('sin', id, [20], runtime.float(Math.sin(20)));
-		       testPrim('sin', id, [0], runtime.float(0));
-		       testPrim('cos', id, [0], runtime.float(1));
+		       testPrim('sin', id, [0], 0);
+		       testPrim('cos', id, [0], 1);
 		       testPrim('cos', runtime.float, [43], runtime.float(Math.cos(43)));
 		       testPrim('tan', runtime.float, [0], runtime.float(0));
 		       testPrim('tan', id, [-30], runtime.float(Math.tan(-30)));
