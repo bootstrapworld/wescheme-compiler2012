@@ -39,15 +39,7 @@ var CasePrimitive = types.CasePrimitive;
 
 var id = function(x) { return x; };
 
-var sub1 = function(x) {
-	check(undefined, x, isNumber, 'sub1', 'number', 1, [x]);
-	return jsnums.subtract(x, 1);
-}
 
-var add1 = function(x) {
-	check(undefined, x, isNumber, 'add1', 'number', 1, [x]);
-	return jsnums.add(x, 1);
-}
 
 var callWithValues = function(f, vals) {
 	if (vals instanceof types.ValuesWrapper) {
@@ -1472,13 +1464,20 @@ PRIMITIVES['sub1'] =
     new PrimProc("sub1",
 		 1,
 		 false, false,
-		 function(aState, v){ return sub1(v); });
+		 function(aState, v){ 
+	             check(aState, v, isNumber, 'sub1', 'number', 1, arguments);
+	             return jsnums.subtract(v, 1);
+                 });
+
 
 PRIMITIVES['add1'] =
     new PrimProc("add1",
 		 1,
 		 false, false,
-		 function(aState, v) { return add1(v); });
+		 function(aState, v) {
+	             check(aState, v, isNumber, 'add1', 'number', 1, arguments);
+	             return jsnums.add(v, 1);
+                 });
 
 
 PRIMITIVES['<'] = 
@@ -2588,7 +2587,7 @@ PRIMITIVES['map'] =
 		 function(aState, f, lst, arglists) {
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
-		 	check(undefined, f, isFunction, 'map', 'procedure', 1, allArgs);
+		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(x, 'map', i+2, allArgs);});
 			checkAllSameLength(arglists, 'map', allArgs);
 			
