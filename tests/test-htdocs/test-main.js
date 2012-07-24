@@ -1704,17 +1704,17 @@ var runTests = function() {
 		       testPrim('format', runtime.string, ['hello'], runtime.string('hello'));
 		       testPrim('format', id, ['hello~n'], runtime.string('hello\n'));
 		       testPrim('format', id, [runtime.string('Test: ~a~nTest2: ~A~%'),
-					       runtime.char('A'),
-					       runtime.list([1, 2, 3])],
-			        runtime.string('Test: A\nTest2: (1 2 3)\n'));
+		          		       runtime.char('A'),
+		          		       runtime.list([1, 2, 3])],
+		                runtime.string('Test: A\nTest2: (list 1 2 3)\n'));
 		       testPrim('format', id, ['~s ~S ~a',
-					       runtime.char('b'),
-					       runtime.complex(0, 2),
-					       runtime.char('b')],
-			        runtime.string('#\\b 0+2i b'));
-
+		         		       runtime.char('b'),
+		         		       runtime.complex(0, 2),
+		         		       runtime.char('b')],
+		                runtime.string('#\\b 0+2i b'));
+                       
 		       testPrim('format', id, ['~s ~a', primitive.getPrimitive('+'), primitive.getPrimitive('format')],
-			        runtime.string('#<procedure:+> #<procedure:format>'));
+		                runtime.string('#<procedure:+> #<procedure:format>'));
 		       
 		       var box1 = types.box('junk');
 		       var box2 = types.box(box1);
@@ -1725,6 +1725,8 @@ var runTests = function() {
 		       box3.set(box3);
 		       testPrim('format', id, ['~a', box3], runtime.string('#&...'));
 	           });
+
+
 
 
         runRawTest('explode',
