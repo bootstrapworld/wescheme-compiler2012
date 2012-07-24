@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    $("#failure-index").css("display", "none");
     $(document.body).append("<p>This is the test suite.</p>");
     runTests();
 });
@@ -258,8 +259,16 @@ var runTests = function() {
 
     //////////////////////////////////////////////////////////////////////
 
+    var failureCount = 0;
+
     var noteRedFailure = function() {
-        $(document.body).append($("<span/>").text(" FAIL").css("color", "red"));
+        failureCount++;
+        $("#failure-index").css("display", "inline");
+        $("#failure-index").append($("<a/>").attr("href", "#fail" + failureCount)
+                                   .text("" + failureCount));
+        $(document.body).append($("<span/>").text(" FAIL")
+                                .css("color", "red").append(
+                                    $("<a/>").attr("name", "fail" + failureCount)));
         $(document.body).css("background-color", "#eeaaaa");
     };
 
@@ -2995,7 +3004,7 @@ var runTests = function() {
 		       state.pushControl(makeApplication(makePrimval('hash-for-each'),
 						         [makeConstant(hash1),
 						          makeConstant(new runtime.Primitive('', 2, false, false,
-								                             function(key, val) {
+								                             function(state, key, val) {
 								  	                         ret.push( helpers.format('~s - ~s!~n', [key, val]) );
 								                             }))]));
 		       assert.deepEqual(run(state), runtime.VOID);

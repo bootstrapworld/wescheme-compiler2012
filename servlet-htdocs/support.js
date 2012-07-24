@@ -18049,7 +18049,7 @@ PRIMITIVES['underlay/align'] =
 new PrimProc('underlay/align',
 			 4,
 			 true, false,
-			 function(placeX, placeY, img1, img2, restImages) {
+	     function(aState, placeX, placeY, img1, img2, restImages) {
 			 check(aState, placeX, isPlaceX, "underlay/align", "x-place", 1, arguments);
 			 check(aState, placeY, isPlaceY, "underlay/align", "y-place", 2, arguments);
 			 check(aState, img1, isImage, "underlay/align", "image", 3, arguments);
