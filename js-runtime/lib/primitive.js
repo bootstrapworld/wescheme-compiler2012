@@ -780,8 +780,8 @@ var defaultPrint =
 		 1, 
 		 false, 
 		 false, 
-		 function(state, x) {
-		     state.getPrintHook()(types.toWrittenString(x));
+		 function(aState, x) {
+		     aState.getPrintHook()(types.toWrittenString(x));
 		     return types.VOID;
 		 });
 
@@ -801,10 +801,10 @@ PRIMITIVES['write'] =
 PRIMITIVES['display'] = 
 	new CasePrimitive('display',
 		      [new PrimProc('display', 1, false, false, function(aState, x) {
-			  state.getDisplayHook()(types.toDisplayedString(x));
+			  aState.getDisplayHook()(types.toDisplayedString(x));
 			  return types.VOID;
 	}),
-			  new PrimProc('display', 2, false, true, function(state, x, port) {
+			  new PrimProc('display', 2, false, true, function(aState, x, port) {
 	     // FIXME
 	     throw types.internalError("display to a port not implemented yet.", false);
 	 } )]);
@@ -813,11 +813,11 @@ PRIMITIVES['display'] =
 
 PRIMITIVES['newline'] = 
 	new CasePrimitive('newline',
-	[new PrimProc('newline', 0, false, true, function(state) {
-	    state.getDisplayHook()('\n');
-	    state.v = types.VOID;
+                          [new PrimProc('newline', 0, false, true, function(aState) {
+	    aState.getDisplayHook()('\n');
+	    aState.v = types.VOID;
 	}),
-	 new PrimProc('newline', 1, false, false, function(state, port) {
+	 new PrimProc('newline', 1, false, false, function(aState, port) {
 	     // FIXME
 	     throw types.internalError("newline to a port not implemented yet.", false);
 	 } )]);
@@ -3555,10 +3555,10 @@ PRIMITIVES['format'] =
 
 PRIMITIVES['printf'] =
     new PrimProc('printf', 1, true, false,
-		 function(state, formatStr, args) {
+		 function(aState, formatStr, args) {
 		 	check(aState, formatStr, isString, 'printf', 'string', 1, [formatStr].concat(args));
 			var msg = helpers.format(formatStr, args, 'printf');
-			state.getDisplayHook()(msg);
+			aState.getDisplayHook()(msg);
 			return types.VOID;
 		 });
 
@@ -6313,10 +6313,10 @@ PRIMITIVES['js-big-bang'] =
     new PrimProc('js-big-bang',
 		 1,
 		 true, false,
-		 function(state, initW, handlers) {
+		 function(aState, initW, handlers) {
 		 	arrayEach(handlers,
 				function(x, i) {
-					check(undefined, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
+					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
 					      'js-big-bang', 'handler or attribute list', i+2);
 				});
 		     var unwrappedConfigs = 
@@ -6334,13 +6334,13 @@ PRIMITIVES['js-big-bang'] =
 			 var onBreak = function() {
 			     bigBangController.breaker();
 			 }
-			 state.addBreakRequestedListener(onBreak);
+			 aState.addBreakRequestedListener(onBreak);
 			 bigBangController = jsworld.MobyJsworld.bigBang(initW, 
-						     state.getToplevelNodeHook()(),
+						     aState.getToplevelNodeHook()(),
 						     unwrappedConfigs,
 						     caller, 
 						     function(v) {
-							 state.removeBreakRequestedListener(onBreak);
+							 aState.removeBreakRequestedListener(onBreak);
 							 restarter(v);
 						     });
 		     })
