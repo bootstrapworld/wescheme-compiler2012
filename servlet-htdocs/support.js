@@ -13603,7 +13603,8 @@ var check = helpers.check;
 
 var checkList = function(x, functionName, position, args) {
 	if ( !isList(x) ) {
-		helpers.throwCheckError([functionName,
+		helpers.throwCheckError(undefined,
+					[functionName,
 					 'list',
 					 helpers.ordinalize(position),
 					 x],
