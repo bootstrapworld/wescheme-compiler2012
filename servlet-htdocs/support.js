@@ -50,37 +50,53 @@ var debugF = function(f_s) {
 
 
 var deepEqual = function (obj1, obj2) {
-	if (obj1 === obj2) {
-		return true;
-	}
-
-	for (var i in obj1) {
-		if ( obj1.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
-			if ( !(obj2.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
-				return false;
-		}
-	}
-	for (var i in obj2) {
-		if ( obj2.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
-			if ( !(obj1.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
-				return false;
-		}
-	}
+    if (obj1 === obj2) {
 	return true;
+    }
+
+    var i;
+    if (obj1 instanceof Array) {
+        if (obj2 instanceof Array) {
+            for (i = 0; i < obj1.length; i++) {
+                if (! deepEqual(obj1[i], obj2[i])) { return false; }
+            }
+            return true;
+        } else {
+            return false;
+        }        
+    }
+
+    if (typeof(obj1) === 'string' || typeof(obj1) === 'number') {
+        return obj1 === obj2;
+    }
+
+    for (var i in obj1) {
+	if ( obj1.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
+	    if ( !(obj2.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
+		return false;
+	}
+    }
+    for (var i in obj2) {
+	if ( obj2.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
+	    if ( !(obj1.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
+		return false;
+	}
+    }
+    return true;
 }
 
 
 var assert = {};
 
 assert.equal = function(x, y) {
-	if (x !== y) {
-		throw new Error('AssertError: ' + x + ' equal ' + y);
-	}
+    if (x !== y) {
+	throw new Error('AssertError: ' + x + ' equal ' + y);
+    }
 }
 
 assert.deepEqual = function(x, y) {
 	if ( !deepEqual(x, y) ) {
-		throw new Error('AssertError: ' + x + ' deepEqual ' + y);
+	    throw new Error('AssertError: ' + x + ' deepEqual ' + y);
 	}
 }
 
