@@ -1936,7 +1936,7 @@ Message.prototype.toString = function() {
   var toReturn = [];
   var i;
   for(i = 0; i < this.args.length; i++) {
-      toReturn.push(''+args[i]);
+      toReturn.push(''+this.args[i]);
   }
   
   return toReturn.join("");
@@ -1970,8 +1970,8 @@ var isGradientPart = function(o) {
 GradientPart.prototype.toString = function() {
 	var i;
 	var resultArray = [];
-	for(i = 0; i < this.parts.length; i++){
-		resultArray.push(this.parts[i].text+'');
+	for(i = 0; i < this.coloredParts.length; i++){
+		resultArray.push(this.coloredParts[i].text+'');
 	}
 	return resultArray.join("");
 

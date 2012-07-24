@@ -56,6 +56,11 @@
 
 
 
+(define (url-matches? a-url text)
+  (for/or ([chunk (url-path a-url)])
+     (and (string? (path/param-path chunk))
+          (string=? (path/param-path chunk) text))))
+
 
 ;; Web service consuming programs and producing bytecode.
 (define (start request)
@@ -66,17 +71,35 @@
                         (handle-json-exception-response request exn)]
                        [else 
                         (handle-exception-response request exn)]))])
-    (let*-values ([(program-name)
-                   (string->symbol
-                    (extract-binding/single 'name (request-bindings request)))]
-                  [(program-text) 
-                   (extract-binding/single 'program (request-bindings request))]
-                  [(program-input-port) (open-input-string program-text)])
-      ;; To support JSONP:
-      (cond [(jsonp-request? request)
-             (handle-json-response request program-name program-input-port)]
-            [else
-             (handle-response request program-name program-input-port)]))))
+    (cond
+     [(url-matches? (request-uri request) "listTestPrograms")
+      (list-test-programs request)]
+     [else
+      (let*-values ([(program-name)
+                     (string->symbol
+                      (extract-binding/single 'name (request-bindings request)))]
+                    [(program-text) 
+                     (extract-binding/single 'program (request-bindings request))]
+                    [(program-input-port) (open-input-string program-text)])
+        ;; To support JSONP:
+        (cond [(jsonp-request? request)
+               (handle-json-response request program-name program-input-port)]
+              [else
+               (handle-response request program-name program-input-port)]))])))
+
+
+
+
+(define (list-test-programs request)
+  (let-values  ([(response output-port) (make-port-response #:mime-type #"text/plain")])
+    (define test-programs (for/list ([p (directory-list test-htdocs)]
+                                    #:when (regexp-match #px".scm$" (path->string p)))
+                             (path->string p)))
+    (write-json test-programs output-port)
+    (close-output-port output-port)
+    response))
+
+
 
 
 
@@ -307,7 +330,7 @@
 (serve/servlet start 
                #:port port
                #:servlet-path "/"
-               #:servlet-regexp #px"^/servlets/standalone.ss"
+               #:servlet-regexp #px"^/(servlets/standalone.ss|listTestPrograms)"
                #:extra-files-paths (list test-htdocs misc-runtime htdocs compat easyxdm)
                #:launch-browser? #t
                #:listen-ip #f)
