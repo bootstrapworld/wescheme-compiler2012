@@ -441,6 +441,8 @@
     (cond
       [(< (length (stx-e expr)) 3)
        (raise (make-moby-error (stx-loc expr)
+                               ;;(make-Message "hi!")))]
+                               
                                (make-moby-error-type:boolean-chain-too-few-elements
                                 (stx-e (first (stx-e expr))))))]
       [else

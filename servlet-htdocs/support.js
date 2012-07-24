@@ -897,7 +897,8 @@ var helpers = {};
 
 	var checkListOf = function(lst, f, functionName, typeName, position, args) {
 		if ( !isListOf(lst, f) ) {
-			helpers.throwCheckError([functionName,
+			helpers.throwCheckError(undefined,
+						[functionName,
 						 'list of ' + typeName,
 						 helpers.ordinalize(position),
 						 lst],
@@ -15562,7 +15563,7 @@ PRIMITIVES['map'] =
 		 function(aState, f, lst, arglists) {
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
-		 	check(undefined, f, isFunction, 'map', 'procedure', 1, allArgs);
+		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(x, 'map', i+2, allArgs);});
 			checkAllSameLength(arglists, 'map', allArgs);
 			

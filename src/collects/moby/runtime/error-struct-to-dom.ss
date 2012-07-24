@@ -287,19 +287,6 @@
                  maybe-dom-parameters)
                ".")]
        
-       ;;--------------------------------------------------------------------------
-       ;;the next two are also not used any more
-       [(moby-error-type:if-too-few-elements? error-type)
-        `(span ((class "Error-IfTooFewElements"))
-               "I expected a test, a consequence, and an alternative, "
-               "but I don't see all these three.")]
-       
-       [(moby-error-type:if-too-many-elements? error-type)
-        `(span ((class "Error-IfTooFewElements"))
-               "I expected only a test, a consequence, and an alternative, "
-               "but I see more than three of these.")]
-       
-       ;;---------------------------------------------------------------------------
        
        [(moby-error-type:begin-body-empty? error-type)
         `(span ((class "Error-BeginBodyEmpty"))
@@ -307,7 +294,7 @@
 
        [(moby-error-type:boolean-chain-too-few-elements? error-type)
         `(span ((class "Error-BooleanChainTooFewElements"))
-               "Inside a " 
+               "Inside an " 
                ,(scheme-value->dom-sexp (moby-error-type:boolean-chain-too-few-elements-id error-type)
                                         maybe-dom-parameters)
                ", expected to see at least two expressions, but both were not found.")]

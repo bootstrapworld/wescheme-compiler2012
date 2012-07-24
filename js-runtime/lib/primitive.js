@@ -620,7 +620,8 @@ var check = helpers.check;
 
 var checkList = function(x, functionName, position, args) {
 	if ( !isList(x) ) {
-		helpers.throwCheckError([functionName,
+		helpers.throwCheckError(undefined,
+					[functionName,
 					 'list',
 					 helpers.ordinalize(position),
 					 x],
@@ -2588,7 +2589,7 @@ PRIMITIVES['map'] =
 		 function(aState, f, lst, arglists) {
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
-		 	check(undefined, f, isFunction, 'map', 'procedure', 1, allArgs);
+		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(x, 'map', i+2, allArgs);});
 			checkAllSameLength(arglists, 'map', allArgs);
 			
