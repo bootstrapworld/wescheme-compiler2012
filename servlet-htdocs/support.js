@@ -13656,7 +13656,15 @@ PRIMITIVES['verify-boolean-branch-value'] =
 			     // FIXME: should throw structure
 			     // make-moby-error-type:branch-value-not-boolean
 			     // instead.
-			     throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
+			     //throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
+			     raise( types.incompleteExn(
+                                 types.exnFailContract,
+				 new types.Message(["the value ",
+						    new types.ColoredPart(types.toWrittenString(x),
+                                                                          aLoc),
+                                                    " is not a boolean value."
+						   ]),
+                                 []));
 			 }
 			 return x;
 		     })

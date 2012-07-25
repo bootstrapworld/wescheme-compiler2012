@@ -42,6 +42,15 @@
                   an-id
                   a-binding)))
 
+
+(define (loc->vec a-loc)
+  (vector (Loc-id a-loc)
+          (Loc-offset a-loc)
+          (Loc-line a-loc)
+          (Loc-column a-loc)
+          (Loc-span a-loc)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; make-default-syntax-env: -> syntax-env
@@ -393,12 +402,12 @@
                (define then-expr (second (first desugared-exprs+pinfo)))
                (define else-expr (third (first desugared-exprs+pinfo)))]
          (list (datum->stx #f 
-                           `(,if-symbol-stx ,test-expr
-                                            #;,(tag-application-operator/module 
+                           `(,if-symbol-stx #;,test-expr
+                                            ,(tag-application-operator/module 
                                                 (datum->stx #f 
                                                             `(verify-boolean-branch-value 
                                                               ,test-expr
-                                                              (quote ,(Loc->sexp (stx-loc test-expr))))
+                                                              (quote ,(loc->vec (stx-loc test-expr))))
                                                             (stx-loc test-expr))
                                                 'moby/runtime/kernel/misc)
                                             ,then-expr
