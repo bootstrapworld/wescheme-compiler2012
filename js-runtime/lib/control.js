@@ -569,10 +569,23 @@ var DefValuesInstallControl = function(ids) {
 
 DefValuesInstallControl.prototype.invoke = function(aState) {
     debug("DEF_VALUES");
+
+    var positionStack = state.captureCurrentContinuationMarks(aState).ref(types.symbol('moby-application-position-key'));   
+   
+    var locationList = positionStack[positionStack.length - 1];
+
     var bodyValue = aState.v;
+
+    var idLength = this.ids.length;
+
     if (bodyValue instanceof types.ValuesWrapper) {
 	if (this.ids.length !== bodyValue.elts.length) {
 	    helpers.raise(
+     //   types.incompleteExn(types.exnFailContract,
+        //    new types.Message([new types.ColoredPart("define-values", locationList.first()), 
+           //                     ": expected ", 
+                     //          [new types.MultiPart(idLength+'', 
+        //it is impossible to find the locationList
 		types.exnFailContractArity("define-values: expected " + this.ids.length 
 					   + " values, but received " + bodyValue.elts.length,
 					   state.captureCurrentContinuationMarks(aState)));
