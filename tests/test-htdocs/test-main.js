@@ -3641,6 +3641,11 @@ var runTests = function() {
                        "(and 'blah 4)",
                        "the value blah is not a boolean value.");
 
+        queueErrorTest("test non-boolean in 'and', second position",
+                       "(and #t 'not-bool)",
+                       "the value not-bool is not a boolean value.");
+
+
 
 
         //////////////////////////////////////////////////////////////////////
