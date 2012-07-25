@@ -13657,7 +13657,7 @@ PRIMITIVES['verify-boolean-branch-value'] =
 			     // make-moby-error-type:branch-value-not-boolean
 			     // instead.
 			     //throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
-			     raise( types.incompleteExn(
+			     raise(types.incompleteExn(
                                  types.exnFailContract,
 				 new types.Message(["the value ",
 						    new types.ColoredPart(types.toWrittenString(x),

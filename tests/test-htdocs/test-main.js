@@ -25,7 +25,7 @@ var runTests = function() {
 	    }
 	}
         $(document.body).append($("<span>").text(e.message).css("white-space", "pre"));
-        noteRedFailure();
+        noteRedFailure(e);
     };
 
 
@@ -261,12 +261,14 @@ var runTests = function() {
 
     var failureCount = 0;
 
-    var noteRedFailure = function() {
+    var noteRedFailure = function(e) {
         failureCount++;
         $("#failure-index").css("display", "inline");
         $("#failure-index").append($("<a/>").attr("href", "#fail" + failureCount)
                                    .text("" + failureCount));
-        $(document.body).append($("<span/>").text(" FAIL")
+        var failMsgText = " FAIL" + ((e.message || e || '') ? 
+                                  ": " + (e.message || e || '') : "");
+        $(document.body).append($("<span/>").text(failMsgText)
                                 .css("color", "red").append(
                                     $("<a/>").attr("name", "fail" + failureCount)));
         $(document.body).css("background-color", "#eeaaaa");
@@ -277,7 +279,7 @@ var runTests = function() {
         try {
 	    thunk();
         } catch(e) {
-            noteRedFailure();
+            noteRedFailure(e);
 	    sys.print("\n");
 	    sys.print(e);
             sys.print('\n');
@@ -326,10 +328,11 @@ var runTests = function() {
             k();
         };
         var fail = function(e) {
-            noteRedFailure();
+            noteRedFailure(e);
 	    sys.print("\n");
 	    sys.print(e);
             sys.print('\n');
+            k();
         };
         try {
             f(success, fail);
@@ -3589,33 +3592,58 @@ var runTests = function() {
 
 
 
-        queueAsyncTest("test-map", function(success, fail) {
 
-            var checkOutput = function(err) {
-                if (evaluator.getMessageFromExn(err) === 
-                    'add1: expects types number as 1st argument, given: "1"') {
-                    success();
-                } else {
-                    fail();
-                }
-            };
+        //////////////////////////////////////////////////////////////////////
 
-            var evaluator = new Evaluator(
-                { write: function(x) {  },
-                  writeError: function(err) { },
-                  compilationServletUrl: "/servlets/standalone.ss",
-                  scriptCompilationServletUrl: "/servlets/standalone.ss"
-                });
-            
-            evaluator.setRootLibraryPath("/collects");
-            evaluator.executeProgram('test-map',
-                                     '(map add1 (list "1"))',
-                                     checkOutput,
-                                     checkOutput);
-        });
+        var queueErrorTest = function(name, code, expectedErrorText) {
+            queueAsyncTest(name, function(success, fail) {
+                var checkOutput = function(err) {
+                    if ((evaluator.getMessageFromExn(err)+'') === expectedErrorText) {
+                        success();
+                    } else {
+                        fail("not the same: " + 
+                             types.toWrittenString(evaluator.getMessageFromExn(err)+'') + 
+                             ", " +
+                             types.toWrittenString(expectedErrorText));
+                    }
+                };
+                var evaluator = new Evaluator(
+                    { write: function(x) {  },
+                      writeError: function(err) { },
+                      compilationServletUrl: "/servlets/standalone.ss",
+                      scriptCompilationServletUrl: "/servlets/standalone.ss"
+                    });
+                
+                evaluator.setRootLibraryPath("/collects");
+                evaluator.executeProgram(name, code, checkOutput,  checkOutput);
+            });
+        };
+        
+
+        queueErrorTest("test type error in map",
+                       '(map add1 (list "1"))',
+                       'add1: expects types number as 1st argument, given: "1"');
+                       
+
+        queueErrorTest("test non-boolean in if test position",
+                       "(if 3 'four 'five)",
+                       'the value 3 is not a boolean value.');
+
+        queueErrorTest("test non-boolean in 'or'",
+                       "(or 42 4)",
+                       'the value 42 is not a boolean value.');
+
+        queueErrorTest("test non-boolean in 'or', second position",
+                       "(or #f 4)",
+                       'the value 4 is not a boolean value.');
+
+        queueErrorTest("test non-boolean in 'and'",
+                       "(and 'blah 4)",
+                       "the value blah is not a boolean value.");
 
 
 
+        //////////////////////////////////////////////////////////////////////
 
 
 
