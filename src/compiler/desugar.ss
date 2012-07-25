@@ -458,8 +458,12 @@
     (cond
       [(< (length (stx-e expr)) 3)
        (raise (make-moby-error (stx-loc expr)
-                               (make-moby-error-type:boolean-chain-too-few-elements
-                                (stx-e (first (stx-e expr))))))]
+                               (make-Message
+                                (make-ColoredPart (symbol->string (stx-e (first (stx-e expr)))) (stx-loc (first (stx-e expr))))
+                                ": expected at least two arguments, but found "
+                                (if (= (length (stx-e expr)) 2)
+                                    (make-ColoredPart "only one" (stx-loc (second (stx-e expr))))
+                                    "none"))))]     
       [else
        (local [(define boolean-chain-stx (first (stx-e expr)))
                (define exprs (rest (stx-e expr)))

@@ -50,8 +50,8 @@ var callWithValues = function(f, vals) {
 	}
 };
 
-var procedureArity = function(proc) {
-	check(undefined, proc, isFunction, 'procedure-arity', 'procedure', 1, [proc]);
+var procedureArity = function(aState, proc) {
+	check(aState, proc, isFunction, 'procedure-arity', 'procedure', 1, [proc]);
 			
 	var singleCaseArity = function(aCase) {
 		if (aCase instanceof types.ContinuationClosureValue) {
@@ -122,31 +122,7 @@ var normalizeArity = function(arity) {
 
 
 var procArityContains = helpers.procArityContains;
-//var procArityContains = function(n) {
-//	return function(proc) {
-//		if ( !isFunction(proc) ) {
-//			return false;
-//		}
-//
-//		var arity = procedureArity(proc);
-//		if ( !isList(arity) ) {
-//			arity = types.pair(arity, types.EMPTY);
-//		}
-//
-//		while ( !arity.isEmpty() ) {
-//			if ( isNumber(arity.first()) &&
-//			     n === arity.first() ) {
-//				return true;
-//			}
-//			else if ( types.isArityAtLeast(arity.first()) &&
-//				  types.arityValue( arity.first() ) <= n ) {
-//				return true;
-//			}
-//			arity = arity.rest();
-//		}
-//		return false;
-//	}
-//}
+
 
 var length = function(lst) {
 	checkList(lst, 'length', 1, [lst]);
@@ -194,7 +170,7 @@ var foldHelp = function(f, acc, args) {
 var quicksort = function(functionName) {
     return function(aState, initList, comp) {
 	checkList(initList, functionName, 1, arguments);
-	check(undefined, comp, procArityContains(2), functionName, 'procedure (arity 2)', 2, arguments);
+	check(aState, comp, procArityContains(2), functionName, 'procedure (arity 2)', 2, arguments);
 	
 	var quicksortHelp = function(aState, lst) {
 	    if ( lst.isEmpty() ) {
@@ -323,8 +299,8 @@ var onEvent = function(funName, inConfigName, numArgs) {
 
 var onEventBang = function(funName, inConfigName) {
     return function(aState, handler, effectHandler) {
-	check(undefined, handler, isFunction, funName, 'procedure', 1, arguments);
-	check(undefined, effectHandler, isFunction, funName, 'procedure', 2, arguments);
+	check(aState, handler, isFunction, funName, 'procedure', 1, arguments);
+	check(aState, effectHandler, isFunction, funName, 'procedure', 2, arguments);
 	return new (WorldConfigOption.extend({
 		    init: function() {
 			this._super(funName);
@@ -420,9 +396,9 @@ var getMakeStructTypeReturns = function(aStructType) {
 					 2,
 					 false,
 					 false,
-					 function(x, i) {
-						check(undefined, x, aStructType.predicate, name+'-ref', 'struct:'+name, 1, arguments);
-						check(undefined, i, isNatural, name+'-ref', 'non-negative exact integer', 2, arguments);
+					 function(aState, x, i) {
+						check(aState, x, aStructType.predicate, name+'-ref', 'struct:'+name, 1, arguments);
+						check(aState, i, isNatural, name+'-ref', 'non-negative exact integer', 2, arguments);
 
 						var numFields = aStructType.numberOfFields;
 						if ( jsnums.greaterThanOrEqual(i, numFields) ) {
@@ -437,9 +413,9 @@ var getMakeStructTypeReturns = function(aStructType) {
 					3,
 					false,
 					false,
-					function(x, i, v) {
-						check(undefined, x, aStructType.predicate, name+'-set!', 'struct:'+name, 1, arguments);
-						check(undefined, i, isNatural, name+'-set!', 'non-negative exact integer', 2, arguments);
+					function(aState, x, i, v) {
+						check(aState, x, aStructType.predicate, name+'-set!', 'struct:'+name, 1, arguments);
+						check(aState, i, isNatural, name+'-set!', 'non-negative exact integer', 2, arguments);
 
 						var numFields = aStructType.numberOfFields;
 						if ( jsnums.greaterThanOrEqual(i, numFields) ) {
@@ -612,7 +588,8 @@ var check = helpers.check;
 
 var checkList = function(x, functionName, position, args) {
 	if ( !isList(x) ) {
-		helpers.throwCheckError([functionName,
+		helpers.throwCheckError(undefined,
+					[functionName,
 					 'list',
 					 helpers.ordinalize(position),
 					 x],
@@ -1045,11 +1022,11 @@ PRIMITIVES['make-struct-field-accessor'] =
 	    2,
 	    [false],
 	    false,
-	    function(userArgs, accessor, fieldPos, fieldName) {
-	    	check(undefined, accessor, function(x) { return x instanceof StructAccessorProc && x.numParams > 1; },
+	    function(userArgs, aState, accessor, fieldPos, fieldName) {
+	    	check(aState, accessor, function(x) { return x instanceof StructAccessorProc && x.numParams > 1; },
 		      'make-struct-field-accessor', 'accessor procedure that requires a field index', 1, userArgs);
-		check(undefined, fieldPos, isNatural, 'make-struct-field-accessor', 'exact non-negative integer', 2, userArgs);
-		check(undefined, fieldName, function(x) { return x === false || isSymbol(x); },
+		check(aState, fieldPos, isNatural, 'make-struct-field-accessor', 'exact non-negative integer', 2, userArgs);
+		check(aState, fieldName, function(x) { return x === false || isSymbol(x); },
 		      'make-struct-field-accessor', 'symbol or #f', 3, userArgs);
 	    	var fixnumPos = jsnums.toFixnum(fieldPos);
 	    	var procName = accessor.typeName + '-'
@@ -1070,11 +1047,11 @@ PRIMITIVES['make-struct-field-mutator'] =
 	    2,
 	    [false],
 	    false,
-	    function(userArgs, mutator, fieldPos, fieldName) {
-	    	check(undefined, mutator, function(x) { return x instanceof StructMutatorProc && x.numParams > 1; },
+	    function(userArgs, aState, mutator, fieldPos, fieldName) {
+	    	check(aState, mutator, function(x) { return x instanceof StructMutatorProc && x.numParams > 1; },
 		      'make-struct-field-mutator', 'mutator procedure that requires a field index', 1, userArgs);
-		check(undefined, fieldPos, isNatural, 'make-struct-field-mutator', 'exact non-negative integer', 2, userArgs);
-		check(undefined, fieldName, function(x) { return x === false || isSymbol(x); },
+		check(aState, fieldPos, isNatural, 'make-struct-field-mutator', 'exact non-negative integer', 2, userArgs);
+		check(aState, fieldName, function(x) { return x === false || isSymbol(x); },
 		      'make-struct-field-mutator', 'symbol or #f', 3, userArgs);
 	    	var fixnumPos = jsnums.toFixnum(fieldPos);
 	    	var procName = mutator.typeName + '-'
@@ -1108,7 +1085,7 @@ PRIMITIVES['struct-mutator-procedure?'] =
 
 
 PRIMITIVES['procedure-arity'] = new PrimProc('procedure-arity', 1, false, false, 
-                                             function(aState, proc){ return procedureArity(proc); });
+                                             function(aState, proc){ return procedureArity(aState, proc); });
 
 
 PRIMITIVES['apply'] =
@@ -1230,7 +1207,7 @@ PRIMITIVES['random'] =
 		      function(aState) {return types['float'](Math.random());}),
 	 new PrimProc('random', 1, false, false,
 		      function(aState, n) {
-			  check(undefined, n, isNatural, 'random', 'non-negative exact integer', 1, arguments);
+			  check(aState, n, isNatural, 'random', 'non-negative exact integer', 1, arguments);
 			  return Math.floor(Math.random() * jsnums.toFixnum(n));
 		      }) ]);
 
@@ -1242,7 +1219,7 @@ PRIMITIVES['sleep'] =
 		      1,
 		      false, false,
 		      function(aState, secs) {
-			  check(undefined, secs, isNonNegativeReal, 'sleep', 'non-negative real number', 1);
+			  check(aState, secs, isNonNegativeReal, 'sleep', 'non-negative real number', 1);
 			  
 			  var millisecs = jsnums.toFixnum(jsnums.multiply(secs, 1000) );
 			  return PAUSE(function(restarter, caller) {
@@ -5350,7 +5327,7 @@ PRIMITIVES['image-url'] =
 		 1,
 		 false, false,
 		 function(aState, path) {
-		     check(undefined, path, isString, "image-url", "string", 1);
+		     check(aState, path, isString, "image-url", "string", 1);
 		     var originalPath = path.toString();
 		     if (aState.getImageProxyHook()) {
 			 path = (aState.getImageProxyHook() +
@@ -5465,12 +5442,12 @@ PRIMITIVES['image->color-list'] =
 
 
 // Note: this has to be done asynchonously.
-var colorListToImage = function(listOfColors, width, height, pinholeX, pinholeY) {
+var colorListToImage = function(aState, listOfColors, width, height, pinholeX, pinholeY) {
     checkListOf(listOfColors, isColor, 'color-list->image', 'image', 1);
-    check(undefined, width, isNatural, 'color-list->image', 'natural', 2);
-    check(undefined, height, isNatural, 'color-list->image', 'natural', 3);
-    check(undefined, pinholeX, isNatural, 'color-list->image', 'natural', 4);
-    check(undefined, pinholeY, isNatural, 'color-list->image', 'natural', 5);
+    check(aState, width, isNatural, 'color-list->image', 'natural', 2);
+    check(aState, height, isNatural, 'color-list->image', 'natural', 3);
+    check(aState, pinholeX, isNatural, 'color-list->image', 'natural', 4);
+    check(aState, pinholeY, isNatural, 'color-list->image', 'natural', 5);
     var canvas = world.Kernel.makeCanvas(jsnums.toFixnum(width),
 					 jsnums.toFixnum(height)),
     ctx = canvas.getContext("2d"),
@@ -5514,7 +5491,7 @@ PRIMITIVES['color-list->image'] =
 		 5,
 		 false, false,
                  function(aState, colorList, width, height, x, y){
-                     return colorListToImage(colorList, width, height, x, y);
+                     return colorListToImage(aState, colorList, width, height, x, y);
                  });
 
 
@@ -5523,7 +5500,7 @@ PRIMITIVES['color-list->bitmap'] =
 		 3,
 		 false, false,
 		 function(aState, colorList, width, height) {
-                     return colorListToImage(colorList, width, height, 0, 0);
+                     return colorListToImage(aState, colorList, width, height, 0, 0);
                  });
 
 
@@ -6169,8 +6146,8 @@ PRIMITIVES['js-div'] =
 
 var jsButtonBang = function(funName) {
     return function(aState, worldUpdateF, effectF, attribList) {
-		check(undefined, worldUpdateF, isFunction, funName, 'procedure', 1);
-		check(undefined, effectF, isFunction, funName, 'procedure', 2);
+		check(aState, worldUpdateF, isFunction, funName, 'procedure', 1);
+		check(aState, effectF, isFunction, funName, 'procedure', 2);
 		checkListOf(attribList, isAssocList, funName, '(listof X Y)', 3);
 
 		var attribs = attribList ? assocListToHash(attribList) : {};
