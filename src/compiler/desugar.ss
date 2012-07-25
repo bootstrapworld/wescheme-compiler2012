@@ -42,6 +42,15 @@
                   an-id
                   a-binding)))
 
+
+(define (loc->vec a-loc)
+  (vector (Loc-id a-loc)
+          (Loc-offset a-loc)
+          (Loc-line a-loc)
+          (Loc-column a-loc)
+          (Loc-span a-loc)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; make-default-syntax-env: -> syntax-env
@@ -375,6 +384,20 @@
                    (second desugared-exprs+pinfo)))])))
 
 
+
+
+;; force-boolean-context: stx -> stx
+;; Force a boolean runtime test on the given expression.
+(define (force-boolean-context bool-expr)
+  (tag-application-operator/module 
+   (datum->stx #f 
+               `(verify-boolean-branch-value 
+                 ,bool-expr
+                 (quote ,(loc->vec (stx-loc bool-expr))))
+               (stx-loc bool-expr))
+   'moby/runtime/kernel/misc))
+
+
 ;; (if test-expr then-expr else-expr)
 ;; desugar-if: stx pinfo -> (list stx pinfo)
 ;; Desugars the conditional, ensuring that the boolean test is of boolean value.
@@ -393,14 +416,8 @@
                (define then-expr (second (first desugared-exprs+pinfo)))
                (define else-expr (third (first desugared-exprs+pinfo)))]
          (list (datum->stx #f 
-                           `(,if-symbol-stx ,test-expr
-                                            #;,(tag-application-operator/module 
-                                                (datum->stx #f 
-                                                            `(verify-boolean-branch-value 
-                                                              ,test-expr
-                                                              (quote ,(Loc->sexp (stx-loc test-expr))))
-                                                            (stx-loc test-expr))
-                                                'moby/runtime/kernel/misc)
+                           `(,if-symbol-stx #;,test-expr
+                                            ,(force-boolean-context test-expr)
                                             ,then-expr
                                             ,else-expr)
                            (stx-loc expr))
@@ -466,13 +483,13 @@
 (define (desugar-and exprs loc)
   (cond [(= (length exprs) 2)
          (datum->stx #f 
-                     `(if ,(first exprs) 
-                          ,(second exprs) 
+                     `(if ,(force-boolean-context (first exprs))
+                          ,(force-boolean-context (second exprs))
                           #f) 
                      loc)]
         [else
          (datum->stx #f 
-                     `(if ,(first exprs) 
+                     `(if ,(force-boolean-context (first exprs))
                           ,(desugar-and (rest exprs) loc) 
                           #f) 
                      loc)]))
@@ -484,17 +501,18 @@
            (desugar-expression/expr+pinfo
             (list (datum->stx #f 
                               `(let ([,(second pinfo+tmp-sym) 
-                                      ,(first exprs)])
+                                      ,(force-boolean-context (first exprs))])
                                  (if ,(second pinfo+tmp-sym)
                                      ,(second pinfo+tmp-sym)
-                                     ,(second exprs)))
+                                     ,(force-boolean-context (second exprs))))
                               loc)
                   (first pinfo+tmp-sym))))]
         [else
          (local [(define pinfo+tmp-sym (pinfo-gensym pinfo 'tmp))
                  (define rest-exprs+pinfo (desugar-or (rest exprs) loc (first pinfo+tmp-sym)))]
            (desugar-expression/expr+pinfo
-            (list (datum->stx #f `(let ([,(second pinfo+tmp-sym) ,(first exprs)])
+            (list (datum->stx #f `(let ([,(second pinfo+tmp-sym)
+                                         ,(force-boolean-context (first exprs))])
                                     (if ,(second pinfo+tmp-sym)
                                         ,(second pinfo+tmp-sym)
                                         ,(first rest-exprs+pinfo)))
