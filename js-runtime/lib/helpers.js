@@ -175,6 +175,7 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
+       		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
 				var locs = locations;
@@ -211,10 +212,8 @@ var helpers = {};
 				return locs.first();
 			}
 
-
-			if(args){
-				var argColoredParts = getArgColoredParts(locationList.rest());
-
+			var argColoredParts = getArgColoredParts(locationList.rest());
+			if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),

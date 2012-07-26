@@ -1404,12 +1404,9 @@ PRIMITIVES['/'] =
         
        
        			var locationList = positionStack[positionStack.length - 1];
-
-       			console.log("locationList is ", locationList);
-
        			var func = locationList.first();
+       			
        			if (step !== -1){
-       				console.log("step is ", step);
        				locationList = locationList.rest().rest();
        			}
        			else locationList = locationList.rest();

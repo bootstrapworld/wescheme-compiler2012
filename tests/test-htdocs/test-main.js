@@ -3622,7 +3622,7 @@ var runTests = function() {
 
         queueErrorTest("test type error in map",
                        '(map add1 (list "1"))',
-                       'add1: expects types number as 1st argument, given: "1"');
+                       'add1: expects type number as 1st argument, given: "1"');
                        
 
         queueErrorTest("test non-boolean in if test position",
