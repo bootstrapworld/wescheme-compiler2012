@@ -3645,6 +3645,14 @@ var runTests = function() {
                        "(and #t 'not-bool)",
                        "the value not-bool is not a boolean value.");
 
+        queueErrorTest("test bad inputs to big-bang",
+                       "(big-bang 1 on-tick add1)",
+                       "big-bang: expects type handler or attribute list as 2nd argument, given: #<procedure:on-tick>");
+
+        queueErrorTest("too many arguments",
+                       "(define (f x) (* x x)) (f 3 4)",
+                       "f: expects 1 argument, given 2: 3 4");
+
 
 
 
