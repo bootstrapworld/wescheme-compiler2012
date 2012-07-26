@@ -1405,7 +1405,7 @@ PRIMITIVES['/'] =
        
        			var locationList = positionStack[positionStack.length - 1];
        			var func = locationList.first();
-       			
+
        			if (step !== -1){
        				locationList = locationList.rest().rest();
        			}
@@ -6298,7 +6298,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'js-big-bang', 'handler or attribute list', i+2);
+					      'js-big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {

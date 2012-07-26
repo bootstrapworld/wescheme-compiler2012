@@ -212,8 +212,13 @@ var helpers = {};
 				return locs.first();
 			}
 
+	//		console.log("args: ", args);
+	//		console.log("locs passed in: ", locationList.rest());
 			var argColoredParts = getArgColoredParts(locationList.rest());
-			if(argColoredParts.length > 0){
+	//		console.log(argColoredParts);
+			if(args) { 
+				var argColoredParts = getArgColoredParts(locationList.rest()); 
+				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -227,20 +232,20 @@ var helpers = {};
 							   		new types.GradientPart(argColoredParts)
 							   	]),
 							   []) );
+				}
 			}
-			else {
-				raise( types.incompleteExn(types.exnFailContract,
-							   new types.Message([
-							   		new types.ColoredPart(details.functionName, locationList.first()),
-							   		": expects type ",
-							   		details.typeName,
-							   		" as ",
-							   		details.ordinalPosition, 
-							   		" argument, given: ",
-							   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
-							   	]),
-							   []) );
-			}
+			
+			raise( types.incompleteExn(types.exnFailContract,
+						   new types.Message([
+						   		new types.ColoredPart(details.functionName, locationList.first()),
+						   		": expects type ",
+						   		details.typeName,
+						   		" as ",
+						   		details.ordinalPosition, 
+						   		" argument, given: ",
+						   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
+						   	]),
+						   []) );
 
 
 	};
