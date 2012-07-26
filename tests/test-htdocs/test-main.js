@@ -3619,6 +3619,53 @@ var runTests = function() {
                 evaluator.executeProgram(name, code, checkOutput,  checkOutput);
             });
         };
+
+
+        var queueTest = function(name, code, expectedText) {
+            queueAsyncTest(name, function(success, fail) {
+                var checkOutput = function(err) {
+                    if (outputSpan.text() === expectedText) {
+                        success();
+                    } else {
+                        fail("not the same: " + 
+                             types.toWrittenString(outputSpan.text()) + 
+                             ", " +
+                             types.toWrittenString(expectedText));
+                    }
+                };
+                var outputSpan = jQuery("<span/>");
+                var evaluator = new Evaluator(
+                    { write: function(x) { outputSpan.append(x); },
+                      writeError: function(err) { outputSpan.append(evaluator.getMessageFromExn(err)+''); },
+                      compilationServletUrl: "/servlets/standalone.ss",
+                      scriptCompilationServletUrl: "/servlets/standalone.ss"
+                    });
+                
+                evaluator.setRootLibraryPath("/collects");
+                evaluator.executeProgram(name, code, checkOutput,  checkOutput);
+            });
+        };
+
+
+        queueTest("test simple function application program",
+                  "(define (double x) (+ x x)) (double 25)",
+                  "50");
+
+        queueTest("test simple function application program 2",
+                  "(define (double x) (+ x x)) (double (double 25))",
+                  "100");
+
+        queueErrorTest("test mis-application 1",
+                       "(define (double x) (+ x x)) (double double)",
+                       "+: expects type number as 1st argument, given: #<procedure:double>; other arguments were: #<procedure:double> ");
+
+        queueErrorTest("test mis-application 2",
+                       "(define (double x) (+ x x)) (double double 25)",
+                       "double: expects 1 argument, given 2: #<procedure:double> 25");
+
+
+
+
         
 
         queueErrorTest("test type error in map",
