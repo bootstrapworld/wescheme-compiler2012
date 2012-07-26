@@ -812,10 +812,8 @@ var helpers = {};
 				return locs.first();
 			}
 
-			//console.log("args: ", args);
-			//console.log("locs passed in: ", locationList.rest());
-			var argColoredParts = getArgColoredParts(locationList.rest());
-			//console.log("argColoredParts is ",argColoredParts);
+			console.log("args: ", args);
+			console.log("locs passed in: ", locationList.rest());
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -862,7 +860,7 @@ var helpers = {};
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
-		//console.log("colored check error");
+			//console.log("colored check error");
 			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
@@ -882,21 +880,25 @@ var helpers = {};
 	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
 		window.huh = args;
 
-		//check to ensure last thing is an array???
-		var flattenedArgs = [];
-		var i;
-		for(i = 0; i < (args.length - 1); i++) {
-			flattenedArgs.push(args[i]);
-		}
-		
-		var wtf1 = flattenedArgs;
-		var wtf2 = args[args.length -1];
-		var passOn = wtf1.concat(wtf2);
-		//the angry variable names are because flattenedArgs = flattenedArgs.concat(args[args.length - 1]) doesn't work
-		console.log("passing on ", passOn);
-		check(aState, x, f, functionName, typeName, position, passOn);
-	};
+		//check to ensure last thing is an array
+		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
+			var flattenedArgs = [];
+			var i;
+			for(i = 0; i < (args.length - 1); i++) {
+				flattenedArgs.push(args[i]);
+			}
 
+			//the angry variable names are because flattenedArgs = flattenedArgs.concat(args[args.length - 1]) doesn't work
+			var wtf1 = flattenedArgs;
+			var wtf2 = args[args.length -1];
+			var passOn = wtf1.concat(wtf2);
+
+			check(aState, x, f, functionName, typeName, position, passOn);
+		}
+		else {
+			check(aState, x, f, functionName, typeName, position, args);
+		}
+	}
     var isList = function(x) {
         var tortoise, hare;
         tortoise = hare = x;
@@ -18001,10 +18003,10 @@ new PrimProc('overlay/align',
 			 4,
 			 true, false,
 			 function(aState, placeX, placeY, img1, img2, restImages) {
-			 check(aState, placeX, isPlaceX, "overlay/align", "x-place", 1, arguments);
-			 check(aState, placeY, isPlaceY, "overlay/align", "y-place", 2, arguments);
-			 check(aState, img1, isImage, "overlay/align", "image", 3, arguments);
-			 check(aState, img2, isImage, "overlay/align", "image", 4, arguments);
+			 checkVarArity(aState, placeX, isPlaceX, "overlay/align", "x-place", 1, arguments);
+			 checkVarArity(aState, placeY, isPlaceY, "overlay/align", "y-place", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "overlay/align", "image", 3, arguments);
+			 checkVarArity(aState, img2, isImage, "overlay/align", "image", 4, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "overlay/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -18026,8 +18028,8 @@ PRIMITIVES['underlay'] =
 		 2,
 		 true, false,
 		 function(aState, img1, img2, restImages) {
-			check(aState, img1, isImage, "underlay", "image", 1, arguments);
-			check(aState, img2, isImage, "underlay", "image", 2, arguments);
+			checkVarArity(aState, img1, isImage, "underlay", "image", 1, arguments);
+			checkVarArity(aState, img2, isImage, "underlay", "image", 2, arguments);
 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay", "image", i+3); }, arguments);
 
 			var img = world.Kernel.overlayImage(img2, img1, 0, 0);
@@ -18060,10 +18062,10 @@ new PrimProc('underlay/align',
 			 4,
 			 true, false,
 	     function(aState, placeX, placeY, img1, img2, restImages) {
-			 check(aState, placeX, isPlaceX, "underlay/align", "x-place", 1, arguments);
-			 check(aState, placeY, isPlaceY, "underlay/align", "y-place", 2, arguments);
-			 check(aState, img1, isImage, "underlay/align", "image", 3, arguments);
-			 check(aState, img2, isImage, "underlay/align", "image", 4, arguments);
+			 checkVarArity(aState, placeX, isPlaceX, "underlay/align", "x-place", 1, arguments);
+			 checkVarArity(aState, placeY, isPlaceY, "underlay/align", "y-place", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "underlay/align", "image", 3, arguments);
+			 checkVarArity(aState, img2, isImage, "underlay/align", "image", 4, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img2,
@@ -18130,8 +18132,8 @@ new PrimProc('above',
 			 2,
 			 true, false,
 			 function(aState, img1, img2, restImages) {
-			 check(aState, img1, isImage, "above", "image", 1, arguments);
-			 check(aState, img2, isImage, "above", "image", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "above", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "above", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "above", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -19789,7 +19791,7 @@ PRIMITIVES['js-new'] =
 		 1,
 		 true, false,
 		 function(aState, constructor, initArgs) {
-		 	check(aState, constructor, isJsFunction, 'js-new', 'javascript function', 1);
+		 	checkVarArity(aState, constructor, isJsFunction, 'js-new', 'javascript function', 1);
 
 			var args = helpers.map(function(x) { return (isJsObject(x) ? x.obj : x); }, initArgs);
 			var proxy = function() {

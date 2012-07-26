@@ -214,8 +214,6 @@ var helpers = {};
 
 			//console.log("args: ", args);
 			//console.log("locs passed in: ", locationList.rest());
-			var argColoredParts = getArgColoredParts(locationList.rest());
-			//console.log("argColoredParts is ",argColoredParts);
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -262,7 +260,7 @@ var helpers = {};
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
-		//console.log("colored check error");
+			//console.log("colored check error");
 			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
@@ -282,7 +280,7 @@ var helpers = {};
 	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
 		window.huh = args;
 
-		//check to ensure last thing is an array???
+		//check to ensure last thing is an array
 		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
 			var flattenedArgs = [];
 			var i;
