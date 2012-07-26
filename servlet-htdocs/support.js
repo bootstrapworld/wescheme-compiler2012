@@ -775,6 +775,7 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
+       		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
 				var locs = locations;
@@ -811,10 +812,8 @@ var helpers = {};
 				return locs.first();
 			}
 
-
-			if(args){
-				var argColoredParts = getArgColoredParts(locationList.rest());
-
+			var argColoredParts = getArgColoredParts(locationList.rest());
+			if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -20417,10 +20416,24 @@ var DefValuesInstallControl = function(ids) {
 
 DefValuesInstallControl.prototype.invoke = function(aState) {
     debug("DEF_VALUES");
+
+    //the following two are empty, because aState does not have the information
+    var positionStack = state.captureCurrentContinuationMarks(aState).ref(types.symbol('moby-application-position-key'));   
+    var locationList = positionStack[positionStack.length - 1];
+
     var bodyValue = aState.v;
+
+    var idLength = this.ids.length;
+
     if (bodyValue instanceof types.ValuesWrapper) {
 	if (this.ids.length !== bodyValue.elts.length) {
 	    helpers.raise(
+        //   types.incompleteExn(types.exnFailContract,
+        //    new types.Message([new types.ColoredPart("define-values", locationList.first()), 
+        //                     ": expected ", 
+                     //          [new types.MultiPart(idLength+'', 
+        //it is impossible to find the locationList, due to how values is returning information.
+
 		types.exnFailContractArity("define-values: expected " + this.ids.length 
 					   + " values, but received " + bodyValue.elts.length,
 					   state.captureCurrentContinuationMarks(aState)));
