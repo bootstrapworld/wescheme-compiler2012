@@ -19281,14 +19281,14 @@ PRIMITIVES['js-big-bang'] =
 */
 PRIMITIVES['big-bang'] =
 PRIMITIVES['js-big-bang'] =
-    new PrimProc('js-big-bang',
+    new PrimProc('big-bang',
 		 1,
 		 true, false,
 		 function(aState, initW, handlers) {
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'js-big-bang', 'handler or attribute list', i+2);
+					      'big-bang', 'handler or attribute list', i+2);
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
@@ -20682,10 +20682,11 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     	var argColoredParts = [];
     	var locs = locations;
     	if (operands.length > 0) {
-    		for (var i = 0; i < operands.length; i++) {
-    			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
-    			locs = locs.rest();
-    		}
+    	    for (var i = 0; i < operands.length; i++) {
+    		argColoredParts.push(new types.ColoredPart(operands[i]+(i < operands.length -1 ? " " : ""),
+                                                           locs.first()));
+    		locs = locs.rest();
+    	    }
     	}
     	return argColoredParts;
     }
@@ -20810,8 +20811,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 		types.exnFailContractArityWithPosition,
 		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
 			": expects ", 
-			''+(procValue.isRest ? 'at least' : ''),
-		        " ",
+			(procValue.isRest ? 'at least ' : ''),
 			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')), 
 							  procValue.locs.slice(1))

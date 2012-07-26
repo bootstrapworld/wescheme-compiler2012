@@ -838,10 +838,11 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     	var argColoredParts = [];
     	var locs = locations;
     	if (operands.length > 0) {
-    		for (var i = 0; i < operands.length; i++) {
-    			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
-    			locs = locs.rest();
-    		}
+    	    for (var i = 0; i < operands.length; i++) {
+    		argColoredParts.push(new types.ColoredPart(operands[i]+(i < operands.length -1 ? " " : ""),
+                                                           locs.first()));
+    		locs = locs.rest();
+    	    }
     	}
     	return argColoredParts;
     }
@@ -966,8 +967,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 		types.exnFailContractArityWithPosition,
 		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
 			": expects ", 
-			''+(procValue.isRest ? 'at least' : ''),
-		        " ",
+			(procValue.isRest ? 'at least ' : ''),
 			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')), 
 							  procValue.locs.slice(1))

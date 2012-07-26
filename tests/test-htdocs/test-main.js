@@ -269,8 +269,9 @@ var runTests = function() {
         var failMsgText = " FAIL" + ((e.message || e || '') ? 
                                   ": " + (e.message || e || '') : "");
         $(document.body).append($("<span/>").text(failMsgText)
-                                .css("color", "red").append(
-                                    $("<a/>").attr("name", "fail" + failureCount)));
+                                .css("color", "red")
+                                .css("white-space", "pre")
+                                .append($("<a/>").attr("name", "fail" + failureCount)));
         $(document.body).css("background-color", "#eeaaaa");
     };
 
