@@ -812,11 +812,13 @@ var helpers = {};
 				return locs.first();
 			}
 
-			console.log("args: ", args);
-			console.log("locs passed in: ", locationList.rest());
+			//console.log("args: ", args);
+			//console.log("locs passed in: ", locationList.rest());
 			var argColoredParts = getArgColoredParts(locationList.rest());
-			console.log(argColoredParts);
-			if(argColoredParts.length > 0){
+			//console.log("argColoredParts is ",argColoredParts);
+			if(args) { 
+				var argColoredParts = getArgColoredParts(locationList.rest()); 
+				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -830,20 +832,20 @@ var helpers = {};
 							   		new types.GradientPart(argColoredParts)
 							   	]),
 							   []) );
+				}
 			}
-			else {
-				raise( types.incompleteExn(types.exnFailContract,
-							   new types.Message([
-							   		new types.ColoredPart(details.functionName, locationList.first()),
-							   		": expects type ",
-							   		details.typeName,
-							   		" as ",
-							   		details.ordinalPosition, 
-							   		" argument, given: ",
-							   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
-							   	]),
-							   []) );
-			}
+			
+			raise( types.incompleteExn(types.exnFailContract,
+						   new types.Message([
+						   		new types.ColoredPart(details.functionName, locationList.first()),
+						   		": expects type ",
+						   		details.typeName,
+						   		" as ",
+						   		details.ordinalPosition, 
+						   		" argument, given: ",
+						   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
+						   	]),
+						   []) );
 
 
 	};
@@ -856,9 +858,11 @@ var helpers = {};
         
 
 		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
+			//console.log("uncolored check error");
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
+		//console.log("colored check error");
 			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
@@ -873,6 +877,24 @@ var helpers = {};
 					position,
 					args);
 		}
+	};
+
+	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
+		window.huh = args;
+
+		//check to ensure last thing is an array???
+		var flattenedArgs = [];
+		var i;
+		for(i = 0; i < (args.length - 1); i++) {
+			flattenedArgs.push(args[i]);
+		}
+		
+		var wtf1 = flattenedArgs;
+		var wtf2 = args[args.length -1];
+		var passOn = wtf1.concat(wtf2);
+		//the angry variable names are because flattenedArgs = flattenedArgs.concat(args[args.length - 1]) doesn't work
+		console.log("passing on ", passOn);
+		check(aState, x, f, functionName, typeName, position, passOn);
 	};
 
     var isList = function(x) {
@@ -1185,6 +1207,7 @@ var helpers = {};
 	helpers.isList = isList;
 	helpers.isListOf = isListOf;
 	helpers.check = check;
+	helpers.checkVarArity = checkVarArity;
 	helpers.checkListOf = checkListOf;
 	
 //	helpers.remove = remove;
@@ -13578,6 +13601,7 @@ var arrayEach = function(arr, f) {
 
 //var throwCheckError = helpers.throwCheckError;
 var check = helpers.check;
+var checkVarArity = helpers.checkVarArity;
 
 var checkList = function(x, functionName, position, args) {
 	if ( !isList(x) ) {
@@ -14398,7 +14422,7 @@ PRIMITIVES['/'] =
        
        			var locationList = positionStack[positionStack.length - 1];
        			var func = locationList.first();
-       			
+
        			if (step !== -1){
        				locationList = locationList.rest().rest();
        			}
@@ -15514,7 +15538,7 @@ PRIMITIVES['list-ref'] =
 		 	}
 		        return lst.first();
 		 });
-
+///////////////////////////////////////
 PRIMITIVES['list-tail'] =
     new PrimProc('list-tail',
 		 2,
@@ -17941,8 +17965,10 @@ PRIMITIVES['overlay'] =
 		 2,
 		 true, false,
 		 function(aState, img1, img2, restImages) {
-			check(aState, img1, isImage, "overlay", "image", 1, arguments);
-			check(aState, img2, isImage, "overlay", "image", 2, arguments);
+		 	//fixme
+		 	var allArgs = [img1, img2].concat(restImages);
+			check(aState, img1, isImage, "overlay", "image", 1, allArgs);
+			check(aState, img2, isImage, "overlay", "image", 2, allArgs);
 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "overlay", "image", i+3); }, arguments);
 
 			var img = world.Kernel.overlayImage(img1, img2, "middle", "middle");
@@ -18060,8 +18086,8 @@ new PrimProc('beside',
 			 2,
 			 true, false,
 			 function(aState, img1, img2, restImages) {
-			 check(aState, img1, isImage, "beside", "image", 1, arguments);
-			 check(aState, img2, isImage, "beside", "image", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "beside", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "beside", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "beside", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -18127,9 +18153,9 @@ new PrimProc('above/align',
 			 3,
 			 true, false,
 			 function(aState, placeX, img1, img2, restImages) {
-			 check(aState, placeX, isPlaceX, "above/align", "x-place", 1, arguments);
-			 check(aState, img1, isImage, "above/align", "image", 1, arguments);
-			 check(aState, img2, isImage, "above/align", "image", 2, arguments);
+			 checkVarArity(aState, placeX, isPlaceX, "above/align", "x-place", 1, arguments);
+			 checkVarArity(aState, img1, isImage, "above/align", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "above/align", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "above/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -19291,7 +19317,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'js-big-bang', 'handler or attribute list', i+2);
+					      'js-big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {

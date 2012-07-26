@@ -212,10 +212,10 @@ var helpers = {};
 				return locs.first();
 			}
 
-	//		console.log("args: ", args);
-	//		console.log("locs passed in: ", locationList.rest());
+			//console.log("args: ", args);
+			//console.log("locs passed in: ", locationList.rest());
 			var argColoredParts = getArgColoredParts(locationList.rest());
-	//		console.log(argColoredParts);
+			//console.log("argColoredParts is ",argColoredParts);
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -258,9 +258,11 @@ var helpers = {};
         
 
 		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
+			//console.log("uncolored check error");
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
+		//console.log("colored check error");
 			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
@@ -277,6 +279,28 @@ var helpers = {};
 		}
 	};
 
+	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
+		window.huh = args;
+
+		//check to ensure last thing is an array???
+		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
+			var flattenedArgs = [];
+			var i;
+			for(i = 0; i < (args.length - 1); i++) {
+				flattenedArgs.push(args[i]);
+			}
+
+			//the angry variable names are because flattenedArgs = flattenedArgs.concat(args[args.length - 1]) doesn't work
+			var wtf1 = flattenedArgs;
+			var wtf2 = args[args.length -1];
+			var passOn = wtf1.concat(wtf2);
+
+			check(aState, x, f, functionName, typeName, position, passOn);
+		}
+		else {
+			check(aState, x, f, functionName, typeName, position, args);
+		}
+	}
     var isList = function(x) {
         var tortoise, hare;
         tortoise = hare = x;
@@ -587,6 +611,7 @@ var helpers = {};
 	helpers.isList = isList;
 	helpers.isListOf = isListOf;
 	helpers.check = check;
+	helpers.checkVarArity = checkVarArity;
 	helpers.checkListOf = checkListOf;
 	
 //	helpers.remove = remove;

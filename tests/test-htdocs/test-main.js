@@ -3641,16 +3641,61 @@ var runTests = function() {
                        "(and 'blah 4)",
                        "the value blah is not a boolean value.");
 
-        queueErrorTest("test non-boolean in 'and', second position",
-                       "(and #t 'not-bool)",
-                       "the value not-bool is not a boolean value.");
+        queueErrorTest("test check-expect functions",
+                       "(check-expect + -)",
+                       'check-expect cannot compare functions');
 
-    
+        queueErrorTest("test check-expect arity",
+                       "(check-expect 1 2 3)",
+                       'check-expect: expects 2 arguments, given 3: 1 2 3 ');
 
+        queueErrorTest("test check-expect arity",
+                       "(check-expect )",
+                       'check-expect: expects 2 arguments, given 0');
 
+        queueErrorTest("test check-within nonneg real",
+                       "(check-within 2 1 -3)",
+                       'check-within requires a non-negative real number for range, given -3.');
 
+         queueErrorTest("test check-within functions",
+                       "(check-within + - 2)",
+                        'check-within cannot compare functions');
 
+         queueErrorTest("test check-within arity",
+                       "(check-within 3 3 3 3 3 3 3 3 3 3 3)",
+                        'check-within: expects 3 arguments, given 11: 3 3 3 3 3 3 3 3 3 3 3 ');
 
+         queueErrorTest("test print arity",
+                       "(print 'hello' 'world')",
+                        "print: expects 1 argument, given 2: 'hello' 'world' ");
+
+         queueErrorTest("test write arity",
+                        "(write 1 2 3 4 5)",
+                        "write: expects 1 or 2 arguments, given 5: 1 2 3 4 5 ");
+
+         queueErrorTest("test write arity",
+                        "(write )",
+                        "write: expects 1 or 2 arguments, given 0");
+
+        queueErrorTest("test display arity",
+                        "(display 1 2 3 4 5)",
+                        "display: expects 1 or 2 arguments, given 5: 1 2 3 4 5 ");
+
+        queueErrorTest("test display arity",
+                        "(display )",
+                        "display: expects 1 or 2 arguments, given 0");
+
+        queueErrorTest("test for-each arity",
+                        "(for-each )",
+                        "display: expects 2 arguments, given 0");
+
+        queueErrorTest("test for-each arity 2",
+                        "(for-each 1 2 3 4 5)",
+                        "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
+
+        queueErrorTest("test for-each type",
+                        "(for-each 1 2)",
+                        "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
         //////////////////////////////////////////////////////////////////////
 
 

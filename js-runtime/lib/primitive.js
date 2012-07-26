@@ -585,6 +585,7 @@ var arrayEach = function(arr, f) {
 
 //var throwCheckError = helpers.throwCheckError;
 var check = helpers.check;
+var checkVarArity = helpers.checkVarArity;
 
 var checkList = function(x, functionName, position, args) {
 	if ( !isList(x) ) {
@@ -2521,7 +2522,7 @@ PRIMITIVES['list-ref'] =
 		 	}
 		        return lst.first();
 		 });
-
+///////////////////////////////////////
 PRIMITIVES['list-tail'] =
     new PrimProc('list-tail',
 		 2,
@@ -4948,8 +4949,10 @@ PRIMITIVES['overlay'] =
 		 2,
 		 true, false,
 		 function(aState, img1, img2, restImages) {
-			check(aState, img1, isImage, "overlay", "image", 1, arguments);
-			check(aState, img2, isImage, "overlay", "image", 2, arguments);
+		 	//fixme
+		 	var allArgs = [img1, img2].concat(restImages);
+			check(aState, img1, isImage, "overlay", "image", 1, allArgs);
+			check(aState, img2, isImage, "overlay", "image", 2, allArgs);
 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "overlay", "image", i+3); }, arguments);
 
 			var img = world.Kernel.overlayImage(img1, img2, "middle", "middle");
@@ -5067,8 +5070,8 @@ new PrimProc('beside',
 			 2,
 			 true, false,
 			 function(aState, img1, img2, restImages) {
-			 check(aState, img1, isImage, "beside", "image", 1, arguments);
-			 check(aState, img2, isImage, "beside", "image", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "beside", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "beside", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "beside", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -5134,9 +5137,9 @@ new PrimProc('above/align',
 			 3,
 			 true, false,
 			 function(aState, placeX, img1, img2, restImages) {
-			 check(aState, placeX, isPlaceX, "above/align", "x-place", 1, arguments);
-			 check(aState, img1, isImage, "above/align", "image", 1, arguments);
-			 check(aState, img2, isImage, "above/align", "image", 2, arguments);
+			 checkVarArity(aState, placeX, isPlaceX, "above/align", "x-place", 1, arguments);
+			 checkVarArity(aState, img1, isImage, "above/align", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "above/align", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "above/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
