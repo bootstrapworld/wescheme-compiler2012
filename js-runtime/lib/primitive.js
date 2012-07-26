@@ -6291,14 +6291,14 @@ PRIMITIVES['js-big-bang'] =
 */
 PRIMITIVES['big-bang'] =
 PRIMITIVES['js-big-bang'] =
-    new PrimProc('js-big-bang',
+    new PrimProc('big-bang',
 		 1,
 		 true, false,
 		 function(aState, initW, handlers) {
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'js-big-bang', 'handler or attribute list', i+2);
+					      'big-bang', 'handler or attribute list', i+2);
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
