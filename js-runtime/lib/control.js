@@ -935,8 +935,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
                 acceptableParameterArity.join(' or '),
                 " arguments, given ",
                 n,
-                ": ",
-                new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
     }
 
@@ -977,8 +977,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 					      ,
   		         ", given ",
 			n ,
-			": ", 
-			new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
 	}
     }

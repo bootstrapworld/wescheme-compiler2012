@@ -13156,26 +13156,7 @@ var length = function(lst) {
 	}
 	return ret;
 }
-/*
-var append = function(aState, initArgs) {
-	console.log("calls append helper");
-	window.initArgs = initArgs;
-	if (initArgs.length == 0) {
-		return types.EMPTY;
-	}
-	var args = initArgs.slice(0, initArgs.length-1);
-	var lastArg = initArgs[initArgs.length - 1];
-	console.log("finishes doing things with args");
 
-	arrayEach(args, function(x, i) {checkList(aState, x, 'append', i+1, initArgs);});
-	console.log("successfully completes arrayEach");
-	var ret = lastArg;
-	for (var i = args.length-1; i >= 0; i--) {
-		ret = args[i].append(aState, ret);
-	}
-	return ret;
-}
-*/
 var append = function(aState, initArgs) {
 	if (initArgs.length == 0) {
 		return types.EMPTY;
@@ -13187,7 +13168,6 @@ var append = function(aState, initArgs) {
 	var ret = lastArg;
 	for (var i = args.length-1; i >= 0; i--) {
 		ret = args[i].append(ret);
-		console.log("args[i].append is ", args[i].append);
 	}
 	return ret;
 }
@@ -20843,8 +20823,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
                 acceptableParameterArity.join(' or '),
                 " arguments, given ",
                 n,
-                ": ",
-                new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
     }
 
@@ -20885,8 +20865,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 					      ,
   		         ", given ",
 			n ,
-			": ", 
-			new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
 	}
     }
