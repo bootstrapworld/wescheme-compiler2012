@@ -782,21 +782,26 @@ var helpers = {};
 				var i;
 
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
-						if(i != pos) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
-						}
-						locs = locs.rest();
+						if(! (locs.isEmpty)){
+							if(i != pos) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
+					    }
 					}
 				}
 				else {
 					for(i = 0; i < args.length; i++){
-						if(i != (pos -1)) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+						if(! (locs.isEmpty)){
+							if(i != (pos -1)) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
 						}
-						locs = locs.rest();
 					}
 				}
 				return coloredParts;
@@ -812,9 +817,8 @@ var helpers = {};
 				return locs.first();
 			}
 
-			//console.log("args: ", args);
-			//console.log("locs passed in: ", locationList.rest());
 			if(args) { 
+				console.log("args, it's ", args);
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
@@ -832,7 +836,7 @@ var helpers = {};
 							   []) );
 				}
 			}
-			
+			console.log("no args");
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -849,7 +853,6 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		window.aState = aState;
 		console.log("throwCheckError started, aState is ",aState);
 		
 		if(aState instanceof state.State){
@@ -7693,10 +7696,10 @@ Empty.prototype.reverse = function() {
 };
 
 Empty.prototype.first = function() {
-    throwRuntimeError("first can't be applied on empty.");
+    throw new Error("first can't be applied on empty.");
 };
 Empty.prototype.rest = function() {
-    throwRuntimeError("rest can't be applied on empty.");
+    throw new Error("rest can't be applied on empty.");
 };
 Empty.prototype.isEmpty = function() {
     return true;
@@ -13321,8 +13324,10 @@ var isWorldConfigOption = function(x) { return x instanceof WorldConfigOption; }
 
 var onEvent = function(funName, inConfigName, numArgs) {
     return function(aState, handler) {
-	return onEventBang(funName, inConfigName)(handler,
-						  new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
+		return onEventBang(funName, inConfigName)(
+			    aState,
+				handler,
+				new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
     };
 };
 
@@ -16106,6 +16111,7 @@ PRIMITIVES['hash-ref'] =
 			  }
 			  else {
 				if (isFunction(defaultVal)) {
+					//window.call = CALL;
 					return CALL(defaultVal, [], id);
 				}
 				return defaultVal;

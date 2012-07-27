@@ -297,8 +297,10 @@ var isWorldConfigOption = function(x) { return x instanceof WorldConfigOption; }
 
 var onEvent = function(funName, inConfigName, numArgs) {
     return function(aState, handler) {
-	return onEventBang(funName, inConfigName)(handler,
-						  new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
+		return onEventBang(funName, inConfigName)(
+			    aState,
+				handler,
+				new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
     };
 };
 
@@ -3082,6 +3084,7 @@ PRIMITIVES['hash-ref'] =
 			  }
 			  else {
 				if (isFunction(defaultVal)) {
+					//window.call = CALL;
 					return CALL(defaultVal, [], id);
 				}
 				return defaultVal;

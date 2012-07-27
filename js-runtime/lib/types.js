@@ -631,10 +631,10 @@ Empty.prototype.reverse = function() {
 };
 
 Empty.prototype.first = function() {
-    throwRuntimeError("first can't be applied on empty.");
+    throw new Error("first can't be applied on empty.");
 };
 Empty.prototype.rest = function() {
-    throwRuntimeError("rest can't be applied on empty.");
+    throw new Error("rest can't be applied on empty.");
 };
 Empty.prototype.isEmpty = function() {
     return true;
