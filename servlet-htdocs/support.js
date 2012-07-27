@@ -13152,7 +13152,6 @@ var procArityContains = helpers.procArityContains;
 
 //fixme pass in state?
 var length = function(lst) {
-	checkList(lst, 'length', 1, [lst]);
 	var ret = 0;
 	for (; !lst.isEmpty(); lst = lst.rest()) {
 		ret = ret+1;
@@ -13331,7 +13330,7 @@ var onEvent = function(funName, inConfigName, numArgs) {
     };
 };
 
-var onEventBang = function(funName, inConfigName) {
+var onEventBang = function(aState, funName, inConfigName) {
     return function(aState, handler, effectHandler) {
 	check(aState, handler, isFunction, funName, 'procedure', 1, arguments);
 	check(aState, effectHandler, isFunction, funName, 'procedure', 2, arguments);
@@ -13649,15 +13648,15 @@ var checkListOfLength = function(aState, lst, n, functionName, position, args) {
 	}
 }
 
-var checkAllSameLength = function(lists, functionName, args) {
-	if (lists.length == 0)
+var checkAllSameLength = function(aState, lists, functionName, args) {
+	if (lists.length === 0)
 		return;
 	
 	var len = length(lists[0]);
 	arrayEach(lists,
 		  function(lst, i) {
 			if (length(lst) != len) {
-				var argsStr = helpers.map(function(x) { return " ~s"; }, args).join('');
+				var argStr = helpers.map(function(x) { return " ~s"; }, args).join('');
 				var msg = helpers.format(functionName + ': all lists must have the same size; arguments were:' + argStr,
 							 args);
 				raise( types.incompleteExn(types.exnFailContract, msg, []) );
@@ -13883,7 +13882,7 @@ PRIMITIVES['for-each'] =
 		 	 arglists.unshift(firstArg);
 			 check(aState, f, isFunction, 'for-each', 'procedure', 1, allArgs);
 			 arrayEach(arglists, function(lst, i) {checkList(aState, lst, 'for-each', i+2, allArgs);});
-			 checkAllSameLength(arglists, 'for-each', allArgs);
+			 checkAllSameLength(aState, arglists, 'for-each', allArgs);
 
 			 var forEachHelp = function(args) {
 			     if (args[0].isEmpty()) {
@@ -15608,10 +15607,16 @@ PRIMITIVES['map'] =
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
+		 	//console.log("gets past first check");
 		 	arrayEach(arglists, function(x, i) {checkList(aState, x, 'map', i+2, allArgs);});
-			checkAllSameLength(arglists, 'map', allArgs);
+		 	//console.log("gets past checkList check");
+			checkAllSameLength(aState, arglists, 'map', allArgs);
+			//console.log("gets past checkAllSameLength check");
 			
+
+
 			var mapHelp = function(f, args, acc) {
+				console.log("mapHelp called on f:", f, " args:", args," acc:",acc);
 				if (args[0].isEmpty()) {
 				    return acc.reverse();
 				}
@@ -15622,6 +15627,7 @@ PRIMITIVES['map'] =
 					argsFirst.push(args[i].first());
 					argsRest.push(args[i].rest());
 				}
+
 				var result = CALL(f, argsFirst,
 					function(result) {
 						return mapHelp(f, argsRest, types.cons(result, acc));
@@ -15641,7 +15647,7 @@ PRIMITIVES['andmap'] =
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'andmap', 'procedure', 1, allArgs);
 		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'andmap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'andmap', allArgs);
+			checkAllSameLength(aState, arglists, 'andmap', allArgs);
   
 			var andmapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -15673,7 +15679,7 @@ PRIMITIVES['ormap'] =
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'ormap', 'procedure', 1, allArgs);
 		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'ormap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'ormap', allArgs);
+			checkAllSameLength(aState, arglists, 'ormap', allArgs);
 
 			var ormapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -15888,7 +15894,7 @@ PRIMITIVES['foldl'] =
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldl', 'procedure', 1, allArgs);
 			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldl', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldl', allArgs);
+			checkAllSameLength(aState, arglists, 'foldl', allArgs);
 	
 			return foldHelp(f, initAcc, arglists);
 		});
@@ -15902,7 +15908,7 @@ PRIMITIVES['foldr'] =
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldr', 'procedure', 1, allArgs);
 			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldr', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldr', allArgs);
+			checkAllSameLength(aState, arglists, 'foldr', allArgs);
 
 			for (var i = 0; i < arglists.length; i++) {
 				arglists[i] = arglists[i].reverse();

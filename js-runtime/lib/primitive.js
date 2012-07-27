@@ -125,7 +125,6 @@ var procArityContains = helpers.procArityContains;
 
 //fixme pass in state?
 var length = function(lst) {
-	checkList(lst, 'length', 1, [lst]);
 	var ret = 0;
 	for (; !lst.isEmpty(); lst = lst.rest()) {
 		ret = ret+1;
@@ -304,7 +303,7 @@ var onEvent = function(funName, inConfigName, numArgs) {
     };
 };
 
-var onEventBang = function(funName, inConfigName) {
+var onEventBang = function(aState, funName, inConfigName) {
     return function(aState, handler, effectHandler) {
 	check(aState, handler, isFunction, funName, 'procedure', 1, arguments);
 	check(aState, effectHandler, isFunction, funName, 'procedure', 2, arguments);
@@ -622,15 +621,15 @@ var checkListOfLength = function(aState, lst, n, functionName, position, args) {
 	}
 }
 
-var checkAllSameLength = function(lists, functionName, args) {
-	if (lists.length == 0)
+var checkAllSameLength = function(aState, lists, functionName, args) {
+	if (lists.length === 0)
 		return;
 	
 	var len = length(lists[0]);
 	arrayEach(lists,
 		  function(lst, i) {
 			if (length(lst) != len) {
-				var argsStr = helpers.map(function(x) { return " ~s"; }, args).join('');
+				var argStr = helpers.map(function(x) { return " ~s"; }, args).join('');
 				var msg = helpers.format(functionName + ': all lists must have the same size; arguments were:' + argStr,
 							 args);
 				raise( types.incompleteExn(types.exnFailContract, msg, []) );
@@ -655,14 +654,23 @@ PRIMITIVES['verify-boolean-branch-value'] =
 			     // make-moby-error-type:branch-value-not-boolean
 			     // instead.
 			     //throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
-			     raise(types.incompleteExn(
-                                 types.exnFailContract,
-				 new types.Message(["the value ",
-						    new types.ColoredPart(types.toWrittenString(x),
-                                                                          aLoc),
-                                                    " is not a boolean value."
-						   ]),
-                                 []));
+			     if(!(aLoc.isNoLocation)){
+				     raise(types.incompleteExn(
+	                                 types.exnFailContract,
+								 new types.Message(["the value ",
+							    	new types.ColoredPart(types.toWrittenString(x),
+	                                                                          aLoc),
+	                                                    " is not a boolean value."
+							   ]),
+	                                 []));
+				 }
+				 else {
+				 	var msg = "the value "+types.toWrittenString(x)+" is not a boolean value.";
+				 	raise(types.incompleteExn(
+	                                 types.exnFailContract,
+									 msg,
+	                                 []));
+				 }
 			 }
 			 return x;
 		     })
@@ -856,7 +864,7 @@ PRIMITIVES['for-each'] =
 		 	 arglists.unshift(firstArg);
 			 check(aState, f, isFunction, 'for-each', 'procedure', 1, allArgs);
 			 arrayEach(arglists, function(lst, i) {checkList(aState, lst, 'for-each', i+2, allArgs);});
-			 checkAllSameLength(arglists, 'for-each', allArgs);
+			 checkAllSameLength(aState, arglists, 'for-each', allArgs);
 
 			 var forEachHelp = function(args) {
 			     if (args[0].isEmpty()) {
@@ -2516,17 +2524,27 @@ PRIMITIVES['list-ref'] =
 			var n = jsnums.toFixnum(num);
 		 	for (var i = 0; i < n; i++) {
 		 		if (lst.isEmpty() || lst.rest().isEmpty()) { //fixing off by one error
-					/*var msg = ('list-ref: index ' + n +
+					if(!(locationList.isNoLocation)){
+						raise( types.incompleteExn(types.exnFailContract, 
+													new types.Message([
+														new types.ColoredPart('list-ref', locationList.first()),
+														": index ",
+														new types.ColoredPart(n, locationList.rest().rest().first()) ,
+														' is too large for list: ',
+														new types.ColoredPart(types.toWrittenString(origList), locationList.rest().first())]), 
+													[]) );
+					}
+
+					else{
+						var msg = ('list-ref: index ' + n +
 						   ' is too large for list: ' +
-						   types.toWrittenString(origList));*/
-					raise( types.incompleteExn(types.exnFailContract, 
-												new types.Message([
-													new types.ColoredPart('list-ref', locationList.first()),
-													": index ",
-													new types.ColoredPart(n, locationList.rest().rest().first()) ,
-													' is too large for list: ',
-													new types.ColoredPart(types.toWrittenString(origList), locationList.rest().first())]), 
+						   types.toWrittenString(origList));
+
+						raise( types.incompleteExn(types.exnFailContract, 
+												msg, 
 												[]) );
+
+					}
 		 		}
 	  			lst = lst.rest();
 		 	}
@@ -2582,9 +2600,12 @@ PRIMITIVES['map'] =
 		 	arglists.unshift(lst);
 		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(aState, x, 'map', i+2, allArgs);});
-			checkAllSameLength(arglists, 'map', allArgs);
+			checkAllSameLength(aState, arglists, 'map', allArgs);
 			
+
+
 			var mapHelp = function(f, args, acc) {
+				//console.log("mapHelp called on f:", f, " args:", args," acc:",acc);
 				if (args[0].isEmpty()) {
 				    return acc.reverse();
 				}
@@ -2595,6 +2616,7 @@ PRIMITIVES['map'] =
 					argsFirst.push(args[i].first());
 					argsRest.push(args[i].rest());
 				}
+
 				var result = CALL(f, argsFirst,
 					function(result) {
 						return mapHelp(f, argsRest, types.cons(result, acc));
@@ -2614,7 +2636,7 @@ PRIMITIVES['andmap'] =
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'andmap', 'procedure', 1, allArgs);
 		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'andmap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'andmap', allArgs);
+			checkAllSameLength(aState, arglists, 'andmap', allArgs);
   
 			var andmapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -2646,7 +2668,7 @@ PRIMITIVES['ormap'] =
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'ormap', 'procedure', 1, allArgs);
 		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'ormap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'ormap', allArgs);
+			checkAllSameLength(aState, arglists, 'ormap', allArgs);
 
 			var ormapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -2861,7 +2883,7 @@ PRIMITIVES['foldl'] =
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldl', 'procedure', 1, allArgs);
 			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldl', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldl', allArgs);
+			checkAllSameLength(aState, arglists, 'foldl', allArgs);
 	
 			return foldHelp(f, initAcc, arglists);
 		});
@@ -2875,7 +2897,7 @@ PRIMITIVES['foldr'] =
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldr', 'procedure', 1, allArgs);
 			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldr', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldr', allArgs);
+			checkAllSameLength(aState, arglists, 'foldr', allArgs);
 
 			for (var i = 0; i < arglists.length; i++) {
 				arglists[i] = arglists[i].reverse();
@@ -3059,17 +3081,24 @@ PRIMITIVES['hash-ref'] =
 			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if ( !obj.hash.containsKey(key) ) {
-			  	//var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
+			  	
 			  	var positionStack = 
 					state.captureCurrentContinuationMarks(aState).ref(
 					    types.symbol('moby-application-position-key'));
 			    var locationList = positionStack[positionStack.length - 1];
-
-			  	raise( types.incompleteExn(types.exnFailContract, 
-			  		new types.Message([new types.ColoredPart("hash-ref", locationList.first()),
-			  							": no value found for key ",
-			  							new types.ColoredPart(types.toWrittenString(key), locationList.rest().rest().first())]), 
-			  		[]) );
+			    if(!(locationList.isNoLocation)){
+				  	raise( types.incompleteExn(types.exnFailContract, 
+				  		new types.Message([new types.ColoredPart("hash-ref", locationList.first()),
+				  							": no value found for key ",
+				  							new types.ColoredPart(types.toWrittenString(key), locationList.rest().rest().first())]), 
+				  		[]) );
+				  }
+			  	else {
+			  		var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
+			  		raise( types.incompleteExn(types.exnFailContract, 
+			  			msg, 
+			  			[]) );
+			  	}
 			  }
 			  return obj.hash.get(key);
 		      }),
@@ -3222,23 +3251,30 @@ PRIMITIVES['string-ref'] =
 
 			var n = jsnums.toFixnum(num);
 			if (n >= str.length) {
-				var msg = ('string-ref: index ' + n + ' out of range ' +
-					   '[0, ' + (str.length-1) + '] for string: ' +
-					   types.toWrittenString(str));
 				var positionStack = 
 					state.captureCurrentContinuationMarks(aState).ref(
 					    types.symbol('moby-application-position-key'));
 			    var locationList = positionStack[positionStack.length - 1];
+			    if(!(locationList.isNoLocation)){
+				  	raise( types.incompleteExn(types.exnFailContract, 
+				  		new types.Message([new types.ColoredPart("string-ref", locationList.first()),
+				  							": index ",
+				  							n,
+				  							' out of range [0, ',
+											(str.length-1),
+											'] for string: ',
+				  							new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())]), 
+				  		[]) );
+			  	}
+			  	else {
+			  		var msg = ('string-ref: index ' + n + ' out of range ' +
+					   '[0, ' + (str.length-1) + '] for string: ' +
+					   types.toWrittenString(str));
 
-			  	raise( types.incompleteExn(types.exnFailContract, 
-			  		new types.Message([new types.ColoredPart("string-ref", locationList.first()),
-			  							": index ",
-			  							n,
-			  							' out of range [0, ',
-										(str.length-1),
-										'] for string: ',
-			  							new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())]), 
-			  		[]) );
+			  		raise( types.incompleteExn(types.exnFailContract, 
+				  		msg, 
+				  		[]) );
+			  	}
 			}
 			return types['char'](str.charAt(n));
 		 });
@@ -3403,29 +3439,38 @@ PRIMITIVES['substring'] =
 		      function(aState, str, theStart) {
 			  check(aState, str, isString, 'substring', 'string', 1, arguments);
 			  check(aState, theStart, isNatural, 'substring', 'non-negative exact integer', 2, arguments);
-			  
-			  var positionStack = 
-        		state.captureCurrentContinuationMarks(aState).ref(
-            		types.symbol('moby-application-position-key'));
-        
-       
-       		  var locationList = positionStack[positionStack.length - 1];
 
 			  var start = jsnums.toFixnum(theStart);
 			  if (start > str.length) {
+			  	var positionStack = 
+	        		state.captureCurrentContinuationMarks(aState).ref(
+	            		types.symbol('moby-application-position-key'));
+        
+       		  	var locationList = positionStack[positionStack.length - 1];
 			   /*	var msg = ('substring: starting index ' + start + ' out of range ' +
 					   '[0, ' + str.length + '] for string: ' + types.toWrittenString(str)); */
-				raise( types.incompleteExn(types.exnFailContract,
-											new types.Message([ new types.ColoredPart('substring', locationList.first()),
-																': starting index ',
-																new types.ColoredPart(start, locationList.rest().rest().first()),
-																' out of range ',
-																'[0, ',
-																 str.length, 
-																 '] for string: ',
-																 new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())
-												]), 
-											[]) );
+				if(!(locationList.isNoLocation)) {
+					raise( types.incompleteExn(types.exnFailContract,
+												new types.Message([ new types.ColoredPart('substring', locationList.first()),
+																	': starting index ',
+																	new types.ColoredPart(start, locationList.rest().rest().first()),
+																	' out of range ',
+																	'[0, ',
+																	 str.length, 
+																	 '] for string: ',
+																	 new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())
+													]), 
+												[]) );
+				}
+				else { 
+					var msg = ('substring: starting index ' + start + ' out of range ' +
+					   '[0, ' + str.length + '] for string: ' + types.toWrittenString(str));
+
+					raise( types.incompleteExn(types.exnFailContract,
+												msg, 
+												[]) );
+
+				}
 			  }
 			  else {
 			  	return types.string( str.substring(jsnums.toFixnum(start)) );
@@ -3439,43 +3484,74 @@ PRIMITIVES['substring'] =
 			  check(aState, theStart, isNatural, 'substring', 'non-negative exact integer', 2, arguments);
 			  check(aState, theEnd, isNatural, 'substring', 'non-negative exact integer', 3, arguments);
 
-			  var positionStack = 
-        		state.captureCurrentContinuationMarks(aState).ref(
-            		types.symbol('moby-application-position-key'));
-        
-       		  var locationList = positionStack[positionStack.length - 1];
+			  
 
 			  var start = jsnums.toFixnum(theStart);
 			  var end = jsnums.toFixnum(theEnd);
 			  if (start > str.length) {
+
+			  	var positionStack = 
+        			state.captureCurrentContinuationMarks(aState).ref(
+            			types.symbol('moby-application-position-key'));
+        
+       		 	 var locationList = positionStack[positionStack.length - 1];
 			   /*	var msg = ('substring: starting index ' + start + ' out of range ' +
 					   '[0, ' + str.length + '] for string: ' + types.toWrittenString(str)); */
-				raise( types.incompleteExn(types.exnFailContract,
-											new types.Message([ new types.ColoredPart('substring', locationList.first()),
-																': starting index ',
-																new types.ColoredPart(start, locationList.rest().rest().first()),
-																' out of range ',
-																'[0, ',
-																 str.length, 
-																 '] for string: ',
-																 new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())
-												]), 
-											[]) );
+
+				if(!(locationList.isNoLocation)) {
+					raise( types.incompleteExn(types.exnFailContract,
+												new types.Message([ new types.ColoredPart('substring', locationList.first()),
+																	': starting index ',
+																	new types.ColoredPart(start, locationList.rest().rest().first()),
+																	' out of range ',
+																	'[0, ',
+																	 str.length, 
+																	 '] for string: ',
+																	 new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())
+													]), 
+												[]) );
+				}
+				else {
+					var msg = ('substring: starting index ' + start + ' out of range ' +
+					   '[0, ' + str.length + '] for string: ' + types.toWrittenString(str)); 
+
+					raise( types.incompleteExn(types.exnFailContract,
+												msg, 
+												[]) );
+				}
 			  }
 			  if (end < start || end > str.length) {
+
+			  	var positionStack = 
+        			state.captureCurrentContinuationMarks(aState).ref(
+            			types.symbol('moby-application-position-key'));
+        
+       		  	var locationList = positionStack[positionStack.length - 1];
 			   	/*var msg = ('substring: ending index ' + end + ' out of range ' + '[' + start +
 					   ', ' + str.length + '] for string: ' + types.toWrittenString(str));*/ 
-				raise( types.incompleteExn(types.exnFailContract,
-											new types.Message([ new types.ColoredPart('substring', locationList.first()),
-																': ending index ',
-																new types.ColoredPart(end, locationList.rest().rest().rest().first()),
-																' out of range ',
-																'[0, ',
-																 str.length, 
-																 '] for string: ',
-																 new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())
-												]), 
-											[]) );
+				if(!(locationList.isNoLocation)) {
+					raise( types.incompleteExn(types.exnFailContract,
+												new types.Message([ new types.ColoredPart('substring', locationList.first()),
+																	': ending index ',
+																	new types.ColoredPart(end, locationList.rest().rest().rest().first()),
+																	' out of range ',
+																	'[0, ',
+																	 str.length, 
+																	 '] for string: ',
+																	 new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())
+													]), 
+												[]) );
+				}
+				else {
+					var msg = ('substring: ending index ' + end + ' out of range ' + '[' + start +
+					   ', ' + str.length + '] for string: ' + types.toWrittenString(str));
+
+					raise( types.incompleteExn(types.exnFailContract,
+												msg, 
+												[]) );
+
+
+				}
 			  }
 			  return types.string( str.substring(start, end) );
 		      }) ]);

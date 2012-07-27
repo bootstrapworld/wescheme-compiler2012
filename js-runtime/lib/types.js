@@ -1990,7 +1990,13 @@ MultiPart.prototype.toString = function() {
 	return this.text;
 };
 
+//if there is not enough location information available,
+//this allows for highlighting to be turned off
+var NoLocation = function(){};
 
+var isNoLocation = function(o) {
+  return o instanceof NoLocation;
+};
 
 //////////////////////////////////////////////////////////////////////
 

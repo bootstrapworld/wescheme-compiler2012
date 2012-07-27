@@ -218,7 +218,6 @@ var helpers = {};
 			}
 
 			if(args) { 
-				console.log("args, it's ", args);
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
@@ -236,7 +235,6 @@ var helpers = {};
 							   []) );
 				}
 			}
-			console.log("no args");
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -264,7 +262,7 @@ var helpers = {};
 			console.log("successfully gets positionStack, it is ", positionStack);
 
 			//if the positionStack at the correct position is defined, we can throw a colored error
-			if (positionStack[positionStack.length - 1] !== undefined) {
+			if (positionStack[positionStack.length - 1] !== undefined && (! (positionStack[positionStack.length - 1]).isNoLocation)) {
 				console.log("colored check error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
