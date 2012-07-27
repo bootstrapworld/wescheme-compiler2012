@@ -702,6 +702,8 @@ var processPrimitiveResult = function(state, result, procValue) {
     if (result instanceof INTERNAL_CALL) {
 	state.cstack.push(new InternalCallRestartControl
 			  (result.k, procValue));
+
+        addNoLocationContinuationMark(state);
 	callProcedure(state,
 		      result.operator, 
 		      result.operands.length, 
@@ -747,6 +749,21 @@ InternalCallRestartControl.prototype.invoke = function(state) {
 };
 
 primitive.setCALL(INTERNAL_CALL);
+
+
+
+// When we're doing an application, but we don't have source locations,
+// we the following function to add the mark.
+var addNoLocationContinuationMark = function(aState) {
+    var aHash = types.makeLowLevelEqHash();
+    aHash.put(types.symbol('moby-application-position-key'),
+              new types.NoLocation());
+    aState.pushControl(types.contMarkRecordControl(aHash));
+};
+
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////
