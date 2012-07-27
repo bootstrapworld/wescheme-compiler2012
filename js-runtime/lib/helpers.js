@@ -249,23 +249,30 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		console.log("throwCheckError started");
-		var positionStack = 
-        		state.captureCurrentContinuationMarks(aState).ref(
-            		types.symbol('moby-application-position-key'));
-        console.log("gets position stack, it is ", positionStack);
+		window.aState = aState;
+		console.log("throwCheckError started, aState is ",aState);
+		
+		if(aState instanceof state.State){
+			//if it's defined and a State, can inspect position stack
+			var positionStack = 
+			state.captureCurrentContinuationMarks(aState).ref(
+	    		types.symbol('moby-application-position-key'));
 
-		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
-			console.log("uncolored check error");
-			throwUncoloredCheckError(aState, details, pos, args);
+			console.log("successfully gets positionStack, it is ", positionStack);
+
+			//if the positionStack at the correct position is defined, we can throw a colored error
+			if (positionStack[positionStack.length - 1] !== undefined) {
+				console.log("colored check error");
+				throwColoredCheckError(aState,details, pos, args);
+			}
 		}
-		else {
-			console.log("colored check error");
-			throwColoredCheckError(aState,details, pos, args);
-		}
+		//otherwise, throw an uncolored error
+		console.log("uncolored check error");
+		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
 	var check = function(aState, x, f, functionName, typeName, position, args) {
+		console.log("check started");
 		if ( !f(x) ) {
 			throwCheckError(aState, 
 					{ functionName: functionName,
@@ -278,7 +285,7 @@ var helpers = {};
 	};
 
 	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
-		window.huh = args;
+		//window.huh = args;
 
 		//check to ensure last thing is an array
 		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
@@ -287,7 +294,6 @@ var helpers = {};
 			for(i = 0; i < (args.length - 1); i++) {
 				flattenedArgs.push(args[i]);
 			}
-
 			//the angry variable names are because flattenedArgs = flattenedArgs.concat(args[args.length - 1]) doesn't work
 			var wtf1 = flattenedArgs;
 			var wtf2 = args[args.length -1];
