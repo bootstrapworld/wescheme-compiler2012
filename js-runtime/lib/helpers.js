@@ -249,18 +249,18 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-
+		console.log("throwCheckError started");
 		var positionStack = 
         		state.captureCurrentContinuationMarks(aState).ref(
             		types.symbol('moby-application-position-key'));
-        
+        console.log("gets position stack, it is ", positionStack);
 
 		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
-			//console.log("uncolored check error");
+			console.log("uncolored check error");
 			throwUncoloredCheckError(aState, details, pos, args);
 		}
 		else {
-			//console.log("colored check error");
+			console.log("colored check error");
 			throwColoredCheckError(aState,details, pos, args);
 		}
 	};
@@ -298,7 +298,7 @@ var helpers = {};
 		else {
 			check(aState, x, f, functionName, typeName, position, args);
 		}
-	}
+	};
     var isList = function(x) {
         var tortoise, hare;
         tortoise = hare = x;
@@ -337,13 +337,13 @@ var helpers = {};
 	    return (x === types.EMPTY);
 	};
 
-	var checkListOf = function(lst, f, functionName, typeName, position, args) {
+	var checkListOf = function(aState, lst, f, functionName, typeName, position, args) {
 		if ( !isListOf(lst, f) ) {
-			helpers.throwCheckError(undefined,
-						[functionName,
-						 'list of ' + typeName,
-						 helpers.ordinalize(position),
-						 lst],
+			helpers.throwCheckError(aState,
+						{functionName: functionName,
+						 typeName: 'list of ' + typeName,
+						 ordinalPosition: helpers.ordinalize(position),
+						 actualValue: lst},
 						position,
 						args);
 		}

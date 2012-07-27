@@ -123,7 +123,7 @@ var normalizeArity = function(arity) {
 
 var procArityContains = helpers.procArityContains;
 
-
+//fixme pass in state?
 var length = function(lst) {
 	checkList(lst, 'length', 1, [lst]);
 	var ret = 0;
@@ -133,14 +133,17 @@ var length = function(lst) {
 	return ret;
 }
 
-var append = function(initArgs) {
+var append = function(aState, initArgs) {
+	console.log("calls append helper");
 	if (initArgs.length == 0) {
 		return types.EMPTY;
 	}
 	var args = initArgs.slice(0, initArgs.length-1);
 	var lastArg = initArgs[initArgs.length - 1];
-	arrayEach(args, function(x, i) {checkList(x, 'append', i+1, initArgs);});
 
+	console.log("does things with args");
+	arrayEach(args, function(x, i) {checkList(aState, x, 'append', i+1, initArgs);});
+	console.log("successfully completes arrayEach");
 	var ret = lastArg;
 	for (var i = args.length-1; i >= 0; i--) {
 		ret = args[i].append(ret);
@@ -169,7 +172,7 @@ var foldHelp = function(f, acc, args) {
 
 var quicksort = function(functionName) {
     return function(aState, initList, comp) {
-	checkList(initList, functionName, 1, arguments);
+	checkList(aState, initList, functionName, 1, arguments);
 	check(aState, comp, procArityContains(2), functionName, 'procedure (arity 2)', 2, arguments);
 	
 	var quicksortHelp = function(aState, lst) {
@@ -587,13 +590,15 @@ var arrayEach = function(arr, f) {
 var check = helpers.check;
 var checkVarArity = helpers.checkVarArity;
 
-var checkList = function(x, functionName, position, args) {
+var checkList = function(aState, x, functionName, position, args) {
 	if ( !isList(x) ) {
-		helpers.throwCheckError(undefined,
-					[functionName,
-					 'list',
-					 helpers.ordinalize(position),
-					 x],
+		console.log("not a list, calling throwCheckError");
+
+		helpers.throwCheckError(aState,
+					{ functionName: functionName,
+					  typeName: 'list',
+					  ordinalPosition: helpers.ordinalize(position),
+					  actualValue: x },
 					position,
 					args);
 	}
@@ -601,14 +606,15 @@ var checkList = function(x, functionName, position, args) {
 
 var checkListOf = helpers.checkListOf;
 
-var checkListOfLength = function(lst, n, functionName, position, args) {
+var checkListOfLength = function(aState, lst, n, functionName, position, args) {
 	if ( !isList(lst) || (length(lst) < n) ) {
-		helpers.throwCheckError([functionName,
-					 'list with ' + n + ' or more elements',
-					 helpers.ordinalize(position),
-					 lst],
-					position,
-					args);
+		helpers.throwCheckError(aState,
+							{functionName: functionName,
+							 typeName: 'list with ' + n + ' or more elements',
+							 ordinalPosition: helpers.ordinalize(position),
+							 actualValue: lst},
+							 position,
+							 args);
 	}
 }
 
@@ -845,7 +851,7 @@ PRIMITIVES['for-each'] =
 		 	 var allArgs = [f, firstArg].concat(arglists);
 		 	 arglists.unshift(firstArg);
 			 check(aState, f, isFunction, 'for-each', 'procedure', 1, allArgs);
-			 arrayEach(arglists, function(lst, i) {checkList(lst, 'for-each', i+2, allArgs);});
+			 arrayEach(arglists, function(lst, i) {checkList(aState, lst, 'for-each', i+2, allArgs);});
 			 checkAllSameLength(arglists, 'for-each', allArgs);
 
 			 var forEachHelp = function(args) {
@@ -968,7 +974,7 @@ PRIMITIVES['make-struct-type'] =
 		// TODO: check props
 		// TODO: check inspector
 		// TODO: check procSpect
-		checkListOf(immutables, isNatural, 'make-struct-type', 'exact non-negative integer', 9, userArgs);
+		checkListOf(aState, immutables, isNatural, 'make-struct-type', 'exact non-negative integer', 9, userArgs);
 		check(aState, guard, function(x) { return x === false || isFunction(x); },
 		      'make-struct-type', 'procedure or #f', 10, userArgs);
 		// Check the number of arguments on the guard
@@ -1099,7 +1105,7 @@ PRIMITIVES['apply'] =
 		 	args.unshift(firstArg);
 
 			var lastArg = args.pop();
-			checkList(lastArg, 'apply', args.length+2, allArgs);
+			checkList(aState, lastArg, 'apply', args.length+2, allArgs);
 			var args = args.concat(helpers.schemeListToArray(lastArg));
 
 			return  CALL(f, args, id);
@@ -2191,7 +2197,7 @@ PRIMITIVES['cons'] =
 		 2,
 		 false, false,
 		 function(aState, f, r) {
-//		 	checkList(r, "cons", 2);
+//		 	checkList(aState, r, "cons", 2);
 		 	return types.cons(f, r);
 		 });
 
@@ -2389,7 +2395,7 @@ PRIMITIVES['second'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-			checkListOfLength(lst, 2, 'second', 1);
+			checkListOf(aState, lst, 2, 'second', 1);
 			return lst.rest().first();
 		 });
 
@@ -2398,7 +2404,7 @@ PRIMITIVES['third'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 3, 'third', 1);
+		 	checkListOfLength(aState, lst, 3, 'third', 1);
 			return lst.rest().rest().first();
 		 });
 
@@ -2407,7 +2413,7 @@ PRIMITIVES['fourth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 4, 'fourth', 1);
+		 	checkListOfLength(aState, lst, 4, 'fourth', 1);
 			return lst.rest().rest().rest().first();
 		 });
 
@@ -2416,7 +2422,7 @@ PRIMITIVES['fifth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 5, 'fifth', 1);
+		 	checkListOfLength(aState, lst, 5, 'fifth', 1);
 		 	return lst.rest().rest().rest().rest().first();
 		 });
 
@@ -2425,7 +2431,7 @@ PRIMITIVES['sixth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 6, 'sixth', 1);
+		 	checkListOfLength(aState, lst, 6, 'sixth', 1);
 		 	return lst.rest().rest().rest().rest().rest().first();
 		 });
 
@@ -2435,7 +2441,7 @@ PRIMITIVES['seventh'] =
 		 1,
 		 false, false,
  	         function(aState, lst) {
-		 	checkListOfLength(lst, 7, 'seventh', 1);
+		 	checkListOfLength(aState, lst, 7, 'seventh', 1);
 		 	return lst.rest().rest().rest().rest().rest().rest().first();
 		 });
 
@@ -2444,7 +2450,7 @@ PRIMITIVES['eighth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 8, 'eighth', 1);
+		 	checkListOfLength(aState, lst, 8, 'eighth', 1);
 		 	return lst.rest().rest().rest().rest().rest().rest().rest().first();
 		 });
 
@@ -2480,7 +2486,7 @@ PRIMITIVES['list*'] =
 			}
 		 
 		 	var lastListItem = otherItems.pop();
-		 	checkList(lastListItem, 'list*', otherItems.length+2, allArgs);
+		 	checkList(aState, lastListItem, 'list*', otherItems.length+2, allArgs);
 
 		 	otherItems.unshift(items);
 		 	return append([types.list(otherItems), lastListItem]);
@@ -2492,7 +2498,7 @@ PRIMITIVES['list-ref'] =
 		 2,
 		 false, false,
 		 function(aState, origList, num) {
-		 	checkList(origList, 'list-ref', 1, arguments);
+		 	checkList(aState, origList, 'list-ref', 1, arguments);
 		 	check(aState, num, isNatural, 'list-ref', 'non-negative exact integer', 2, arguments);
 
 		 	var positionStack = 
@@ -2528,7 +2534,7 @@ PRIMITIVES['list-tail'] =
 		 2,
 		 false, false,
 		 function(aState, lst, num) {
-		 	checkList(lst, 'list-tail', 1, arguments);
+		 	checkList(aState, lst, 'list-tail', 1, arguments);
 			check(aState, x, isNatural, 'list-tail', 'non-negative exact integer', 2, arguments);
 
 			var lst = origList;
@@ -2550,7 +2556,7 @@ PRIMITIVES['append'] =
     new PrimProc('append',
 		 0,
 		 true, false,
-		 function(aState, args) { return append(args); });
+		 function(aState, args) { return append(aState, args); });
 
 
 PRIMITIVES['reverse'] =
@@ -2558,7 +2564,7 @@ PRIMITIVES['reverse'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkList(lst, 'reverse', 1);
+		 	checkList(aState, lst, 'reverse', 1);
 		 	return lst.reverse();
 		 });
 
@@ -2571,7 +2577,7 @@ PRIMITIVES['map'] =
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
-		 	arrayEach(arglists, function(x, i) {checkList(x, 'map', i+2, allArgs);});
+		 	arrayEach(arglists, function(x, i) {checkList(aState, x, 'map', i+2, allArgs);});
 			checkAllSameLength(arglists, 'map', allArgs);
 			
 			var mapHelp = function(f, args, acc) {
@@ -2603,7 +2609,7 @@ PRIMITIVES['andmap'] =
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'andmap', 'procedure', 1, allArgs);
-		  	arrayEach(arglists, function(x, i) {checkList(x, 'andmap', i+2, allArgs);});
+		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'andmap', i+2, allArgs);});
 			checkAllSameLength(arglists, 'andmap', allArgs);
   
 			var andmapHelp = function(f, args) {
@@ -2635,7 +2641,7 @@ PRIMITIVES['ormap'] =
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'ormap', 'procedure', 1, allArgs);
-		  	arrayEach(arglists, function(x, i) {checkList(x, 'ormap', i+2, allArgs);});
+		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'ormap', i+2, allArgs);});
 			checkAllSameLength(arglists, 'ormap', allArgs);
 
 			var ormapHelp = function(f, args) {
@@ -2664,7 +2670,7 @@ PRIMITIVES['memq'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'memq', 2, arguments);
+		 	checkList(aState, lst, 'memq', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEq(item, lst.first()) ) {
 					return lst;
@@ -2680,7 +2686,7 @@ PRIMITIVES['memv'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'memv', 2, arguments);
+		 	checkList(aState, lst, 'memv', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEqv(item, lst.first()) ) {
 					return lst;
@@ -2696,7 +2702,7 @@ PRIMITIVES['member'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'member', 2, arguments);
+		 	checkList(aState, lst, 'member', 2, arguments);
 		 	while ( !lst.isEmpty() ) {
 		 		if ( isEqual(item, lst.first()) ) {
 		 			return lst;
@@ -2711,7 +2717,7 @@ PRIMITIVES['member?'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'member?', 2, arguments);
+		 	checkList(aState, lst, 'member?', 2, arguments);
 		 	while ( !lst.isEmpty() ) {
 		 		if ( isEqual(item, lst.first()) ) {
 		 			return true;
@@ -2728,7 +2734,7 @@ PRIMITIVES['memf'] =
 		 false, true,
 		 function(aState, f, initList) {
 		 	check(aState, f, isFunction, 'memf', 'procedure', 1, arguments);
-			checkList(initList, 'memf', 2, arguments);
+			checkList(aState, initList, 'memf', 2, arguments);
 
 			var memfHelp = function(lst) {
 				if ( lst.isEmpty() ) {
@@ -2752,7 +2758,7 @@ PRIMITIVES['assq'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkListOf(lst, isPair, 'assq', 'pair', 2, arguments);
+		 	checkListOf(aState, lst, isPair, 'assq', 'pair', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEq(item, lst.first().first()) ) {
 					return lst.first();
@@ -2768,7 +2774,7 @@ PRIMITIVES['assv'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkListOf(lst, isPair, 'assv', 'pair', 2, arguments);
+		 	checkListOf(aState, lst, isPair, 'assv', 'pair', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEqv(item, lst.first().first()) ) {
 					return lst.first();
@@ -2784,7 +2790,7 @@ PRIMITIVES['assoc'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkListOf(lst, isPair, 'assoc', 'pair', 2, arguments);
+		 	checkListOf(aState, lst, isPair, 'assoc', 'pair', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEqual(item, lst.first().first()) ) {
 					return lst.first();
@@ -2800,7 +2806,7 @@ PRIMITIVES['remove'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'remove', 2, arguments);
+		 	checkList(aState, lst, 'remove', 2, arguments);
 		 	var originalLst = lst;
 		 	var result = types.EMPTY;
 		 	while ( !lst.isEmpty() ) {
@@ -2821,7 +2827,7 @@ PRIMITIVES['filter'] =
 		 false, false,
 		 function(aState, f, lst) {
 		 	check(aState, f, procArityContains(1), 'filter', 'procedure (arity 1)', 1, arguments);
-			checkList(lst, 'filter', 2);
+			checkList(aState, lst, 'filter', 2);
 
 			var filterHelp = function(f, lst, acc) {
 				if ( lst.isEmpty() ) {
@@ -2850,7 +2856,7 @@ PRIMITIVES['foldl'] =
 		 	arglists.unshift(lst);
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldl', 'procedure', 1, allArgs);
-			arrayEach(arglists, function(x, i) {checkList(x, 'foldl', i+3, allArgs);});
+			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldl', i+3, allArgs);});
 			checkAllSameLength(arglists, 'foldl', allArgs);
 	
 			return foldHelp(f, initAcc, arglists);
@@ -2864,7 +2870,7 @@ PRIMITIVES['foldr'] =
 		 	arglists.unshift(lst);
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldr', 'procedure', 1, allArgs);
-			arrayEach(arglists, function(x, i) {checkList(x, 'foldr', i+3, allArgs);});
+			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldr', i+3, allArgs);});
 			checkAllSameLength(arglists, 'foldr', allArgs);
 
 			for (var i = 0; i < arglists.length; i++) {
@@ -3015,7 +3021,7 @@ PRIMITIVES['make-hash'] =
 		      1,
 		      false, false,
 		      function(aState, lst) {
-			  checkListOf(lst, isPair, 'make-hash', 'list of pairs', 1);
+			  checkListOf(aState, lst, isPair, 'make-hash', 'list of pairs', 1);
 			  return types.hash(lst);
 		      }) ]);
 
@@ -3026,7 +3032,7 @@ PRIMITIVES['make-hasheq'] =
 		      1,
 		      false, false,
 		      function(aState, lst) {
-			  checkListOf(lst, isPair, 'make-hasheq', 'list of pairs', 1);
+			  checkListOf(aState, lst, isPair, 'make-hasheq', 'list of pairs', 1);
 			  return types.hashEq(lst);
 		      }) ]);
 
@@ -3485,7 +3491,7 @@ PRIMITIVES['list->string'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOf(lst, isChar, 'list->string', 'char', 1);
+		 	checkListOf(aState, lst, isChar, 'list->string', 'char', 1);
 
 			var ret = [];
 			while( !lst.isEmpty() ) {
@@ -3595,7 +3601,7 @@ PRIMITIVES['implode'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOf(lst, function(x) { return isString(x) && x.length == 1; },
+		 	checkListOf(aState, lst, function(x) { return isString(x) && x.length == 1; },
 				    'implode', 'list of 1-letter strings', 1);
 			var ret = [];
 			while ( !lst.isEmpty() ) {
@@ -3961,7 +3967,7 @@ PRIMITIVES['list->bytes'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOf(lst, isByte, 'list->bytes', 'byte', 1);
+		 	checkListOf(aState, lst, isByte, 'list->bytes', 'byte', 1);
 
 			var ret = [];
 			while ( !lst.isEmpty() ) {
@@ -4106,7 +4112,7 @@ PRIMITIVES['list->vector'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkList(lst, 'list->vector', 1);
+		 	checkList(aState, lst, 'list->vector', 1);
 			return types.vector( helpers.schemeListToArray(lst) );
 		 });
 
@@ -5443,7 +5449,7 @@ PRIMITIVES['image->color-list'] =
 
 // Note: this has to be done asynchonously.
 var colorListToImage = function(aState, listOfColors, width, height, pinholeX, pinholeY) {
-    checkListOf(listOfColors, isColor, 'color-list->image', 'image', 1);
+    checkListOf(aState, listOfColors, isColor, 'color-list->image', 'image', 1);
     check(aState, width, isNatural, 'color-list->image', 'natural', 2);
     check(aState, height, isNatural, 'color-list->image', 'natural', 3);
     check(aState, pinholeX, isNatural, 'color-list->image', 'natural', 4);
@@ -6108,9 +6114,9 @@ PRIMITIVES['initial-effect'] =
  *** Jsworld Primitives ***
  **************************/
 
-
+//fixme pass in aState?
 var jsp = function(attribList) {
-	checkListOf(attribList, function(x) { return isList(x) && length(x) == 2; },
+	checkListOf(undefined, attribList, function(x) { return isList(x) && length(x) == 2; },
 		    'js-p', 'list of (list of X Y)', 1);
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.p(attribs);
@@ -6127,7 +6133,7 @@ PRIMITIVES['js-p'] =
 
 
 var jsdiv = function(attribList) {
-	checkListOf(attribList, isAssocList, 'js-div', '(listof X Y)', 1);
+	checkListOf(undefined, attribList, isAssocList, 'js-div', '(listof X Y)', 1);
 
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.div(attribs);
@@ -6148,7 +6154,7 @@ var jsButtonBang = function(funName) {
     return function(aState, worldUpdateF, effectF, attribList) {
 		check(aState, worldUpdateF, isFunction, funName, 'procedure', 1);
 		check(aState, effectF, isFunction, funName, 'procedure', 2);
-		checkListOf(attribList, isAssocList, funName, '(listof X Y)', 3);
+		checkListOf(undefined, attribList, isAssocList, funName, '(listof X Y)', 3);
 
 		var attribs = attribList ? assocListToHash(attribList) : {};
 		var node = jsworld.MobyJsworld.buttonBang(worldUpdateF, effectF, attribs);
@@ -6180,7 +6186,7 @@ PRIMITIVES['js-button!'] =
 var jsInput = function(type, updateF, attribList) {
 	check(aState, type, isString, 'js-input', 'string', 1);
 	check(aState, updateF, isFunction, 'js-input', 'procedure', 2);
-	checkListOf(attribList, isAssocList, 'js-input', '(listof X Y)', 3);
+	checkListOf(undefined, attribList, isAssocList, 'js-input', '(listof X Y)', 3);
 
 	var attribs = attribList ? assocListToHash(attribList) : {};
 	var node = jsworld.MobyJsworld.input(type, updateF, attribs);
@@ -6201,7 +6207,7 @@ PRIMITIVES['js-input'] =
 
 var jsImg = function(src, attribList) {
 	check(aState, src, isString, "js-img", "string", 1);
-	checkListOf(attribList, isAssocList, 'js-img', '(listof X Y)', 2);
+	checkListOf(undefined, attribList, isAssocList, 'js-img', '(listof X Y)', 2);
 
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.img(src, attribs);
@@ -6234,9 +6240,9 @@ PRIMITIVES['js-text'] =
 
 
 var jsSelect = function(optionList, updateF, attribList) {
-	checkListOf(optionList, isString, 'js-select', 'listof string', 1);
+	checkListOf(undefined, optionList, isString, 'js-select', 'listof string', 1);
 	check(aState, updateF, isFunction, 'js-select', 'procedure', 2);
-	checkListOf(attribList, isAssocList, 'js-select', '(listof X Y)', 3);
+	checkListOf(undefined, attribList, isAssocList, 'js-select', '(listof X Y)', 3);
 
 	var attribs = attribList ? assocListToHash(attribList) : {};
 	var options = helpers.deepListToArray(optionList);
@@ -6338,7 +6344,7 @@ PRIMITIVES['js-big-bang'] =
 
 
     var emptyPage = function(attribList) {
-	checkListOf(attribList, isAssocList, 'empty-page', '(listof X Y)', 1);
+	checkListOf(undefined, attribList, isAssocList, 'empty-page', '(listof X Y)', 1);
 
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.emptyPage(attribs);
@@ -6412,7 +6418,7 @@ PRIMITIVES['make-effect-type'] =
 		      'make-effect-type', 'effect type or #f', 2, userArgs);
 		check(aState, fieldCnt, isNatural, 'make-effect-type', 'exact non-negative integer', 3, userArgs);
 		check(aState, impl, isFunction, 'make-effect-type', 'procedure', 4, userArgs);
-//		checkListOf(handlerIndices, isNatural, 'make-effect-type', 'exact non-negative integer', 5);
+//		checkListOf(aState, handlerIndices, isNatural, 'make-effect-type', 'exact non-negative integer', 5);
 		check(aState, guard, function(x) { return x === false || isFunction(x); }, 'make-effect-type', 'procedure or #f', 6, userArgs);
 		// Check the number of arguments on the guard
 		var numberOfGuardArgs = fieldCnt + 1 + (superType ? superType.numberOfArgs : 0);
@@ -6791,7 +6797,7 @@ PRIMITIVES['js-make-hash'] =
 		      1,
 		      false, false,
 		      function(aState, bindings) {
-			  checkListOf(bindings, function(x) { return isAssocList(x) && isString(x.first()); },
+			  checkListOf(aState, bindings, function(x) { return isAssocList(x) && isString(x.first()); },
 				      'js-make-hash', '(listof string X)', 1);
 
 			  var ret = {};
