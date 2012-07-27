@@ -16081,8 +16081,17 @@ PRIMITIVES['hash-ref'] =
 			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if ( !obj.hash.containsKey(key) ) {
-			  	var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
-			  	raise( types.incompleteExn(types.exnFailContract, msg, []) );
+			  	//var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
+			  	var positionStack = 
+					state.captureCurrentContinuationMarks(aState).ref(
+					    types.symbol('moby-application-position-key'));
+			    var locationList = positionStack[positionStack.length - 1];
+
+			  	raise( types.incompleteExn(types.exnFailContract, 
+			  		new types.Message([new types.ColoredPart("hash-ref", locationList.first()),
+			  							": no value found for key ",
+			  							new types.ColoredPart(types.toWrittenString(key), locationList.rest().rest().first())]), 
+			  		[]) );
 			  }
 			  return obj.hash.get(key);
 		      }),
@@ -16237,7 +16246,20 @@ PRIMITIVES['string-ref'] =
 				var msg = ('string-ref: index ' + n + ' out of range ' +
 					   '[0, ' + (str.length-1) + '] for string: ' +
 					   types.toWrittenString(str));
-				raise( types.incompleteExn(types.exnFailContract, msg, []) );
+				var positionStack = 
+					state.captureCurrentContinuationMarks(aState).ref(
+					    types.symbol('moby-application-position-key'));
+			    var locationList = positionStack[positionStack.length - 1];
+
+			  	raise( types.incompleteExn(types.exnFailContract, 
+			  		new types.Message([new types.ColoredPart("string-ref", locationList.first()),
+			  							": index ",
+			  							n,
+			  							' out of range [0, ',
+										(str.length-1),
+										'] for string: ',
+			  							new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())]), 
+			  		[]) );
 			}
 			return types['char'](str.charAt(n));
 		 });
