@@ -595,7 +595,6 @@ var checkVarArity = helpers.checkVarArity;
 
 var checkList = function(aState, x, functionName, position, args) {
 	if ( !isList(x) ) {
-		console.log("not a list, calling throwCheckError");
 
 		helpers.throwCheckError(aState,
 					{ functionName: functionName,

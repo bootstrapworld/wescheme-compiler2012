@@ -259,21 +259,16 @@ var helpers = {};
 			state.captureCurrentContinuationMarks(aState).ref(
 	    		types.symbol('moby-application-position-key'));
 
-			console.log("successfully gets positionStack, it is ", positionStack);
-
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined && (! (positionStack[positionStack.length - 1]).isNoLocation)) {
-				console.log("colored check error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		console.log("uncolored check error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
 	var check = function(aState, x, f, functionName, typeName, position, args) {
-		console.log("check started");
 		if ( !f(x) ) {
 			throwCheckError(aState, 
 					{ functionName: functionName,
