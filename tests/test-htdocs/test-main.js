@@ -3693,9 +3693,6 @@ var runTests = function() {
                         "(for-each 1 2 3 4 5)",
                         "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
 
-        queueErrorTest("test for-each type",
-                        "(for-each 1 2)",
-                        "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
         //////////////////////////////////////////////////////////////////////
 
 

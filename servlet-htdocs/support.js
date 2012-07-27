@@ -13156,24 +13156,46 @@ var length = function(lst) {
 	}
 	return ret;
 }
-
+/*
 var append = function(aState, initArgs) {
 	console.log("calls append helper");
+	window.initArgs = initArgs;
 	if (initArgs.length == 0) {
 		return types.EMPTY;
 	}
 	var args = initArgs.slice(0, initArgs.length-1);
 	var lastArg = initArgs[initArgs.length - 1];
+	console.log("finishes doing things with args");
 
-	console.log("does things with args");
 	arrayEach(args, function(x, i) {checkList(aState, x, 'append', i+1, initArgs);});
 	console.log("successfully completes arrayEach");
 	var ret = lastArg;
 	for (var i = args.length-1; i >= 0; i--) {
-		ret = args[i].append(ret);
+		ret = args[i].append(aState, ret);
 	}
 	return ret;
 }
+*/
+var append = function(aState, initArgs) {
+	if (initArgs.length == 0) {
+		return types.EMPTY;
+	}
+	var args = initArgs.slice(0, initArgs.length-1);
+	var lastArg = initArgs[initArgs.length - 1];
+	arrayEach(args, function(x, i) {checkList(aState, x, 'append', i+1, initArgs);});
+
+	var ret = lastArg;
+	for (var i = args.length-1; i >= 0; i--) {
+		ret = args[i].append(ret);
+		console.log("args[i].append is ", args[i].append);
+	}
+	return ret;
+}
+
+
+
+
+
 
 var foldHelp = function(f, acc, args) {
 	if ( args[0].isEmpty() ) {
@@ -13219,7 +13241,7 @@ var quicksort = function(functionName) {
 							function(half2) {
 							    return CALL(recCallProc, [half2],
 									function(sorted2) {
-									    return append([sorted1,
+									    return append(aState, [sorted1,
 											   types.list([lst.first()]),
 											   sorted2]);
 									});
@@ -15513,7 +15535,7 @@ PRIMITIVES['list*'] =
 		 	checkList(aState, lastListItem, 'list*', otherItems.length+2, allArgs);
 
 		 	otherItems.unshift(items);
-		 	return append([types.list(otherItems), lastListItem]);
+		 	return append(aState, [types.list(otherItems), lastListItem]);
 		 });
 
 
@@ -15835,7 +15857,7 @@ PRIMITIVES['remove'] =
 		 	var result = types.EMPTY;
 		 	while ( !lst.isEmpty() ) {
 		 		if ( isEqual(item, lst.first()) ) {
-		 			return append([result.reverse(), lst.rest()]);
+		 			return append(aState, [result.reverse(), lst.rest()]);
 		 		} else {
 		 			result = types.cons(lst.first(), result);
 		 			lst = lst.rest();
@@ -19331,7 +19353,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'js-big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
+					      'big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
