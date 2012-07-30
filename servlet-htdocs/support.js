@@ -775,6 +775,8 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
+       		console.log("locationList is ", locationList);
+
        		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
@@ -782,21 +784,26 @@ var helpers = {};
 				var i;
 
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
-						if(i != pos) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
-						}
-						locs = locs.rest();
+						if(! (locs.isEmpty())){
+							if(i != pos) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
+					    }
 					}
 				}
 				else {
 					for(i = 0; i < args.length; i++){
-						if(i != (pos -1)) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+						if(! (locs.isEmpty())){
+							if(i != (pos -1)) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
 						}
-						locs = locs.rest();
 					}
 				}
 				return coloredParts;
@@ -812,8 +819,13 @@ var helpers = {};
 				return locs.first();
 			}
 
-			//console.log("args: ", args);
-			//console.log("locs passed in: ", locationList.rest());
+<<<<<<< HEAD
+	//		console.log("args: ", args);
+	//		console.log("locs passed in: ", locationList.rest());
+			var argColoredParts = getArgColoredParts(locationList.rest());
+	//		console.log(argColoredParts);
+=======
+>>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -832,7 +844,10 @@ var helpers = {};
 							   []) );
 				}
 			}
+<<<<<<< HEAD
 			
+=======
+>>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -849,8 +864,6 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		window.aState = aState;
-		console.log("throwCheckError started, aState is ",aState);
 		
 		if(aState instanceof state.State){
 			//if it's defined and a State, can inspect position stack
@@ -858,21 +871,18 @@ var helpers = {};
 			state.captureCurrentContinuationMarks(aState).ref(
 	    		types.symbol('moby-application-position-key'));
 
-			console.log("successfully gets positionStack, it is ", positionStack);
-
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				console.log("colored check error");
+				//console.log("colored error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		console.log("uncolored check error");
+		//console.log("uncolored error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
 	var check = function(aState, x, f, functionName, typeName, position, args) {
-		console.log("check started");
 		if ( !f(x) ) {
 			throwCheckError(aState, 
 					{ functionName: functionName,
@@ -885,8 +895,6 @@ var helpers = {};
 	};
 
 	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
-		//window.huh = args;
-
 		//check to ensure last thing is an array
 		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
 			var flattenedArgs = [];
@@ -7693,10 +7701,10 @@ Empty.prototype.reverse = function() {
 };
 
 Empty.prototype.first = function() {
-    throwRuntimeError("first can't be applied on empty.");
+    throw new Error("first can't be applied on empty.");
 };
 Empty.prototype.rest = function() {
-    throwRuntimeError("rest can't be applied on empty.");
+    throw new Error("rest can't be applied on empty.");
 };
 Empty.prototype.isEmpty = function() {
     return true;
@@ -9053,7 +9061,6 @@ MultiPart.prototype.toString = function() {
 };
 
 
-
 //////////////////////////////////////////////////////////////////////
 
 
@@ -9072,7 +9079,7 @@ var makeList = function(args) {
 
 var makeVector = function(args) {
     return Vector.makeInstance(args.length, args);
-}
+};
 
 var makeString = function(s) {
 	if (s instanceof Str) {
@@ -9094,7 +9101,7 @@ var makeString = function(s) {
 					  ' given ' + s.toString(),
 					  false);
 	}
-}
+};
 
 
 var makeHashEq = function(lst) {
@@ -9104,7 +9111,7 @@ var makeHashEq = function(lst) {
 		lst = lst.rest();
 	}
 	return newHash;
-}
+};
 
 
 var makeHashEqual = function(lst) {
@@ -9114,7 +9121,17 @@ var makeHashEqual = function(lst) {
 		lst = lst.rest();
 	}
 	return newHash;
-}
+};
+
+
+//if there is not enough location information available,
+//this allows for highlighting to be turned off
+var NoLocation = makeVector(['<no-location>', 0,0,0,0]);
+
+var isNoLocation = function(o) {
+  return o === NoLocation;
+};
+
 
 
 var Posn = makeStructureType('posn', false, 2, 0, false, false);
@@ -9362,7 +9379,8 @@ types.isRenderEffect = RenderEffect.predicate;
 //types.setRenderEffectEffects = function(x, v) { RenderEffect.mutator(x, 1, v); };
 
 
-
+types.NoLocation = NoLocation;
+types.isNoLocation = isNoLocation;
 
 
 
@@ -13147,9 +13165,8 @@ var normalizeArity = function(arity) {
 
 var procArityContains = helpers.procArityContains;
 
-//fixme pass in state?
+
 var length = function(lst) {
-	checkList(lst, 'length', 1, [lst]);
 	var ret = 0;
 	for (; !lst.isEmpty(); lst = lst.rest()) {
 		ret = ret+1;
@@ -13158,22 +13175,24 @@ var length = function(lst) {
 }
 
 var append = function(aState, initArgs) {
-	console.log("calls append helper");
 	if (initArgs.length == 0) {
 		return types.EMPTY;
 	}
 	var args = initArgs.slice(0, initArgs.length-1);
 	var lastArg = initArgs[initArgs.length - 1];
-
-	console.log("does things with args");
 	arrayEach(args, function(x, i) {checkList(aState, x, 'append', i+1, initArgs);});
-	console.log("successfully completes arrayEach");
+
 	var ret = lastArg;
 	for (var i = args.length-1; i >= 0; i--) {
 		ret = args[i].append(ret);
 	}
 	return ret;
 }
+
+
+
+
+
 
 var foldHelp = function(f, acc, args) {
 	if ( args[0].isEmpty() ) {
@@ -13219,7 +13238,7 @@ var quicksort = function(functionName) {
 							function(half2) {
 							    return CALL(recCallProc, [half2],
 									function(sorted2) {
-									    return append([sorted1,
+									    return append(aState, [sorted1,
 											   types.list([lst.first()]),
 											   sorted2]);
 									});
@@ -13319,8 +13338,10 @@ var isWorldConfigOption = function(x) { return x instanceof WorldConfigOption; }
 
 var onEvent = function(funName, inConfigName, numArgs) {
     return function(aState, handler) {
-	return onEventBang(funName, inConfigName)(handler,
-						  new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
+		return onEventBang(funName, inConfigName)(
+			    aState,
+				handler,
+				new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
     };
 };
 
@@ -13616,8 +13637,6 @@ var checkVarArity = helpers.checkVarArity;
 
 var checkList = function(aState, x, functionName, position, args) {
 	if ( !isList(x) ) {
-		console.log("not a list, calling throwCheckError");
-
 		helpers.throwCheckError(aState,
 					{ functionName: functionName,
 					  typeName: 'list',
@@ -13642,15 +13661,15 @@ var checkListOfLength = function(aState, lst, n, functionName, position, args) {
 	}
 }
 
-var checkAllSameLength = function(lists, functionName, args) {
-	if (lists.length == 0)
+var checkAllSameLength = function(aState, lists, functionName, args) {
+	if (lists.length === 0)
 		return;
-	
+
 	var len = length(lists[0]);
 	arrayEach(lists,
 		  function(lst, i) {
 			if (length(lst) != len) {
-				var argsStr = helpers.map(function(x) { return " ~s"; }, args).join('');
+				var argStr = helpers.map(function(x) { return " ~s"; }, args).join('');
 				var msg = helpers.format(functionName + ': all lists must have the same size; arguments were:' + argStr,
 							 args);
 				raise( types.incompleteExn(types.exnFailContract, msg, []) );
@@ -13876,7 +13895,7 @@ PRIMITIVES['for-each'] =
 		 	 arglists.unshift(firstArg);
 			 check(aState, f, isFunction, 'for-each', 'procedure', 1, allArgs);
 			 arrayEach(arglists, function(lst, i) {checkList(aState, lst, 'for-each', i+2, allArgs);});
-			 checkAllSameLength(arglists, 'for-each', allArgs);
+			 checkAllSameLength(aState, arglists, 'for-each', allArgs);
 
 			 var forEachHelp = function(args) {
 			     if (args[0].isEmpty()) {
@@ -15513,7 +15532,7 @@ PRIMITIVES['list*'] =
 		 	checkList(aState, lastListItem, 'list*', otherItems.length+2, allArgs);
 
 		 	otherItems.unshift(items);
-		 	return append([types.list(otherItems), lastListItem]);
+		 	return append(aState, [types.list(otherItems), lastListItem]);
 		 });
 
 
@@ -15602,8 +15621,8 @@ PRIMITIVES['map'] =
 		 	arglists.unshift(lst);
 		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(aState, x, 'map', i+2, allArgs);});
-			checkAllSameLength(arglists, 'map', allArgs);
-			
+			checkAllSameLength(aState, arglists, 'map', allArgs);
+
 			var mapHelp = function(f, args, acc) {
 				if (args[0].isEmpty()) {
 				    return acc.reverse();
@@ -15634,7 +15653,7 @@ PRIMITIVES['andmap'] =
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'andmap', 'procedure', 1, allArgs);
 		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'andmap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'andmap', allArgs);
+			checkAllSameLength(aState, arglists, 'andmap', allArgs);
   
 			var andmapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -15666,7 +15685,7 @@ PRIMITIVES['ormap'] =
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'ormap', 'procedure', 1, allArgs);
 		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'ormap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'ormap', allArgs);
+			checkAllSameLength(aState, arglists, 'ormap', allArgs);
 
 			var ormapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -15835,7 +15854,7 @@ PRIMITIVES['remove'] =
 		 	var result = types.EMPTY;
 		 	while ( !lst.isEmpty() ) {
 		 		if ( isEqual(item, lst.first()) ) {
-		 			return append([result.reverse(), lst.rest()]);
+		 			return append(aState, [result.reverse(), lst.rest()]);
 		 		} else {
 		 			result = types.cons(lst.first(), result);
 		 			lst = lst.rest();
@@ -15881,7 +15900,7 @@ PRIMITIVES['foldl'] =
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldl', 'procedure', 1, allArgs);
 			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldl', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldl', allArgs);
+			checkAllSameLength(aState, arglists, 'foldl', allArgs);
 	
 			return foldHelp(f, initAcc, arglists);
 		});
@@ -15895,7 +15914,7 @@ PRIMITIVES['foldr'] =
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldr', 'procedure', 1, allArgs);
 			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldr', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldr', allArgs);
+			checkAllSameLength(aState, arglists, 'foldr', allArgs);
 
 			for (var i = 0; i < arglists.length; i++) {
 				arglists[i] = arglists[i].reverse();
@@ -16079,8 +16098,17 @@ PRIMITIVES['hash-ref'] =
 			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if ( !obj.hash.containsKey(key) ) {
-			  	var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
-			  	raise( types.incompleteExn(types.exnFailContract, msg, []) );
+			  	//var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
+			  	var positionStack = 
+					state.captureCurrentContinuationMarks(aState).ref(
+					    types.symbol('moby-application-position-key'));
+			    var locationList = positionStack[positionStack.length - 1];
+
+			  	raise( types.incompleteExn(types.exnFailContract, 
+			  		new types.Message([new types.ColoredPart("hash-ref", locationList.first()),
+			  							": no value found for key ",
+			  							new types.ColoredPart(types.toWrittenString(key), locationList.rest().rest().first())]), 
+			  		[]) );
 			  }
 			  return obj.hash.get(key);
 		      }),
@@ -16095,6 +16123,7 @@ PRIMITIVES['hash-ref'] =
 			  }
 			  else {
 				if (isFunction(defaultVal)) {
+					//window.call = CALL;
 					return CALL(defaultVal, [], id);
 				}
 				return defaultVal;
@@ -16235,7 +16264,20 @@ PRIMITIVES['string-ref'] =
 				var msg = ('string-ref: index ' + n + ' out of range ' +
 					   '[0, ' + (str.length-1) + '] for string: ' +
 					   types.toWrittenString(str));
-				raise( types.incompleteExn(types.exnFailContract, msg, []) );
+				var positionStack = 
+					state.captureCurrentContinuationMarks(aState).ref(
+					    types.symbol('moby-application-position-key'));
+			    var locationList = positionStack[positionStack.length - 1];
+
+			  	raise( types.incompleteExn(types.exnFailContract, 
+			  		new types.Message([new types.ColoredPart("string-ref", locationList.first()),
+			  							": index ",
+			  							n,
+			  							' out of range [0, ',
+										(str.length-1),
+										'] for string: ',
+			  							new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())]), 
+			  		[]) );
 			}
 			return types['char'](str.charAt(n));
 		 });
@@ -19331,7 +19373,11 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
+<<<<<<< HEAD
 					      'js-big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
+=======
+					      'big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
+>>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
@@ -19883,7 +19929,6 @@ primitive.setCALL = setCALL;
 primitive.setPAUSE = setPAUSE;
 
 })();
-
 // Control structures
 
 /*
@@ -20580,14 +20625,16 @@ var callPrimitiveProcedure = function(state, procValue, n, operandValues) {
 					 operandValues,
 					 n);
     var result = procValue.impl.apply(procValue.impl, args);
-    processPrimitiveResult(state, result, procValue);
+    processPrimitiveResult(state, result, procValue, n);
 };
 
 
-var processPrimitiveResult = function(state, result, procValue) {
+var processPrimitiveResult = function(state, result, procValue, n) {
     if (result instanceof INTERNAL_CALL) {
 	state.cstack.push(new InternalCallRestartControl
 			  (result.k, procValue));
+
+        addNoLocationContinuationMark(state, n);
 	callProcedure(state,
 		      result.operator, 
 		      result.operands.length, 
@@ -20633,6 +20680,24 @@ InternalCallRestartControl.prototype.invoke = function(state) {
 };
 
 primitive.setCALL(INTERNAL_CALL);
+
+
+
+// When we're doing an application, but we don't have source locations,
+// we the following function to add the mark.
+var addNoLocationContinuationMark = function(aState, n) {
+    var i;
+    var aHash = types.makeLowLevelEqHash();
+    var nonPositions = [types.NoLocation];
+    for (i = 0; i < n; i++) { nonPositions.push(types.NoLocation); }
+    aHash.put(types.symbol('moby-application-position-key'),
+              types.list(nonPositions));
+    aState.pushControl(types.contMarkRecordControl(aHash));
+};
+
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -20821,8 +20886,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
                 acceptableParameterArity.join(' or '),
                 " arguments, given ",
                 n,
-                ": ",
-                new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
     }
 
@@ -20846,14 +20911,13 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	   
 	    var locationList = positionStack[positionStack.length - 1];
 	    var argColoredParts = getArgColoredParts(locationList.rest());
-	   
-	    
+
+
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "anonymous function")), locationList.first()),
 			": expects ", 
-			''+(procValue.isRest ? 'at least' : ''),
-		        " ",
+			''+(procValue.isRest ? 'at least ' : ''),
 			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')), 
 							  procValue.locs.slice(1))
@@ -20863,8 +20927,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 					      ,
   		         ", given ",
 			n ,
-			": ", 
-			new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
 	}
     }

@@ -175,6 +175,8 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
+       		console.log("locationList is ", locationList);
+
        		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
@@ -182,21 +184,26 @@ var helpers = {};
 				var i;
 
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
-						if(i != pos) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
-						}
-						locs = locs.rest();
+						if(! (locs.isEmpty())){
+							if(i != pos) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
+					    }
 					}
 				}
 				else {
 					for(i = 0; i < args.length; i++){
-						if(i != (pos -1)) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+						if(! (locs.isEmpty())){
+							if(i != (pos -1)) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
 						}
-						locs = locs.rest();
 					}
 				}
 				return coloredParts;
@@ -212,8 +219,6 @@ var helpers = {};
 				return locs.first();
 			}
 
-			//console.log("args: ", args);
-			//console.log("locs passed in: ", locationList.rest());
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -232,7 +237,6 @@ var helpers = {};
 							   []) );
 				}
 			}
-			
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -249,8 +253,6 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		window.aState = aState;
-		console.log("throwCheckError started, aState is ",aState);
 		
 		if(aState instanceof state.State){
 			//if it's defined and a State, can inspect position stack
@@ -258,21 +260,18 @@ var helpers = {};
 			state.captureCurrentContinuationMarks(aState).ref(
 	    		types.symbol('moby-application-position-key'));
 
-			console.log("successfully gets positionStack, it is ", positionStack);
-
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				console.log("colored check error");
+				//console.log("colored error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		console.log("uncolored check error");
+		//console.log("uncolored error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
 	var check = function(aState, x, f, functionName, typeName, position, args) {
-		console.log("check started");
 		if ( !f(x) ) {
 			throwCheckError(aState, 
 					{ functionName: functionName,
@@ -285,8 +284,6 @@ var helpers = {};
 	};
 
 	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
-		//window.huh = args;
-
 		//check to ensure last thing is an array
 		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
 			var flattenedArgs = [];
