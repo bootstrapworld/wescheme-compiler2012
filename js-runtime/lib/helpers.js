@@ -186,11 +186,13 @@ var helpers = {};
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
+				var space = "";
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
 						if(! (locs.isEmpty())){
 							if(i != pos) {
-								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+								space = (locs.rest().isEmpty() ? "" : " ");
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+space, locs.first()));
 							}
 							locs = locs.rest();
 					    }
@@ -200,7 +202,8 @@ var helpers = {};
 					for(i = 0; i < args.length; i++){
 						if(! (locs.isEmpty())){
 							if(i != (pos -1)) {
-								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+								space = (locs.rest.isEmpty() ? "" : " ");
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+space, locs.first()));
 							}
 							locs = locs.rest();
 						}

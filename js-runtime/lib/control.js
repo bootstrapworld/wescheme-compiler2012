@@ -857,8 +857,10 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     var getArgColoredParts = function(locations) {
     	var argColoredParts = [];
     	var locs = locations;
+        var space = "";
     	if (operands.length > 0) {
     		for (var i = 0; i < operands.length; i++) {
+                space = (locs.rest().isEmpty() ? "" : " ");
     			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
     			locs = locs.rest();
     		}

@@ -3654,7 +3654,7 @@ var runTests = function() {
 		       "beside: expects type image as 1st argument, given: 2; other arguments were: 3 3 ");
 	
 	queueErrorTest("beside given bad args, correct number",
-		       "(beside 1 1)"
+		       "(beside 1 1)",
 		       "NOT SURE OF MESSAGE");
 
 	queueErrorTest("beside given 0 args",

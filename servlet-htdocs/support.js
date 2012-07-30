@@ -786,11 +786,13 @@ var helpers = {};
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
+				var space = "";
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
 						if(! (locs.isEmpty())){
 							if(i != pos) {
-								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+								space = (locs.rest().isEmpty() ? "" : " ");
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+space, locs.first()));
 							}
 							locs = locs.rest();
 					    }
@@ -800,7 +802,8 @@ var helpers = {};
 					for(i = 0; i < args.length; i++){
 						if(! (locs.isEmpty())){
 							if(i != (pos -1)) {
-								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+								space = (locs.rest.isEmpty() ? "" : " ");
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+space, locs.first()));
 							}
 							locs = locs.rest();
 						}
@@ -819,13 +822,6 @@ var helpers = {};
 				return locs.first();
 			}
 
-<<<<<<< HEAD
-	//		console.log("args: ", args);
-	//		console.log("locs passed in: ", locationList.rest());
-			var argColoredParts = getArgColoredParts(locationList.rest());
-	//		console.log(argColoredParts);
-=======
->>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -844,10 +840,6 @@ var helpers = {};
 							   []) );
 				}
 			}
-<<<<<<< HEAD
-			
-=======
->>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -18162,9 +18154,9 @@ new PrimProc('beside/align',
 			 3,
 			 true, false,
 			 function(aState, placeY, img1, img2, restImages) {
-			 check(aState, placeY, isPlaceY, "beside/align", "y-place", 1, arguments);
-			 check(aState, img1, isImage, "beside/align", "image", 2, arguments);
-			 check(aState, img2, isImage, "beside/align", "image", 3, arguments);
+			 checkVarArity(aState, placeY, isPlaceY, "beside/align", "y-place", 1, arguments);
+			 checkVarArity(aState, img1, isImage, "beside/align", "image", 2, arguments);
+			 checkVarArity(aState, img2, isImage, "beside/align", "image", 3, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "beside", "image", i+3); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -19373,11 +19365,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-<<<<<<< HEAD
-					      'js-big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
-=======
 					      'big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
->>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {

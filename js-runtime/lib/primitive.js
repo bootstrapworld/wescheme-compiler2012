@@ -5120,9 +5120,9 @@ new PrimProc('beside/align',
 			 3,
 			 true, false,
 			 function(aState, placeY, img1, img2, restImages) {
-			 check(aState, placeY, isPlaceY, "beside/align", "y-place", 1, arguments);
-			 check(aState, img1, isImage, "beside/align", "image", 2, arguments);
-			 check(aState, img2, isImage, "beside/align", "image", 3, arguments);
+			 checkVarArity(aState, placeY, isPlaceY, "beside/align", "y-place", 1, arguments);
+			 checkVarArity(aState, img1, isImage, "beside/align", "image", 2, arguments);
+			 checkVarArity(aState, img2, isImage, "beside/align", "image", 3, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "beside", "image", i+3); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
