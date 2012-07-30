@@ -9381,7 +9381,8 @@ types.GradientPart = GradientPart;
 types.isGradientPart = isGradientPart;
 types.MultiPart = MultiPart;
 types.isMultiPart = isMultiPart;
-
+types.NoLocation = NoLocation;
+types.isNoLocation = isNoLocation;
 
 
 })();
