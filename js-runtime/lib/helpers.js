@@ -175,6 +175,8 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
+       		console.log("locationList is ", locationList);
+
        		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
@@ -182,21 +184,26 @@ var helpers = {};
 				var i;
 
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
-						if(i != pos) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
-						}
-						locs = locs.rest();
+						if(! (locs.isEmpty())){
+							if(i != pos) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
+					    }
 					}
 				}
 				else {
 					for(i = 0; i < args.length; i++){
-						if(i != (pos -1)) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+						if(! (locs.isEmpty())){
+							if(i != (pos -1)) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
 						}
-						locs = locs.rest();
 					}
 				}
 				return coloredParts;
@@ -212,10 +219,6 @@ var helpers = {};
 				return locs.first();
 			}
 
-	//		console.log("args: ", args);
-	//		console.log("locs passed in: ", locationList.rest());
-			var argColoredParts = getArgColoredParts(locationList.rest());
-	//		console.log(argColoredParts);
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -234,7 +237,6 @@ var helpers = {};
 							   []) );
 				}
 			}
-			
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -251,18 +253,22 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
+		
+		if(aState instanceof state.State){
+			//if it's defined and a State, can inspect position stack
+			var positionStack = 
+			state.captureCurrentContinuationMarks(aState).ref(
+	    		types.symbol('moby-application-position-key'));
 
-		var positionStack = 
-        		state.captureCurrentContinuationMarks(aState).ref(
-            		types.symbol('moby-application-position-key'));
-        
-
-		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
-			throwUncoloredCheckError(aState, details, pos, args);
+			//if the positionStack at the correct position is defined, we can throw a colored error
+			if (positionStack[positionStack.length - 1] !== undefined) {
+				//console.log("colored error");
+				throwColoredCheckError(aState,details, pos, args);
+			}
 		}
-		else {
-			throwColoredCheckError(aState,details, pos, args);
-		}
+		//otherwise, throw an uncolored error
+		//console.log("uncolored error");
+		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
 	var check = function(aState, x, f, functionName, typeName, position, args) {
@@ -277,6 +283,25 @@ var helpers = {};
 		}
 	};
 
+	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
+		//check to ensure last thing is an array
+		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
+			var flattenedArgs = [];
+			var i;
+			for(i = 0; i < (args.length - 1); i++) {
+				flattenedArgs.push(args[i]);
+			}
+			//the angry variable names are because flattenedArgs = flattenedArgs.concat(args[args.length - 1]) doesn't work
+			var wtf1 = flattenedArgs;
+			var wtf2 = args[args.length -1];
+			var passOn = wtf1.concat(wtf2);
+
+			check(aState, x, f, functionName, typeName, position, passOn);
+		}
+		else {
+			check(aState, x, f, functionName, typeName, position, args);
+		}
+	};
     var isList = function(x) {
         var tortoise, hare;
         tortoise = hare = x;
@@ -315,13 +340,13 @@ var helpers = {};
 	    return (x === types.EMPTY);
 	};
 
-	var checkListOf = function(lst, f, functionName, typeName, position, args) {
+	var checkListOf = function(aState, lst, f, functionName, typeName, position, args) {
 		if ( !isListOf(lst, f) ) {
-			helpers.throwCheckError(undefined,
-						[functionName,
-						 'list of ' + typeName,
-						 helpers.ordinalize(position),
-						 lst],
+			helpers.throwCheckError(aState,
+						{functionName: functionName,
+						 typeName: 'list of ' + typeName,
+						 ordinalPosition: helpers.ordinalize(position),
+						 actualValue: lst},
 						position,
 						args);
 		}
@@ -587,6 +612,7 @@ var helpers = {};
 	helpers.isList = isList;
 	helpers.isListOf = isListOf;
 	helpers.check = check;
+	helpers.checkVarArity = checkVarArity;
 	helpers.checkListOf = checkListOf;
 	
 //	helpers.remove = remove;
