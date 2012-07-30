@@ -979,13 +979,12 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    
 	   
 	    var locationList = positionStack[positionStack.length - 1];
-        console.log("locationList is ",locationList);
 	    var argColoredParts = getArgColoredParts(locationList.rest());
 	   
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "anonymous function")), locationList.first()),
 			": expects ", 
 			''+(procValue.isRest ? 'at least ' : ''),
 			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 

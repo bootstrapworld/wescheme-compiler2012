@@ -20911,7 +20911,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "anonymous function")), locationList.first()),
 			": expects ", 
 			''+(procValue.isRest ? 'at least ' : ''),
 			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 

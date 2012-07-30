@@ -595,7 +595,6 @@ var checkVarArity = helpers.checkVarArity;
 
 var checkList = function(aState, x, functionName, position, args) {
 	if ( !isList(x) ) {
-		console.log("not a list, calling throwCheckError");
 
 		helpers.throwCheckError(aState,
 					{ functionName: functionName,
@@ -2577,21 +2576,16 @@ PRIMITIVES['map'] =
 		 2,
 		 true, false,
 		 function(aState, f, lst, arglists) {
-		 	console.log("map started");
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
 		 	arrayEach(arglists, function(x, i) {checkList(aState, x, 'map', i+2, allArgs);});
 			checkAllSameLength(aState, arglists, 'map', allArgs);
 
-			console.log("map passes all tests");
-
 			var mapHelp = function(f, args, acc) {
-				console.log("mapHelp called on f:", f, " args:", args," acc:",acc);
 				if (args[0].isEmpty()) {
 				    return acc.reverse();
 				}
-				console.log("gets past first check");
 				
 				var argsFirst = [];
 				var argsRest = [];
@@ -2599,7 +2593,6 @@ PRIMITIVES['map'] =
 					argsFirst.push(args[i].first());
 					argsRest.push(args[i].rest());
 				}
-				console.log("gets past argsFirst/rest business");
 				var result = CALL(f, argsFirst,
 					function(result) {
 						return mapHelp(f, argsRest, types.cons(result, acc));

@@ -251,7 +251,6 @@ var helpers = {};
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
-		console.log("throwCheckError started, aState is ",aState);
 		
 		if(aState instanceof state.State){
 			//if it's defined and a State, can inspect position stack
@@ -259,15 +258,14 @@ var helpers = {};
 			state.captureCurrentContinuationMarks(aState).ref(
 	    		types.symbol('moby-application-position-key'));
 
-			console.log("moving along");
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				console.log("colored error");
+				//console.log("colored error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		console.log("uncolored error");
+		//console.log("uncolored error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
