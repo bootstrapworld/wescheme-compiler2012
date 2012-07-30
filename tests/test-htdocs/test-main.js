@@ -3648,6 +3648,7 @@ var runTests = function() {
         };
 
 
+
         queueTest("test simple function application program",
                   "(define (double x) (+ x x)) (double 25)",
                   "50");
@@ -3655,6 +3656,16 @@ var runTests = function() {
         queueTest("test simple function application program 2",
                   "(define (double x) (+ x x)) (double (double 25))",
                   "100");
+
+
+        queueErrorTest("set! is not enabled, part 1",
+                       "set!",
+                       "set!: this variable is not defined")
+
+        queueErrorTest("set! is not enabled, part 2",
+                       "(define x 42) (set! x 16)",
+                       "set!: this variable is not defined")
+
 
         queueErrorTest("test mis-application 1",
                        "(define (double x) (+ x x)) (double double)",
