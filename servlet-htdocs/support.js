@@ -812,11 +812,13 @@ var helpers = {};
 				return locs.first();
 			}
 
-			console.log("args: ", args);
-			console.log("locs passed in: ", locationList.rest());
+	//		console.log("args: ", args);
+	//		console.log("locs passed in: ", locationList.rest());
 			var argColoredParts = getArgColoredParts(locationList.rest());
-			console.log(argColoredParts);
-			if(argColoredParts.length > 0){
+	//		console.log(argColoredParts);
+			if(args) { 
+				var argColoredParts = getArgColoredParts(locationList.rest()); 
+				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -830,20 +832,20 @@ var helpers = {};
 							   		new types.GradientPart(argColoredParts)
 							   	]),
 							   []) );
+				}
 			}
-			else {
-				raise( types.incompleteExn(types.exnFailContract,
-							   new types.Message([
-							   		new types.ColoredPart(details.functionName, locationList.first()),
-							   		": expects type ",
-							   		details.typeName,
-							   		" as ",
-							   		details.ordinalPosition, 
-							   		" argument, given: ",
-							   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
-							   	]),
-							   []) );
-			}
+			
+			raise( types.incompleteExn(types.exnFailContract,
+						   new types.Message([
+						   		new types.ColoredPart(details.functionName, locationList.first()),
+						   		": expects type ",
+						   		details.typeName,
+						   		" as ",
+						   		details.ordinalPosition, 
+						   		" argument, given: ",
+						   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
+						   	]),
+						   []) );
 
 
 	};
@@ -14398,7 +14400,7 @@ PRIMITIVES['/'] =
        
        			var locationList = positionStack[positionStack.length - 1];
        			var func = locationList.first();
-       			
+
        			if (step !== -1){
        				locationList = locationList.rest().rest();
        			}
@@ -19291,7 +19293,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'js-big-bang', 'handler or attribute list', i+2);
+					      'js-big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
