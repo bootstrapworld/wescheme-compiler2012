@@ -71,7 +71,8 @@
                (list 'unquote-splicing desugar-quasiquote)
                (list 'local desugar-local)
                (list 'begin desugar-begin)
-               (list 'set! desugar-set!)
+               ; set! is disabled
+               ;(list 'set! desugar-set!)
                (list 'if desugar-if)
                (list 'and desugar-boolean-chain)
                (list 'or desugar-boolean-chain)
@@ -628,7 +629,7 @@
 
 ;; desugar-set!: expr pinfo -> (list expr pinfo)
 ;; Desugars set!.
-(define (desugar-set! expr pinfo)
+#;(define (desugar-set! expr pinfo)
   (begin
     (check-syntax-application! expr (lambda (expr)
                                       '(set! x 17)))
