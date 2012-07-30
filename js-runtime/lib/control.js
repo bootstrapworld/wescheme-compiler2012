@@ -694,14 +694,16 @@ var callPrimitiveProcedure = function(state, procValue, n, operandValues) {
 					 operandValues,
 					 n);
     var result = procValue.impl.apply(procValue.impl, args);
-    processPrimitiveResult(state, result, procValue);
+    processPrimitiveResult(state, result, procValue, n);
 };
 
 
-var processPrimitiveResult = function(state, result, procValue) {
+var processPrimitiveResult = function(state, result, procValue, n) {
     if (result instanceof INTERNAL_CALL) {
 	state.cstack.push(new InternalCallRestartControl
 			  (result.k, procValue));
+
+        addNoLocationContinuationMark(state, n);
 	callProcedure(state,
 		      result.operator, 
 		      result.operands.length, 
@@ -747,6 +749,24 @@ InternalCallRestartControl.prototype.invoke = function(state) {
 };
 
 primitive.setCALL(INTERNAL_CALL);
+
+
+
+// When we're doing an application, but we don't have source locations,
+// we the following function to add the mark.
+var addNoLocationContinuationMark = function(aState, n) {
+    var i;
+    var aHash = types.makeLowLevelEqHash();
+    var nonPositions = [types.NoLocation];
+    for (i = 0; i < n; i++) { nonPositions.push(types.NoLocation); }
+    aHash.put(types.symbol('moby-application-position-key'),
+              types.list(nonPositions));
+    aState.pushControl(types.contMarkRecordControl(aHash));
+};
+
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -936,8 +956,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
                 acceptableParameterArity.join(' or '),
                 " arguments, given ",
                 n,
-                ": ",
-                new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
     }
 
@@ -961,13 +981,13 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	   
 	    var locationList = positionStack[positionStack.length - 1];
 	    var argColoredParts = getArgColoredParts(locationList.rest());
-	   
-	    
+
+
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "anonymous function")), locationList.first()),
 			": expects ", 
-			(procValue.isRest ? 'at least ' : ''),
+			''+(procValue.isRest ? 'at least ' : ''),
 			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')), 
 							  procValue.locs.slice(1))
@@ -977,8 +997,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 					      ,
   		         ", given ",
 			n ,
-			": ", 
-			new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
 	}
     }

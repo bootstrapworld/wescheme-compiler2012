@@ -775,6 +775,8 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
+       		console.log("locationList is ", locationList);
+
        		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
@@ -782,21 +784,26 @@ var helpers = {};
 				var i;
 
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
-						if(i != pos) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
-						}
-						locs = locs.rest();
+						if(! (locs.isEmpty())){
+							if(i != pos) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
+					    }
 					}
 				}
 				else {
 					for(i = 0; i < args.length; i++){
-						if(i != (pos -1)) {
-							coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+						if(! (locs.isEmpty())){
+							if(i != (pos -1)) {
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
+							}
+							locs = locs.rest();
 						}
-						locs = locs.rest();
 					}
 				}
 				return coloredParts;
@@ -812,8 +819,9 @@ var helpers = {};
 				return locs.first();
 			}
 
-			var argColoredParts = getArgColoredParts(locationList.rest());
-			if(argColoredParts.length > 0){
+			if(args) { 
+				var argColoredParts = getArgColoredParts(locationList.rest()); 
+				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -827,37 +835,40 @@ var helpers = {};
 							   		new types.GradientPart(argColoredParts)
 							   	]),
 							   []) );
+				}
 			}
-			else {
-				raise( types.incompleteExn(types.exnFailContract,
-							   new types.Message([
-							   		new types.ColoredPart(details.functionName, locationList.first()),
-							   		": expects type ",
-							   		details.typeName,
-							   		" as ",
-							   		details.ordinalPosition, 
-							   		" argument, given: ",
-							   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
-							   	]),
-							   []) );
-			}
+			raise( types.incompleteExn(types.exnFailContract,
+						   new types.Message([
+						   		new types.ColoredPart(details.functionName, locationList.first()),
+						   		": expects type ",
+						   		details.typeName,
+						   		" as ",
+						   		details.ordinalPosition, 
+						   		" argument, given: ",
+						   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
+						   	]),
+						   []) );
 
 
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
+		
+		if(aState instanceof state.State){
+			//if it's defined and a State, can inspect position stack
+			var positionStack = 
+			state.captureCurrentContinuationMarks(aState).ref(
+	    		types.symbol('moby-application-position-key'));
 
-		var positionStack = 
-        		state.captureCurrentContinuationMarks(aState).ref(
-            		types.symbol('moby-application-position-key'));
-        
-
-		if(aState === undefined || (positionStack[positionStack.length - 1] === undefined)) {
-			throwUncoloredCheckError(aState, details, pos, args);
+			//if the positionStack at the correct position is defined, we can throw a colored error
+			if (positionStack[positionStack.length - 1] !== undefined) {
+				//console.log("colored error");
+				throwColoredCheckError(aState,details, pos, args);
+			}
 		}
-		else {
-			throwColoredCheckError(aState,details, pos, args);
-		}
+		//otherwise, throw an uncolored error
+		//console.log("uncolored error");
+		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
 	var check = function(aState, x, f, functionName, typeName, position, args) {
@@ -872,6 +883,25 @@ var helpers = {};
 		}
 	};
 
+	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
+		//check to ensure last thing is an array
+		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
+			var flattenedArgs = [];
+			var i;
+			for(i = 0; i < (args.length - 1); i++) {
+				flattenedArgs.push(args[i]);
+			}
+			//the angry variable names are because flattenedArgs = flattenedArgs.concat(args[args.length - 1]) doesn't work
+			var wtf1 = flattenedArgs;
+			var wtf2 = args[args.length -1];
+			var passOn = wtf1.concat(wtf2);
+
+			check(aState, x, f, functionName, typeName, position, passOn);
+		}
+		else {
+			check(aState, x, f, functionName, typeName, position, args);
+		}
+	};
     var isList = function(x) {
         var tortoise, hare;
         tortoise = hare = x;
@@ -910,13 +940,13 @@ var helpers = {};
 	    return (x === types.EMPTY);
 	};
 
-	var checkListOf = function(lst, f, functionName, typeName, position, args) {
+	var checkListOf = function(aState, lst, f, functionName, typeName, position, args) {
 		if ( !isListOf(lst, f) ) {
-			helpers.throwCheckError(undefined,
-						[functionName,
-						 'list of ' + typeName,
-						 helpers.ordinalize(position),
-						 lst],
+			helpers.throwCheckError(aState,
+						{functionName: functionName,
+						 typeName: 'list of ' + typeName,
+						 ordinalPosition: helpers.ordinalize(position),
+						 actualValue: lst},
 						position,
 						args);
 		}
@@ -1182,6 +1212,7 @@ var helpers = {};
 	helpers.isList = isList;
 	helpers.isListOf = isListOf;
 	helpers.check = check;
+	helpers.checkVarArity = checkVarArity;
 	helpers.checkListOf = checkListOf;
 	
 //	helpers.remove = remove;
@@ -7659,10 +7690,10 @@ Empty.prototype.reverse = function() {
 };
 
 Empty.prototype.first = function() {
-    throwRuntimeError("first can't be applied on empty.");
+    throw new Error("first can't be applied on empty.");
 };
 Empty.prototype.rest = function() {
-    throwRuntimeError("rest can't be applied on empty.");
+    throw new Error("rest can't be applied on empty.");
 };
 Empty.prototype.isEmpty = function() {
     return true;
@@ -9019,7 +9050,6 @@ MultiPart.prototype.toString = function() {
 };
 
 
-
 //////////////////////////////////////////////////////////////////////
 
 
@@ -9038,7 +9068,7 @@ var makeList = function(args) {
 
 var makeVector = function(args) {
     return Vector.makeInstance(args.length, args);
-}
+};
 
 var makeString = function(s) {
 	if (s instanceof Str) {
@@ -9060,7 +9090,7 @@ var makeString = function(s) {
 					  ' given ' + s.toString(),
 					  false);
 	}
-}
+};
 
 
 var makeHashEq = function(lst) {
@@ -9070,7 +9100,7 @@ var makeHashEq = function(lst) {
 		lst = lst.rest();
 	}
 	return newHash;
-}
+};
 
 
 var makeHashEqual = function(lst) {
@@ -9080,7 +9110,17 @@ var makeHashEqual = function(lst) {
 		lst = lst.rest();
 	}
 	return newHash;
-}
+};
+
+
+//if there is not enough location information available,
+//this allows for highlighting to be turned off
+var NoLocation = makeVector(['<no-location>', 0,0,0,0]);
+
+var isNoLocation = function(o) {
+  return o === NoLocation;
+};
+
 
 
 var Posn = makeStructureType('posn', false, 2, 0, false, false);
@@ -9328,7 +9368,8 @@ types.isRenderEffect = RenderEffect.predicate;
 //types.setRenderEffectEffects = function(x, v) { RenderEffect.mutator(x, 1, v); };
 
 
-
+types.NoLocation = NoLocation;
+types.isNoLocation = isNoLocation;
 
 
 
@@ -13115,7 +13156,6 @@ var procArityContains = helpers.procArityContains;
 
 
 var length = function(lst) {
-	checkList(lst, 'length', 1, [lst]);
 	var ret = 0;
 	for (; !lst.isEmpty(); lst = lst.rest()) {
 		ret = ret+1;
@@ -13123,13 +13163,13 @@ var length = function(lst) {
 	return ret;
 }
 
-var append = function(initArgs) {
+var append = function(aState, initArgs) {
 	if (initArgs.length == 0) {
 		return types.EMPTY;
 	}
 	var args = initArgs.slice(0, initArgs.length-1);
 	var lastArg = initArgs[initArgs.length - 1];
-	arrayEach(args, function(x, i) {checkList(x, 'append', i+1, initArgs);});
+	arrayEach(args, function(x, i) {checkList(aState, x, 'append', i+1, initArgs);});
 
 	var ret = lastArg;
 	for (var i = args.length-1; i >= 0; i--) {
@@ -13137,6 +13177,11 @@ var append = function(initArgs) {
 	}
 	return ret;
 }
+
+
+
+
+
 
 var foldHelp = function(f, acc, args) {
 	if ( args[0].isEmpty() ) {
@@ -13159,7 +13204,7 @@ var foldHelp = function(f, acc, args) {
 
 var quicksort = function(functionName) {
     return function(aState, initList, comp) {
-	checkList(initList, functionName, 1, arguments);
+	checkList(aState, initList, functionName, 1, arguments);
 	check(aState, comp, procArityContains(2), functionName, 'procedure (arity 2)', 2, arguments);
 	
 	var quicksortHelp = function(aState, lst) {
@@ -13182,7 +13227,7 @@ var quicksort = function(functionName) {
 							function(half2) {
 							    return CALL(recCallProc, [half2],
 									function(sorted2) {
-									    return append([sorted1,
+									    return append(aState, [sorted1,
 											   types.list([lst.first()]),
 											   sorted2]);
 									});
@@ -13282,8 +13327,10 @@ var isWorldConfigOption = function(x) { return x instanceof WorldConfigOption; }
 
 var onEvent = function(funName, inConfigName, numArgs) {
     return function(aState, handler) {
-	return onEventBang(funName, inConfigName)(handler,
-						  new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
+		return onEventBang(funName, inConfigName)(
+			    aState,
+				handler,
+				new PrimProc('', numArgs, false, false, function(aState) { return types.EMPTY; }));
     };
 };
 
@@ -13575,14 +13622,15 @@ var arrayEach = function(arr, f) {
 
 //var throwCheckError = helpers.throwCheckError;
 var check = helpers.check;
+var checkVarArity = helpers.checkVarArity;
 
-var checkList = function(x, functionName, position, args) {
+var checkList = function(aState, x, functionName, position, args) {
 	if ( !isList(x) ) {
-		helpers.throwCheckError(undefined,
-					[functionName,
-					 'list',
-					 helpers.ordinalize(position),
-					 x],
+		helpers.throwCheckError(aState,
+					{ functionName: functionName,
+					  typeName: 'list',
+					  ordinalPosition: helpers.ordinalize(position),
+					  actualValue: x },
 					position,
 					args);
 	}
@@ -13590,26 +13638,27 @@ var checkList = function(x, functionName, position, args) {
 
 var checkListOf = helpers.checkListOf;
 
-var checkListOfLength = function(lst, n, functionName, position, args) {
+var checkListOfLength = function(aState, lst, n, functionName, position, args) {
 	if ( !isList(lst) || (length(lst) < n) ) {
-		helpers.throwCheckError([functionName,
-					 'list with ' + n + ' or more elements',
-					 helpers.ordinalize(position),
-					 lst],
-					position,
-					args);
+		helpers.throwCheckError(aState,
+							{functionName: functionName,
+							 typeName: 'list with ' + n + ' or more elements',
+							 ordinalPosition: helpers.ordinalize(position),
+							 actualValue: lst},
+							 position,
+							 args);
 	}
 }
 
-var checkAllSameLength = function(lists, functionName, args) {
-	if (lists.length == 0)
+var checkAllSameLength = function(aState, lists, functionName, args) {
+	if (lists.length === 0)
 		return;
-	
+
 	var len = length(lists[0]);
 	arrayEach(lists,
 		  function(lst, i) {
 			if (length(lst) != len) {
-				var argsStr = helpers.map(function(x) { return " ~s"; }, args).join('');
+				var argStr = helpers.map(function(x) { return " ~s"; }, args).join('');
 				var msg = helpers.format(functionName + ': all lists must have the same size; arguments were:' + argStr,
 							 args);
 				raise( types.incompleteExn(types.exnFailContract, msg, []) );
@@ -13834,8 +13883,8 @@ PRIMITIVES['for-each'] =
 		 	 var allArgs = [f, firstArg].concat(arglists);
 		 	 arglists.unshift(firstArg);
 			 check(aState, f, isFunction, 'for-each', 'procedure', 1, allArgs);
-			 arrayEach(arglists, function(lst, i) {checkList(lst, 'for-each', i+2, allArgs);});
-			 checkAllSameLength(arglists, 'for-each', allArgs);
+			 arrayEach(arglists, function(lst, i) {checkList(aState, lst, 'for-each', i+2, allArgs);});
+			 checkAllSameLength(aState, arglists, 'for-each', allArgs);
 
 			 var forEachHelp = function(args) {
 			     if (args[0].isEmpty()) {
@@ -13957,7 +14006,7 @@ PRIMITIVES['make-struct-type'] =
 		// TODO: check props
 		// TODO: check inspector
 		// TODO: check procSpect
-		checkListOf(immutables, isNatural, 'make-struct-type', 'exact non-negative integer', 9, userArgs);
+		checkListOf(aState, immutables, isNatural, 'make-struct-type', 'exact non-negative integer', 9, userArgs);
 		check(aState, guard, function(x) { return x === false || isFunction(x); },
 		      'make-struct-type', 'procedure or #f', 10, userArgs);
 		// Check the number of arguments on the guard
@@ -14088,7 +14137,7 @@ PRIMITIVES['apply'] =
 		 	args.unshift(firstArg);
 
 			var lastArg = args.pop();
-			checkList(lastArg, 'apply', args.length+2, allArgs);
+			checkList(aState, lastArg, 'apply', args.length+2, allArgs);
 			var args = args.concat(helpers.schemeListToArray(lastArg));
 
 			return  CALL(f, args, id);
@@ -14395,7 +14444,7 @@ PRIMITIVES['/'] =
        
        			var locationList = positionStack[positionStack.length - 1];
        			var func = locationList.first();
-       			
+
        			if (step !== -1){
        				locationList = locationList.rest().rest();
        			}
@@ -15180,7 +15229,7 @@ PRIMITIVES['cons'] =
 		 2,
 		 false, false,
 		 function(aState, f, r) {
-//		 	checkList(r, "cons", 2);
+//		 	checkList(aState, r, "cons", 2);
 		 	return types.cons(f, r);
 		 });
 
@@ -15378,7 +15427,7 @@ PRIMITIVES['second'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-			checkListOfLength(lst, 2, 'second', 1);
+			checkListOf(aState, lst, 2, 'second', 1);
 			return lst.rest().first();
 		 });
 
@@ -15387,7 +15436,7 @@ PRIMITIVES['third'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 3, 'third', 1);
+		 	checkListOfLength(aState, lst, 3, 'third', 1);
 			return lst.rest().rest().first();
 		 });
 
@@ -15396,7 +15445,7 @@ PRIMITIVES['fourth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 4, 'fourth', 1);
+		 	checkListOfLength(aState, lst, 4, 'fourth', 1);
 			return lst.rest().rest().rest().first();
 		 });
 
@@ -15405,7 +15454,7 @@ PRIMITIVES['fifth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 5, 'fifth', 1);
+		 	checkListOfLength(aState, lst, 5, 'fifth', 1);
 		 	return lst.rest().rest().rest().rest().first();
 		 });
 
@@ -15414,7 +15463,7 @@ PRIMITIVES['sixth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 6, 'sixth', 1);
+		 	checkListOfLength(aState, lst, 6, 'sixth', 1);
 		 	return lst.rest().rest().rest().rest().rest().first();
 		 });
 
@@ -15424,7 +15473,7 @@ PRIMITIVES['seventh'] =
 		 1,
 		 false, false,
  	         function(aState, lst) {
-		 	checkListOfLength(lst, 7, 'seventh', 1);
+		 	checkListOfLength(aState, lst, 7, 'seventh', 1);
 		 	return lst.rest().rest().rest().rest().rest().rest().first();
 		 });
 
@@ -15433,7 +15482,7 @@ PRIMITIVES['eighth'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOfLength(lst, 8, 'eighth', 1);
+		 	checkListOfLength(aState, lst, 8, 'eighth', 1);
 		 	return lst.rest().rest().rest().rest().rest().rest().rest().first();
 		 });
 
@@ -15469,10 +15518,10 @@ PRIMITIVES['list*'] =
 			}
 		 
 		 	var lastListItem = otherItems.pop();
-		 	checkList(lastListItem, 'list*', otherItems.length+2, allArgs);
+		 	checkList(aState, lastListItem, 'list*', otherItems.length+2, allArgs);
 
 		 	otherItems.unshift(items);
-		 	return append([types.list(otherItems), lastListItem]);
+		 	return append(aState, [types.list(otherItems), lastListItem]);
 		 });
 
 
@@ -15481,7 +15530,7 @@ PRIMITIVES['list-ref'] =
 		 2,
 		 false, false,
 		 function(aState, origList, num) {
-		 	checkList(origList, 'list-ref', 1, arguments);
+		 	checkList(aState, origList, 'list-ref', 1, arguments);
 		 	check(aState, num, isNatural, 'list-ref', 'non-negative exact integer', 2, arguments);
 
 		 	var positionStack = 
@@ -15511,13 +15560,13 @@ PRIMITIVES['list-ref'] =
 		 	}
 		        return lst.first();
 		 });
-
+///////////////////////////////////////
 PRIMITIVES['list-tail'] =
     new PrimProc('list-tail',
 		 2,
 		 false, false,
 		 function(aState, lst, num) {
-		 	checkList(lst, 'list-tail', 1, arguments);
+		 	checkList(aState, lst, 'list-tail', 1, arguments);
 			check(aState, x, isNatural, 'list-tail', 'non-negative exact integer', 2, arguments);
 
 			var lst = origList;
@@ -15539,7 +15588,7 @@ PRIMITIVES['append'] =
     new PrimProc('append',
 		 0,
 		 true, false,
-		 function(aState, args) { return append(args); });
+		 function(aState, args) { return append(aState, args); });
 
 
 PRIMITIVES['reverse'] =
@@ -15547,7 +15596,7 @@ PRIMITIVES['reverse'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkList(lst, 'reverse', 1);
+		 	checkList(aState, lst, 'reverse', 1);
 		 	return lst.reverse();
 		 });
 
@@ -15560,9 +15609,9 @@ PRIMITIVES['map'] =
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		 	check(aState, f, isFunction, 'map', 'procedure', 1, allArgs);
-		 	arrayEach(arglists, function(x, i) {checkList(x, 'map', i+2, allArgs);});
-			checkAllSameLength(arglists, 'map', allArgs);
-			
+		 	arrayEach(arglists, function(x, i) {checkList(aState, x, 'map', i+2, allArgs);});
+			checkAllSameLength(aState, arglists, 'map', allArgs);
+
 			var mapHelp = function(f, args, acc) {
 				if (args[0].isEmpty()) {
 				    return acc.reverse();
@@ -15592,8 +15641,8 @@ PRIMITIVES['andmap'] =
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'andmap', 'procedure', 1, allArgs);
-		  	arrayEach(arglists, function(x, i) {checkList(x, 'andmap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'andmap', allArgs);
+		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'andmap', i+2, allArgs);});
+			checkAllSameLength(aState, arglists, 'andmap', allArgs);
   
 			var andmapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -15624,8 +15673,8 @@ PRIMITIVES['ormap'] =
 		 	var allArgs = [f, lst].concat(arglists);
 		 	arglists.unshift(lst);
 		  	check(aState, f, isFunction, 'ormap', 'procedure', 1, allArgs);
-		  	arrayEach(arglists, function(x, i) {checkList(x, 'ormap', i+2, allArgs);});
-			checkAllSameLength(arglists, 'ormap', allArgs);
+		  	arrayEach(arglists, function(x, i) {checkList(aState, x, 'ormap', i+2, allArgs);});
+			checkAllSameLength(aState, arglists, 'ormap', allArgs);
 
 			var ormapHelp = function(f, args) {
 				if ( args[0].isEmpty() ) {
@@ -15653,7 +15702,7 @@ PRIMITIVES['memq'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'memq', 2, arguments);
+		 	checkList(aState, lst, 'memq', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEq(item, lst.first()) ) {
 					return lst;
@@ -15669,7 +15718,7 @@ PRIMITIVES['memv'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'memv', 2, arguments);
+		 	checkList(aState, lst, 'memv', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEqv(item, lst.first()) ) {
 					return lst;
@@ -15685,7 +15734,7 @@ PRIMITIVES['member'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'member', 2, arguments);
+		 	checkList(aState, lst, 'member', 2, arguments);
 		 	while ( !lst.isEmpty() ) {
 		 		if ( isEqual(item, lst.first()) ) {
 		 			return lst;
@@ -15700,7 +15749,7 @@ PRIMITIVES['member?'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'member?', 2, arguments);
+		 	checkList(aState, lst, 'member?', 2, arguments);
 		 	while ( !lst.isEmpty() ) {
 		 		if ( isEqual(item, lst.first()) ) {
 		 			return true;
@@ -15717,7 +15766,7 @@ PRIMITIVES['memf'] =
 		 false, true,
 		 function(aState, f, initList) {
 		 	check(aState, f, isFunction, 'memf', 'procedure', 1, arguments);
-			checkList(initList, 'memf', 2, arguments);
+			checkList(aState, initList, 'memf', 2, arguments);
 
 			var memfHelp = function(lst) {
 				if ( lst.isEmpty() ) {
@@ -15741,7 +15790,7 @@ PRIMITIVES['assq'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkListOf(lst, isPair, 'assq', 'pair', 2, arguments);
+		 	checkListOf(aState, lst, isPair, 'assq', 'pair', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEq(item, lst.first().first()) ) {
 					return lst.first();
@@ -15757,7 +15806,7 @@ PRIMITIVES['assv'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkListOf(lst, isPair, 'assv', 'pair', 2, arguments);
+		 	checkListOf(aState, lst, isPair, 'assv', 'pair', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEqv(item, lst.first().first()) ) {
 					return lst.first();
@@ -15773,7 +15822,7 @@ PRIMITIVES['assoc'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkListOf(lst, isPair, 'assoc', 'pair', 2, arguments);
+		 	checkListOf(aState, lst, isPair, 'assoc', 'pair', 2, arguments);
 			while ( !lst.isEmpty() ) {
 				if ( isEqual(item, lst.first().first()) ) {
 					return lst.first();
@@ -15789,12 +15838,12 @@ PRIMITIVES['remove'] =
 		 2,
 		 false, false,
 		 function(aState, item, lst) {
-		 	checkList(lst, 'remove', 2, arguments);
+		 	checkList(aState, lst, 'remove', 2, arguments);
 		 	var originalLst = lst;
 		 	var result = types.EMPTY;
 		 	while ( !lst.isEmpty() ) {
 		 		if ( isEqual(item, lst.first()) ) {
-		 			return append([result.reverse(), lst.rest()]);
+		 			return append(aState, [result.reverse(), lst.rest()]);
 		 		} else {
 		 			result = types.cons(lst.first(), result);
 		 			lst = lst.rest();
@@ -15810,7 +15859,7 @@ PRIMITIVES['filter'] =
 		 false, false,
 		 function(aState, f, lst) {
 		 	check(aState, f, procArityContains(1), 'filter', 'procedure (arity 1)', 1, arguments);
-			checkList(lst, 'filter', 2);
+			checkList(aState, lst, 'filter', 2);
 
 			var filterHelp = function(f, lst, acc) {
 				if ( lst.isEmpty() ) {
@@ -15839,8 +15888,8 @@ PRIMITIVES['foldl'] =
 		 	arglists.unshift(lst);
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldl', 'procedure', 1, allArgs);
-			arrayEach(arglists, function(x, i) {checkList(x, 'foldl', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldl', allArgs);
+			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldl', i+3, allArgs);});
+			checkAllSameLength(aState, arglists, 'foldl', allArgs);
 	
 			return foldHelp(f, initAcc, arglists);
 		});
@@ -15853,8 +15902,8 @@ PRIMITIVES['foldr'] =
 		 	arglists.unshift(lst);
 			var allArgs = [f, initAcc].concat(arglists);
 		 	check(aState, f, isFunction, 'foldr', 'procedure', 1, allArgs);
-			arrayEach(arglists, function(x, i) {checkList(x, 'foldr', i+3, allArgs);});
-			checkAllSameLength(arglists, 'foldr', allArgs);
+			arrayEach(arglists, function(x, i) {checkList(aState, x, 'foldr', i+3, allArgs);});
+			checkAllSameLength(aState, arglists, 'foldr', allArgs);
 
 			for (var i = 0; i < arglists.length; i++) {
 				arglists[i] = arglists[i].reverse();
@@ -16004,7 +16053,7 @@ PRIMITIVES['make-hash'] =
 		      1,
 		      false, false,
 		      function(aState, lst) {
-			  checkListOf(lst, isPair, 'make-hash', 'list of pairs', 1);
+			  checkListOf(aState, lst, isPair, 'make-hash', 'list of pairs', 1);
 			  return types.hash(lst);
 		      }) ]);
 
@@ -16015,7 +16064,7 @@ PRIMITIVES['make-hasheq'] =
 		      1,
 		      false, false,
 		      function(aState, lst) {
-			  checkListOf(lst, isPair, 'make-hasheq', 'list of pairs', 1);
+			  checkListOf(aState, lst, isPair, 'make-hasheq', 'list of pairs', 1);
 			  return types.hashEq(lst);
 		      }) ]);
 
@@ -16038,8 +16087,17 @@ PRIMITIVES['hash-ref'] =
 			  check(aState, obj, isHash, 'hash-ref', 'hash', 1, arguments);
 
 			  if ( !obj.hash.containsKey(key) ) {
-			  	var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
-			  	raise( types.incompleteExn(types.exnFailContract, msg, []) );
+			  	//var msg = 'hash-ref: no value found for key: ' + types.toWrittenString(key);
+			  	var positionStack = 
+					state.captureCurrentContinuationMarks(aState).ref(
+					    types.symbol('moby-application-position-key'));
+			    var locationList = positionStack[positionStack.length - 1];
+
+			  	raise( types.incompleteExn(types.exnFailContract, 
+			  		new types.Message([new types.ColoredPart("hash-ref", locationList.first()),
+			  							": no value found for key ",
+			  							new types.ColoredPart(types.toWrittenString(key), locationList.rest().rest().first())]), 
+			  		[]) );
 			  }
 			  return obj.hash.get(key);
 		      }),
@@ -16054,6 +16112,7 @@ PRIMITIVES['hash-ref'] =
 			  }
 			  else {
 				if (isFunction(defaultVal)) {
+					//window.call = CALL;
 					return CALL(defaultVal, [], id);
 				}
 				return defaultVal;
@@ -16194,7 +16253,20 @@ PRIMITIVES['string-ref'] =
 				var msg = ('string-ref: index ' + n + ' out of range ' +
 					   '[0, ' + (str.length-1) + '] for string: ' +
 					   types.toWrittenString(str));
-				raise( types.incompleteExn(types.exnFailContract, msg, []) );
+				var positionStack = 
+					state.captureCurrentContinuationMarks(aState).ref(
+					    types.symbol('moby-application-position-key'));
+			    var locationList = positionStack[positionStack.length - 1];
+
+			  	raise( types.incompleteExn(types.exnFailContract, 
+			  		new types.Message([new types.ColoredPart("string-ref", locationList.first()),
+			  							": index ",
+			  							n,
+			  							' out of range [0, ',
+										(str.length-1),
+										'] for string: ',
+			  							new types.ColoredPart(types.toWrittenString(str), locationList.rest().first())]), 
+			  		[]) );
 			}
 			return types['char'](str.charAt(n));
 		 });
@@ -16474,7 +16546,7 @@ PRIMITIVES['list->string'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOf(lst, isChar, 'list->string', 'char', 1);
+		 	checkListOf(aState, lst, isChar, 'list->string', 'char', 1);
 
 			var ret = [];
 			while( !lst.isEmpty() ) {
@@ -16584,8 +16656,8 @@ PRIMITIVES['implode'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOf(lst, function(x) { return isString(x) && x.length == 1; },
-				    'implode', 'list of 1-letter strings', 1);
+		 	checkListOf(aState, lst, function(x) { return isString(x) && x.length == 1; },
+				    'implode', ' 1-letter strings', 1);
 			var ret = [];
 			while ( !lst.isEmpty() ) {
 				ret.push( lst.first().toString() );
@@ -16950,7 +17022,7 @@ PRIMITIVES['list->bytes'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOf(lst, isByte, 'list->bytes', 'byte', 1);
+		 	checkListOf(aState, lst, isByte, 'list->bytes', 'byte', 1);
 
 			var ret = [];
 			while ( !lst.isEmpty() ) {
@@ -17095,7 +17167,7 @@ PRIMITIVES['list->vector'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkList(lst, 'list->vector', 1);
+		 	checkList(aState, lst, 'list->vector', 1);
 			return types.vector( helpers.schemeListToArray(lst) );
 		 });
 
@@ -17938,8 +18010,10 @@ PRIMITIVES['overlay'] =
 		 2,
 		 true, false,
 		 function(aState, img1, img2, restImages) {
-			check(aState, img1, isImage, "overlay", "image", 1, arguments);
-			check(aState, img2, isImage, "overlay", "image", 2, arguments);
+		 	//fixme
+		 	var allArgs = [img1, img2].concat(restImages);
+			check(aState, img1, isImage, "overlay", "image", 1, allArgs);
+			check(aState, img2, isImage, "overlay", "image", 2, allArgs);
 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "overlay", "image", i+3); }, arguments);
 
 			var img = world.Kernel.overlayImage(img1, img2, "middle", "middle");
@@ -17972,10 +18046,10 @@ new PrimProc('overlay/align',
 			 4,
 			 true, false,
 			 function(aState, placeX, placeY, img1, img2, restImages) {
-			 check(aState, placeX, isPlaceX, "overlay/align", "x-place", 1, arguments);
-			 check(aState, placeY, isPlaceY, "overlay/align", "y-place", 2, arguments);
-			 check(aState, img1, isImage, "overlay/align", "image", 3, arguments);
-			 check(aState, img2, isImage, "overlay/align", "image", 4, arguments);
+			 checkVarArity(aState, placeX, isPlaceX, "overlay/align", "x-place", 1, arguments);
+			 checkVarArity(aState, placeY, isPlaceY, "overlay/align", "y-place", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "overlay/align", "image", 3, arguments);
+			 checkVarArity(aState, img2, isImage, "overlay/align", "image", 4, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "overlay/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -17997,8 +18071,8 @@ PRIMITIVES['underlay'] =
 		 2,
 		 true, false,
 		 function(aState, img1, img2, restImages) {
-			check(aState, img1, isImage, "underlay", "image", 1, arguments);
-			check(aState, img2, isImage, "underlay", "image", 2, arguments);
+			checkVarArity(aState, img1, isImage, "underlay", "image", 1, arguments);
+			checkVarArity(aState, img2, isImage, "underlay", "image", 2, arguments);
 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay", "image", i+3); }, arguments);
 
 			var img = world.Kernel.overlayImage(img2, img1, 0, 0);
@@ -18031,10 +18105,10 @@ new PrimProc('underlay/align',
 			 4,
 			 true, false,
 	     function(aState, placeX, placeY, img1, img2, restImages) {
-			 check(aState, placeX, isPlaceX, "underlay/align", "x-place", 1, arguments);
-			 check(aState, placeY, isPlaceY, "underlay/align", "y-place", 2, arguments);
-			 check(aState, img1, isImage, "underlay/align", "image", 3, arguments);
-			 check(aState, img2, isImage, "underlay/align", "image", 4, arguments);
+			 checkVarArity(aState, placeX, isPlaceX, "underlay/align", "x-place", 1, arguments);
+			 checkVarArity(aState, placeY, isPlaceY, "underlay/align", "y-place", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "underlay/align", "image", 3, arguments);
+			 checkVarArity(aState, img2, isImage, "underlay/align", "image", 4, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img2,
@@ -18057,8 +18131,8 @@ new PrimProc('beside',
 			 2,
 			 true, false,
 			 function(aState, img1, img2, restImages) {
-			 check(aState, img1, isImage, "beside", "image", 1, arguments);
-			 check(aState, img2, isImage, "beside", "image", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "beside", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "beside", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "beside", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -18101,8 +18175,8 @@ new PrimProc('above',
 			 2,
 			 true, false,
 			 function(aState, img1, img2, restImages) {
-			 check(aState, img1, isImage, "above", "image", 1, arguments);
-			 check(aState, img2, isImage, "above", "image", 2, arguments);
+			 checkVarArity(aState, img1, isImage, "above", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "above", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "above", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -18124,9 +18198,9 @@ new PrimProc('above/align',
 			 3,
 			 true, false,
 			 function(aState, placeX, img1, img2, restImages) {
-			 check(aState, placeX, isPlaceX, "above/align", "x-place", 1, arguments);
-			 check(aState, img1, isImage, "above/align", "image", 1, arguments);
-			 check(aState, img2, isImage, "above/align", "image", 2, arguments);
+			 checkVarArity(aState, placeX, isPlaceX, "above/align", "x-place", 1, arguments);
+			 checkVarArity(aState, img1, isImage, "above/align", "image", 1, arguments);
+			 checkVarArity(aState, img2, isImage, "above/align", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "above/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -18314,7 +18388,7 @@ PRIMITIVES['image-url'] =
 		 1,
 		 false, false,
 		 function(aState, path) {
-		     check(aState, path, isString, "image-url", "string", 1);
+		     check(aState, path, isString, "image-url", "string", 1);  //fixme? if using bitmap/url, error says image-url...
 		     var originalPath = path.toString();
 		     if (aState.getImageProxyHook()) {
 			 path = (aState.getImageProxyHook() +
@@ -18430,7 +18504,7 @@ PRIMITIVES['image->color-list'] =
 
 // Note: this has to be done asynchonously.
 var colorListToImage = function(aState, listOfColors, width, height, pinholeX, pinholeY) {
-    checkListOf(listOfColors, isColor, 'color-list->image', 'image', 1);
+    checkListOf(aState, listOfColors, isColor, 'color-list->image', 'image', 1);
     check(aState, width, isNatural, 'color-list->image', 'natural', 2);
     check(aState, height, isNatural, 'color-list->image', 'natural', 3);
     check(aState, pinholeX, isNatural, 'color-list->image', 'natural', 4);
@@ -19095,9 +19169,9 @@ PRIMITIVES['initial-effect'] =
  *** Jsworld Primitives ***
  **************************/
 
-
+//fixme pass in aState?
 var jsp = function(attribList) {
-	checkListOf(attribList, function(x) { return isList(x) && length(x) == 2; },
+	checkListOf(undefined, attribList, function(x) { return isList(x) && length(x) == 2; },
 		    'js-p', 'list of (list of X Y)', 1);
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.p(attribs);
@@ -19114,7 +19188,7 @@ PRIMITIVES['js-p'] =
 
 
 var jsdiv = function(attribList) {
-	checkListOf(attribList, isAssocList, 'js-div', '(listof X Y)', 1);
+	checkListOf(undefined, attribList, isAssocList, 'js-div', '(listof X Y)', 1);
 
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.div(attribs);
@@ -19135,7 +19209,7 @@ var jsButtonBang = function(funName) {
     return function(aState, worldUpdateF, effectF, attribList) {
 		check(aState, worldUpdateF, isFunction, funName, 'procedure', 1);
 		check(aState, effectF, isFunction, funName, 'procedure', 2);
-		checkListOf(attribList, isAssocList, funName, '(listof X Y)', 3);
+		checkListOf(undefined, attribList, isAssocList, funName, '(listof X Y)', 3);
 
 		var attribs = attribList ? assocListToHash(attribList) : {};
 		var node = jsworld.MobyJsworld.buttonBang(worldUpdateF, effectF, attribs);
@@ -19167,7 +19241,7 @@ PRIMITIVES['js-button!'] =
 var jsInput = function(type, updateF, attribList) {
 	check(aState, type, isString, 'js-input', 'string', 1);
 	check(aState, updateF, isFunction, 'js-input', 'procedure', 2);
-	checkListOf(attribList, isAssocList, 'js-input', '(listof X Y)', 3);
+	checkListOf(undefined, attribList, isAssocList, 'js-input', '(listof X Y)', 3);
 
 	var attribs = attribList ? assocListToHash(attribList) : {};
 	var node = jsworld.MobyJsworld.input(type, updateF, attribs);
@@ -19188,7 +19262,7 @@ PRIMITIVES['js-input'] =
 
 var jsImg = function(src, attribList) {
 	check(aState, src, isString, "js-img", "string", 1);
-	checkListOf(attribList, isAssocList, 'js-img', '(listof X Y)', 2);
+	checkListOf(undefined, attribList, isAssocList, 'js-img', '(listof X Y)', 2);
 
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.img(src, attribs);
@@ -19221,9 +19295,9 @@ PRIMITIVES['js-text'] =
 
 
 var jsSelect = function(optionList, updateF, attribList) {
-	checkListOf(optionList, isString, 'js-select', 'listof string', 1);
+	checkListOf(undefined, optionList, isString, 'js-select', 'listof string', 1);
 	check(aState, updateF, isFunction, 'js-select', 'procedure', 2);
-	checkListOf(attribList, isAssocList, 'js-select', '(listof X Y)', 3);
+	checkListOf(undefined, attribList, isAssocList, 'js-select', '(listof X Y)', 3);
 
 	var attribs = attribList ? assocListToHash(attribList) : {};
 	var options = helpers.deepListToArray(optionList);
@@ -19288,7 +19362,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'big-bang', 'handler or attribute list', i+2);
+					      'big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
@@ -19325,7 +19399,7 @@ PRIMITIVES['js-big-bang'] =
 
 
     var emptyPage = function(attribList) {
-	checkListOf(attribList, isAssocList, 'empty-page', '(listof X Y)', 1);
+	checkListOf(undefined, attribList, isAssocList, 'empty-page', '(listof X Y)', 1);
 
 	var attribs = assocListToHash(attribList);
 	var node = jsworld.MobyJsworld.emptyPage(attribs);
@@ -19399,7 +19473,7 @@ PRIMITIVES['make-effect-type'] =
 		      'make-effect-type', 'effect type or #f', 2, userArgs);
 		check(aState, fieldCnt, isNatural, 'make-effect-type', 'exact non-negative integer', 3, userArgs);
 		check(aState, impl, isFunction, 'make-effect-type', 'procedure', 4, userArgs);
-//		checkListOf(handlerIndices, isNatural, 'make-effect-type', 'exact non-negative integer', 5);
+//		checkListOf(aState, handlerIndices, isNatural, 'make-effect-type', 'exact non-negative integer', 5);
 		check(aState, guard, function(x) { return x === false || isFunction(x); }, 'make-effect-type', 'procedure or #f', 6, userArgs);
 		// Check the number of arguments on the guard
 		var numberOfGuardArgs = fieldCnt + 1 + (superType ? superType.numberOfArgs : 0);
@@ -19666,7 +19740,6 @@ PRIMITIVES['js-get-named-object'] =
 		 });
 
 
-
 PRIMITIVES['js-get-field'] =
     new PrimProc('js-get-field',
 		 2,
@@ -19760,7 +19833,7 @@ PRIMITIVES['js-new'] =
 		 1,
 		 true, false,
 		 function(aState, constructor, initArgs) {
-		 	check(aState, constructor, isJsFunction, 'js-new', 'javascript function', 1);
+		 	checkVarArity(aState, constructor, isJsFunction, 'js-new', 'javascript function', 1);
 
 			var args = helpers.map(function(x) { return (isJsObject(x) ? x.obj : x); }, initArgs);
 			var proxy = function() {
@@ -19779,7 +19852,7 @@ PRIMITIVES['js-make-hash'] =
 		      1,
 		      false, false,
 		      function(aState, bindings) {
-			  checkListOf(bindings, function(x) { return isAssocList(x) && isString(x.first()); },
+			  checkListOf(aState, bindings, function(x) { return isAssocList(x) && isString(x.first()); },
 				      'js-make-hash', '(listof string X)', 1);
 
 			  var ret = {};
@@ -19841,7 +19914,6 @@ primitive.setCALL = setCALL;
 primitive.setPAUSE = setPAUSE;
 
 })();
-
 // Control structures
 
 /*
@@ -20538,14 +20610,16 @@ var callPrimitiveProcedure = function(state, procValue, n, operandValues) {
 					 operandValues,
 					 n);
     var result = procValue.impl.apply(procValue.impl, args);
-    processPrimitiveResult(state, result, procValue);
+    processPrimitiveResult(state, result, procValue, n);
 };
 
 
-var processPrimitiveResult = function(state, result, procValue) {
+var processPrimitiveResult = function(state, result, procValue, n) {
     if (result instanceof INTERNAL_CALL) {
 	state.cstack.push(new InternalCallRestartControl
 			  (result.k, procValue));
+
+        addNoLocationContinuationMark(state, n);
 	callProcedure(state,
 		      result.operator, 
 		      result.operands.length, 
@@ -20591,6 +20665,24 @@ InternalCallRestartControl.prototype.invoke = function(state) {
 };
 
 primitive.setCALL(INTERNAL_CALL);
+
+
+
+// When we're doing an application, but we don't have source locations,
+// we the following function to add the mark.
+var addNoLocationContinuationMark = function(aState, n) {
+    var i;
+    var aHash = types.makeLowLevelEqHash();
+    var nonPositions = [types.NoLocation];
+    for (i = 0; i < n; i++) { nonPositions.push(types.NoLocation); }
+    aHash.put(types.symbol('moby-application-position-key'),
+              types.list(nonPositions));
+    aState.pushControl(types.contMarkRecordControl(aHash));
+};
+
+
+
+
 
 
 //////////////////////////////////////////////////////////////////////
@@ -20780,8 +20872,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
                 acceptableParameterArity.join(' or '),
                 " arguments, given ",
                 n,
-                ": ",
-                new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
     }
 
@@ -20805,13 +20897,13 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	   
 	    var locationList = positionStack[positionStack.length - 1];
 	    var argColoredParts = getArgColoredParts(locationList.rest());
-	   
-	    
+
+
 	    helpers.raise(types.incompleteExn(
 		types.exnFailContractArityWithPosition,
-		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "#<procedure>")), locationList.first()),
+		new types.Message([new types.ColoredPart((''+(procValue.name !== types.EMPTY ? procValue.name : "anonymous function")), locationList.first()),
 			": expects ", 
-			(procValue.isRest ? 'at least ' : ''),
+			''+(procValue.isRest ? 'at least ' : ''),
 			((procValue.locs != undefined) ? new types.MultiPart((procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')), 
 							  procValue.locs.slice(1))
@@ -20821,8 +20913,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 					      ,
   		         ", given ",
 			n ,
-			": ", 
-			new types.GradientPart(argColoredParts)]),
+            ((argColoredParts.length > 0) ? ": " : ""),
+            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
 		[]));
 	}
     }
