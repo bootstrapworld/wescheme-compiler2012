@@ -1990,13 +1990,6 @@ MultiPart.prototype.toString = function() {
 	return this.text;
 };
 
-//if there is not enough location information available,
-//this allows for highlighting to be turned off
-var NoLocation = function(){};
-
-var isNoLocation = function(o) {
-  return o instanceof NoLocation;
-};
 
 //////////////////////////////////////////////////////////////////////
 
@@ -2016,7 +2009,7 @@ var makeList = function(args) {
 
 var makeVector = function(args) {
     return Vector.makeInstance(args.length, args);
-}
+};
 
 var makeString = function(s) {
 	if (s instanceof Str) {
@@ -2038,7 +2031,7 @@ var makeString = function(s) {
 					  ' given ' + s.toString(),
 					  false);
 	}
-}
+};
 
 
 var makeHashEq = function(lst) {
@@ -2048,7 +2041,7 @@ var makeHashEq = function(lst) {
 		lst = lst.rest();
 	}
 	return newHash;
-}
+};
 
 
 var makeHashEqual = function(lst) {
@@ -2058,7 +2051,17 @@ var makeHashEqual = function(lst) {
 		lst = lst.rest();
 	}
 	return newHash;
-}
+};
+
+
+//if there is not enough location information available,
+//this allows for highlighting to be turned off
+var NoLocation = makeVector(['<no-location>', 0,0,0,0]);
+
+var isNoLocation = function(o) {
+  return o === NoLocation;
+};
+
 
 
 var Posn = makeStructureType('posn', false, 2, 0, false, false);
@@ -2306,7 +2309,8 @@ types.isRenderEffect = RenderEffect.predicate;
 //types.setRenderEffectEffects = function(x, v) { RenderEffect.mutator(x, 1, v); };
 
 
-
+types.NoLocation = NoLocation;
+types.isNoLocation = isNoLocation;
 
 
 
@@ -2318,8 +2322,7 @@ types.GradientPart = GradientPart;
 types.isGradientPart = isGradientPart;
 types.MultiPart = MultiPart;
 types.isMultiPart = isMultiPart;
-types.NoLocation = NoLocation;
-types.isNoLocation = isNoLocation;
+
 
 
 })();
