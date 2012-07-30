@@ -175,6 +175,8 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
+       		console.log("locationList is ", locationList);
+
        		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
@@ -186,7 +188,7 @@ var helpers = {};
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
-						if(! (locs.isEmpty)){
+						if(! (locs.isEmpty())){
 							if(i != pos) {
 								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
 							}
@@ -196,7 +198,7 @@ var helpers = {};
 				}
 				else {
 					for(i = 0; i < args.length; i++){
-						if(! (locs.isEmpty)){
+						if(! (locs.isEmpty())){
 							if(i != (pos -1)) {
 								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+" ", locs.first()));
 							}
@@ -282,8 +284,6 @@ var helpers = {};
 	};
 
 	var checkVarArity = function(aState, x, f, functionName, typeName, position, args) {
-		//window.huh = args;
-
 		//check to ensure last thing is an array
 		if(args.length > 0 && (args[args.length - 1] instanceof Array)) {
 			var flattenedArgs = [];
