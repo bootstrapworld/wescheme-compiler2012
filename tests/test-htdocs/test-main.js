@@ -3655,7 +3655,7 @@ var runTests = function() {
 	
 	queueErrorTest("beside given bad args, correct number",
 		       "(beside 1 1)"
-		       "NOT SURE OF MESSAGE");
+		       "beside: expects type image as 1st argument, given: 1; other arguments were: 1");
 
 	queueErrorTest("beside given 0 args",
 		       "(beside)",
@@ -3670,7 +3670,7 @@ var runTests = function() {
 
 	queueErrorTest("beside/align given bad args, correct number",
 		       "(beside/align 1 1 1)",
-		       "NOT SURE OF MESSAGE");
+		       "beside/align: expects type y-place as 1st argument, given: 1; other arguments were: 1 1");
 
 	queueErrorTest("above given 0 args",
 		       "(above)",
@@ -3682,7 +3682,7 @@ var runTests = function() {
 	
 	queueErrorTest("above given bad args, correct number",
 		       "(above 1 1)",
-		       "NOT SURE OF MESSAGE");
+		       "above: expects type image as 1st argument, given: 1; other arguments were: 1");
 
 	queueErrorTest("above/align given no args",
 		       "(above/align)",
@@ -3690,7 +3690,7 @@ var runTests = function() {
 
 	queueErrorTest("above/align given bad args, correct number",
 		       "(above/align 1 1 1)",
-		       "NOT SURE OF MESSAGE");
+		       "above/align: expects type x-place as 1st argument, given: 1; other arguments were: 1 1");
 
 	queueErrorTest("above/align given too many args, all bad",
 		      "(above/align 1 1 1 1 1)",
@@ -3778,7 +3778,7 @@ var runTests = function() {
 
 	queueErrorTest("bitmap/url given correct amount of args, but bad types",
 		       "(bitmap/url 1)",
-		       "NOT SURE OF MESSAGE");
+		       "image-url: expects type string as 1st argument, given: 1");
 
 	queueErrorTest("video-url given bad amount of args",
 		       "(video-url)",
@@ -3794,7 +3794,7 @@ var runTests = function() {
 
 	queueErrorTest("image-width given correct arg amount, but bad types",
 		       "(image-width 1)",
-		       "NOT SURE OF MESSAGE");
+		       "image-width: expects type image as 1st argument, given: 1");
 
 	queueErrorTest("image-height given no args",
 		       "(image-height)",
@@ -3802,7 +3802,7 @@ var runTests = function() {
 
 	queueErrorTest("image-height given correct arg amount, but bad types",
 		       "(image-height 1)",
-		       "NOT SURE OF MESSAGE");
+		       "image-height: expects type image as 1st argument, given: 1");
 
 	queueErrorTest("image-baseline given no args",
 		       "(image-baseline)",
@@ -3810,7 +3810,7 @@ var runTests = function() {
 
 	queueErrorTest("image-baseline given correct arg amount, but bad types",
 		       "(image-baseline 1)",
-		       "NOT SURE OF MESSAGE");
+		       "image-baseline: expects type image as 1st argument, given: 1");
 	
 	queueErrorTest("color-list->image bad arg amount",
 		       "(color-list->image)",
@@ -3818,7 +3818,7 @@ var runTests = function() {
 
 	queueErrorTest("color-list->bitmap bad arg type",
 		       "(color-list->bitmap 1 1 1 1 1)",
-		       "NOT SURE OF MESSAGE");
+		       "color-list->bitmap: expects 3 arguments, given 5: 1 1 1 1 1");
 
 	queueErrorTest("color-list->bitmap bad arg amount",
 		       "(color-list->bitmap)",
@@ -3826,7 +3826,7 @@ var runTests = function() {
 
 	queueErrorTest("color-list->image bad arg type",
 		       "(color-list->image 1 1 1 1 1)",
-		       "NOT SURE OF MESSAGE");
+		       "color-list->image: expects type list of image as 1st argument, given: 1");
 	
 	queueErrorTest("mode? no args",
 		       "(mode?)",
@@ -3898,7 +3898,7 @@ var runTests = function() {
 
 	queueErrorTest("on-tick 1 arg",
 		       "(on-tick 1)", 
-		       "NOT SURE OF MESSAGE");
+		       "on-tick: expects type procedure as 1st argument, given: 1");
 
 	queueErrorTest("on-tick 2 args",
 		       "(on-tick 1 2)",
@@ -3922,7 +3922,7 @@ var runTests = function() {
 
 	queueErrorTest("on-tap bad arg type",
 		       "(on-tap 1)",
-		       "NOT SURE OF MESSAGE");
+		       "on-tap: expects type procedure as 1st argument, given: 1");
 
 	queueErrorTest("on-tilt bad arg amount",
 		       "(on-tilt)",
@@ -3930,7 +3930,7 @@ var runTests = function() {
 
 	queueErrorTest("on-tilt bad arg type",
 		       "(on-tilt 1)",
-		       "NOT SURE OF MESSAGE");
+		       "on-tilt: expects type procedure as 1st argument, given: 1");
 
 	queueErrorTest("on-key bad arg amount",
 		       "(on-key)",
@@ -3938,7 +3938,7 @@ var runTests = function() {
 	
 	queueErrorTest("on-key bad arg type",
 		       "(on-key 1)",
-		       "NOT SURE OF MESSAGE");
+		       "on-key: expects type procedure as 1st argument, given: 1");
 
 	queueErrorTest("on-key! bad arg amount",
 		       "(on-key!)",
@@ -3954,7 +3954,7 @@ var runTests = function() {
 	
 	queueErrorTest("stop-when bad arg type",
 		       "(stop-when 1)",
-		       "NOT SURE OF MESSAGE");
+		       "stop-when: expects type procedure as 1st argument, given: 1");
 
 	queueErrorTest("stop-when! bad arg amount",
 		       "(stop-when!)",
@@ -3970,15 +3970,9 @@ var runTests = function() {
 
 	queueErrorTest("on-redraw bad arg type",
 		       "(on-redraw 1)",
-		       "NOT SURE OF MESSAGE");
+		       "on-redraw: expects type procedure as 1st argument, given: 1");
 
-	queueErrorTest("to-redraw bad arg amount",
-		       "(to-redraw)",
-		       "to-redraw: expects 1 argument, given 0");
 
-	queueErrorTest("to-redraw bad arg type",
-		       "(to-redraw 1)",
-		       "NOT SURE OF MESSAGE");
 
 	queueErrorTest("on-draw bad arg amount",
 		       "(on-draw)",
@@ -3986,7 +3980,7 @@ var runTests = function() {
 	
 	queueErrorTest("on-draw bad arg type",
 		       "(on-draw 1)",
-		       "NOT SURE OF MESSAGE");
+		       "on-redraw: expects type procedure as 1st argument, given: 1");
 
 	queueErrorTest("on-draw bad arg types",
 		       "(on-draw 1 2)",
@@ -4062,7 +4056,7 @@ var runTests = function() {
 	
 	queueErrorTest("apply given bad arg type for second arg",
 		       "(apply add1 1)",
-		       "NOT SURE OF MESSAGE");
+		       "apply: expects type list as 2nd argument, given: 1; other arguments were: #<procedure:add1>");
 
 	queueErrorTest("compose given bad arg type",
 		       "(compose 1)",
@@ -4098,7 +4092,7 @@ var runTests = function() {
 
 	queueErrorTest("sleep given bad arg type",
 		       "(sleep add1)",
-		       "NOT SURE OF MESSAGE");
+		       "sleep: expects type non-negative real number as 1st argument, given: #<procedure:add1>");
 
 	queueErrorTest("sleep given too many args",
 		       "(sleep 1 2)",
@@ -4134,7 +4128,7 @@ var runTests = function() {
 	
 	queueErrorTest("make-exn given bad arg types",
 		       "(make-exn 1 1)",
-		       "NOT SURE OF MESSAGE");
+		       "exn: expects argument of type continuation mark set, given: 1");
 	
 	queueErrorTest("* given bad arg",
 		       "(* add1)",
@@ -4276,7 +4270,7 @@ var runTests = function() {
 	
 	queueErrorTest("abs given 1 bad arg",
 		       "(abs add1)",
-		       "NOT SURE OF MESSAGE");
+		       "abs: expects type real as 1st argument, given: #<procedure:add1>");
 
 	queueErrorTest("abs given too many args",
 		       "(abs 1 1)",
@@ -4384,7 +4378,7 @@ var runTests = function() {
 	
 	queueErrorTest("floor given 1 bad arg",
 		       "(floor add1)",
-		       "NOT SURE OF MESSAGE");
+		       "floor: expects type real as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("floor given too many args",
 		       "(floor 1 1 1)",
@@ -4396,7 +4390,7 @@ var runTests = function() {
 	
 	queueErrorTest("ceiling given 1 bad arg",
 		       "(ceiling add1)",
-		       "NOT SURE OF MESSAGE");
+		       "ceiling: expects type real as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("ceiling given too many args",
 		       "(ceiling 1 1 1)",
@@ -4408,7 +4402,7 @@ var runTests = function() {
 	
 	queueErrorTest("round given 1 bad arg",
 		       "(round add1)",
-		       "NOT SURE OF MESSAGE");
+		       "round: expects type real as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("round given too many args",
 		       "(round 1 1 1)",
@@ -4420,7 +4414,7 @@ var runTests = function() {
 	
 	queueErrorTest("numerator given 1 bad arg",
 		       "(numerator add1)",
-		       "NOT SURE OF MESSAGE");
+		       "numerator: expects type rational number as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("numerator given too many args",
 		       "(numerator 1 1 1)",
@@ -4432,7 +4426,7 @@ var runTests = function() {
 	
 	queueErrorTest("denominator given 1 bad arg",
 		       "(denominator add1)",
-		       "NOT SURE OF MESSAGE");
+		       "denominator: expects type rational number as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("denominator given too many args",
 		       "(denominator 1 1 1)",
@@ -4460,7 +4454,7 @@ var runTests = function() {
 	
 	queueErrorTest("exp given 1 bad arg",
 		       "(exp add1)",
-		       "NOT SURE OF MESSAGE");
+		       "exp: expects type number as 1st argument, given: #<procedure:add1>");
 
 	queueErrorTest("exp given too many bad args",
 		       "(exp 1 1)",
@@ -4472,7 +4466,7 @@ var runTests = function() {
 
 	queueErrorTest("log given 1 bad arg",
 		       "(log add1)",
-		       "NOT SURE OF MESSAGE");
+		       "log: expects type number as 1st argument, given: #<procedure:add1>");
 
 	queueErrorTest("log given too many args",
 		       "(log 1 1)",

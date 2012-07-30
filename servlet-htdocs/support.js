@@ -819,13 +819,6 @@ var helpers = {};
 				return locs.first();
 			}
 
-<<<<<<< HEAD
-	//		console.log("args: ", args);
-	//		console.log("locs passed in: ", locationList.rest());
-			var argColoredParts = getArgColoredParts(locationList.rest());
-	//		console.log(argColoredParts);
-=======
->>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				if(argColoredParts.length > 0){
@@ -844,10 +837,6 @@ var helpers = {};
 							   []) );
 				}
 			}
-<<<<<<< HEAD
-			
-=======
->>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
@@ -19373,11 +19362,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-<<<<<<< HEAD
-					      'js-big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
-=======
 					      'big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
->>>>>>> fe0892d85fbd1931e2c2812c4332c494c0dfc042
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
