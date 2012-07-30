@@ -5036,6 +5036,779 @@ var runTests = function() {
                         "(for-each 1 2 3 4 5)",
                         "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
 
+<<<<<<< HEAD
+        queueErrorTest("test for-each type",
+                        "(for-each 1 2)",
+                        "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
+
+
+
+        //////////////////////////////////////////////////////////////////////
+
+
+        //map
+        queueErrorTest("test map with function that cannot be applied to elements in list",
+                       "(map add1 (list \"hello\" \"world\"))",
+                       'add1: expects type number as 1st argument, given: "hello"');
+//filter
+        queueErrorTest("test filter without procedure as 1st argument",
+                       "(filter 2 (list 2 3 4))",
+                       'filter: expects type procedure (arity 1) as 1st argument, given: 2; other arguments were: (list 2 3 4)');
+
+//foldl
+        queueErrorTest("test foldl with arguments of wrong type",
+                       "(foldl 1 7 (list 2 3))",
+                       '-: expects type number as 2nd argument, given: "1"; other arguments were: 2');
+
+        queueErrorTest("test foldl with arguments of wrong type",
+                       "(foldl 1 7 (list 2 3))",
+                       'foldl: expects type procedure as 1st argument, given: 1; other arguments were: 7 (list 2 3)');
+
+//foldr
+        queueErrorTest("test foldr with arguments of wrong type",
+                       "(foldr 1 2 (list 3))",
+                       'foldr: expects type procedure as 1st argument, given: 1; other arguments were: 2 (list 3');
+
+        queueErrorTest("test foldr with arguments of wrong type",
+                       "(foldr + \"hello\" (list 1 2 3))",
+                       '+: expects type number as 2nd argument, given: "hello"; other arguments were: 3');
+
+//argmax
+        queueErrorTest("test argmax with empty list",
+                       "(argmax 2 '())",
+                       'argmax: expects type procedure as 1st argument, given: 2; other arguments were: empty');
+
+        queueErrorTest("test argmax with first argument not a procedure",
+                       "(argmax 2 (list 2))",
+                       'argmax: expects type procedure as 1st argument, given: 2; other arguments were: (list 2)');
+
+        queueErrorTest("test argmax with second argument not a list",
+                       "(argmax car 2)",
+                       'argmax: expects type non-empty list as 2nd argument, given: 2; other arguments were: #<procedure:car>');
+
+//argmin
+        queueErrorTest("test argmin with empty list",
+                       "(argmin 2 '())",
+                       'argmax: expects type procedure as 1st argument, given: 2; other arguments were: empty');
+
+        queueErrorTest("test argmin with first argument not a procedure",
+                       "(argmin 2 (list 2))",
+                       'argmin: expects type procedure as 1st argument, given: 2; other arguments were: (list 2)');
+
+        queueErrorTest("test argmin with second argument not a list",
+                       "(argmin car 2)",
+                       'argmin: expects type non-empty list as 2nd argument, given: 2; other arguments were: #<procedure:car>');
+
+//build-list
+        queueErrorTest("test build-list with first argument not a number",
+                       "(build-list \"number\" add1)",
+                       'argmin: expects type non-empty list as 2nd argument, given: 2; other arguments were: #<procedure:car>');
+
+        queueErrorTest("test build-list with second argument not a proc",
+                       "(build-list 2 6)",
+                       'build-list: expects type procedure as 2nd argument, given: 6; other arguments were: 2');
+
+//make-hash 
+
+        queueErrorTest("test make-hash with listof listof pairs not first argument",
+                       "(make-hash 1)",
+                       'make-hash: expects type list of list of pairs as 1st argument, given: 1');
+
+        queueErrorTest("test make-hash with 2 arguments instead of 0 or 1",
+                       "(make-hash (list (list 1 \"hello\") (list 2 \"world\") (list 3 \"today\")) 2)",
+                       'make-hash: expects 0 or 1 arguments, given 2: (list (list 1 "hello") (list 2 "world") (list 3 "today")) 2');
+
+
+//hash-set!
+
+        queueErrorTest("test hash-set! with first argument not a hash",
+                       "(hash-set! 5 2 \"bird\")",
+                       'hash-set!: expects type hash as 1st argument, given: 5; other arguments were: 2 "bird"');
+
+        queueErrorTest("test hash-set! with wrong arity",
+                       "(hash-set!)",
+                       'hash-set!: expects 3 arguments, given 0');
+
+//hash-ref 
+        queueErrorTest("test hash-ref with wrong arity",
+                       "(hash-ref \"thing\")",
+                       'hash-ref: expects 2 or 3 arguments, given 1: thing');
+
+        queueErrorTest("test hash-ref with 1st argument not a hash",
+                       "(hash-ref \"imma hash\" 2)",
+                       'hash-ref: expects type hash as 1st argument, given: "imma hash"; other arguments were: 2');
+
+//hash-remove!
+        queueErrorTest("test hash-remove! with wrong arity",
+                       "(hash-remove!)",
+                       'hash-remove: expects 2 arguments, given 0');
+
+        queueErrorTest("test hash-remove! with wrong 1st argument not hash",
+                       "(hash-remove! 2 2)",
+                       'hash-remove!: expects type hash as 1st argument, given: 2; other arguments were: 2');
+
+//hash-map
+
+        queueErrorTest("test hash-map with wrong arity",
+                       "(hash-map)",
+                       'hash-map: expects 2 arguments, given 0');
+
+        queueErrorTest("test hash-map with wrong first argument not hash",
+                       "(hash-map 2 cons)",
+                       'hash-map: expects type hash as 1st argument, given: 2; other arguments were: #<procedure:cons>');
+
+        queueErrorTest("test hash-map with wrong 2nd argument not proc",
+                       "(hash-map (make-hash (list (list 1 100) (list 2 200) (list 3 300))) 2)",
+                       'hash-map: expects type procedure as 2nd argument, given: 2; other arguments were: #hash((1 . (list 100)) (2 . (list 200)) (3 . (list 300)))');
+
+//hash-for-each
+
+        queueErrorTest("test hash-for-each with wrong arity",
+                       "(hash-for-each)",
+                       'hash-for-each: expects 2 arguments, given 0');
+
+        queueErrorTest("test hash-for-each with wrong 1st argument not proc",
+                       "(hash-for-each \"imma hash brown\" cons)",
+                       'hash-for-each: expects type hash as 1st argument, given: "imma hash brown"; other arguments were: #<procedure:cons>');
+
+        queueErrorTest("test hash-for-each with wrong 2nd argument not proc",
+                       "(hash-for-each (make-hash) \"add\")",
+                       'hash-for-each: expects type procedure as 2nd argument, given: "add"; other arguments were: #hash()');
+
+//make-string
+
+        queueErrorTest("test make-string with wrong arity",
+                       "(make-string)",
+                       'make-string: expects 2 arguments, given 0');
+
+        queueErrorTest("test make-string with 1st argument not exact integer",
+                       "(make-string 2.5 2)",
+                       'make-string: expects type non-negative exact integer as 1st argument, given: 5/2; other arguments were: 2');
+
+        queueErrorTest("test make-string with 2nd argument not char",
+                       "(make-string 3 2)",
+                       'make-string: expects type char as 2nd argument, given: 2; other arguments were: 3');
+
+//replicate
+
+        queueErrorTest("test replicate with wrong arity",
+                       "(replicate)",
+                       'replicate: expects 2 arguments, given 0');
+
+        queueErrorTest("test replicate with 1st argument not exact integer",
+                       "(replicate 2.1 \"World\")",
+                       'replicate: expects type non-negative exact integer as 1st argument, given: 21/10; other arguments were: "World"');
+
+        queueErrorTest("test replicate with 2nd argument not string",
+                       "(replicate 2 1)",
+                       'replicate: expects type string as 2nd argument, given: 1; other arguments were: 2');
+
+//string
+
+        queueErrorTest("test string with 1st argument not char",
+                       "(string 1)",
+                       'string: expects type char as 1st argument, given: 1');
+
+//string-length
+
+        queueErrorTest("test string-length with wrong arity",
+                       "(string-length)",
+                       'string-length: expects 1 argument, given 0');
+
+        queueErrorTest("test string-length with 1st argument not string",
+                       "(string-length 2)",
+                       'string-length: expects type string as 1st argument, given: 2');
+
+//string-ref
+
+        queueErrorTest("test string-ref with wrong arity",
+                       "(string-ref)",
+                       'string-ref: expects 2 arguments, given 0');
+
+        queueErrorTest("test string-ref with 1st argument not string",
+                       "(string-ref 2 2)",
+                       'string-ref: expects type string as 1st argument, given: 2; other arguments were: 2');
+
+        queueErrorTest("test string-ref with 1st argument not string",
+                       "(string-ref \"hello\" \"world\")",
+                       'string-ref: expects type non-negative exact integer as 2nd argument, given: "world"; other arguments were: "hello"');
+
+        //out of bounds
+
+
+//string=?
+
+        queueErrorTest("test string=? with 1st argument not string",
+                       "(string? 42 \"hello\")",
+                       'string=?: expects type string as 1st argument, given: 42; other arguments were: "thing"');
+
+        queueErrorTest("test string=? with 2nd argument not string",
+                       "(string? \"thing\" 42)",
+                       'string=?: expects type string as 2nd argument, given: 42; other arguments were: "thing"');
+
+        queueErrorTest("test string=? with wrong arity",
+                       "(string=?)",
+                       'string=?: expects at least 2 arguments, given 0');
+
+//string-ci=?
+
+        queueErrorTest("test string-ci=? with wrong arity",
+                       "(string-ci=?)",
+                       'string-ci=?: expects at least 2 arguments, given 0');
+
+        QueueErrorTest("test string-ci=? with 1st argument not string",
+                       "(string-ci=? 4 \"thing\")",
+                       'string-ci=?: expects type string as 1st argument, given: 4; other arguments were: "thing"');
+
+        queueErrorTest("test string-ci=? with 1st argument not string",
+                       "(string-ci=? \"thing\" 2)",
+                       'string-ci=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+
+//string<?
+
+        queueErrorTest("test string<? with wrong arity",
+                       "(string<?)",
+                       'string-ci=?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string<? with 1st argument not string",
+                       "(string<? \"thing\" 4)",
+                       'string<?: expects type string as 2nd argument, given: 4; other arguments were: "thing"');
+
+        queueErrorTest("test string<? with 1st argument not string",
+                       "(string<? 4 \"thing\")",
+                       'string<?: expects type string as 1st argument, given: 4; other arguments were: "thing"');
+
+//string>?
+
+        queueErrorTest("test string>? with wrong arity",
+                       "(string>?)",
+                       'string>?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string>? with 1st argument not string",
+                       "(string>? 3 \"thing\")",
+                       'string>?: expects type string as 1st argument, given: 3; other arguments were: "thing"');
+
+        queueErrorTest("test string>? with 1st argument not string",
+                       "(string>? \"thing\" 3)",
+                       'string>?: expects type string as 2nd argument, given: 3; other arguments were: "thing"');
+
+
+//string<=?
+
+        queueErrorTest("test string<=? with wrong arity",
+                       "(string<=?)",
+                       'string<=?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string<=? with 1st argument not string",
+                       "(string<=? 3 \"thing\")",
+                       'string<=?: expects type string as 1st argument, given: 3; other arguments were: "thing"');
+
+        queueErrorTest("test string>? with 1st argument not string",
+                       "(string>? \"thing\" 3)",
+                       'string>?: expects type string as 2nd argument, given: 3; other arguments were: "thing"');
+
+//string>=?
+
+        queueErrorTest("test string>=? with wrong arity",
+                       "(string>=?)",
+                       'string>=?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string>=? with 1st argument not string",
+                       "(string>=? 2 \"thing\")",
+                       'string>=?: expects type string as 1st argument, given: 2; other arguments were: "thing"');
+
+        queueErrorTest("test string>=? with 1st argument not string",
+                       "(string>=? \"thing\" 2)",
+                       'string>=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+
+
+//string-ci<?
+
+        queueErrorTest("test string-ci<? with wrong arity",
+                       "(string-ci<?)",
+                       'string-ci<?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string-ci<? with 1st argument not string",
+                       "(string-ci<? 1 \"thing\")",
+                       'string-ci<?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+
+        queueErrorTest("test string-ci<? with 1st argument not string",
+                       "(string-ci<? \"thing\" 2)",
+                       'string-ci<?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+
+
+//string-ci>?
+
+        queueErrorTest("test string-ci>? with wrong arity",
+                       "(string-ci>?)",
+                       'string-ci>?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string-ci>? with 1st argument not string",
+                       "(string-ci>? 1 \"thing\")",
+                       'string-ci>?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+
+        queueErrorTest("test string-ci>? with 1st argument not string",
+                       "(string-ci>? \"thing\" 2)",
+                       'string-ci>?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+
+//string-ci<=?
+
+        queueErrorTest("test string-ci<=? with wrong arity",
+                       "(string-ci<=?)",
+                       'string-ci<=?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string-ci<=? with 1st argument not string",
+                       "(string-ci<=? 1 \"thing\")",
+                       'string-ci<=?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+
+        queueErrorTest("test string-ci<=? with 1st argument not string",
+                       "(string-ci<=? \"thing\" 2)",
+                       'string-ci<=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+
+//string-ci>=?
+
+        queueErrorTest("test string-ci>=? with wrong arity",
+                       "(string-ci>=?)",
+                       'string-ci>=?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("test string-ci>=? with 1st argument not string",
+                       "(string-ci>=? 1 \"thing\")",
+                       'string-ci>=?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+
+        queueErrorTest("test string-ci>=? with 1st argument not string",
+                       "(string-ci>=? \"thing\" 2)",
+                       'string-ci>=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+
+//substring
+
+        queueErrorTest("test substring with wrong arity",
+                       "(substring)",
+                       'substring: expects 2 or 3 arguments, given 0');
+
+        queueErrorTest("test substring with 1st argument not string",
+                       "(substring 1 1 2)",
+                       'substring: expects type string as 1st argument, given: 1; other arguments were: 1 2');
+
+        queueErrorTest("test substring with 2nd argument not string",
+                       "(substring \"hello\" \"world\" 2)",
+                       'substring: expects type non-negative exact integer as 2nd argument, given: "world"; other arguments were: "hello" 2');
+
+        queueErrorTest("test substring with 3rd argument not string",
+                       "(substring \"hello\" 2 \"world\")",
+                       'substring: expects type non-negative exact integer as 3rd argument, given: "world"; other arguments were: "hello" 2');                
+
+        queueErrorTest("test substring with index out of bounds",
+                       "(substring \"thing\" 0 53)",
+                       'substring: ending index 53 out of range [0, 5] for string: "thing"');                
+
+
+//string-append
+
+        queueErrorTest("test string-append with first argument not a string",
+                       "(string-append 1 "2")",
+                       'string-append: expects type string as 1st argument, given: 1; other arguments were: "2');
+
+        queueErrorTest("test string-append with an argument not a string",
+                       "(string-append \"1\" \"2\" \"3\" \"4\" 5)",
+                       'string-append: expects type string as 5th argument, given: 5; other arguments were: "1" "2" "3" "4"');
+
+//string->list
+
+        queueErrorTest("test string->list with wrong arity",
+                       "(string->list)",
+                       'string->list: expects 1 argument, given 0');
+
+        queueErrorTest("test string->list with first argument not a string",
+                       "(string->list 2)",
+                       'string->list: expects type string as 1st argument, given: 2');
+
+//list->string
+
+        queueErrorTest("test list->string with first argument not a string",
+                       "(list->string)",
+                       'list->string: expects 1 argument, given 0');
+
+        queueErrorTest("test list->string with first argument not list of char",
+                       "(list->string (list 1 2 3))",
+                       'list->string: expects type list of char as 1st argument, given: (list 1 2 3)');
+
+//string-copy
+
+        queueErrorTest("test string-copy with wrong arity",
+                       "(string-copy)",
+                       'string-copy: expects 1 argument, given 0');
+
+        queueErrorTest("test string-copy with 1st argument not string",
+                       "(string-copy 2)",
+                       'string-copy: expects type string as 1st argument, given: 2');
+
+//string->symbol
+
+        queueErrorTest("test string->symbol with wrong arity",
+                       "(string->symbol)",
+                       'string->symbol: expects 1 argument, given 0');
+
+        queueErrorTest("test string->symbol with 1st argument not string",
+                       "(string->symbol 2)",
+                       'string->symbol: expects type string as 1st argument, given: 2');
+
+//symbol->string
+
+        queueErrorTest("test symbol->string with wrong arity",
+                       "(symbol->string)",
+                       'symbol->string: expects 1 argument, given 0');
+
+        queueErrorTest("test symbol->string with 1st argument not string",
+                       "(symbol->string 2)",
+                       'symbol->string: expects type string as 1st argument, given: 2');
+
+//format
+
+        queueErrorTest("test format with wrong arity",
+                       "(format)",
+                       'format: expects at least 1 argument, given 0');
+
+        queueErrorTest("test format with 1st argument not string",
+                       "(format 1)",
+                       'format: expects type string as 1st argument, given: 1');
+
+//printf
+
+        queueErrorTest("test printf with wrong arity",
+                       "(printf)",
+                       'printf: expects at least 1 argument, given 0');
+
+        queueErrorTest("test printf with 1st argument not string",
+                       "(printf 1)",
+                       'printf: expects type string as 1st argument, given: 1');
+
+//string->int
+
+        queueErrorTest("test string->int with wrong arity",
+                       "(string->int)",
+                       'string->int: expects 1 argument, given 0');
+
+        queueErrorTest("test string->int with 1st argument not string",
+                       "(string->int 1)",
+                       'string->int: expects type 1-letter string as 1st argument, given: 1');
+
+        queueErrorTest("test string->int with 1st argument not 1-letter string",
+                       "(string->int \"23\")",
+                       'string->int: expects type 1-letter string as 1st argument, given: "23"');
+
+//int->string
+
+        queueErrorTest("test int->string with wrong arity",
+                       "(int->string)",
+                       'int->string: expects at least 1 argument, given 0');
+
+        queueErrorTest("test int->string with 1st argument not exact integer",
+                       "(int->string \"1\")",
+                       'int->string: expects type exact integer in [0,55295] or [57344,1114111] as 1st argument, given: "1"');
+
+//explode
+
+        queueErrorTest("explode with wrong arity",
+                       "(explode)",
+                       'explode: expects at least 1 argument, given 0');
+
+        queueErrorTest("test explode with 1st argument not string",
+                       "(explode 123)",
+                       'explode: expects type string as 1st argument, given: 123');
+
+//implode
+
+        queueErrorTest("implode with wrong arity",
+                       "(implode)",
+                       'implode: expects at least 1 argument, given 0');
+
+        queueErrorTest("test implode with 1st argument not list of 1-letter strings",
+                       "(implode \"h235s\")",
+                       'implode: expects type list of 1-letter strings as 1st argument, given: "h235s"');
+
+//string-alphabetic? 
+
+        queueErrorTest("string-alphabetic? with wrong arity",
+                       "(string-alphabetic?)",
+                       'string-alphabetic?: expects 1 argument, given 0');
+
+        queueErrorTest("string-alphabetic? 1st argument not string",
+                       "(string-alphabetic? 123)",
+                       'string-alphabetic?: expects type string as 1st argument, given: 123');
+
+//string-ith
+    
+        queueErrorTest("string-ith with wrong arity",
+                       "(string-ith)",
+                       'string-ith: expects 1 argument, given 0');
+
+        queueErrorTest("string-ith 1st argument not string",
+                       "(string-ith 1 2)",
+                       'string-ith: expects type string as 1st argument, given: 1; other arguments were: 2');
+
+        queueErrorTest("string-ith 2nd argument not exact integer",
+                       "(string-ith \"hello\" 1.5)",
+                       'string-ith: expects type exact integer in [0, length of the given string minus 1 (4)] as 2nd argument, given: 3/2; other arguments were: "hello"');
+
+        queueErrorTest("string-ith index out of bounds",
+                       "(string-ith \"hello\" 5)",
+                       'string-ith: expects type exact integer in [0, length of the given string minus 1 (4)] as 2nd argument, given: 5; other arguments were: "hello"');
+
+//string-lower-case?
+
+        queueErrorTest("string-lower-case? with wrong arity",
+                       "(string-lower-case?)",
+                       'string-lower-case?: expects 1 argument, given 0');
+
+        queueErrorTest("string-lower-case? with 1st argument not string",
+                       "(string-lower-case? 2)",
+                       'string-lower-case?: expects type string as 1st argument, given: 2');
+
+//string-numeric?
+
+        queueErrorTest("string-numeric? with wrong arity",
+                       "(string-numeric?)",
+                       'string-numeric?: expects 1 argument, given 0');
+
+        queueErrorTest("tring-numeric? with 1st argument not string",
+                       "(string-numeric? 2)",
+                       'string-numeric?: expects type string as 1st argument, given: 2');
+
+
+//string-upper-case?
+
+        queueErrorTest("string-upper-case? with wrong arity",
+                       "(string-upper-case?)",
+                       'string-upper-case?: expects 1 argument, given 0');
+
+        queueErrorTest("string-upper-case? with 1st argument not string",
+                       "(string-upper-case? 2)",
+                       'string-upper-case?: expects type string as 1st argument, given: 2');
+//string-whitespace?
+
+        queueErrorTest("string-whitespace? with wrong arity",
+                       "(string-whitespace?)",
+                       'string-whitespace?: expects 1 argument, given 0');
+
+        queueErrorTest("string-whitespace? with 1st argument not string",
+                       "(string-whitespace? 2)",
+                       'string-whitespace?: expects type string as 1st argument, given: 2');
+
+//build-string
+
+        queueErrorTest("build-string with wrong arity",
+                       "(build-string)",
+                       'build-string: expects 2 arguments, given 0');
+
+        queueErrorTest("build-string? with 1st argument not non-negative exact integer",
+                       "(build-string \"hello\" 2)",
+                       'build-string: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2');
+
+        queueErrorTest("build-string? with 2nd argument not a proc",
+                       "(build-string 5 \"hello\")",
+                       'build-string: expects type procedure as 2nd argument, given: "hello"; other arguments were: 5');
+
+//string->immutable-string DNE
+
+//string-set! DNE
+
+//string-fill! DNE
+
+/*PRIMITIVES['make-bytes'] =
+
+PRIMITIVES['bytes'] =
+
+PRIMITIVES['bytes->immutable-bytes'] =
+
+PRIMITIVES['bytes-length'] =
+
+PRIMITIVES['bytes-ref'] =
+
+PRIMITIVES['bytes-set!'] =
+
+PRIMITIVES['subbytes'] =
+
+PRIMITIVES['bytes-copy'] =
+
+PRIMITIVES['bytes-fill!'] =
+
+PRIMITIVES['bytes-append'] =
+
+PRIMITIVES['bytes->list'] =
+
+PRIMITIVES['list->bytes'] =
+
+PRIMITIVES['bytes=?'] =
+
+PRIMITIVES['bytes<?'] =
+
+PRIMITIVES['bytes>?'] = ALL DNE */
+
+//PRIMITIVES['make-vector']
+
+        queueErrorTest("make-vector with wrong arity",
+                       "(make-vector)",
+                       'make-vector: expects 2 arguments, given 0');
+
+        queueErrorTest("make-vector with 1st argument not non-negative exact integer",
+                       "(make-vector \"size\" 2)",
+                       'make-vector: expects type non-negative exact integer as 1st argument, given: "size"; other arguments were: 2');
+
+//PRIMITIVES['vector']
+
+//PRIMITIVES['vector-length']
+
+        queueErrorTest("vector-length with wrong arity",
+                       "(vector-length)",
+                       'vector-length: expects 1 argument, given 0');
+
+        queueErrorTest("vector-length with 1st argument not vector",
+                       "(vector-length 1)",
+                       'vector-length: expects type vector as 1st argument, given: 1');
+
+//PRIMITIVES['vector-ref']
+
+        queueErrorTest("vector-ref with wrong arity",
+                       "(vector-ref)",
+                       'vector-ref: expects 2 arguments, given 0');
+
+        queueErrorTest("vector-ref with 1st argument not vector",
+                       "(vector-ref 1 2)",
+                       'vector-ref: expects type vector as 1st argument, given: 1; other arguments were: 2');
+
+        queueErrorTest("vector-ref with 2nd argument not non-negative ",
+                       "(vector-ref (make-vector 1) 2.2)",
+                       'make-vector: expects 2 arguments, given 1: 1');
+
+        queueErrorTest("vector-ref with index out of bounds",
+                       "(vector-ref (vector 1) 7)",
+                       'vector-ref: index 7 out of range [0, 0] for vector: #(1)');
+
+//PRIMITIVES['vector-set!'] 
+
+        queueErrorTest("make-vector with wrong arity",
+                       "(make-vector)",
+                       'vector-set!: expects 3 arguments, given 0');
+
+        queueErrorTest("vector-length with 1st argument not vector",
+                       "(vector-length 1)",
+                       'vector-length: expects type vector as 1st argument, given: 1');
+
+
+PRIMITIVES['vector->list'] =
+
+PRIMITIVES['list->vector'] =
+
+PRIMITIVES['build-vector'] =
+
+PRIMITIVES['char=?'] =
+
+PRIMITIVES['char<?'] =
+
+PRIMITIVES['char>?'] =
+
+PRIMITIVES['char<=?'] =
+
+PRIMITIVES['char>=?'] =
+
+PRIMITIVES['char-ci=?'] =
+
+PRIMITIVES['char-ci<?'] =
+
+PRIMITIVES['char-ci>?'] =
+
+PRIMITIVES['char-ci<=?'] =
+
+PRIMITIVES['char-ci>=?'] =
+
+PRIMITIVES['char-alphabetic?'] =
+
+PRIMITIVES['char-numeric?'] =
+
+PRIMITIVES['char-whitespace?'] =
+
+PRIMITIVES['char-upper-case?'] =
+
+PRIMITIVES['char-lower-case?'] =
+
+PRIMITIVES['char->integer'] =
+
+PRIMITIVES['integer->char'] =
+
+PRIMITIVES['char-upcase'] =
+
+PRIMITIVES['char-downcase'] =
+
+PRIMITIVES['make-posn'] =
+
+PRIMITIVES['posn-x'] =
+
+PRIMITIVES['posn-y'] =
+
+PRIMITIVES['key=?'] 
+
+PRIMITIVES['image?'] = 
+
+PRIMITIVES['make-color'] =
+
+PRIMITIVES['color-red'] =
+
+PRIMITIVES['color-green'] =
+
+PRIMITIVES['color-blue'] =
+
+PRIMITIVES['color-alpha'] =
+
+PRIMITIVES['empty-scene'] =
+
+PRIMITIVES['place-image'] =
+
+PRIMITIVES['place-image/align'] =
+
+PRIMITIVES['scene+line'] =
+
+PRIMITIVES['put-pinhole'] =
+
+PRIMITIVES['circle'] =
+
+PRIMITIVES['star'] = 
+
+PRIMITIVES['radial-star'] =
+
+PRIMITIVES['nw:rectangle'] =
+
+PRIMITIVES['rectangle'] =
+
+PRIMITIVES['regular-polygon'] =
+
+PRIMITIVES['star-polygon'] =
+
+PRIMITIVES['rhombus'] =
+
+PRIMITIVES['square'] =
+
+PRIMITIVES['triangle'] =
+
+PRIMITIVES['right-triangle'] =
+
+PRIMITIVES['isosceles-triangle'] =
+
+PRIMITIVES['ellipse'] =
+
+PRIMITIVES['line'] =
+
+
+
+
+
+
+
+//
+    
+
+
+=======
+>>>>>>> 11ff965bc6cab7eefedb55aa5199237935bb427d
         //////////////////////////////////////////////////////////////////////
 
 
