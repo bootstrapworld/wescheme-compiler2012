@@ -3667,6 +3667,15 @@ var runTests = function() {
                   "(define-struct foo (x y)) (foo-y (make-foo 3 4))",
                   "4")
 
+        queueTest("simple structures predicate 1",
+                  "(define-struct foo (x y)) (foo? (make-foo 3 4))",
+                  "true")
+
+        queueTest("simple structures predicate 2",
+                  "(define-struct foo (x y)) (foo? 'foo)",
+                  "false")
+
+
         queueErrorTest("set! is not enabled, part 1",
                        "set!",
                        "set!: this variable is not defined")

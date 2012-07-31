@@ -13452,8 +13452,14 @@ var getMakeStructTypeReturns = function(aStructType) {
 					    aStructType.numberOfArgs,
 					    false,
 					    false,
-					    aStructType.constructor)),
-		 (new StructPredicateProc(name, name+'?', 1, false, false, aStructType.predicate)),
+					    function(aState) { 
+                                                return aStructType.constructor.apply(
+                                                    null, [].slice.call(arguments, 1));
+                                            })),
+		 (new StructPredicateProc(name, name+'?', 1, false, false,
+                                          function(aState, x) { 
+                                              return aStructType.predicate(x);
+                                          })),
 		 (new StructAccessorProc(name,
 					 name+'-ref',
 					 2,
@@ -14098,8 +14104,8 @@ PRIMITIVES['make-struct-field-accessor'] =
 			+ (fieldName ? fieldName.toString() : 'field' + fixnumPos);
 
 		return new StructAccessorProc(accessor.typeName, procName, 1, false, false,
-					      function(x) {
-						  return accessor.impl(x, fixnumPos);
+					      function(aState, x) {
+						  return accessor.impl(aState, x, fixnumPos);
 					      });
 	    });
 
@@ -14124,7 +14130,7 @@ PRIMITIVES['make-struct-field-mutator'] =
 
 		return new StructMutatorProc(mutator.typeName, procName, 2, false, false,
 					     function(x, v) {
-						 return mutator.impl(x, fixnumPos, v);
+						 return mutator.impl(aState, x, fixnumPos, v);
 					     });
 	    });
 

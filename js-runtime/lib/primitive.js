@@ -1048,7 +1048,7 @@ PRIMITIVES['make-struct-field-accessor'] =
 
 		return new StructAccessorProc(accessor.typeName, procName, 1, false, false,
 					      function(aState, x) {
-						  return accessor.impl(x, fixnumPos);
+						  return accessor.impl(aState, x, fixnumPos);
 					      });
 	    });
 
@@ -1073,7 +1073,7 @@ PRIMITIVES['make-struct-field-mutator'] =
 
 		return new StructMutatorProc(mutator.typeName, procName, 2, false, false,
 					     function(x, v) {
-						 return mutator.impl(x, fixnumPos, v);
+						 return mutator.impl(aState, x, fixnumPos, v);
 					     });
 	    });
 
