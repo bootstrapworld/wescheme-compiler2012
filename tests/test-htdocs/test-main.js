@@ -5042,7 +5042,6 @@ var runTests = function() {
                         "(for-each 1 2 3 4 5)",
                         "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
 
-<<<<<<< HEAD
         queueErrorTest("test for-each type",
                         "(for-each 1 2)",
                         "display: expects 2 arguments, given 5: 1 2 3 4 5 ");
@@ -5052,7 +5051,7 @@ var runTests = function() {
         //////////////////////////////////////////////////////////////////////
 
 
-        //map
+//map
         queueErrorTest("test map with function that cannot be applied to elements in list",
                        "(map add1 (list \"hello\" \"world\"))",
                        'add1: expects type number as 1st argument, given: "hello"');
@@ -5700,91 +5699,542 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(vector-length 1)",
                        'vector-length: expects type vector as 1st argument, given: 1');
 
+//PRIMITIVES['vector->list']
 
-PRIMITIVES['vector->list'] =
+        queueErrorTest("vector->list with wrong arity",
+                       "(vector->list)",
+                       'vector->list: expects 1 argument, given 0');
 
-PRIMITIVES['list->vector'] =
+        queueErrorTest("vector->list with 1st argument not vector",
+                       "(vector->list 1)",
+                       'vector->list: expects type vector as 1st argument, given: 1');
 
-PRIMITIVES['build-vector'] =
+//PRIMITIVES['list->vector']
 
-PRIMITIVES['char=?'] =
+        queueErrorTest("build-vector with wrong arity",
+                       "(build-vector)",
+                       'build-vector: expects 2 arguments, given 0');
 
-PRIMITIVES['char<?'] =
+        queueErrorTest("list->vector with 1st argument not vector",
+                       "(list->vector 1)",
+                       'list->vector: expects type list as 1st argument, given: 1');
 
-PRIMITIVES['char>?'] =
+//PRIMITIVES['build-vector']
 
-PRIMITIVES['char<=?'] =
+        queueErrorTest("build-vector with wrong arity",
+                       "(build-vector)",
+                       'build-vector: expects 2 arguments, given 0');
 
-PRIMITIVES['char>=?'] =
+        queueErrorTest("build-vector with 1st argument not non-negative exact integer",
+                       "(build-vector \"hello\" 2)",
+                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2 ');
 
-PRIMITIVES['char-ci=?'] =
+        queueErrorTest("build-vector with 2nd argument not a proc",
+                       "(build-vector \"hello\" 2)",
+                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2 ');
 
-PRIMITIVES['char-ci<?'] =
 
-PRIMITIVES['char-ci>?'] =
+//PRIMITIVES['char=?']
 
-PRIMITIVES['char-ci<=?'] =
+        queueErrorTest("char=? with wrong arity",
+                       "(char=?)",
+                       'char=?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['char-ci>=?'] =
+        queueErrorTest("char=? with 1st argument not char",
+                       "(char=?)",
+                       'char=?: expects type char as 1st argument, given: "hello"; other arguments were: #\a');
 
-PRIMITIVES['char-alphabetic?'] =
+//PRIMITIVES['char<?'] 
 
-PRIMITIVES['char-numeric?'] =
+        queueErrorTest("char<? with wrong arity",
+                       "(char<?)",
+                       'char<?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['char-whitespace?'] =
+        queueErrorTest("char<? with 1st argument not char",
+                       "(char<? add1 #\a)",
+                       'char<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['char-upper-case?'] =
+        queueErrorTest("char<? with 2nd argument not char",
+                       "(char<? #\a add1)",
+                       'char<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['char-lower-case?'] =
+//PRIMITIVES['char>?'] 
 
-PRIMITIVES['char->integer'] =
+        queueErrorTest("char>? with wrong arity",
+                       "(char>?)",
+                       'char>?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['integer->char'] =
+        queueErrorTest("char>? with 1st argument not char",
+                       "(char>? add1 #\a)",
+                       'char>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['char-upcase'] =
+        queueErrorTest("char>? with 2nd argument not char",
+                       "(char>? #\a add1)",
+                       'char>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['char-downcase'] =
+//PRIMITIVES['char<=?']
 
-PRIMITIVES['make-posn'] =
+        queueErrorTest("char<=? with wrong arity",
+                       "(char<=?)",
+                       'char<=?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['posn-x'] =
+        queueErrorTest("char<=? with 1st argument not char",
+                       "(char<=? add1 #\a)",
+                       'char<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['posn-y'] =
+        queueErrorTest("char<=? with 2nd argument not char",
+                       "(char<=? #\a add1)",
+                       'char<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['key=?'] 
+//PRIMITIVES['char>=?']
 
-PRIMITIVES['image?'] = 
+        queueErrorTest("char>=? with wrong arity",
+                       "(char>=?)",
+                       'char>=?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['make-color'] =
+        queueErrorTest("char>=? with 1st argument not char",
+                       "(char>=? add1 #\a)",
+                       'char>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['color-red'] =
+        queueErrorTest("char>=? with 2nd argument not char",
+                       "(char>=? #\a add1)",
+                       'char>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['color-green'] =
 
-PRIMITIVES['color-blue'] =
+//PRIMITIVES['char-ci=?'] 
 
-PRIMITIVES['color-alpha'] =
+        queueErrorTest("char-ci=? with wrong arity",
+                       "(char-ci=?)",
+                       'char-ci=?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['empty-scene'] =
+        queueErrorTest("char-ci=? with 1st argument not char",
+                       "(char-ci=? add1 #\a)",
+                       'char-ci=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['place-image'] =
+        queueErrorTest("char-ci=? with 2nd argument not char",
+                       "(char-ci=? #\a add1)",
+                       'char-ci=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['place-image/align'] =
 
-PRIMITIVES['scene+line'] =
+//PRIMITIVES['char-ci<?'] 
 
-PRIMITIVES['put-pinhole'] =
+        queueErrorTest("char-ci<? with wrong arity",
+                       "(char-ci<?)",
+                       'char-ci<?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['circle'] =
+        queueErrorTest("char-ci<? with 1st argument not char",
+                       "(char-ci<? add1 #\a)",
+                       'char-ci<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['star'] = 
+        queueErrorTest("char-ci<? with 2nd argument not char",
+                       "(char-ci<? #\a add1)",
+                       'char-ci<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
 
-PRIMITIVES['radial-star'] =
+//PRIMITIVES['char-ci>?'] 
 
-PRIMITIVES['nw:rectangle'] =
+        queueErrorTest("char-ci>? with wrong arity",
+                       "(char-ci>?)",
+                       'char-ci>?: expects at least 2 arguments, given 0');
 
-PRIMITIVES['rectangle'] =
+        queueErrorTest("char-ci>? with 1st argument not char",
+                       "(char-ci>? add1 #\a)",
+                       'char-ci>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
 
+        queueErrorTest("char-ci>? with 2nd argument not char",
+                       "(char-ci>? #\a add1)",
+                       'char-ci>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+
+//PRIMITIVES['char-ci<=?'] 
+
+        queueErrorTest("char-ci<=? with wrong arity",
+                       "(char-ci<=?)",
+                       'char-ci<=?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("char-ci<=? with 1st argument not char",
+                       "(char-ci<=? add1 #\a)",
+                       'char-ci<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+
+        queueErrorTest("char-ci<=? with 2nd argument not char",
+                       "(char-ci<=? #\a add1)",
+                       'char-ci<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+
+//PRIMITIVES['char-ci>=?'] 
+
+        queueErrorTest("char-ci>=? with wrong arity",
+                       "(char-ci>=?)",
+                       'char-ci>=?: expects at least 2 arguments, given 0');
+
+        queueErrorTest("char-ci>=? with 1st argument not char",
+                       "(char-ci>=? add1 #\a)",
+                       'char-ci>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+
+        queueErrorTest("char-ci>=? with 2nd argument not char",
+                       "(char-ci>=? #\a add1)",
+                       'char-ci>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+
+//PRIMITIVES['char-alphabetic?'] 
+
+        queueErrorTest("char-alphabetic? with wrong arity",
+                       "(char-alphabetic?)",
+                       'char-alphabetic?: expects 1 argument, given 0');
+
+        queueErrorTest("char-alphabetic? with 1st argument not char",
+                       "(char-alphabetic? add1)",
+                       'char-alphabetic?: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['char-numeric?'] 
+
+        queueErrorTest("char-numeric? with wrong arity",
+                       "(char-numeric?)",
+                       'char-numeric?: expects 1 argument, given 0');
+
+        queueErrorTest("char-numeric? with 1st argument not char",
+                       "(char-numeric? add1)",
+                       'char-numeric?: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['char-whitespace?']
+
+        queueErrorTest("char-whitespace? with wrong arity",
+                       "(char-whitespace?)",
+                       'char-whitespace?: expects 1 argument, given 0');
+
+        queueErrorTest("char-whitespace? with 1st argument not char",
+                       "(char-whitespace? add1)",
+                       'char-whitespace?: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['char-upper-case?'] 
+
+        queueErrorTest("char-upper-case? with wrong arity",
+                       "(char-upper-case?)",
+                       'char-upper-case?: expects 1 argument, given 0');
+
+        queueErrorTest("char-upper-case? with 1st argument not char",
+                       "(char-upper-case? add1)",
+                       'char-upper-case?: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['char-lower-case?'] 
+
+        queueErrorTest("char-lower-case? with wrong arity",
+                       "(char-lower-case?)",
+                       'char-lower-case?: expects 1 argument, given 0');
+
+        queueErrorTest("char-lower-case? with 1st argument not char",
+                       "(char-lower-case? add1)",
+                       'char-lower-case?: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['char->integer'] 
+
+        queueErrorTest("char->integer with wrong arity",
+                       "(char->integer)",
+                       'char->integer: expects 1 argument, given 0');
+
+        queueErrorTest("char->integer with 1st argument not char",
+                       "(char->integer add1)",
+                       'char->integer: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['integer->char'] 
+
+        queueErrorTest("integer->char with wrong arity",
+                       "(integer->char)",
+                       'integer->char: expects 1 argument, given 0');
+
+        queueErrorTest("integer->char with 1st argument not integer",
+                       "(integer->char add1)",
+                       'integer->char: expects type exact integer in [0,#x10FFFF], not in [#xD800,#xDFFF] as 1st argument, given: #<procedure:add1>');
+//perhaps change the error message so hex does not show
+
+//PRIMITIVES['char-upcase']
+
+        queueErrorTest("char-upcaser with wrong arity",
+                       "(char-upcase)",
+                       'char-upcase: expects 1 argument, given 0');
+
+        queueErrorTest("char-upcase with 1st argument not char",
+                       "(char-upcase add1)",
+                       'char-upcase: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['char-downcase'] 
+
+        queueErrorTest("char-downcase with wrong arity",
+                       "(char-downcase)",
+                       'char-downcase: expects 1 argument, given 0');
+
+        queueErrorTest("char-downcase with 1st argument not char",
+                       "(char-downcase add1)",
+                       'char-downcase: expects type char as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['make-posn'] 
+
+        queueErrorTest("make-posn with wrong arity",
+                       "(make-posn)",
+                       'make-posn: expects 2 arguments, given 0');
+
+//PRIMITIVES['posn-x']
+
+        queueErrorTest("posn-x with wrong arity",
+                       "(posn-x)",
+                       'posn-x: expects 1 argument, given 0');
+
+        queueErrorTest("posn-x with 1st argument not posn",
+                       "(posn-x add1)",
+                       'posn-x: expects type posn as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['posn-y'] 
+
+        queueErrorTest("posn-y with wrong arity",
+                       "(posn-y)",
+                       'posn-y: expects 1 argument, given 0');
+
+        queueErrorTest("posn-y with 1st argument not posn",
+                       "(posn-y add1)",
+                       'posn-y: expects type posn as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['key=?'] 
+
+        queueErrorTest("key=? with wrong arity",
+                       "(key=?)",
+                       'key=?: expects 2 arguments, given 0');
+
+//PRIMITIVES['image?'] 
+
+        queueErrorTest("image? with wrong arity",
+                       "(image?)",
+                       'image?: expects 1 argument, given 0');
+
+//PRIMITIVES['make-color']
+
+        queueErrorTest("make-color with wrong arity",
+                       "(make-color)",
+                       'make-color: expects 3 or 4 arguments, given 0');
+
+        queueErrorTest("make-color with 1st argument not a number between 0 and 255",
+                       "(make-color 256 1 2 3)",
+                       'make-color: expects type number between 0 and 255 as 1st argument, given: 256; other arguments were: 1 2 3');
+
+        queueErrorTest("make-color with 2nd argument not a number between 0 and 255",
+                       "(make-color 255 256 2 3)",
+                       'make-color: expects type number between 0 and 255 as 2nd argument, given: 256; other arguments were: 255 2 3');
+
+
+        queueErrorTest("make-color with 3rd argument not a number between 0 and 255",
+                       "(make-color 255 255 256 3)",
+                       'make-color: expects type number between 0 and 255 as 3rd argument, given: 256; other arguments were: 255 255 3');
+
+        queueErrorTest("make-color with 4th argument not a number between 0 and 255",
+                       "(make-color 255 255 255 256)",
+                       'make-color: expects type number between 0 and 255 as 4th argument, given: 256; other arguments were: 255 255 255');
+
+//PRIMITIVES['color-red']
+
+        queueErrorTest("color-red with wrong arity",
+                       "(color-red)",
+                       'color-red: expects 1 argument, given 0');
+
+        queueErrorTest("color-red with 1st argument not color",
+                       "(color-red add1)",
+                       'color-red: expects type color as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['color-green'] 
+
+        queueErrorTest("color-green with wrong arity",
+                       "(color-red)",
+                       'color-green: expects 1 argument, given 0');
+
+        queueErrorTest("color-green with 1st argument not color",
+                       "(color-green add1)",
+                       'color-green: expects type color as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['color-blue'] 
+
+        queueErrorTest("color-blue with wrong arity",
+                       "(color-blue)",
+                       'color-blue: expects 1 argument, given 0');
+
+        queueErrorTest("color-blue with 1st argument not color",
+                       "(color-blue add1)",
+                       'color-blue: expects type color as 1st argument, given: #<procedure:add1>');
+
+//PRIMITIVES['color-alpha']
+
+        queueErrorTest("color-alpha with wrong arity",
+                       "(color-alpha)",
+                       'color-alpha: expects 1 argument, given 0');
+
+        queueErrorTest("color-alpha with 1st argument not color",
+                       "(color-alpha add1)",
+                       'color-alpha: expects type color as 1st argument, given: #<procedure:add1>');
+
+
+//PRIMITIVES['empty-scene'] 
+
+        queueErrorTest("empty-scene with wrong arity",
+                       "(empty-scene)",
+                       'empty-scene: expects 2 arguments, given 0');
+
+        queueErrorTest("empty-scene with 1st argument not non-negative number",
+                       "(empty-scene add1 2)",
+                       'empty-scene: expects type non-negative number as 1st argument, given: #<procedure:add1>; other arguments were: 2');
+
+        queueErrorTest("empty-scene with 2nd argument not non-negative number",
+                       "(empty-scene 0 add1)",
+                       'empty-scene: expects type non-negative number as 2nd argument, given: #<procedure:add1>; other arguments were: 0');
+
+//PRIMITIVES['place-image']
+
+        queueErrorTest("empty-scene with wrong arity",
+                       "(empty-scene)",
+                       'empty-scene: expects 2 arguments, given 0');
+
+        queueErrorTest("empty-scene with 1st argument not non-negative number",
+                       "(empty-scene add1 2)",
+                       'empty-scene: expects type non-negative number as 1st argument, given: #<procedure:add1>; other arguments were: 2');
+
+        queueErrorTest("empty-scene with 2nd argument not non-negative number",
+                       "(empty-scene 0 add1)",
+                       'empty-scene: expects type non-negative number as 2nd argument, given: #<procedure:add1>; other arguments were: 0');
+
+//PRIMITIVES['place-image/align']
+
+        queueErrorTest("place-image/align with wrong arity",
+                       "(place-image/align)",
+                       'place-image/align: expects 6 arguments, given 0');
+
+        queueErrorTest("empty-scene with 1st argument not image",
+                       "(empty-scene add1 2 3 4 5 6)",
+                       'empty-scene: expects type non-negative number as 1st argument, given: #<procedure:add1>; other arguments were: 2');
+
+        queueErrorTest("empty-scene with 2nd argument not real number",
+                       "(place-image/align (circle 50 \"solid\" \"red\") \"hello\" 3 4 5 6)",
+                       'place-image/align: expects type real number as 2nd argument, given: "hello"; other arguments were: <image> 3 4 5 6');
+
+        queueErrorTest("empty-scene with 3rd argument not real number",
+                       "(place-image/align (circle 50 \"solid\" \"red\") 2 \"hello\" 4 5 6)",
+                       'place-image/align: expects type real number as 3rd argument, given: "hello"; other arguments were: <image> 2 4 5 6');
+
+        queueErrorTest("empty-scene with 4th argument not x-place",
+                       "(place-image/align (circle 50 \"solid\" \"red\") 2 3 (make-posn 2 3) 5 6)",
+                       'place-image/align: expects type x-place as 4th argument, given: (posn 2 3); other arguments were: <image> 2 3 5 6');
+
+        queueErrorTest("empty-scene with 5th argument not y-place",
+                       "(place-image/align (circle 50 \"solid\" \"red\") 2 3 \"left\" 5 6)",
+                       'place-image/align: expects type y-place as 5th argument, given: 5; other arguments were: <image> 2 3 "left" 6');
+
+        queueErrorTest("empty-scene with 6th argument not image",
+                       "(place-image/align (circle 50 \"solid\" \"red\") 2 3 \"left\" \"top\" add1)",
+                       'place-image/align: expects type image as 6th argument, given: #<procedure:add1>; other arguments were: <image> 2 3 "left" "top"');
+
+//PRIMITIVES['scene+line'] 
+
+        queueErrorTest("scene+line with wrong arity",
+                       "(scene+line)",
+                       'scene+line: expects 6 arguments, given 0');
+
+
+//PRIMITIVES['put-pinhole'] 
+
+        queueErrorTest("put-pinhole with wrong arity",
+                       "(put-pinhole)",
+                       'put-pinhole: expects 3 arguments, given 0');
+
+        queueErrorTest("put-pinhole with 1st argument not image",
+                       "(put-pinhole 1 2 3)",
+                       'put-pinhole: expects type image as 1st argument, given: 1; other arguments were: 2 3');
+
+        queueErrorTest("put-pinhole with 2nd argument not image",
+                       "(put-pinhole (circle 50 \"solid\" \"red\") add1 3)",
+                       'put-pinhole: expects type real as 2nd argument, given: #<procedure:add1>; other arguments were: <image> 3');
+
+        queueErrorTest("put-pinhole with 3rd argument not image",
+                       "(put-pinhole (circle 50 \"solid\" \"red\") 1 add1)",
+                       'put-pinhole: expects type real as 3rd argument, given: #<procedure:add1>; other arguments were: <image> 1');
+
+//PRIMITIVES['circle']
+
+        queueErrorTest("circle with wrong arity",
+                       "(circle)",
+                       'circle: expects 3 arguments, given 0');
+
+        queueErrorTest("circle with 1st argument not non-negative number",
+                       "(circle \"foo\" 2 3)",
+                       'circle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3');
+
+        queueErrorTest("circle with 2nd argument not style",
+                       "(circle 1 2 3)",
+                       'circle: expects type style as 2nd argument, given: 2; other arguments were: 1 3');
+
+        queueErrorTest("circle with 3rd argument not colour",
+                       "(circle 1 \"solid\" add1)",
+                       'circle: expects type color as 3rd argument, given: #<procedure:add1>; other arguments were: 1 "solid"');
+
+//PRIMITIVES['star']
+
+        queueErrorTest("star with wrong arity",
+                       "(star)",
+                       'star: expects 5 or 3 arguments, given 0');
+
+        queueErrorTest("star with 1st argument not non-negative number",
+                       "(star \"hello\" 2 3)",
+                       'star: expects type non-negative number as 1st argument, given: "hello"; other arguments were: 2 3');
+
+        queueErrorTest("star with 2nd argument not image",
+                       "(star 1 2 3)",
+                       'star: expects type style as 2nd argument, given: 2; other arguments were: 1 3');
+
+        queueErrorTest("star with 3rd argument not colour",
+                       "(star 1 \"solid\" add1)",
+                       'star: expects type color as 3rd argument, given: #<procedure:add1>; other arguments were: 1 "solid"');
+
+//PRIMITIVES['radial-star'] 
+
+        queueErrorTest("radial-star with wrong arity",
+                       "(radial-star)",
+                       'radial-star: expects 5 arguments, given 0');
+
+        queueErrorTest("radial-star with 1st argument not positive integer greater than or equal to 2",
+                       "(radial-star 1 2 3 4 5)",
+                       'radial-star: expects type positive integer greater than or equal to 2 as 1st argument, given: 1; other arguments were: 2 3 4 5');
+
+        queueErrorTest("star with 2nd argument not positive number",
+                       "(radial-star 5 \"foo\" 3 4 5)",
+                       'radial-star: expects type positive number as 2nd argument, given: "foo"; other arguments were: 5 3 4 5');
+
+        queueErrorTest("star with 3rd argument not positive number",
+                       "(radial-star 5 4 \"foo\" 4 5)",
+                       'radial-star: expects type positive number as 3rd argument, given: "foo"; other arguments were: 5 4 4 5');
+
+        queueErrorTest("star with 4th argument not style",
+                       "(radial-star 5 4 2 \"foo\" 5)",
+                       'radial-star: expects type style as 4th argument, given: "foo"; other arguments were: 5 4 2 5');
+
+        queueErrorTest("star with 5th argument not colour",
+                       "(radial-star 5 4 2 \"solid\" \"foo\")",
+                       'radial-star: expects type color as 5th argument, given: "foo"; other arguments were: 5 4 2 "solid"');
+
+//PRIMITIVES['nw:rectangle']
+
+        queueErrorTest("nw:rectangle",
+                       "(nw:rectangle)",
+                       'nw:rectangle: expects 4 arguments, given 0');
+
+        queueErrorTest("radial-star with 1st argument non-negative number",
+                       "(nw:rectangle \"foo\" 2 3 4)",
+                       'nw:rectangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("star with 2nd argument not non-negative number",
+                       "(nw:rectangle 2 \"foo\" 3 4)",
+                       'nw:rectangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("star with 3rd argument not style",
+                       "(nw:rectangle 2 5 add1 4)",
+                       'nw:rectangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+
+        queueErrorTest("star with 4th argument not colour",
+                       "(nw:rectangle 2 5 \"outline\" \"focus\")",
+                       'nw:rectangle: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
+
+//PRIMITIVES['rectangle']
+
+/*
 PRIMITIVES['regular-polygon'] =
 
 PRIMITIVES['star-polygon'] =
@@ -5802,7 +6252,7 @@ PRIMITIVES['isosceles-triangle'] =
 PRIMITIVES['ellipse'] =
 
 PRIMITIVES['line'] =
-
+*/
 
 
 
@@ -5813,8 +6263,6 @@ PRIMITIVES['line'] =
     
 
 
-=======
->>>>>>> 11ff965bc6cab7eefedb55aa5199237935bb427d
         //////////////////////////////////////////////////////////////////////
 
 

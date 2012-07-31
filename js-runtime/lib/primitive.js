@@ -4594,8 +4594,8 @@ PRIMITIVES['place-image/align'] =
 		     false, false,
 		     function(aState, img, x, y, placeX, placeY, background) {
 			 check(aState, img,		isImage,	"place-image/align", "image",	1, arguments);
-			 check(aState, x,		isReal,		"place-image/align", "real",	2, arguments);
-			 check(aState, y,		isReal,		"place-image/align", "real",	3, arguments);
+			 check(aState, x,		isReal,		"place-image/align", "real number",	2, arguments);
+			 check(aState, y,		isReal,		"place-image/align", "real number",	3, arguments);
 			 check(aState, placeX,	isPlaceX,	"place-image/align", "x-place", 4, arguments);
 			 check(aState, placeY,	isPlaceY,	"place-image/align", "y-place", 5, arguments);
 			 check(aState, background, function(x) { return isScene(x) || isImage(x) },
@@ -4738,7 +4738,7 @@ new PrimProc('radial-star',
 			 check(aState, anOuter, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
 									"radial-star", "positive number", 2, arguments);
 			 check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
-									"radial-star", "positive number", 2, arguments);
+									"radial-star", "positive number", 3, arguments);
 			 check(aState, aStyle, isMode, "radial-star", "style", 4, arguments);
 			 check(aState, aColor, isColor, "radial-star", "color", 5, arguments);
 			 
