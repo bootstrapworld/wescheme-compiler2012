@@ -7014,7 +7014,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
 //PRIMITIVES['nw:rectangle']
 
-        queueErrorTest("nw:rectangle",
+        queueErrorTest("nw:rectangle wrong arity",
                        "(nw:rectangle)",
                        'nw:rectangle: expects 4 arguments, given 0');
 
@@ -7034,28 +7034,219 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(nw:rectangle 2 5 \"outline\" \"focus\")",
                        'nw:rectangle: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
 
+// PRIMITIVES['rectangle'] 
+
+        queueErrorTest("rectangle wrong arity",
+                       "(rectangle)",
+                       'rectangle: expects 4 arguments, given 0');
+
+        queueErrorTest("rectangle with 1st argument non-negative number",
+                       "(rectangle \"foo\" 2 3 4)",
+                       'nw:rectangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("rectangle with 2nd argument not non-negative number",
+                       "(rectangle 2 \"foo\" 3 4)",
+                       'rectangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("rectangle with 3rd argument not style",
+                       "(rectangle 2 5 add1 4)",
+                       'rectangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+
+        queueErrorTest("rectangle with 4th argument not colour",
+                       "(rectangle 2 5 \"outline\" \"focus\")",
+                       'rectangle: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
+
+// PRIMITIVES['regular-polygon'] 
+
+        queueErrorTest("regular-polygon wrong arity",
+                       "(regular-polygon)",
+                       'regular-polygon: expects 4 arguments, given 0');
+
+        queueErrorTest("rectangle with 1st argument not non-negative number",
+                       "(regular-polygon \"foo\" 2 3 4)",
+                       'regular-polygon: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("rectangle with 2nd argument not positive integer greater than or equal to 3",
+                       "(regular-polygon 2 \"foo\" 3 4)",
+                       'regular-polygon: expects type positive integer greater than or equal to 3 as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("regular-polygon with 3rd argument not style",
+                       "(regular-polygon 2 5 add1 4)",
+                       'regular-polygon: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+
+        queueErrorTest("regular-polygonwith 4th argument not colour",
+                       "(rregular-polygon 2 5 \"outline\" \"focus\")",
+                       'regular-polygon: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
+
+// PRIMITIVES['star-polygon'] 
+
+        queueErrorTest("star-polygon wrong arity",
+                       "(star-polygon)",
+                       'star-polygon: expects 4 arguments, given 0');
+
+        queueErrorTest("star-polygon with 1st argument not non-negative number",
+                       "(star-polygon \"foo\" 2 3 4 5)",
+                       'star-polygon: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4 5');
+
+        queueErrorTest("star-polygon with 2nd argument not positive integer greater than or equal to 3",
+                       "(star-polygon 2 \"foo\" 3 4 5)",
+                       'star-polygon: expects type positive integer greater than or equal to 3 as 2nd argument, given: "foo"; other arguments were: 2 3 4 5');
+
+        queueErrorTest("star-polygon with 3rd argument not positive integer greater than or equal to 1",
+                       "(star-polygon 2 5 add1 4 5)",
+                       'star-polygon: expects type positive integer greater than or equal to 1 as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4 5');
+
+        queueErrorTest("star-polygon with 4th argument not style",
+                       "(star-polygon 2 5 5 add1 5)",
+                       'star-polygon: expects type style as 4th argument, given: #<procedure:add1>; other arguments were: 2 5 5 5');
+
+        queueErrorTest("star-polygon with 5th argument not colour",
+                       "(star-polygon 2 5 5 \"outline\" \"focus\")",
+                       'star-polygon: expects type color as 5th argument, given: "focus"; other arguments were: 2 5 5 "outline"');
+
+// PRIMITIVES['rhombus'] 
+
+        queueErrorTest("rhombus wrong arity",
+                       "(rhombus)",
+                       'rhombus: expects 4 arguments, given 0');
+
+        queueErrorTest("rhombus with 1st argument non-negative number",
+                       "(rhombus \"foo\" 2 3 4)",
+                       'rhombus: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("star with 2nd argument not non-negative number",
+                       "(rhombus 2 \"foo\" 3 4)",
+                       'rhombus: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+
+        queueErrorTest("rhombus with 3rd argument not style",
+                       "(rhombus 2 5 add1 4)",
+                       'rhombus: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+
+        queueErrorTest("rhombus with 4th argument not colour",
+                       "(rhombus 2 5 \"outline\" \"focus\")",
+                       'rhombus: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
 
 
-// PRIMITIVES['rectangle'] =
+// PRIMITIVES['square'] 
 
-// PRIMITIVES['regular-polygon'] =
+        queueErrorTest("square wrong arity",
+                       "(square)",
+                       'square: expects 3 arguments, given 0');
 
-// PRIMITIVES['star-polygon'] =
+        queueErrorTest("square with 1st argument non-negative number",
+                       "(square \"foo\" 3 4)",
+                       'square: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4');
 
-// PRIMITIVES['rhombus'] =
+        queueErrorTest("square with 2nd argument not style",
+                       "(square 2 add1 4)",
+                       'square: expects type style as 2nd argument, given: #<procedure:add1>; other arguments were: 2 4');
 
-// PRIMITIVES['square'] =
+        queueErrorTest("square with 3rd argument not colour",
+                       "(square 2 \"outline\" \"focus\")",
+                       'square: expects type color as 3rd argument, given: "focus"; other arguments were: 2 "outline"');
 
-// PRIMITIVES['triangle'] =
+// PRIMITIVES['triangle'] 
 
-// PRIMITIVES['right-triangle'] =
+        queueErrorTest("triangle wrong arity",
+                       "(triangle)",
+                       'triangle: expects 3 arguments, given 0');
 
-// PRIMITIVES['isosceles-triangle'] =
+        queueErrorTest("triangle with 1st argument non-negative number",
+                       "(triangle \"foo\" 3 4)",
+                       'triangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4');
 
-// PRIMITIVES['ellipse'] =
+        queueErrorTest("triangle with 2nd argument not style",
+                       "(triangle 2 add1 4)",
+                       'triangle: expects type style as 2nd argument, given: #<procedure:add1>; other arguments were: 2 4');
 
-// PRIMITIVES['line'] =
+        queueErrorTest("triangle with 3rd argument not colour",
+                       "(triangle 2 \"outline\" \"focus\")",
+                       'triangle: expects type color as 3rd argument, given: "focus"; other arguments were: 2 "outline"');
 
+// PRIMITIVES['right-triangle'] 
+
+        queueErrorTest("right-triangle wrong arity",
+                       "(right-triangle)",
+                       'right-triangle: expects 4 arguments, given 0');
+
+        queueErrorTest("right-triangle with 1st argument non-negative number",
+                       "(right-triangle \"foo\" 3 4 3)",
+                       'right-triangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4 3');
+
+        queueErrorTest("right-triangle with 2nd argument non-negative number",
+                       "(right-triangle 5 \"foo\" 3 4)",
+                       'right-triangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 5 3 4');
+
+        queueErrorTest("right-triangle with 3rd argument not style",
+                       "(right-triangle 2 4 add1 4)",
+                       'right-triangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4 4');
+
+        queueErrorTest("right-triangle with 4th argument not colour",
+                       "(right-triangle 5 2 \"outline\" \"focus\")",
+                       'right-triangle: expects type color as 4th argument, given: "focus"; other arguments were: 5 2 "outline"');
+
+// PRIMITIVES['isosceles-triangle'] 
+
+
+        queueErrorTest("isosceles-triangle wrong arity",
+                       "(isosceles-triangle)",
+                       'isosceles-triangle: expects 4 arguments, given 0');
+
+        queueErrorTest("isosceles-triangle with 1st argument non-negative number",
+                       "(isosceles-triangle \"foo\" 3 4 3)",
+                       'isosceles-triangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4 3');
+
+        queueErrorTest("isosceles-triangle with 2nd argument not finite real number between 0 and 360",
+                       "(isosceles-triangle 5 \"foo\" 3 4)",
+                       'isosceles-triangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 5 3 4');
+
+        queueErrorTest("isosceles-triangle with 3rd argument not style",
+                       "(isosceles-triangle 2 4 add1 4)",
+                       'isosceles-triangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4 4');
+
+        queueErrorTest("isosceles-triangle with 4th argument not colour",
+                       "(isosceles-triangle 5 2 \"outline\" \"focus\")",
+                       'isosceles-triangle: expects type color as 4th argument, given: "focus"; other arguments were: 5 2 "outline"');
+
+// PRIMITIVES['ellipse'] 
+
+        queueErrorTest("ellipse wrong arity",
+                       "(ellipse)",
+                       'ellipse: expects 4 arguments, given 0');
+
+        queueErrorTest("ellipse with 1st argument not non-negative number",
+                       "(ellipse \"foo\" 3 4 3)",
+                       'ellipse: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4 3');
+
+        queueErrorTest("ellipse with 2nd argument not non-negative number",
+                       "(ellipse 5 \"foo\" 3 4)",
+                       'ellipse: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 5 3 4');
+
+        queueErrorTest("ellipse with 3rd argument not string",
+                       "(ellipse 2 4 add1 4)",
+                       'ellipse: expects type string as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4 4');
+
+        queueErrorTest("ellipse with 4th argument not colour",
+                       "(ellipse 5 2 \"outline\" \"focus\")",
+                       'ellipse: expects type color as 4th argument, given: "focus"; other arguments were: 5 2 "outline"');
+
+// PRIMITIVES['line'] 
+
+        queueErrorTest("line wrong arity",
+                       "(line)",
+                       'line: expects 3 arguments, given 0');
+
+        queueErrorTest("line 1st argument not finite real",
+                       "(line \"foo\" 3 4)",
+                       'line: expects type finite real number as 1st argument, given: "foo"; other arguments were: 3 4');
+
+        queueErrorTest("line with 2nd argument not finite real",
+                       "(line 5 \"foo\" 3)",
+                       'line: expects type finite real number as 2nd argument, given: "foo"; other arguments were: 5 3');
+
+        queueErrorTest("line with 3rd argument not colour",
+                       "(line 2 4 add1)",
+                       'line: expects type color as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4');
 
         //////////////////////////////////////////////////////////////////////
 
