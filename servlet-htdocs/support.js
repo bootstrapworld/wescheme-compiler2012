@@ -756,7 +756,7 @@ var helpers = {};
 				}
 				errorFormatStr = errorFormatStrBuffer.join(' ');
 
-				console.log("errorFormatStr is ", errorFormatStr);
+				//console.log("errorFormatStr is ", errorFormatStr);
 
 				raise( types.incompleteExn(types.exnFailContract,
 						   helpers.format(errorFormatStr, [details.functionName, details.typeName, details.ordinalPosition, details.actualValue]),
@@ -845,7 +845,7 @@ var helpers = {};
 
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
-				console.log("args, argColoredParts is ", argColoredParts);
+				//console.log("args, argColoredParts is ", argColoredParts);
 
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,

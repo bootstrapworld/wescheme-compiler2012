@@ -3659,6 +3659,13 @@ var runTests = function() {
                   "(define (double x) (+ x x)) (double (double 25))",
                   "100");
 
+        queueTest("simple structures 1",
+                  "(define-struct foo (x y)) (foo-x (make-foo 3 4))",
+                  "3")
+
+        queueTest("simple structures 2",
+                  "(define-struct foo (x y)) (foo-y (make-foo 3 4))",
+                  "4")
 
         queueErrorTest("set! is not enabled, part 1",
                        "set!",
