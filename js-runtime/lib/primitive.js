@@ -2117,6 +2117,7 @@ PRIMITIVES['zero?'] =
 		 1,
 		 false, false,
 		 function(aState, x) {
+		 	check(aState, x, isNumber, 'zero?', 'number', 1);
 		     return jsnums.equals(0, x)
 		 });
 
@@ -2396,7 +2397,7 @@ PRIMITIVES['second'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-			checkListOf(aState, lst, 2, 'second', 1);
+			checkListOfLength(aState, lst, 2, 'second', 1);
 			return lst.rest().first();
 		 });
 
@@ -2461,6 +2462,7 @@ PRIMITIVES['length'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
+		 	checkList(aState, lst, 'length', 1, arguments);
 		  	return jsnums.makeRational(length(lst));
 		 });
 
@@ -3626,7 +3628,7 @@ PRIMITIVES['implode'] =
 		 false, false,
 		 function(aState, lst) {
 		 	checkListOf(aState, lst, function(x) { return isString(x) && x.length == 1; },
-				    'implode', ' 1-letter strings', 1);
+				    'implode', '1-letter strings', 1);
 			var ret = [];
 			while ( !lst.isEmpty() ) {
 				ret.push( lst.first().toString() );
@@ -5540,7 +5542,7 @@ PRIMITIVES['mode?']		= new PrimProc('mode?', 1, false, false,
                                                function(aState, v) { return isMode(v); });
 PRIMITIVES['image-color?']      = new PrimProc('image-color?', 1, false, false, 
                                                function(aState, v) { return isColor(v); });
-PRIMITIVES['name->color']       = new PrimProc('name->color?', 1, false, false,
+PRIMITIVES['name->color']       = new PrimProc('name->color', 1, false, false,
                                                function(aState, x) { 
                                                    return nameToColor(x) || false; 
                                                });

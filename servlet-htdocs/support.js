@@ -772,7 +772,8 @@ var helpers = {};
 	};
 
 	var throwColoredCheckError = function(aState, details, pos, args){
-		console.log("COLORED ERROR");
+
+
 		var positionStack = 
         		state.captureCurrentContinuationMarks(aState).ref(
             		types.symbol('moby-application-position-key'));
@@ -790,28 +791,44 @@ var helpers = {};
 				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
 				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
-				var space = "";
+
+				//getting the actual arguments from args
+				var actualArgs = [];
+				for(i = 0; i < args.length; i++) {
+					if(! (state.isState(args[i]))){
+						actualArgs.push(args[i]);
+					} 
+				}
+
+				console.log("args is ", args, ", actualArgs is ", actualArgs);
+				/*
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
 						if(! (locs.isEmpty())){
 							if(i != pos) {
-								space = (locs.rest().isEmpty() ? "" : " ");
-								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+space, locs.first()));
+								//space = (locs.rest().isEmpty() ? "" : " ");
+								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+(i < args.length -2 ? " " : ""), 
+									locs.first()));
 							}
 							locs = locs.rest();
 					    }
 					}
-				}
-				else {
-					for(i = 0; i < args.length; i++){
-						if(! (locs.isEmpty())){
-							if(i != (pos -1)) {
-								space = (locs.rest.isEmpty() ? "" : " ");
-								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+space, locs.first()));
-							}
-							locs = locs.rest();
+				}*/
+				for(i = 0; i < actualArgs.length; i++){
+					if(! (locs.isEmpty())){
+						if(i != (pos -1)) {
+							//coloredParts.push(new types.ColoredPart(types.toWrittenString(actualArgs[i])+(i < actualArgs.length -1 ? " " : ""), locs.first()));\
+							coloredParts.push(new types.ColoredPart(types.toWrittenString(actualArgs[i])+" ", locs.first()));
 						}
+						locs = locs.rest();
 					}
+				}
+				if(coloredParts.length > 0){
+					//removing the last space
+					var lastEltText = coloredParts[coloredParts.length-1].text;
+					lastEltText = lastEltText.substring(0, lastEltText.length - 1);
+					coloredParts[coloredParts.length - 1] = new types.ColoredPart(lastEltText, 
+																					coloredParts[coloredParts.length-1].location);
 				}
 				return coloredParts;
 			}
@@ -828,6 +845,8 @@ var helpers = {};
 
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
+				console.log("args, argColoredParts is ", argColoredParts);
+
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
@@ -869,12 +888,12 @@ var helpers = {};
 
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				//console.log("colored error");
+				console.log("colored error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		//console.log("uncolored error");
+		console.log("uncolored error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
@@ -15155,6 +15174,7 @@ PRIMITIVES['zero?'] =
 		 1,
 		 false, false,
 		 function(aState, x) {
+		 	check(aState, x, isNumber, 'zero?', 'number', 1);
 		     return jsnums.equals(0, x)
 		 });
 
@@ -15434,7 +15454,7 @@ PRIMITIVES['second'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-			checkListOf(aState, lst, 2, 'second', 1);
+			checkListOfLength(aState, lst, 2, 'second', 1);
 			return lst.rest().first();
 		 });
 
@@ -15499,6 +15519,7 @@ PRIMITIVES['length'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
+		 	checkList(aState, lst, 'length', 1, arguments);
 		  	return jsnums.makeRational(length(lst));
 		 });
 
@@ -16664,7 +16685,7 @@ PRIMITIVES['implode'] =
 		 false, false,
 		 function(aState, lst) {
 		 	checkListOf(aState, lst, function(x) { return isString(x) && x.length == 1; },
-				    'implode', ' 1-letter strings', 1);
+				    'implode', '1-letter strings', 1);
 			var ret = [];
 			while ( !lst.isEmpty() ) {
 				ret.push( lst.first().toString() );
@@ -18578,7 +18599,7 @@ PRIMITIVES['mode?']		= new PrimProc('mode?', 1, false, false,
                                                function(aState, v) { return isMode(v); });
 PRIMITIVES['image-color?']      = new PrimProc('image-color?', 1, false, false, 
                                                function(aState, v) { return isColor(v); });
-PRIMITIVES['name->color']       = new PrimProc('name->color?', 1, false, false,
+PRIMITIVES['name->color']       = new PrimProc('name->color', 1, false, false,
                                                function(aState, x) { 
                                                    return nameToColor(x) || false; 
                                                });
