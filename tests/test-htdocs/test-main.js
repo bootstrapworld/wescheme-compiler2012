@@ -8,6 +8,7 @@ $(document).ready(function() {
 
 
 var runTests = function() {
+    "use strict";
     //////////////////////////////////////////////////////////////////////
 
 
@@ -269,8 +270,9 @@ var runTests = function() {
         var failMsgText = " FAIL" + ((e.message || e || '') ? 
                                   ": " + (e.message || e || '') : "");
         $(document.body).append($("<span/>").text(failMsgText)
-                                .css("color", "red").append(
-                                    $("<a/>").attr("name", "fail" + failureCount)));
+                                .css("color", "red")
+                                .css("white-space", "pre")
+                                .append($("<a/>").attr("name", "fail" + failureCount)));
         $(document.body).css("background-color", "#eeaaaa");
     };
 
@@ -3618,6 +3620,64 @@ var runTests = function() {
                 evaluator.executeProgram(name, code, checkOutput,  checkOutput);
             });
         };
+
+
+        var queueTest = function(name, code, expectedText) {
+            queueAsyncTest(name, function(success, fail) {
+                var checkOutput = function(err) {
+                    if (outputSpan.text() === expectedText) {
+                        success();
+                    } else {
+                        fail("not the same: " + 
+                             types.toWrittenString(outputSpan.text()) + 
+                             ", " +
+                             types.toWrittenString(expectedText));
+                    }
+                };
+                var outputSpan = jQuery("<span/>");
+                var evaluator = new Evaluator(
+                    { write: function(x) { outputSpan.append(x); },
+                      writeError: function(err) { outputSpan.append(evaluator.getMessageFromExn(err)+''); },
+                      compilationServletUrl: "/servlets/standalone.ss",
+                      scriptCompilationServletUrl: "/servlets/standalone.ss"
+                    });
+                
+                evaluator.setRootLibraryPath("/collects");
+                evaluator.executeProgram(name, code, checkOutput,  checkOutput);
+            });
+        };
+
+
+
+        queueTest("test simple function application program",
+                  "(define (double x) (+ x x)) (double 25)",
+                  "50");
+
+        queueTest("test simple function application program 2",
+                  "(define (double x) (+ x x)) (double (double 25))",
+                  "100");
+
+
+        queueErrorTest("set! is not enabled, part 1",
+                       "set!",
+                       "set!: this variable is not defined")
+
+        queueErrorTest("set! is not enabled, part 2",
+                       "(define x 42) (set! x 16)",
+                       "set!: this variable is not defined")
+
+
+        queueErrorTest("test mis-application 1",
+                       "(define (double x) (+ x x)) (double double)",
+                       "+: expects type number as 1st argument, given: #<procedure:double>; other arguments were: #<procedure:double> ");
+
+        queueErrorTest("test mis-application 2",
+                       "(define (double x) (+ x x)) (double double 25)",
+                       "double: expects 1 argument, given 2: #<procedure:double> 25");
+
+
+
+
         
 
         queueErrorTest("test type error in map",
@@ -3654,7 +3714,7 @@ var runTests = function() {
 		       "beside: expects type image as 1st argument, given: 2; other arguments were: 3 3 ");
 	
 	queueErrorTest("beside given bad args, correct number",
-		       "(beside 1 1)"
+		       "(beside 1 1)",
 		       "beside: expects type image as 1st argument, given: 1; other arguments were: 1");
 
 	queueErrorTest("beside given 0 args",
@@ -5792,7 +5852,7 @@ var runTests = function() {
                        "(string-ci=?)",
                        'string-ci=?: expects at least 2 arguments, given 0');
 
-        QueueErrorTest("test string-ci=? with 1st argument not string",
+        queueErrorTest("test string-ci=? with 1st argument not string",
                        "(string-ci=? 4 \"thing\")",
                        'string-ci=?: expects type string as 1st argument, given: 4; other arguments were: "thing"');
 
@@ -5941,7 +6001,7 @@ var runTests = function() {
 //string-append
 
         queueErrorTest("test string-append with first argument not a string",
-                       "(string-append 1 "2")",
+                       "(string-append 1 \"2\")",
                        'string-append: expects type string as 1st argument, given: 1; other arguments were: "2');
 
         queueErrorTest("test string-append with an argument not a string",
@@ -6009,6 +6069,14 @@ var runTests = function() {
                        'format: expects type string as 1st argument, given: 1');
 
 //printf
+
+        queueErrorTest("test bad inputs to big-bang",
+                       "(big-bang 1 on-tick add1)",
+                       "big-bang: expects type handler or attribute list as 2nd argument, given: #<procedure:on-tick>");
+
+        queueErrorTest("too many arguments",
+                       "(define (f x) (* x x)) (f 3 4)",
+                       "f: expects 1 argument, given 2: 3 4");
 
         queueErrorTest("test printf with wrong arity",
                        "(printf)",
@@ -6230,117 +6298,116 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(vector-length 1)",
                        'vector-length: expects type vector as 1st argument, given: 1');
 
+
 /*
 PRIMITIVES['vector->list'] =
+=======
 
-PRIMITIVES['list->vector'] =
+// PRIMITIVES['vector->list'] =
 
-PRIMITIVES['build-vector'] =
+// PRIMITIVES['list->vector'] =
 
-PRIMITIVES['char=?'] =
+// PRIMITIVES['build-vector'] =
 
-PRIMITIVES['char<?'] =
+// PRIMITIVES['char=?'] =
 
-PRIMITIVES['char>?'] =
+// PRIMITIVES['char<?'] =
 
-PRIMITIVES['char<=?'] =
+// PRIMITIVES['char>?'] =
 
-PRIMITIVES['char>=?'] =
+// PRIMITIVES['char<=?'] =
 
-PRIMITIVES['char-ci=?'] =
+// PRIMITIVES['char>=?'] =
 
-PRIMITIVES['char-ci<?'] =
+// PRIMITIVES['char-ci=?'] =
 
-PRIMITIVES['char-ci>?'] =
+// PRIMITIVES['char-ci<?'] =
 
-PRIMITIVES['char-ci<=?'] =
+// PRIMITIVES['char-ci>?'] =
 
-PRIMITIVES['char-ci>=?'] =
+// PRIMITIVES['char-ci<=?'] =
 
-PRIMITIVES['char-alphabetic?'] =
+// PRIMITIVES['char-ci>=?'] =
 
-PRIMITIVES['char-numeric?'] =
+// PRIMITIVES['char-alphabetic?'] =
 
-PRIMITIVES['char-whitespace?'] =
+// PRIMITIVES['char-numeric?'] =
 
-PRIMITIVES['char-upper-case?'] =
+// PRIMITIVES['char-whitespace?'] =
 
-PRIMITIVES['char-lower-case?'] =
+// PRIMITIVES['char-upper-case?'] =
 
-PRIMITIVES['char->integer'] =
+// PRIMITIVES['char-lower-case?'] =
 
-PRIMITIVES['integer->char'] =
+// PRIMITIVES['char->integer'] =
 
-PRIMITIVES['char-upcase'] =
+// PRIMITIVES['integer->char'] =
 
-PRIMITIVES['char-downcase'] =
+// PRIMITIVES['char-upcase'] =
 
-PRIMITIVES['make-posn'] =
+// PRIMITIVES['char-downcase'] =
 
-PRIMITIVES['posn-x'] =
+// PRIMITIVES['make-posn'] =
 
-PRIMITIVES['posn-y'] =
+// PRIMITIVES['posn-x'] =
 
-PRIMITIVES['key=?'] 
+// PRIMITIVES['posn-y'] =
 
-PRIMITIVES['image?'] = 
+// PRIMITIVES['key=?'] 
 
-PRIMITIVES['make-color'] =
+// PRIMITIVES['image?'] = 
 
-PRIMITIVES['color-red'] =
+// PRIMITIVES['make-color'] =
 
-PRIMITIVES['color-green'] =
+// PRIMITIVES['color-red'] =
 
-PRIMITIVES['color-blue'] =
+// PRIMITIVES['color-green'] =
 
-PRIMITIVES['color-alpha'] =
+// PRIMITIVES['color-blue'] =
 
-PRIMITIVES['empty-scene'] =
+// PRIMITIVES['color-alpha'] =
 
-PRIMITIVES['place-image'] =
+// PRIMITIVES['empty-scene'] =
 
-PRIMITIVES['place-image/align'] =
+// PRIMITIVES['place-image'] =
 
-PRIMITIVES['scene+line'] =
+// PRIMITIVES['place-image/align'] =
 
-PRIMITIVES['put-pinhole'] =
+// PRIMITIVES['scene+line'] =
 
-PRIMITIVES['circle'] =
+// PRIMITIVES['put-pinhole'] =
 
-PRIMITIVES['star'] = 
+// PRIMITIVES['circle'] =
 
-PRIMITIVES['radial-star'] =
+// PRIMITIVES['star'] = 
 
-PRIMITIVES['nw:rectangle'] =
+// PRIMITIVES['radial-star'] =
 
-PRIMITIVES['rectangle'] =
+// PRIMITIVES['nw:rectangle'] =
 
-PRIMITIVES['regular-polygon'] =
+// PRIMITIVES['rectangle'] =
 
-PRIMITIVES['star-polygon'] =
+// PRIMITIVES['regular-polygon'] =
 
-PRIMITIVES['rhombus'] =
+// PRIMITIVES['star-polygon'] =
 
-PRIMITIVES['square'] =
+// PRIMITIVES['rhombus'] =
 
-PRIMITIVES['triangle'] =
+// PRIMITIVES['square'] =
 
-PRIMITIVES['right-triangle'] =
+// PRIMITIVES['triangle'] =
 
-PRIMITIVES['isosceles-triangle'] =
+// PRIMITIVES['right-triangle'] =
 
-PRIMITIVES['ellipse'] =
+// PRIMITIVES['isosceles-triangle'] =
 
-PRIMITIVES['line'] =
+// PRIMITIVES['ellipse'] =
+
+// PRIMITIVES['line'] =
 
 
 */
 
-
-
-
-//
-            //////////////////////////////////////////////////////////////////////
 
 
 
@@ -6372,8 +6439,7 @@ PRIMITIVES['line'] =
 	                   interpret.run(state,
 			                 function() {
 			                 }, 
-			                 function(err) {
-			                     assert.ok(types.isSchemeError(err));
+			                 function(err) {			                     assert.ok(types.isSchemeError(err));
 			                     assert.ok(types.isExnBreak(err.val));
 			                     isTerminated = true;
 			                 });

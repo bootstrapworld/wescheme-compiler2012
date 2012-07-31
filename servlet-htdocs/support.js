@@ -16657,7 +16657,7 @@ PRIMITIVES['implode'] =
 		 false, false,
 		 function(aState, lst) {
 		 	checkListOf(aState, lst, function(x) { return isString(x) && x.length == 1; },
-				    'implode', 'list of 1-letter strings', 1);
+				    'implode', ' 1-letter strings', 1);
 			var ret = [];
 			while ( !lst.isEmpty() ) {
 				ret.push( lst.first().toString() );
@@ -19355,7 +19355,7 @@ PRIMITIVES['js-big-bang'] =
 */
 PRIMITIVES['big-bang'] =
 PRIMITIVES['js-big-bang'] =
-    new PrimProc('js-big-bang',
+    new PrimProc('big-bang',
 		 1,
 		 true, false,
 		 function(aState, initW, handlers) {
@@ -20774,10 +20774,11 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     	var argColoredParts = [];
     	var locs = locations;
     	if (operands.length > 0) {
-    		for (var i = 0; i < operands.length; i++) {
-    			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
-    			locs = locs.rest();
-    		}
+    	    for (var i = 0; i < operands.length; i++) {
+    		argColoredParts.push(new types.ColoredPart(operands[i]+(i < operands.length -1 ? " " : ""),
+                                                           locs.first()));
+    		locs = locs.rest();
+    	    }
     	}
     	return argColoredParts;
     }

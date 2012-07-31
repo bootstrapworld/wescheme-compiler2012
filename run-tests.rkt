@@ -13,6 +13,7 @@
          scheme/list
          racket/cmdline
          ;; profile
+         "find-paren-loc.rkt"
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
          "src/compiler/mzscheme-vm/private/json.ss"
@@ -60,6 +61,17 @@
   (for/or ([chunk (url-path a-url)])
      (and (string? (path/param-path chunk))
           (string=? (path/param-path chunk) text))))
+
+
+;; has-program-text?: request -> boolean
+;; returns true if the request includes program text.
+(define (has-program-text? request)
+  (exists-binding? 'program (request-bindings request)))
+
+;; get-program-text: request -> string
+;; Returns the textual content of the program.
+(define (get-program-text request)
+  (extract-binding/single 'program (request-bindings request)))
 
 
 ;; Web service consuming programs and producing bytecode.
@@ -171,24 +183,57 @@
      (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")])
        (let ([payload
               (format "~a(~a);\n" (extract-binding/single 'on-error (request-bindings request))
-                      (jsexpr->json (exn->json-structured-output exn)))])
+                      (jsexpr->json (exn->json-structured-output request exn)))])
          (fprintf output-port "~a" payload)
          (close-output-port output-port)
          response))]))
      
 
+;;paren->loc: paren -> loc
+;;converts a paren to a loc
+(define (paren->loc p)
+  (match p
+    [(struct paren (text type paren-type p-start p-end))
+     (make-Loc p-start 0 0 (- p-end p-start) "<definitions>")]))
+
+
+;;paren->oppParen: paren -> string
+;;takes in a paren and outputs the opposite paren as a string
+(define (paren->oppParen p)
+  (match p
+    [(struct paren (text type paren-type p-start p-end))
+    (get-match text)]))
+     
+;;parenCheck takes as input a string, and outputs a boolean.
+;;The string that is input should be either ) } or ], which will return true. Else, false.
+(define (parenCheck paren)
+  (or (string=? paren ")")  
+      (string=? paren "}") 
+      (string=? paren "]")))
+
+
 
 ;; exn->structured-output: exception -> jsexpr
 ;; Given an exception, tries to get back a jsexpr-structured value that can be passed back to
 ;; the user.
-(define (exn->json-structured-output an-exn)
+;; exn->structured-output: exception -> jsexpr
+;; Given an exception, tries to get back a jsexpr-structured value that can be passed back to
+;; the user.
+(define (exn->json-structured-output request an-exn)
   (define (on-moby-failure-val failure-val)
     (make-hash `(("type" . "moby-failure")
                  ("dom-message" . 
                                 ,(dom->jsexpr 
-                                  (error-struct->dom-sexp failure-val #f))))))
+                                  (error-struct->dom-sexp failure-val #f)))
+                 ("structured-error" .
+                  ,(jsexpr->json (make-hash `(("location" . ,(loc->jsexpr (moby-error-location failure-val)))
+                                              ("message" . ,(error-struct->jsexpr failure-val)))))))))
   (cond
     [(exn:fail:read? an-exn)
+     (define program (get-program-text request))
+     (define input-port (open-input-string program))
+     (define parens (paren-problem input-port))       ;;assuming that it is a paren problem 
+     
      (let ([translated-srclocs 
             (map srcloc->Loc (exn:fail:read-srclocs an-exn))])
        (on-moby-failure-val
@@ -198,17 +243,33 @@
                              ;; we'd better not die here.
                              (make-Loc 0 1 0 0 "")
                              (first translated-srclocs))
-                         (make-moby-error-type:generic-read-error
-                          (exn-message an-exn)
-                          (if (empty? translated-srclocs) 
-                              empty
-                              (rest translated-srclocs))))))]
-    
+                         (cond [(empty? parens)
+                                
+                                (make-moby-error-type:generic-read-error
+                                 (exn-message an-exn)
+                                 (if (empty? translated-srclocs) 
+                                     empty
+                                     (rest translated-srclocs)))]
+                               [else
+                                (make-Message "read: expected a "
+                                              (get-match (paren-text (first parens)))
+                                      
+                                              (if (parenCheck (get-match (paren-text (first parens))))    
+                                                  " to close "
+                                                  " to open "
+                                                  )
+
+                                              (make-ColoredPart (paren-text (first parens)) (paren->loc (first parens)))
+                                              (if (not (empty? (rest parens))) " but found a " "")
+                                              (if (not (empty? (rest parens))) (make-ColoredPart (paren-text (second parens)) (paren->loc (second parens))) "")
+                                              )]))))]
+
     [(moby-failure? an-exn)
      (on-moby-failure-val (moby-failure-val an-exn))]
     
     [else
      (exn-message an-exn)]))
+
 
 
 ;; dom->jsexpr: dom -> jsexpr
@@ -278,7 +339,7 @@
                     #"application/octet-stream"
                     (list)
                     (list (string->bytes/utf-8 
-                           (jsexpr->json (exn->json-structured-output exn)))))]))
+                           (jsexpr->json (exn->json-structured-output request exn)))))]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
