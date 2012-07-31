@@ -7043,7 +7043,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("rectangle with 1st argument non-negative number",
                        "(rectangle \"foo\" 2 3 4)",
-                       'nw:rectangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+                       'rectangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("rectangle with 2nd argument not non-negative number",
                        "(rectangle 2 \"foo\" 3 4)",
@@ -7076,14 +7076,14 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'regular-polygon: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("regular-polygonwith 4th argument not colour",
-                       "(rregular-polygon 2 5 \"outline\" \"focus\")",
+                       "(regular-polygon 2 5 \"outline\" \"focus\")",
                        'regular-polygon: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
 
 // PRIMITIVES['star-polygon'] 
 
         queueErrorTest("star-polygon wrong arity",
                        "(star-polygon)",
-                       'star-polygon: expects 4 arguments, given 0');
+                       'star-polygon: expects 5 arguments, given 0');
 
         queueErrorTest("star-polygon with 1st argument not non-negative number",
                        "(star-polygon \"foo\" 2 3 4 5)",
@@ -7193,13 +7193,13 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(isosceles-triangle)",
                        'isosceles-triangle: expects 4 arguments, given 0');
 
-        queueErrorTest("isosceles-triangle with 1st argument non-negative number",
+        queueErrorTest("isosceles-triangle with 1st argument not non-negative number",
                        "(isosceles-triangle \"foo\" 3 4 3)",
                        'isosceles-triangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4 3');
 
         queueErrorTest("isosceles-triangle with 2nd argument not finite real number between 0 and 360",
                        "(isosceles-triangle 5 \"foo\" 3 4)",
-                       'isosceles-triangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 5 3 4');
+                       'isosceles-triangle: expects type finite real number between 0 and 360 as 2nd argument, given: "foo"; other arguments were: 5 3 4');
 
         queueErrorTest("isosceles-triangle with 3rd argument not style",
                        "(isosceles-triangle 2 4 add1 4)",
