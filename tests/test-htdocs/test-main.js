@@ -5577,6 +5577,67 @@ var runTests = function() {
 		       "reverse: expects type list as 1st argument, given: #<procedure:add1>");
 
 
+	queueErrorTest("underlay given no args",
+		       "(underlay)",
+		       "underlay: expects at least 2 arguments, given 0");
+	
+	queueErrorTest("underlay given bad first arg",
+		       "(underlay 1 1 1)",
+		       "underlay: expects type image as 1st argument, given: 1; other arguments were: 1 1");
+
+	queueErrorTest("underlay given not enough args",
+		       "(underlay 1)",
+		       "underlay: expects at least 2 arguments, given 1: 1");
+	
+	queueErrorTest("underlay/xy given no args",
+		       "(underlay/xy)",
+		       "underlay/xy: expects 4 arguments, given 0");
+	
+	queueErrorTest("underlay/xy given bad first arg",
+		       "(underlay/xy 1 1 1 1)",
+		       "underlay/xy: expects type image as 1st argument, given: 1; other arguments were: 1 1 1");
+
+	queueErrorTest("underlay/xy given too many args",
+		       "(underlay/xy 1 1 1 1 1)",
+		       "underlay/xy: expects 4 arguments, given 5: 1 1 1 1 1");
+
+	queueErrorTest("underlay/align given no args",
+		       "(underlay/align)",
+		       "underlay/align: expects at least 4 arguments, given 0");
+	
+	queueErrorTest("underlay/align given bad first arg",
+		       "(underlay/align 1 1 1 1 1)",
+		       "underlay/align: expects type x-place as 1st argument, given: 1; other arguments were: 1 1 1 1");
+
+	queueErrorTest("scale given no args",
+		       "(scale)",
+		       "scale: expects 2 arguments, given 0");
+
+	queueErrorTest("scale given too many args",
+		       "(scale 1 1 1)",
+		       "scale: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("scale given bad second arg type",
+		       "(scale 1 1)",
+		       "scale: expects type image as 2nd argument, given: 1; other arguments were: 1");
+	
+
+	queueErrorTest("scale given bad first arg type",
+		       "(scale add1 1)",
+		       "scale: expects type finite real number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+
+	queueErrorTest("scale/xy given no args",
+		       "(scale/xy)",
+		       "scale/xy: expects 3 arguments, given 0");
+	
+	queueErrorTest("scale/xy given bad 3rd arg type",
+		       "(scale/xy 1 1 1)",
+		       "scale/xy: expects type image as 3rd argument, given: 1; other arguments were: 1 1");
+	
+	queueErrorTest("scale/xy given too many args",
+		       "(scale/xy 1 1 1 1)",
+		       "scale/xy: expects 3 arguments, given 4: 1 1 1 1");
+
 
 
 
@@ -6297,6 +6358,8 @@ PRIMITIVES['bytes>?'] = ALL DNE */
         queueErrorTest("vector-length with 1st argument not vector",
                        "(vector-length 1)",
                        'vector-length: expects type vector as 1st argument, given: 1');
+
+
 
 
 /*
