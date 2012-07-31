@@ -5582,6 +5582,207 @@ var runTests = function() {
 		       "(reverse add1)",
 		       "reverse: expects type list as 1st argument, given: #<procedure:add1>");
 
+
+	queueErrorTest("underlay given no args",
+		       "(underlay)",
+		       "underlay: expects at least 2 arguments, given 0");
+	
+	queueErrorTest("underlay given bad first arg",
+		       "(underlay 1 1 1)",
+		       "underlay: expects type image as 1st argument, given: 1; other arguments were: 1 1");
+
+	queueErrorTest("underlay given not enough args",
+		       "(underlay 1)",
+		       "underlay: expects at least 2 arguments, given 1: 1");
+	
+	queueErrorTest("underlay/xy given no args",
+		       "(underlay/xy)",
+		       "underlay/xy: expects 4 arguments, given 0");
+	
+	queueErrorTest("underlay/xy given bad first arg",
+		       "(underlay/xy 1 1 1 1)",
+		       "underlay/xy: expects type image as 1st argument, given: 1; other arguments were: 1 1 1");
+
+	queueErrorTest("underlay/xy given too many args",
+		       "(underlay/xy 1 1 1 1 1)",
+		       "underlay/xy: expects 4 arguments, given 5: 1 1 1 1 1");
+
+	queueErrorTest("underlay/align given no args",
+		       "(underlay/align)",
+		       "underlay/align: expects at least 4 arguments, given 0");
+	
+	queueErrorTest("underlay/align given bad first arg",
+		       "(underlay/align 1 1 1 1 1)",
+		       "underlay/align: expects type x-place as 1st argument, given: 1; other arguments were: 1 1 1 1");
+
+	queueErrorTest("scale given no args",
+		       "(scale)",
+		       "scale: expects 2 arguments, given 0");
+
+	queueErrorTest("scale given too many args",
+		       "(scale 1 1 1)",
+		       "scale: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("scale given bad second arg type",
+		       "(scale 1 1)",
+		       "scale: expects type image as 2nd argument, given: 1; other arguments were: 1");
+	
+
+	queueErrorTest("scale given bad first arg type",
+		       "(scale add1 1)",
+		       "scale: expects type finite real number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+
+	queueErrorTest("scale/xy given no args",
+		       "(scale/xy)",
+		       "scale/xy: expects 3 arguments, given 0");
+	
+	queueErrorTest("scale/xy given bad 3rd arg type",
+		       "(scale/xy 1 1 1)",
+		       "scale/xy: expects type image as 3rd argument, given: 1; other arguments were: 1 1");
+	
+	queueErrorTest("scale/xy given too many args",
+		       "(scale/xy 1 1 1 1)",
+		       "scale/xy: expects 3 arguments, given 4: 1 1 1 1");
+
+	queueErrorTest("andmap given no args",
+		       "(andmap)",
+		       "andmap: expects at least 2 arguments, given 0");
+	
+	queueErrorTest("andmap given bad first arg type",
+		       "(andmap 1 1)",
+		       "andmap: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+
+	queueErrorTest("andmap given bad 2nd arg type",
+		       "(andmap add1 sub1)",
+		       "andmap: expects type list as 2nd argument, given: #<procedure:sub1>; other arguments were: #<procedure:add1>");
+	
+	queueErrorTest("ormap given no args",
+		       "(ormap)",
+		       "ormap: expects at least 2 arguments, given 0");
+	
+	queueErrorTest("ormap given bad first arg type",
+		       "(ormap 1 1)",
+		       "ormap: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+
+	queueErrorTest("ormap given bad 2nd arg type",
+		       "(ormap add1 sub1)",
+		       "ormap: expects type list as 2nd argument, given: #<procedure:sub1>; other arguments were: #<procedure:add1>");	
+
+
+	queueErrorTest("memq given no args",
+		       "(memq)",
+		       "memq: expects 2 arguments, given 0");
+	
+	queueErrorTest("memq given too many args",
+		       "(memq 1 1 1)",
+		       "memq: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("memq given bad second arg type",
+		       "(memq 1 1)",
+		       "memq: expects type list as 2nd argument, given: 1; other arguments were: 1");
+
+	queueErrorTest("memv given no args",
+		       "(memv)",
+		       "memv: expects 2 arguments, given 0");
+	
+	queueErrorTest("memv given too many args",
+		       "(memv 1 1 1)",
+		       "memv: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("memv given bad second arg type",
+		       "(memv 1 1)",
+		       "memv: expects type list as 2nd argument, given: 1; other arguments were: 1");	
+
+
+	queueErrorTest("member given no args",
+		       "(member)",
+		       "member: expects 2 arguments, given 0");
+	
+	queueErrorTest("member given too many args",
+		       "(member 1 1 1)",
+		       "member: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("member given bad second arg type",
+		       "(member 1 1)",
+		       "member: expects type list as 2nd argument, given: 1; other arguments were: 1");
+
+
+	queueErrorTest("member? given no args",
+		       "(member?)",
+		       "member?: expects 2 arguments, given 0");
+	
+	queueErrorTest("member? given too many args",
+		       "(member? 1 1 1)",
+		       "member?: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("member? given bad second arg type",
+		       "(member? 1 1)",
+		       "member?: expects type list as 2nd argument, given: 1; other arguments were: 1");
+
+
+	queueErrorTest("memf given no args",
+		       "(memf)",
+		       "memf: expects 2 arguments, given 0");
+	
+	queueErrorTest("memf given too many args",
+		       "(memf 1 1 1)",
+		       "memf: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("memf given bad first arg type",
+		       "(memf 1 1)",
+		       "memf: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+
+
+	queueErrorTest("assq given no args",
+		       "(assq)",
+		       "assq: expects 2 arguments, given 0");
+	
+	queueErrorTest("assq given too many args",
+		       "(assq 1 1 1)",
+		       "assq: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("assq given bad second arg type",
+		       "(assq 1 1)",
+		       "assq: expects type list of pair as 2nd argument, given: 1; other arguments were: 1");	
+
+	queueErrorTest("assv given no args",
+		       "(assv)",
+		       "assv: expects 2 arguments, given 0");
+	
+	queueErrorTest("assv given too many args",
+		       "(assv 1 1 1)",
+		       "assv: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("assv given bad second arg type",
+		       "(assv 1 1)",
+		       "assv: expects type list of pair as 2nd argument, given: 1; other arguments were: 1");
+
+
+	queueErrorTest("assoc given no args",
+		       "(assoc)",
+		       "assoc: expects 2 arguments, given 0");
+	
+	queueErrorTest("assoc given too many args",
+		       "(assoc 1 1 1)",
+		       "assoc: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("assoc given bad second arg type",
+		       "(assoc 1 1)",
+		       "assoc: expects type list of pair as 2nd argument, given: 1; other arguments were: 1");
+
+	queueErrorTest("remove given no args",
+		       "(remove)",
+		       "remove: expects 2 arguments, given 0");
+	
+	queueErrorTest("remove given too many args",
+		       "(remove 1 1 1)",
+		       "remove: expects 2 arguments, given 3: 1 1 1");
+	
+	queueErrorTest("remove given bad second arg",
+		       "(remove 1 1)",
+		       "remove: expects type list as 2nd argument, given: 1; other arguments were: 1");
+
+
         queueErrorTest("test check-expect functions",
                        "(check-expect + -)",
                        'check-expect cannot compare functions');
