@@ -3654,7 +3654,7 @@ var runTests = function() {
 		       "beside: expects type image as 1st argument, given: 2; other arguments were: 3 3 ");
 	
 	queueErrorTest("beside given bad args, correct number",
-		       "(beside 1 1)"
+		       "(beside 1 1)",
 		       "beside: expects type image as 1st argument, given: 1; other arguments were: 1");
 
 	queueErrorTest("beside given 0 args",
@@ -4962,14 +4962,16 @@ var runTests = function() {
 		       "rational?: expects 1 argument, given 2: 1 1");
 
 //next predicate
+
+
 	queueErrorTest("integer? given no args",
 		       "(integer?)",
 		       "integer?: expects 1 argument, given 0");
 	
+
 	queueErrorTest("integer? too many args",
 		       "(integer? 1 1)",
 		       "integer?: expects 1 argument, given 2: 1 1");
-
 
 
 
@@ -5255,7 +5257,7 @@ var runTests = function() {
                        "(string-ci=?)",
                        'string-ci=?: expects at least 2 arguments, given 0');
 
-        QueueErrorTest("test string-ci=? with 1st argument not string",
+        queueErrorTest("test string-ci=? with 1st argument not string",
                        "(string-ci=? 4 \"thing\")",
                        'string-ci=?: expects type string as 1st argument, given: 4; other arguments were: "thing"');
 
@@ -5404,7 +5406,7 @@ var runTests = function() {
 //string-append
 
         queueErrorTest("test string-append with first argument not a string",
-                       "(string-append 1 "2")",
+                       "(string-append 1 \"2\")",
                        'string-append: expects type string as 1st argument, given: 1; other arguments were: "2');
 
         queueErrorTest("test string-append with an argument not a string",

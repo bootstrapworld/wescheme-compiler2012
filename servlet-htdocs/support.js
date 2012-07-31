@@ -755,6 +755,9 @@ var helpers = {};
 					}
 				}
 				errorFormatStr = errorFormatStrBuffer.join(' ');
+
+				console.log("errorFormatStr is ", errorFormatStr);
+
 				raise( types.incompleteExn(types.exnFailContract,
 						   helpers.format(errorFormatStr, [details.functionName, details.typeName, details.ordinalPosition, details.actualValue]),
 						   []) );
@@ -769,13 +772,14 @@ var helpers = {};
 	};
 
 	var throwColoredCheckError = function(aState, details, pos, args){
+		console.log("COLORED ERROR");
 		var positionStack = 
         		state.captureCurrentContinuationMarks(aState).ref(
             		types.symbol('moby-application-position-key'));
         
        		var locationList = positionStack[positionStack.length - 1];
 
-       		console.log("locationList is ", locationList);
+       		//console.log("locationList is ", locationList);
 
        		//locations -> array
 			var getArgColoredParts = function(locations) {
@@ -16660,7 +16664,7 @@ PRIMITIVES['implode'] =
 		 false, false,
 		 function(aState, lst) {
 		 	checkListOf(aState, lst, function(x) { return isString(x) && x.length == 1; },
-				    'implode', 'list of 1-letter strings', 1);
+				    'implode', ' 1-letter strings', 1);
 			var ret = [];
 			while ( !lst.isEmpty() ) {
 				ret.push( lst.first().toString() );
@@ -20762,23 +20766,25 @@ var callContinuationProcedure = function(state, procValue, n, operandValues) {
 // selectProcedureByArity: state (CaseLambdaValue | CasePrimitive | Continuation | Closure | Primitive) -> (Continuation | Closure | Primitive)
 var selectProcedureByArity = function(aState, n, procValue, operands) {
     var getArgStr = function() {
-	var argStr = '';
-	if (operands.length > 0) {
-		var argStrBuffer = [':'];
-		for (var i = 0; i < operands.length; i++) {
-			argStrBuffer.push( types.toWrittenString(operands[i]) );
-		}
-		argStr = argStrBuffer.join(' ');
-	}
-	return argStr;
+    	var argStr = '';
+    	if (operands.length > 0) {
+    		var argStrBuffer = [':'];
+    		for (var i = 0; i < operands.length; i++) {
+    			argStrBuffer.push( types.toWrittenString(operands[i]) );
+    		}
+    		argStr = argStrBuffer.join(' ');
+    	}
+    	return argStr;
     }
     
     var getArgColoredParts = function(locations) {
     	var argColoredParts = [];
     	var locs = locations;
+        var space = "";
     	if (operands.length > 0) {
     		for (var i = 0; i < operands.length; i++) {
-    			argColoredParts.push(new types.ColoredPart(operands[i]+" ", locs.first()));
+                space = (locs.rest().isEmpty() ? "" : " ");
+    			argColoredParts.push(new types.ColoredPart(operands[i]+space, locs.first()));
     			locs = locs.rest();
     		}
     	}
@@ -20806,8 +20812,6 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
             new types.Message([new types.MultiPart("function call", [op, cp]),
                                 ": expected function, given: ",
                                 new types.ColoredPart(procValue, locationList.first())
-                                //((operands.length == 0) ? ' (no arguments)' : '; arguments were '),
-                               // ((operands.length != 0) ? new types.GradientPart(argColoredParts) : ''),
                                 ]),
                              []));
 
@@ -20845,7 +20849,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
                            n,
                            new types.GradientPart(argColoredParts)]),	
 		[]));
-    } else if (procValue instanceof primitive.CasePrimitive) {
+    } 
+    else if (procValue instanceof primitive.CasePrimitive) {
 	for (var j = 0; j < procValue.cases.length; j++) {
 	    if (n === procValue.cases[j].numParams ||
 		(n > procValue.cases[j].numParams && 

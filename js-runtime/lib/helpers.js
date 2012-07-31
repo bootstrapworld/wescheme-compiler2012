@@ -155,6 +155,9 @@ var helpers = {};
 					}
 				}
 				errorFormatStr = errorFormatStrBuffer.join(' ');
+
+				console.log("errorFormatStr is ", errorFormatStr);
+
 				raise( types.incompleteExn(types.exnFailContract,
 						   helpers.format(errorFormatStr, [details.functionName, details.typeName, details.ordinalPosition, details.actualValue]),
 						   []) );
@@ -169,13 +172,14 @@ var helpers = {};
 	};
 
 	var throwColoredCheckError = function(aState, details, pos, args){
+		console.log("COLORED ERROR");
 		var positionStack = 
         		state.captureCurrentContinuationMarks(aState).ref(
             		types.symbol('moby-application-position-key'));
         
        		var locationList = positionStack[positionStack.length - 1];
 
-       		console.log("locationList is ", locationList);
+       		//console.log("locationList is ", locationList);
 
        		//locations -> array
 			var getArgColoredParts = function(locations) {
