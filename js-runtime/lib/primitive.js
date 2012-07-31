@@ -1840,7 +1840,7 @@ PRIMITIVES['make-polar'] =
 		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isReal, 'make-polar', 'real', 1, arguments);
-			check(aState, x, isReal, 'make-polar', 'real', 2, arguments);
+			check(aState, y, isReal, 'make-polar', 'real', 2, arguments);
 			return jsnums.makeComplexPolar(x, y);
 		 });
 
@@ -4740,7 +4740,7 @@ new PrimProc('radial-star',
 			 check(aState, anOuter, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
 									"radial-star", "positive number", 2, arguments);
 			 check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
-									"radial-star", "positive number", 2, arguments);
+									"radial-star", "positive number", 3, arguments);
 			 check(aState, aStyle, isMode, "radial-star", "style", 4, arguments);
 			 check(aState, aColor, isColor, "radial-star", "color", 5, arguments);
 			 
