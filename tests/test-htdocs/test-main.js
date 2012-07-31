@@ -4017,7 +4017,7 @@ var runTests = function() {
 	queueErrorTest("stop-when bad arg type",
 		       "(stop-when 1)",
 		       "stop-when: expects type procedure as 1st argument, given: 1");
-
+/*
 	queueErrorTest("stop-when! bad arg amount",
 		       "(stop-when!)",
 		       "stop-when!: expects 2 arguments, given 0");
@@ -4025,7 +4025,7 @@ var runTests = function() {
 	queueErrorTest("stop-when! bad arg type",
 		       "(stop-when! 1 1)",
 		       "stop-when!: expects type procedure as 1st argument, given: 1; other arguments were: 1");
-
+*/
 	queueErrorTest("on-redraw bad arg amount",
 		       "(on-redraw)",
 		       "on-redraw: expects 1 argument, given 0");
@@ -4898,6 +4898,7 @@ var runTests = function() {
 		       "undefined?: expects 1 argument, given 2: 1 1");
 
 //next predicate
+/*
 	queueErrorTest("void? given no args",
 		       "(void?)",
 		       "void?: expects 1 argument, given 0");
@@ -4905,7 +4906,7 @@ var runTests = function() {
 	queueErrorTest("void? too many args",
 		       "(void? 1 1)",
 		       "void?: expects 1 argument, given 2: 1 1");
-
+*/
 //next predicate
 	queueErrorTest("symbol? given no args",
 		       "(symbol?)",
@@ -4977,7 +4978,7 @@ var runTests = function() {
 	queueErrorTest("posn? too many args",
 		       "(posn? 1 1)",
 		       "posn?: expects 1 argument, given 2: 1 1");
-
+/*
 //next predicate
 	queueErrorTest("bytes? given no args",
 		       "(bytes?)",
@@ -4995,7 +4996,7 @@ var runTests = function() {
 	queueErrorTest("byte? too many args",
 		       "(byte? 1 1)",
 		       "byte?: expects 1 argument, given 2: 1 1");
-
+*/
 //next predicate
 	queueErrorTest("number? given no args",
 		       "(number?)",
@@ -5066,7 +5067,7 @@ var runTests = function() {
 	
 	queueErrorTest("odd? given a bad arg",
 		       "(odd? add1)",
-		       "odd?: expects type number as 1st argument, given: #<procedure:add1>");
+		       "odd?: expects type integer as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("odd? given too many args",
 		       "(odd? 1 1)",
@@ -5078,7 +5079,7 @@ var runTests = function() {
 	
 	queueErrorTest("even? given a bad arg",
 		       "(even? add1)",
-		       "even?: expects type number as 1st argument, given: #<procedure:add1>");
+		       "even?: expects type integer as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("even? given too many args",
 		       "(even? 1 1)",
@@ -5102,7 +5103,7 @@ var runTests = function() {
 	
 	queueErrorTest("positive? given a bad arg",
 		       "(positive? add1)",
-		       "positive?: expects type number as 1st argument, given: #<procedure:add1>");
+		       "positive?: expects type real as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("positive? given too many args",
 		       "(positive? 1 1)",
@@ -5114,7 +5115,7 @@ var runTests = function() {
 	
 	queueErrorTest("negative? given a bad arg",
 		       "(negative? add1)",
-		       "negative?: expects type number as 1st argument, given: #<procedure:add1>");
+		       "negative?: expects type real as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("negative? given too many args",
 		       "(negative? 1 1)",
@@ -5138,7 +5139,7 @@ var runTests = function() {
 
 	queueErrorTest("eq? given no args",
 		       "(eq?)",
-		       "eq?: expects 1 argument, given 0");
+		       "eq?: expects 2 arguments, given 0");
 	
 	queueErrorTest("eq? given too many args",
 		       "(eq? 2 2 2)",
@@ -5150,7 +5151,7 @@ var runTests = function() {
 
 	queueErrorTest("eqv? given no args",
 		       "(eqv?)",
-		       "eqv?: expects 1 argument, given 0");
+		       "eqv?: expects 2 arguments, given 0");
 	
 	queueErrorTest("eqv? given too many args",
 		       "(eqv? 2 2 2)",
@@ -5162,7 +5163,7 @@ var runTests = function() {
 
 	queueErrorTest("equal? given no args",
 		       "(equal?)",
-		       "equal?: expects 1 argument, given 0");
+		       "equal?: expects 2 arguments, given 0");
 	
 	queueErrorTest("equal? given too many args",
 		       "(equal? 2 2 2)",
@@ -5527,7 +5528,7 @@ var runTests = function() {
 	
 	queueErrorTest("length given a bad arg",
 		       "(length add1)",
-		       "length: expects type non-empty list, but given: #<procedure:add1>");
+		       "length: expects type list as 1st argument, given: #<procedure:add1>");
 	
 	queueErrorTest("length given too many args",
 		       "(length 1 1)",
@@ -5557,7 +5558,7 @@ var runTests = function() {
 		       "(list-ref 1 1 1)",
 		       "list-ref: expects 2 arguments, given 3: 1 1 1");
 
-	queueErrrorTest("list-ref given bad arg for first arg",
+	queueErrorTest("list-ref given bad arg for first arg",
 			"(list-ref add1 1)",
 			"list-ref: expects type list as 1st argument, given: #<procedure:add1>; other arguments were: 1");
 
@@ -5805,11 +5806,11 @@ var runTests = function() {
          queueErrorTest("test check-within arity",
                        "(check-within 3 3 3 3 3 3 3 3 3 3 3)",
                         'check-within: expects 3 arguments, given 11: 3 3 3 3 3 3 3 3 3 3 3');
-
+         /*
          queueErrorTest("test print arity",
-                       "(print 'hello' 'world')",
-                        "print: expects 1 argument, given 2: 'hello' 'world'");
-
+                       '(print "hello" "world")',
+                        'print: expects 1 argument, given 2: "hello" "world"');
+            */
          queueErrorTest("test write arity",
                         "(write 1 2 3 4 5)",
                         "write: expects 1 or 2 arguments, given 5: 1 2 3 4 5");
@@ -5855,8 +5856,8 @@ var runTests = function() {
 
 //foldl
         queueErrorTest("test foldl with arguments of wrong type",
-                       "(foldl add1 \"1\" (list 2 3))",
-                       'foldl: expects type number as 2nd argument, given: "1"; other arguments were: 7 (list 2 3)');
+                       "(foldl + \"1\" (list 2 3))",
+                       '+: expects type number as 2nd argument, given: "1"; other arguments were: 2');
 
         queueErrorTest("test foldl with arguments of wrong type",
                        "(foldl 1 7 (list 2 3))",
@@ -6529,11 +6530,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("build-vector with 1st argument not non-negative exact integer",
                        "(build-vector \"hello\" 2)",
-                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2 ');
+                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2');
 
         queueErrorTest("build-vector with 2nd argument not a proc",
                        "(build-vector \"hello\" 2)",
-                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2 ');
+                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2');
 
 
 //PRIMITIVES['char=?']
@@ -6543,8 +6544,8 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char=?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char=? with 1st argument not char",
-                       "(char=?)",
-                       'char=?: expects type char as 1st argument, given: "hello"; other arguments were: #\a');
+                       '(char=? "hello")',
+                       'char=?: expects at least 2 arguments, given 1: hello');
 
 //PRIMITIVES['char<?'] 
 
@@ -6553,12 +6554,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char<?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char<? with 1st argument not char",
-                       "(char<? add1 #\a)",
-                       'char<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char<? add1 #\\a)",
+                       'char<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char<? with 2nd argument not char",
-                       "(char<? #\a add1)",
-                       'char<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char<? #\\a add1)",
+                       'char<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char>?'] 
 
@@ -6567,12 +6568,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char>?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char>? with 1st argument not char",
-                       "(char>? add1 #\a)",
-                       'char>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char>? add1 #\\a)",
+                       'char>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char>? with 2nd argument not char",
-                       "(char>? #\a add1)",
-                       'char>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char>? #\\a add1)",
+                       'char>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char<=?']
 
@@ -6581,12 +6582,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char<=?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char<=? with 1st argument not char",
-                       "(char<=? add1 #\a)",
-                       'char<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char<=? add1 #\\a)",
+                       'char<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char<=? with 2nd argument not char",
-                       "(char<=? #\a add1)",
-                       'char<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char<=? #\\a add1)",
+                       'char<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char>=?']
 
@@ -6595,12 +6596,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char>=?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char>=? with 1st argument not char",
-                       "(char>=? add1 #\a)",
-                       'char>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char>=? add1 #\\a)",
+                       'char>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char>=? with 2nd argument not char",
-                       "(char>=? #\a add1)",
-                       'char>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char>=? #\\a add1)",
+                       'char>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 
 //PRIMITIVES['char-ci=?'] 
@@ -6610,12 +6611,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char-ci=?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char-ci=? with 1st argument not char",
-                       "(char-ci=? add1 #\a)",
-                       'char-ci=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci=? add1 #\\a)",
+                       'char-ci=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci=? with 2nd argument not char",
-                       "(char-ci=? #\a add1)",
-                       'char-ci=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci=? #\\a add1)",
+                       'char-ci=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 
 //PRIMITIVES['char-ci<?'] 
@@ -6625,12 +6626,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char-ci<?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char-ci<? with 1st argument not char",
-                       "(char-ci<? add1 #\a)",
-                       'char-ci<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci<? add1 #\\a)",
+                       'char-ci<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci<? with 2nd argument not char",
-                       "(char-ci<? #\a add1)",
-                       'char-ci<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci<? #\\a add1)",
+                       'char-ci<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci>?'] 
 
@@ -6639,12 +6640,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char-ci>?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char-ci>? with 1st argument not char",
-                       "(char-ci>? add1 #\a)",
-                       'char-ci>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci>? add1 #\\a)",
+                       'char-ci>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci>? with 2nd argument not char",
-                       "(char-ci>? #\a add1)",
-                       'char-ci>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci>? #\\a add1)",
+                       'char-ci>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci<=?'] 
 
@@ -6653,12 +6654,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char-ci<=?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char-ci<=? with 1st argument not char",
-                       "(char-ci<=? add1 #\a)",
-                       'char-ci<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci<=? add1 #\\a)",
+                       'char-ci<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci<=? with 2nd argument not char",
-                       "(char-ci<=? #\a add1)",
-                       'char-ci<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci<=? #\\a add1)",
+                       'char-ci<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci>=?'] 
 
@@ -6667,12 +6668,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'char-ci>=?: expects at least 2 arguments, given 0');
 
         queueErrorTest("char-ci>=? with 1st argument not char",
-                       "(char-ci>=? add1 #\a)",
-                       'char-ci>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci>=? add1 #\\a)",
+                       'char-ci>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci>=? with 2nd argument not char",
-                       "(char-ci>=? #\a add1)",
-                       'char-ci>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\a');
+                       "(char-ci>=? #\\a add1)",
+                       'char-ci>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-alphabetic?'] 
 
@@ -6839,7 +6840,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 //PRIMITIVES['color-green'] 
 
         queueErrorTest("color-green with wrong arity",
-                       "(color-red)",
+                       "(color-green)",
                        'color-green: expects 1 argument, given 0');
 
         queueErrorTest("color-green with 1st argument not color",
@@ -6901,27 +6902,27 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(place-image/align)",
                        'place-image/align: expects 6 arguments, given 0');
 
-        queueErrorTest("empty-scene with 1st argument not image",
-                       "(empty-scene add1 2 3 4 5 6)",
-                       'empty-scene: expects type non-negative number as 1st argument, given: #<procedure:add1>; other arguments were: 2');
+        queueErrorTest("place-image/align with 1st argument not image",
+                       "(place-image/align add1 2 3 4 5 6)",
+                       'place-image/align: expects type image as 1st argument, given: #<procedure:add1>; other arguments were: 2 3 4 5 6');
 
-        queueErrorTest("empty-scene with 2nd argument not real number",
+        queueErrorTest("place-image/align with 2nd argument not real number",
                        "(place-image/align (circle 50 \"solid\" \"red\") \"hello\" 3 4 5 6)",
                        'place-image/align: expects type real number as 2nd argument, given: "hello"; other arguments were: <image> 3 4 5 6');
 
-        queueErrorTest("empty-scene with 3rd argument not real number",
+        queueErrorTest("place-image/align with 3rd argument not real number",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 \"hello\" 4 5 6)",
                        'place-image/align: expects type real number as 3rd argument, given: "hello"; other arguments were: <image> 2 4 5 6');
 
-        queueErrorTest("empty-scene with 4th argument not x-place",
+        queueErrorTest("place-image/align with 4th argument not x-place",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 3 (make-posn 2 3) 5 6)",
                        'place-image/align: expects type x-place as 4th argument, given: (posn 2 3); other arguments were: <image> 2 3 5 6');
 
-        queueErrorTest("empty-scene with 5th argument not y-place",
+        queueErrorTest("place-image/alignwith 5th argument not y-place",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 3 \"left\" 5 6)",
                        'place-image/align: expects type y-place as 5th argument, given: 5; other arguments were: <image> 2 3 "left" 6');
 
-        queueErrorTest("empty-scene with 6th argument not image",
+        queueErrorTest("place-image/align with 6th argument not image",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 3 \"left\" \"top\" add1)",
                        'place-image/align: expects type image as 6th argument, given: #<procedure:add1>; other arguments were: <image> 2 3 "left" "top"');
 

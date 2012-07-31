@@ -800,7 +800,7 @@ var helpers = {};
 					} 
 				}
 
-				console.log("args is ", args, ", actualArgs is ", actualArgs);
+				//console.log("args is ", args, ", actualArgs is ", actualArgs);
 				/*
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
@@ -888,12 +888,12 @@ var helpers = {};
 
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				console.log("colored error");
+				//console.log("colored error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		console.log("uncolored error");
+		//console.log("uncolored error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
@@ -14897,7 +14897,7 @@ PRIMITIVES['make-polar'] =
 		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isReal, 'make-polar', 'real', 1, arguments);
-			check(aState, x, isReal, 'make-polar', 'real', 2, arguments);
+			check(aState, y, isReal, 'make-polar', 'real', 2, arguments);
 			return jsnums.makeComplexPolar(x, y);
 		 });
 
@@ -17653,8 +17653,8 @@ PRIMITIVES['place-image/align'] =
 		     false, false,
 		     function(aState, img, x, y, placeX, placeY, background) {
 			 check(aState, img,		isImage,	"place-image/align", "image",	1, arguments);
-			 check(aState, x,		isReal,		"place-image/align", "real",	2, arguments);
-			 check(aState, y,		isReal,		"place-image/align", "real",	3, arguments);
+			 check(aState, x,		isReal,		"place-image/align", "real number",	2, arguments);
+			 check(aState, y,		isReal,		"place-image/align", "real number",	3, arguments);
 			 check(aState, placeX,	isPlaceX,	"place-image/align", "x-place", 4, arguments);
 			 check(aState, placeY,	isPlaceY,	"place-image/align", "y-place", 5, arguments);
 			 check(aState, background, function(x) { return isScene(x) || isImage(x) },
@@ -17797,7 +17797,7 @@ new PrimProc('radial-star',
 			 check(aState, anOuter, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
 									"radial-star", "positive number", 2, arguments);
 			 check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
-									"radial-star", "positive number", 2, arguments);
+									"radial-star", "positive number", 3, arguments);
 			 check(aState, aStyle, isMode, "radial-star", "style", 4, arguments);
 			 check(aState, aColor, isColor, "radial-star", "color", 5, arguments);
 			 

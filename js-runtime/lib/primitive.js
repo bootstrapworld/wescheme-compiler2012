@@ -1840,7 +1840,7 @@ PRIMITIVES['make-polar'] =
 		 false, false,
 		 function(aState, x, y) {
 		 	check(aState, x, isReal, 'make-polar', 'real', 1, arguments);
-			check(aState, x, isReal, 'make-polar', 'real', 2, arguments);
+			check(aState, y, isReal, 'make-polar', 'real', 2, arguments);
 			return jsnums.makeComplexPolar(x, y);
 		 });
 

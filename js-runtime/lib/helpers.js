@@ -200,7 +200,7 @@ var helpers = {};
 					} 
 				}
 
-				console.log("args is ", args, ", actualArgs is ", actualArgs);
+				//console.log("args is ", args, ", actualArgs is ", actualArgs);
 				/*
 				if(state.isState(args[0])){
 					for(i = 1; i < args.length; i++){
@@ -288,12 +288,12 @@ var helpers = {};
 
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				console.log("colored error");
+				//console.log("colored error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		console.log("uncolored error");
+		//console.log("uncolored error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 
