@@ -2117,6 +2117,7 @@ PRIMITIVES['zero?'] =
 		 1,
 		 false, false,
 		 function(aState, x) {
+		 	check(aState, x, isNumber, 'zero?', 'number', 1);
 		     return jsnums.equals(0, x)
 		 });
 
@@ -2396,7 +2397,7 @@ PRIMITIVES['second'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-			checkListOf(aState, lst, 2, 'second', 1);
+			checkListOfLength(aState, lst, 2, 'second', 1);
 			return lst.rest().first();
 		 });
 
@@ -2461,6 +2462,7 @@ PRIMITIVES['length'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
+		 	checkList(aState, lst, 'length', 1, arguments);
 		  	return jsnums.makeRational(length(lst));
 		 });
 
@@ -3626,7 +3628,7 @@ PRIMITIVES['implode'] =
 		 false, false,
 		 function(aState, lst) {
 		 	checkListOf(aState, lst, function(x) { return isString(x) && x.length == 1; },
-				    'implode', ' 1-letter strings', 1);
+				    'implode', '1-letter strings', 1);
 			var ret = [];
 			while ( !lst.isEmpty() ) {
 				ret.push( lst.first().toString() );
@@ -5120,9 +5122,9 @@ new PrimProc('beside/align',
 			 3,
 			 true, false,
 			 function(aState, placeY, img1, img2, restImages) {
-			 check(aState, placeY, isPlaceY, "beside/align", "y-place", 1, arguments);
-			 check(aState, img1, isImage, "beside/align", "image", 2, arguments);
-			 check(aState, img2, isImage, "beside/align", "image", 3, arguments);
+			 checkVarArity(aState, placeY, isPlaceY, "beside/align", "y-place", 1, arguments);
+			 checkVarArity(aState, img1, isImage, "beside/align", "image", 2, arguments);
+			 checkVarArity(aState, img2, isImage, "beside/align", "image", 3, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "beside", "image", i+3); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
@@ -5540,7 +5542,7 @@ PRIMITIVES['mode?']		= new PrimProc('mode?', 1, false, false,
                                                function(aState, v) { return isMode(v); });
 PRIMITIVES['image-color?']      = new PrimProc('image-color?', 1, false, false, 
                                                function(aState, v) { return isColor(v); });
-PRIMITIVES['name->color']       = new PrimProc('name->color?', 1, false, false,
+PRIMITIVES['name->color']       = new PrimProc('name->color', 1, false, false,
                                                function(aState, x) { 
                                                    return nameToColor(x) || false; 
                                                });

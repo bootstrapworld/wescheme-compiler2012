@@ -843,20 +843,21 @@ var callContinuationProcedure = function(state, procValue, n, operandValues) {
 // selectProcedureByArity: state (CaseLambdaValue | CasePrimitive | Continuation | Closure | Primitive) -> (Continuation | Closure | Primitive)
 var selectProcedureByArity = function(aState, n, procValue, operands) {
     var getArgStr = function() {
-	var argStr = '';
-	if (operands.length > 0) {
-		var argStrBuffer = [':'];
-		for (var i = 0; i < operands.length; i++) {
-			argStrBuffer.push( types.toWrittenString(operands[i]) );
-		}
-		argStr = argStrBuffer.join(' ');
-	}
-	return argStr;
+    	var argStr = '';
+    	if (operands.length > 0) {
+    		var argStrBuffer = [':'];
+    		for (var i = 0; i < operands.length; i++) {
+    			argStrBuffer.push( types.toWrittenString(operands[i]) );
+    		}
+    		argStr = argStrBuffer.join(' ');
+    	}
+    	return argStr;
     }
     
     var getArgColoredParts = function(locations) {
     	var argColoredParts = [];
     	var locs = locations;
+        var space = "";
     	if (operands.length > 0) {
     	    for (var i = 0; i < operands.length; i++) {
     		argColoredParts.push(new types.ColoredPart(operands[i]+(i < operands.length -1 ? " " : ""),
@@ -888,8 +889,6 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
             new types.Message([new types.MultiPart("function call", [op, cp]),
                                 ": expected function, given: ",
                                 new types.ColoredPart(procValue, locationList.first())
-                                //((operands.length == 0) ? ' (no arguments)' : '; arguments were '),
-                               // ((operands.length != 0) ? new types.GradientPart(argColoredParts) : ''),
                                 ]),
                              []));
 
@@ -927,7 +926,8 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
                            n,
                            new types.GradientPart(argColoredParts)]),	
 		[]));
-    } else if (procValue instanceof primitive.CasePrimitive) {
+    } 
+    else if (procValue instanceof primitive.CasePrimitive) {
 	for (var j = 0; j < procValue.cases.length; j++) {
 	    if (n === procValue.cases[j].numParams ||
 		(n > procValue.cases[j].numParams && 
