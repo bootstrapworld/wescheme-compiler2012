@@ -8,6 +8,7 @@ $(document).ready(function() {
 
 
 var runTests = function() {
+    "use strict";
     //////////////////////////////////////////////////////////////////////
 
 
@@ -269,8 +270,9 @@ var runTests = function() {
         var failMsgText = " FAIL" + ((e.message || e || '') ? 
                                   ": " + (e.message || e || '') : "");
         $(document.body).append($("<span/>").text(failMsgText)
-                                .css("color", "red").append(
-                                    $("<a/>").attr("name", "fail" + failureCount)));
+                                .css("color", "red")
+                                .css("white-space", "pre")
+                                .append($("<a/>").attr("name", "fail" + failureCount)));
         $(document.body).css("background-color", "#eeaaaa");
     };
 
@@ -3618,6 +3620,64 @@ var runTests = function() {
                 evaluator.executeProgram(name, code, checkOutput,  checkOutput);
             });
         };
+
+
+        var queueTest = function(name, code, expectedText) {
+            queueAsyncTest(name, function(success, fail) {
+                var checkOutput = function(err) {
+                    if (outputSpan.text() === expectedText) {
+                        success();
+                    } else {
+                        fail("not the same: " + 
+                             types.toWrittenString(outputSpan.text()) + 
+                             ", " +
+                             types.toWrittenString(expectedText));
+                    }
+                };
+                var outputSpan = jQuery("<span/>");
+                var evaluator = new Evaluator(
+                    { write: function(x) { outputSpan.append(x); },
+                      writeError: function(err) { outputSpan.append(evaluator.getMessageFromExn(err)+''); },
+                      compilationServletUrl: "/servlets/standalone.ss",
+                      scriptCompilationServletUrl: "/servlets/standalone.ss"
+                    });
+                
+                evaluator.setRootLibraryPath("/collects");
+                evaluator.executeProgram(name, code, checkOutput,  checkOutput);
+            });
+        };
+
+
+
+        queueTest("test simple function application program",
+                  "(define (double x) (+ x x)) (double 25)",
+                  "50");
+
+        queueTest("test simple function application program 2",
+                  "(define (double x) (+ x x)) (double (double 25))",
+                  "100");
+
+
+        queueErrorTest("set! is not enabled, part 1",
+                       "set!",
+                       "set!: this variable is not defined")
+
+        queueErrorTest("set! is not enabled, part 2",
+                       "(define x 42) (set! x 16)",
+                       "set!: this variable is not defined")
+
+
+        queueErrorTest("test mis-application 1",
+                       "(define (double x) (+ x x)) (double double)",
+                       "+: expects type number as 1st argument, given: #<procedure:double>; other arguments were: #<procedure:double> ");
+
+        queueErrorTest("test mis-application 2",
+                       "(define (double x) (+ x x)) (double double 25)",
+                       "double: expects 1 argument, given 2: #<procedure:double> 25");
+
+
+
+
         
 
         queueErrorTest("test type error in map",
@@ -5475,6 +5535,14 @@ var runTests = function() {
 
 //printf
 
+        queueErrorTest("test bad inputs to big-bang",
+                       "(big-bang 1 on-tick add1)",
+                       "big-bang: expects type handler or attribute list as 2nd argument, given: #<procedure:on-tick>");
+
+        queueErrorTest("too many arguments",
+                       "(define (f x) (* x x)) (f 3 4)",
+                       "f: expects 1 argument, given 2: 3 4");
+
         queueErrorTest("test printf with wrong arity",
                        "(printf)",
                        'printf: expects at least 1 argument, given 0');
@@ -5695,6 +5763,116 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(vector-length 1)",
                        'vector-length: expects type vector as 1st argument, given: 1');
 
+// PRIMITIVES['vector->list'] =
+
+// PRIMITIVES['list->vector'] =
+
+// PRIMITIVES['build-vector'] =
+
+// PRIMITIVES['char=?'] =
+
+// PRIMITIVES['char<?'] =
+
+// PRIMITIVES['char>?'] =
+
+// PRIMITIVES['char<=?'] =
+
+// PRIMITIVES['char>=?'] =
+
+// PRIMITIVES['char-ci=?'] =
+
+// PRIMITIVES['char-ci<?'] =
+
+// PRIMITIVES['char-ci>?'] =
+
+// PRIMITIVES['char-ci<=?'] =
+
+// PRIMITIVES['char-ci>=?'] =
+
+// PRIMITIVES['char-alphabetic?'] =
+
+// PRIMITIVES['char-numeric?'] =
+
+// PRIMITIVES['char-whitespace?'] =
+
+// PRIMITIVES['char-upper-case?'] =
+
+// PRIMITIVES['char-lower-case?'] =
+
+// PRIMITIVES['char->integer'] =
+
+// PRIMITIVES['integer->char'] =
+
+// PRIMITIVES['char-upcase'] =
+
+// PRIMITIVES['char-downcase'] =
+
+// PRIMITIVES['make-posn'] =
+
+// PRIMITIVES['posn-x'] =
+
+// PRIMITIVES['posn-y'] =
+
+// PRIMITIVES['key=?'] 
+
+// PRIMITIVES['image?'] = 
+
+// PRIMITIVES['make-color'] =
+
+// PRIMITIVES['color-red'] =
+
+// PRIMITIVES['color-green'] =
+
+// PRIMITIVES['color-blue'] =
+
+// PRIMITIVES['color-alpha'] =
+
+// PRIMITIVES['empty-scene'] =
+
+// PRIMITIVES['place-image'] =
+
+// PRIMITIVES['place-image/align'] =
+
+// PRIMITIVES['scene+line'] =
+
+// PRIMITIVES['put-pinhole'] =
+
+// PRIMITIVES['circle'] =
+
+// PRIMITIVES['star'] = 
+
+// PRIMITIVES['radial-star'] =
+
+// PRIMITIVES['nw:rectangle'] =
+
+// PRIMITIVES['rectangle'] =
+
+// PRIMITIVES['regular-polygon'] =
+
+// PRIMITIVES['star-polygon'] =
+
+// PRIMITIVES['rhombus'] =
+
+// PRIMITIVES['square'] =
+
+// PRIMITIVES['triangle'] =
+
+// PRIMITIVES['right-triangle'] =
+
+// PRIMITIVES['isosceles-triangle'] =
+
+// PRIMITIVES['ellipse'] =
+
+// PRIMITIVES['line'] =
+
+
+
+
+
+
+
+//
+    
         //////////////////////////////////////////////////////////////////////
 
 

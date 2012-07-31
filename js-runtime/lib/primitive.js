@@ -6324,7 +6324,7 @@ PRIMITIVES['js-big-bang'] =
 */
 PRIMITIVES['big-bang'] =
 PRIMITIVES['js-big-bang'] =
-    new PrimProc('js-big-bang',
+    new PrimProc('big-bang',
 		 1,
 		 true, false,
 		 function(aState, initW, handlers) {
