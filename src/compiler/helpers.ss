@@ -479,11 +479,11 @@
       [(= (length parts) 1) (raise (make-moby-error (stx-loc a-definition)
                                                     (make-Message
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
-                                                     ": expected a variable but found nothing")))]
+                                                     ": expected a variable name, or a function name and its variables (in parentheses), but nothing's there")))]
       [(= (length (stx-e (second parts))) 0)
        (raise (make-moby-error (stx-loc a-definition)
                                (make-Message 
-                                (make-ColoredPart "define" (stx-loc (first parts)))
+                                (make-ColoredPart "define" (stx-loc (first parts)))                     
                                 ": expected a name for the function, but found nothing " 
                                 (make-ColoredPart "there" (stx-loc (second parts))))))]
       
