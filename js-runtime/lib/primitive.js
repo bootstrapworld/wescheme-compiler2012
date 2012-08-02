@@ -654,18 +654,26 @@ PRIMITIVES['verify-boolean-branch-value'] =
 		     false,
 		     function(aState, x, aLoc) { 
 			 if (x !== true && x !== false) {
+		
+       			var positionStack = 
+        			state.captureCurrentContinuationMarks(aState).ref(
+            			types.symbol('moby-application-position-key'));  
+       
+       			var locationList = positionStack[positionStack.length - 1];
+			     console.log("loclist ", locationList);
+			     console.log("astate ", aState);
 			     // FIXME: should throw structure
 			     // make-moby-error-type:branch-value-not-boolean
 			     // instead.
 			     //throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
 			     raise(types.incompleteExn(
                                  types.exnFailContract,
-				 new types.Message(["the value ",
+				 new types.Message(["cond clause: expected a boolean value, but found: ",
 						    new types.ColoredPart(types.toWrittenString(x),
                                                                           aLoc),
-                                                    " is not a boolean value."
+                                                    
 						   ]),
-                                 []));
+                                 []));  
 			 }
 			 return x;
 		     })
@@ -679,7 +687,14 @@ PRIMITIVES['throw-cond-exhausted-error'] =
 			     // FIXME: should throw structure
 			     // make-moby-error-type:conditional-exhausted
 			     // instead.
-			 throw types.schemeError(types.incompleteExn(types.exnFail, "cond: all question results were false", []));
+			// throw types.schemeError(types.incompleteExn(types.exnFail, "cond: all question results were false", []));
+			 raise(types.incompleteExn(
+			     types.exnFailContract,
+			     new types.Message([new types.ColoredPart("cond", aLoc), 
+						": all question results were false"
+					       ]),
+			     []));
+			 
 		     });
 
 
@@ -1244,6 +1259,7 @@ PRIMITIVES['sleep'] =
 
 
 PRIMITIVES['identity'] = new PrimProc('identity', 1, false, false, function(aState, x) { return x; });
+
 
 
 PRIMITIVES['raise'] = new PrimProc('raise', 1, false, false, function(aState, v) { return raise(v);} );
