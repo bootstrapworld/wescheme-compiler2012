@@ -200,6 +200,7 @@ var helpers = {};
 					} 
 				}
 
+
 				//console.log("args is ", args, ", actualArgs is ", actualArgs);
 				/*
 				if(state.isState(args[0])){
@@ -247,12 +248,16 @@ var helpers = {};
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				//console.log("args, argColoredParts is ", argColoredParts);
 
+				var typeName = details.typeName+'';
+				var fL = typeName.substring(0,1);   //first letter of type name
+
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),
-							   		": expects type ",
-							   		details.typeName,
+							   		": expects ",
+							   		((fL === "a" || fL === "e" || fL === "i" || fL === "o" || fL === "u") ? "an " : "a "),
+							   		typeName,
 							   		" as ",
 							   		details.ordinalPosition, 
 							   		" argument, given: ",
@@ -266,8 +271,9 @@ var helpers = {};
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
-						   		": expects type ",
-						   		details.typeName,
+						   		": expects ",
+						   		((fL === "a" || fL === "e" || fL === "i" || fL === "o" || fL === "u") ? "an " : "a "),
+						   		typeName,
 						   		" as ",
 						   		details.ordinalPosition, 
 						   		" argument, given: ",
