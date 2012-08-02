@@ -789,9 +789,9 @@
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs)  
-                                                       ": Expected a "
-                                                       (make-MultiPart "clause" cond-branch-locs)
-                                                       " with a question and an answer, but found an empty part")))]
+                                                       ": Expected a clause with a question and an ansewr, but found an "
+                                                       (make-MultiPart "empty part" cond-branch-locs)
+                                                       )))]
                              [(< (length (stx-e a-clause)) 2)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
@@ -834,9 +834,9 @@
       (cond
         [(empty? cond-clauses)
          (raise (make-moby-error (stx-loc an-expr)  ;;conditional-missing-question-answer
-                                 (make-Message "After "
+                                 (make-Message 
                                                (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
-                                               " expected a clause, but nothing was found")))]
+                                               ": expected at least one clause after cond, but nothing's there")))]
         [else
          (begin
            (check-clause-structures!)
