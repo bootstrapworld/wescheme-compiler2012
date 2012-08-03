@@ -660,8 +660,6 @@ PRIMITIVES['verify-boolean-branch-value'] =
             			types.symbol('moby-application-position-key'));  
        
        			var locationList = positionStack[positionStack.length - 1];
-			     console.log("loclist ", locationList);
-			     console.log("astate ", aState);
 			     // FIXME: should throw structure
 			     // make-moby-error-type:branch-value-not-boolean
 			     // instead.
