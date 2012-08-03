@@ -389,12 +389,14 @@
 
 
 
-;; force-boolean-context: stx -> stx
+;; force-boolean-context: symbol-stx stx -> stx
 ;; Force a boolean runtime test on the given expression.
-(define (force-boolean-context bool-expr)
+(define (force-boolean-context name bool-expr)
   (tag-application-operator/module 
    (datum->stx #f 
-               `(verify-boolean-branch-value 
+               `(verify-boolean-branch-value
+                 (quote , (symbol->string (stx->datum  name)))
+                 (quote ,(loc->vec (stx-loc name)))
                  ,bool-expr
                  (quote ,(loc->vec (stx-loc bool-expr))))
                (stx-loc bool-expr))
@@ -420,7 +422,7 @@
                (define else-expr (third (first desugared-exprs+pinfo)))]
          (list (datum->stx #f 
                            `(,if-symbol-stx #;,test-expr
-                                            ,(force-boolean-context test-expr)
+                                            ,(force-boolean-context if-symbol-stx test-expr)
                                             ,then-expr
                                             ,else-expr)
                            (stx-loc expr))
@@ -472,50 +474,51 @@
                (define exprs (rest (stx-e expr)))
                (define desugared-exprs+pinfo (desugar-expressions exprs pinfo))]
          (cond [(symbol=? (stx-e boolean-chain-stx) 'and)
-                (list (desugar-and (first desugared-exprs+pinfo) (stx-loc expr))
+                (list (desugar-and (first desugared-exprs+pinfo) (stx-loc expr)  boolean-chain-stx)
                       (second desugared-exprs+pinfo))]
                [(symbol=? (stx-e boolean-chain-stx) 'or)
                 (desugar-or (first desugared-exprs+pinfo) 
                             (stx-loc expr) 
-                            (second desugared-exprs+pinfo))]))])))
+                            (second desugared-exprs+pinfo)  boolean-chain-stx
+ )]))])))
 
 
 
 ;; desugar-and: (listof expr) loc -> expr
 ;; Assumption: (length exprs) >= 2
-(define (desugar-and exprs loc)
+(define (desugar-and exprs loc stx-symbol)
   (cond [(= (length exprs) 2)
          (datum->stx #f 
-                     `(if ,(force-boolean-context (first exprs))
-                          ,(force-boolean-context (second exprs))
+                     `(if ,(force-boolean-context stx-symbol (first exprs))
+                          ,(force-boolean-context stx-symbol (second exprs))
                           #f) 
                      loc)]
         [else
          (datum->stx #f 
-                     `(if ,(force-boolean-context (first exprs))
-                          ,(desugar-and (rest exprs) loc) 
+                     `(if ,(force-boolean-context stx-symbol (first exprs))
+                          ,(desugar-and (rest exprs) loc stx-symbol) 
                           #f) 
                      loc)]))
 
 
-(define (desugar-or exprs loc pinfo)
+(define (desugar-or exprs loc pinfo stx-symbol)
   (cond [(= (length exprs) 2)
          (local [(define pinfo+tmp-sym (pinfo-gensym pinfo 'tmp))]
            (desugar-expression/expr+pinfo
             (list (datum->stx #f 
                               `(let ([,(second pinfo+tmp-sym) 
-                                      ,(force-boolean-context (first exprs))])
+                                      ,(force-boolean-context stx-symbol (first exprs))])
                                  (if ,(second pinfo+tmp-sym)
                                      ,(second pinfo+tmp-sym)
-                                     ,(force-boolean-context (second exprs))))
+                                     ,(force-boolean-context stx-symbol (second exprs))))
                               loc)
                   (first pinfo+tmp-sym))))]
         [else
          (local [(define pinfo+tmp-sym (pinfo-gensym pinfo 'tmp))
-                 (define rest-exprs+pinfo (desugar-or (rest exprs) loc (first pinfo+tmp-sym)))]
+                 (define rest-exprs+pinfo (desugar-or (rest exprs) loc (first pinfo+tmp-sym) stx-symbol))]
            (desugar-expression/expr+pinfo
             (list (datum->stx #f `(let ([,(second pinfo+tmp-sym)
-                                         ,(force-boolean-context (first exprs))])
+                                         ,(force-boolean-context stx-symbol (first exprs))])
                                     (if ,(second pinfo+tmp-sym)
                                         ,(second pinfo+tmp-sym)
                                         ,(first rest-exprs+pinfo)))

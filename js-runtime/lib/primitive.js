@@ -649,10 +649,10 @@ var checkAllSameLength = function(aState, lists, functionName, args) {
 
 PRIMITIVES['verify-boolean-branch-value'] =
 	new PrimProc('verify-boolean-branch-value',
-		     2,
+		     4,
 		     false,
 		     false,
-		     function(aState, x, aLoc) { 
+		     function(aState, name, nameLoc, x, aLoc) { 
 			 if (x !== true && x !== false) {
 		
        			var positionStack = 
@@ -662,13 +662,16 @@ PRIMITIVES['verify-boolean-branch-value'] =
        			var locationList = positionStack[positionStack.length - 1];
 			     console.log("loclist ", locationList);
 			     console.log("astate ", aState);
+			     console.log("namelco ", nameLoc);
+			     console.log("name ", name);
 			     // FIXME: should throw structure
 			     // make-moby-error-type:branch-value-not-boolean
 			     // instead.
 			     //throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
 			     raise(types.incompleteExn(
                                  types.exnFailContract,
-				 new types.Message(["expected a boolean value, but found: ",
+				 new types.Message([new types.ColoredPart(name, nameLoc), 
+						    ": expected a boolean value, but found: ",
 						    new types.ColoredPart(types.toWrittenString(x),
                                                                           aLoc),
                                                     
