@@ -71,6 +71,7 @@
                (list 'unquote-splicing desugar-quasiquote)
                (list 'local desugar-local)
                (list 'begin desugar-begin)
+               
                ; set! is disabled
                ;(list 'set! desugar-set!)
                (list 'if desugar-if)
@@ -83,6 +84,7 @@
                (list 'quote desugar-quote))))
 
 
+  
 
 
 ;; desugar-program: program pinfo -> (list program pinfo)
@@ -461,10 +463,10 @@
        (raise (make-moby-error (stx-loc expr)
                                (make-Message
                                 (make-ColoredPart (symbol->string (stx-e (first (stx-e expr)))) (stx-loc (first (stx-e expr))))
-                                ": expected at least two arguments, but found "
+                                ": expects at least 2 arguments, but found "
                                 (if (= (length (stx-e expr)) 2)
-                                    (make-ColoredPart "only one" (stx-loc (second (stx-e expr))))
-                                    "none"))))]     
+                                    (make-ColoredPart "only 1" (stx-loc (second (stx-e expr))))
+                                    "0"))))]     
       [else
        (local [(define boolean-chain-stx (first (stx-e expr)))
                (define exprs (rest (stx-e expr)))
@@ -783,20 +785,20 @@
                               (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs) 
-                                                       ": Expected a clause with a question and an answer, but found "
+                                                       ": expected a clause with a question and an answer, but found "
                                                        (make-ColoredPart "something else" (stx-loc a-clause)))))]
                              [(= (length (stx-e a-clause)) 0)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs)  
-                                                       ": Expected a clause with a question and an ansewr, but found an "
+                                                       ": expected a clause with a question and an answer, but found an "
                                                        (make-MultiPart "empty part" cond-branch-locs)
                                                        )))]
                              [(< (length (stx-e a-clause)) 2)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs)  
-                                                       ": Expected a clause with a question and an answer, but found a "
+                                                       ": expected a clause with a question and an answer, but found a "
                                                        (make-MultiPart "clause" cond-branch-locs)
                                                        " with only   "
                                                        (make-MultiPart "one part" (map stx-loc (stx-e a-clause))))))]                 
@@ -882,7 +884,7 @@
 ;; make-cond-exhausted-expression: loc -> stx
 (define (make-cond-exhausted-expression a-loc)
   (tag-application-operator/module
-   (datum->stx #f `(throw-cond-exhausted-error (quote ,(Loc->sexp a-loc))) a-loc)
+   (datum->stx #f `(throw-cond-exhausted-error (quote ,(loc->vec a-loc))) a-loc)
    'moby/runtime/kernel/misc))
 
 

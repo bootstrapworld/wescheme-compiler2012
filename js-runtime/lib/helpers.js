@@ -13,7 +13,7 @@ var helpers = {};
 			var matches = formatStr.match(new RegExp('~[sSaA]', 'g'));
 			var expectedNumberOfArgs = matches == null ? 0 : matches.length;
 			var errorStrBuffer = [functionName + ': format string requires ' + expectedNumberOfArgs
-						+ ' arguments, given ' + args.length + '; arguments were:',
+						+ ' arguments, but given ' + args.length + '; arguments were:',
 					      types.toWrittenString(formatStr)];
 			for (var i = 0; i < args.length; i++) {
 				errorStrBuffer.push( types.toWrittenString(args[i]) );
@@ -148,7 +148,7 @@ var helpers = {};
 	var throwUncoloredCheckError = function(aState, details, pos, args){
 			var errorFormatStr;
 			if (args && args.length > 1) {
-				var errorFormatStrBuffer = ['~a: expects type ~a as ~a arguments, given: ~s; other arguments were:'];
+				var errorFormatStrBuffer = ['~a: expects type ~a as ~a arguments, but given: ~s; other arguments were:'];
 				for (var i = 0; i < args.length; i++) {
 					if ( i != pos-1 ) {
 						errorFormatStrBuffer.push( types.toWrittenString(args[i]) );
@@ -163,7 +163,7 @@ var helpers = {};
 						   []) );
 			}
 			else {
-				errorFormatStr = "~a: expects argument of type ~a, given: ~s";
+				errorFormatStr = "~a: expects argument of type ~a, but given: ~s";
 				raise( types.incompleteExn(types.exnFailContract,
 						   helpers.format(errorFormatStr, [details.functionName, details.typeName , details.actualValue]),
 						   []));
@@ -199,6 +199,7 @@ var helpers = {};
 						actualArgs.push(args[i]);
 					} 
 				}
+
 
 				//console.log("args is ", args, ", actualArgs is ", actualArgs);
 				/*
@@ -243,6 +244,10 @@ var helpers = {};
 				return locs.first();
 			}
 
+			var typeName = details.typeName+'';
+			var fL = typeName.substring(0,1);   //first letter of type name
+
+
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				//console.log("args, argColoredParts is ", argColoredParts);
@@ -251,11 +256,12 @@ var helpers = {};
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([
 							   		new types.ColoredPart(details.functionName, locationList.first()),
-							   		": expects type ",
-							   		details.typeName,
+							   		": expects ",
+							   		((fL === "a" || fL === "e" || fL === "i" || fL === "o" || fL === "u") ? "an " : "a "),
+							   		typeName,
 							   		" as ",
 							   		details.ordinalPosition, 
-							   		" argument, given: ",
+							   		" argument, but given: ",
 							   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos)),
 							   		"; other arguments were: ",
 							   		new types.GradientPart(argColoredParts)
@@ -266,15 +272,15 @@ var helpers = {};
 			raise( types.incompleteExn(types.exnFailContract,
 						   new types.Message([
 						   		new types.ColoredPart(details.functionName, locationList.first()),
-						   		": expects type ",
-						   		details.typeName,
+						   		": expects ",
+						   		((fL === "a" || fL === "e" || fL === "i" || fL === "o" || fL === "u") ? "an " : "a "),
+						   		typeName,
 						   		" as ",
 						   		details.ordinalPosition, 
-						   		" argument, given: ",
+						   		" argument, but given: ",
 						   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
 						   	]),
 						   []) );
-
 
 	};
 

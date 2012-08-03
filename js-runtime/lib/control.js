@@ -995,7 +995,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 							(procValue.numParams + " argument" + 
 							  ((procValue.numParams == 1) ? '' : 's')))
 					      ,
-  		         ", given ",
+  		         ", but given ",
 			n ,
             ((argColoredParts.length > 0) ? ": " : ""),
             ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),

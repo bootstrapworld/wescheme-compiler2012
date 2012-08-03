@@ -7,6 +7,8 @@
          scheme/match
          scheme/list
          racket/cmdline
+         file/gzip
+         racket/port
          "find-paren-loc.rkt"
          ;; profile
          "src/compiler/mzscheme-vm/write-support.ss"
@@ -32,8 +34,12 @@
 ;; Creates a response that's coupled to an output-port: whatever you
 ;; write into the output will be pushed into the response.
 (define (make-port-response #:mime-type (mime-type #"application/octet-stream")
-                            #:headers (headers '()))
-  (let-values ([(in out) (make-pipe)]
+                            #:with-gzip? (with-gzip? #f))
+  (define headers (if with-gzip?
+                      (list (header #"Content-Encoding" #"gzip"))
+                      (list)))
+  (let-values ([(in out)
+                (make-pipe)]
                [(CHUNK-SIZE) 1024])
     (values (response
              200 #"OK"
@@ -41,11 +47,11 @@
              mime-type
              headers
              (lambda (op)
-               (let loop ()
-                 (let ([some-bytes (read-bytes CHUNK-SIZE in)])
-                   (unless (eof-object? some-bytes)
-                     (write-bytes some-bytes op)
-                     (loop))))))
+               (cond
+                [with-gzip?
+                 (gzip-through-ports in op #f (current-seconds))]
+                [else
+                 (copy-port in op)])))
             out)))
 
 
@@ -59,6 +65,14 @@
 (define (get-program-text request)
   (extract-binding/single 'program (request-bindings request)))
 
+
+
+;; request-accepts-gzip-encoding?: request -> boolean
+;; Returns true if we can send a respond with gzip encoding.
+(define (request-accepts-gzip-encoding? request)
+  (define elts (assq 'accept-encoding (request-headers request)))
+  (and elts (member "gzip" (regexp-split #px"," (cdr elts))) #t))
+  
 
 ;; Web service consuming programs and producing bytecode.
 (define (start request)
@@ -95,7 +109,8 @@
 
 ;; handle-json-response: -> response
 (define (handle-json-response request program-name program-input-port)
-  (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")]
+  (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
+                                                           #:with-gzip? (request-accepts-gzip-encoding? request))]
                [(compiled-program-port) (open-output-bytes)])
     (let ([pinfo (compile/port program-input-port compiled-program-port #:name program-name)])
       (fprintf output-port "~a(~a);" 
@@ -140,7 +155,8 @@
 (define (handle-json-exception-response request exn)
   (case (compiler-version request)
     [(0)
-     (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")])
+     (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
+                                                              #:with-gzip? (request-accepts-gzip-encoding? request))])
        (let ([payload
               (format "~a(~a);\n" (extract-binding/single 'on-error (request-bindings request))
                       (sexp->js (exn-message exn)))])
@@ -148,7 +164,8 @@
          (close-output-port output-port)
          response))]
     [(1)
-     (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")])
+     (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
+                                                              #:with-gzip? (request-accepts-gzip-encoding? request))])
        (let ([payload
               (format "~a(~a);\n" (extract-binding/single 'on-error (request-bindings request))
                       (jsexpr->json (exn->json-structured-output request exn)))])
@@ -264,7 +281,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; non jsonp stuff: use with xmlhttprequest
 (define (handle-response request program-name program-input-port)
-  (let-values  ([(response output-port) (make-port-response #:mime-type #"text/plain")]
+  (let-values  ([(response output-port) (make-port-response #:mime-type #"text/plain"
+                                                            #:with-gzip? (request-accepts-gzip-encoding? request))]
                 [(program-output-port) (open-output-bytes)])
     (let ([pinfo (compile/port program-input-port program-output-port #:name program-name)])    
       (display (format-output (get-output-bytes program-output-port) pinfo request) output-port)

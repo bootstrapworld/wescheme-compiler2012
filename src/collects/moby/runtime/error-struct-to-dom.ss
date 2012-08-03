@@ -179,15 +179,14 @@
         
        [(moby-error-type:syntax-not-applied? error-type)
         `(span ((class "Error-SyntaxNotApplied"))
-               "Found "
+               ""
                ,(stx->dom-sexp (moby-error-type:syntax-not-applied-keyword error-type)
                                maybe-dom-parameters)
-               ", which isn't supposed to be used as a bare expression.  "
-               "Rather, one example of its use is: "
-               ,(scheme-value->dom-sexp 
-                 (moby-error-type:syntax-not-applied-example error-type)
-                 maybe-dom-parameters)
-               ".")]
+               ": expected an open parenthesis before  "
+               ,(stx->dom-sexp (moby-error-type:syntax-not-applied-keyword error-type)
+                               maybe-dom-parameters)
+               ", but found none"
+               )]
        
        ;;fixme: is this ever called? 
        [(moby-error-type:closing-parenthesis-before-opener? error-type)
