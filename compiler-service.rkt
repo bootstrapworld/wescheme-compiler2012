@@ -8,7 +8,7 @@
          scheme/list
          racket/cmdline
          "find-paren-loc.rkt"
-         ;; profile
+         profile
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
          "src/compiler/mzscheme-vm/private/json.ss"
@@ -62,24 +62,29 @@
 
 ;; Web service consuming programs and producing bytecode.
 (define (start request)
-  (with-handlers ([void 
-                   (lambda (exn)
-                     (cond
-                       [(jsonp-request? request)
-                        (handle-json-exception-response request exn)]
-                       [else 
-                        (handle-exception-response request exn)]))])
-    (let*-values ([(program-name)
-                   (string->symbol
-                    (extract-binding/single 'name (request-bindings request)))]
-                  [(program-text) 
-                   (get-program-text request)]
-                  [(program-input-port) (open-input-string program-text)])
-      ;; To support JSONP:
-      (cond [(jsonp-request? request)
-             (handle-json-response request program-name program-input-port)]
-            [else
-             (handle-response request program-name program-input-port)]))))
+  (define result #f)
+  (profile
+   (set! result (with-handlers ([void 
+                                (lambda (exn)
+                                  (cond
+                                   [(jsonp-request? request)
+                                    (handle-json-exception-response request exn)]
+                                   [else 
+                                    (handle-exception-response request exn)]))])
+                 (let*-values ([(program-name)
+                                (string->symbol
+                                 (extract-binding/single 'name (request-bindings request)))]
+                               [(program-text) 
+                                (get-program-text request)]
+                               [(program-input-port) (open-input-string program-text)])
+                   ;; To support JSONP:
+                   (cond [(jsonp-request? request)
+                          (handle-json-response request program-name program-input-port)]
+                         [else
+                          (handle-response request program-name program-input-port)]))))
+   #:repeat 10
+   #:delay 0.0001)
+  result)
 
 
 

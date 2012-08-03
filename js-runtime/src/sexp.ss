@@ -70,7 +70,7 @@
 
 ;; apply a for-each across a list of elements, printing the separator into the
 ;; port between each element.
-(define (port-for-each/comma-separate f elts op #:separator [separator ","])
+(define (port-for-each/comma-separate f elts op)
   (cond [(empty? elts)
          (void)]
         [else
@@ -80,7 +80,7 @@
              (f (first elts) op)]
             [else
              (f (first elts) op)
-             (display separator op)
+             (display "," op)
              (loop (rest elts))]))]))
 
 
