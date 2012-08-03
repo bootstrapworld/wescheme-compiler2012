@@ -244,12 +244,13 @@ var helpers = {};
 				return locs.first();
 			}
 
+			var typeName = details.typeName+'';
+			var fL = typeName.substring(0,1);   //first letter of type name
+
+
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
 				//console.log("args, argColoredParts is ", argColoredParts);
-
-				var typeName = details.typeName+'';
-				var fL = typeName.substring(0,1);   //first letter of type name
 
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
@@ -280,7 +281,6 @@ var helpers = {};
 						   		new types.ColoredPart(types.toWrittenString(details.actualValue), getLocation(pos))
 						   	]),
 						   []) );
-
 
 	};
 
