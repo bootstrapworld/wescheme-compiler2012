@@ -660,10 +660,7 @@ PRIMITIVES['verify-boolean-branch-value'] =
             			types.symbol('moby-application-position-key'));  
        
        			var locationList = positionStack[positionStack.length - 1];
-			     console.log("loclist ", locationList);
-			     console.log("astate ", aState);
-			     console.log("namelco ", nameLoc);
-			     console.log("name ", name);
+
 			     // FIXME: should throw structure
 			     // make-moby-error-type:branch-value-not-boolean
 			     // instead.
@@ -1133,7 +1130,7 @@ PRIMITIVES['apply'] =
 			checkList(aState, lastArg, 'apply', args.length+2, allArgs);
 			var args = args.concat(helpers.schemeListToArray(lastArg));
 
-			return  CALL(f, args, id);
+			return CALL(f, args, id);
 		 });
 
 

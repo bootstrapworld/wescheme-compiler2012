@@ -156,8 +156,6 @@ var helpers = {};
 				}
 				errorFormatStr = errorFormatStrBuffer.join(' ');
 
-				//console.log("errorFormatStr is ", errorFormatStr);
-
 				raise( types.incompleteExn(types.exnFailContract,
 						   helpers.format(errorFormatStr, [details.functionName, details.typeName, details.ordinalPosition, details.actualValue]),
 						   []) );
@@ -180,8 +178,6 @@ var helpers = {};
         
        		var locationList = positionStack[positionStack.length - 1];
 
-       		//console.log("locationList is ", locationList);
-
        		//locations -> array
 			var getArgColoredParts = function(locations) {
 				var coloredParts = [];
@@ -199,22 +195,6 @@ var helpers = {};
 						actualArgs.push(args[i]);
 					} 
 				}
-
-
-				//console.log("args is ", args, ", actualArgs is ", actualArgs);
-				/*
-				if(state.isState(args[0])){
-					for(i = 1; i < args.length; i++){
-						if(! (locs.isEmpty())){
-							if(i != pos) {
-								//space = (locs.rest().isEmpty() ? "" : " ");
-								coloredParts.push(new types.ColoredPart(types.toWrittenString(args[i])+(i < args.length -2 ? " " : ""), 
-									locs.first()));
-							}
-							locs = locs.rest();
-					    }
-					}
-				}*/
 				for(i = 0; i < actualArgs.length; i++){
 					if(! (locs.isEmpty())){
 						if(i != (pos -1)) {
@@ -244,12 +224,12 @@ var helpers = {};
 				return locs.first();
 			}
 
+			var typeName = details.typeName+'';
+			var fL = typeName.substring(0,1);   //first letter of type name
+
+
 			if(args) { 
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
-				//console.log("args, argColoredParts is ", argColoredParts);
-
-				var typeName = details.typeName+'';
-				var fL = typeName.substring(0,1);   //first letter of type name
 
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
@@ -281,7 +261,6 @@ var helpers = {};
 						   	]),
 						   []) );
 
-
 	};
 
 	var throwCheckError = function(aState, details, pos, args) {
@@ -294,12 +273,10 @@ var helpers = {};
 
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				//console.log("colored error");
 				throwColoredCheckError(aState,details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error
-		//console.log("uncolored error");
 		throwUncoloredCheckError(aState, details, pos, args);
 	};
 

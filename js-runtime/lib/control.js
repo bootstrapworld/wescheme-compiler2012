@@ -694,16 +694,16 @@ var callPrimitiveProcedure = function(state, procValue, n, operandValues) {
 					 operandValues,
 					 n);
     var result = procValue.impl.apply(procValue.impl, args);
-    processPrimitiveResult(state, result, procValue, n);
+    processPrimitiveResult(state, result, procValue);
 };
 
 
-var processPrimitiveResult = function(state, result, procValue, n) {
+var processPrimitiveResult = function(state, result, procValue) {
     if (result instanceof INTERNAL_CALL) {
 	state.cstack.push(new InternalCallRestartControl
 			  (result.k, procValue));
 
-        addNoLocationContinuationMark(state, n);
+        addNoLocationContinuationMark(state, result.operands.length);
 	callProcedure(state,
 		      result.operator, 
 		      result.operands.length, 
@@ -895,70 +895,70 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     }
 
     if (procValue instanceof types.CaseLambdaValue) {
-	for (var j = 0; j < procValue.closures.length; j++) {
-	    if (n === procValue.closures[j].numParams ||
-		(n > procValue.closures[j].numParams && 
-		 procValue.closures[j].isRest)) {
-		return procValue.closures[j];
-	    }
-	}
-	var acceptableParameterArity = [];
-	for (var i = 0; i < procValue.closures.length; i++) {
-	    acceptableParameterArity.push(procValue.closures[i].numParams + '');
-	}
+    	for (var j = 0; j < procValue.closures.length; j++) {
+    	    if (n === procValue.closures[j].numParams ||
+    		(n > procValue.closures[j].numParams && 
+    		 procValue.closures[j].isRest)) {
+    		return procValue.closures[j];
+    	    }
+    	}
+    	var acceptableParameterArity = [];
+    	for (var i = 0; i < procValue.closures.length; i++) {
+    	    acceptableParameterArity.push(procValue.closures[i].numParams + '');
+    	}
 
-    var positionStack = 
-        state.captureCurrentContinuationMarks(aState).ref(
-            types.symbol('moby-application-position-key'));
-        
-       
-        var locationList = positionStack[positionStack.length - 1];
-        var argColoredParts = getArgColoredParts(locationList.rest());
+        var positionStack = 
+            state.captureCurrentContinuationMarks(aState).ref(
+                types.symbol('moby-application-position-key'));
+            
+           
+            var locationList = positionStack[positionStack.length - 1];
+            var argColoredParts = getArgColoredParts(locationList.rest());
 
 
-//unable to test
-	helpers.raise(types.incompleteExn(
-		types.exnFailContractArity,
-		new types.Message([new types.ColoredPart(procValue.name ? procValue.name : "#<case-lambda-procedure>", locationList.first()),
-                           ": expects [",
-                           acceptableParameterArity.join(', '),
-                           "] arguments, given ",
-                           n,
-                           new types.GradientPart(argColoredParts)]),	
-		[]));
+        //unable to test
+    	helpers.raise(types.incompleteExn(
+    		types.exnFailContractArity,
+    		new types.Message([new types.ColoredPart(procValue.name ? procValue.name : "#<case-lambda-procedure>", locationList.first()),
+                               ": expects [",
+                               acceptableParameterArity.join(', '),
+                               "] arguments, given ",
+                               n,
+                               new types.GradientPart(argColoredParts)]),	
+    		[]));
     } 
     else if (procValue instanceof primitive.CasePrimitive) {
-	for (var j = 0; j < procValue.cases.length; j++) {
-	    if (n === procValue.cases[j].numParams ||
-		(n > procValue.cases[j].numParams && 
-		 procValue.cases[j].isRest)) {
-		return procValue.cases[j];
-	    }
-	}
-	var acceptableParameterArity = [];
-	for (var i = 0; i < procValue.cases.length; i++) {
-	    acceptableParameterArity.push(procValue.cases[i].numParams + '');
-	}
-    var positionStack = 
-        state.captureCurrentContinuationMarks(aState).ref(
-            types.symbol('moby-application-position-key'));
-        
-       
-        var locationList = positionStack[positionStack.length - 1];
-        var argColoredParts = getArgColoredParts(locationList.rest());
+    	for (var j = 0; j < procValue.cases.length; j++) {
+    	    if (n === procValue.cases[j].numParams ||
+    		(n > procValue.cases[j].numParams && 
+    		 procValue.cases[j].isRest)) {
+    		return procValue.cases[j];
+    	    }
+    	}
+    	var acceptableParameterArity = [];
+    	for (var i = 0; i < procValue.cases.length; i++) {
+    	    acceptableParameterArity.push(procValue.cases[i].numParams + '');
+    	}
+        var positionStack = 
+            state.captureCurrentContinuationMarks(aState).ref(
+                types.symbol('moby-application-position-key'));
+            
+           
+            var locationList = positionStack[positionStack.length - 1];
+            var argColoredParts = getArgColoredParts(locationList.rest());
 
 
-        //textchange
-	helpers.raise(types.incompleteExn(
-		types.exnFailContractArity,
-		new types.Message([new types.ColoredPart(procValue.name, locationList.first()),
-                ": expects ",
-                acceptableParameterArity.join(' or '),
-                " arguments, but given ",
-                n,
-            ((argColoredParts.length > 0) ? ": " : ""),
-            ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
-		[]));
+            //textchange
+    	helpers.raise(types.incompleteExn(
+    		types.exnFailContractArity,
+    		new types.Message([new types.ColoredPart(procValue.name, locationList.first()),
+                    ": expects ",
+                    acceptableParameterArity.join(' or '),
+                    " arguments, given ",
+                    n,
+                ((argColoredParts.length > 0) ? ": " : ""),
+                ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),
+    		[]));
     }
 
 
