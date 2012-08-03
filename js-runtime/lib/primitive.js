@@ -668,7 +668,7 @@ PRIMITIVES['verify-boolean-branch-value'] =
 			     //throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
 			     raise(types.incompleteExn(
                                  types.exnFailContract,
-				 new types.Message(["cond clause: expected a boolean value, but found: ",
+				 new types.Message(["expected a boolean value, but found: ",
 						    new types.ColoredPart(types.toWrittenString(x),
                                                                           aLoc),
                                                     
