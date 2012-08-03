@@ -1115,7 +1115,7 @@ PRIMITIVES['apply'] =
 			checkList(aState, lastArg, 'apply', args.length+2, allArgs);
 			var args = args.concat(helpers.schemeListToArray(lastArg));
 
-			return  CALL(f, args, id);
+			return CALL(f, args, id);
 		 });
 
 
