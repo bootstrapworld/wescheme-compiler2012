@@ -108,13 +108,21 @@
     
     (processing-loop a-program a-pinfo)))
 
-
-
+;; bare-keyword?: an-element -> boolean   This method is a helper checking for specific bare keywords. 
+(define (bare-keyword? an-element)
+  (and (symbol? (stx-e an-element))
+       (or (eq? (stx-e an-element) 'define)
+          (eq? (stx-e an-element) 'define-struct))))
 
 
 ;; desugar-program-element: program-element pinfo -> (list (listof program-element) pinfo)
 (define (desugar-program-element an-element a-pinfo)
   (cond
+    [(bare-keyword? an-element)
+     (raise (make-moby-error (stx-loc an-element)
+                             (make-Message (make-ColoredPart  (symbol->string (stx-e an-element)) (stx-loc an-element))
+                                           ": expected an open parenthesis before "
+                                           (symbol->string (stx-e an-element)))))]
     [(defn? an-element)
      (desugar-defn an-element a-pinfo)]
     [(library-require? an-element)
