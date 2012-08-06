@@ -4076,7 +4076,7 @@ var runTests = function() {
 		       "(big-bang)",
 		       "big-bang: expects at least 1 argument, but given 0");
 
-	queueErrorTest("big-bang given wrong a of arg as 2nd arg",
+	queueErrorTest("big-bang given wrong type of arg as 2nd arg",
 		       "(big-bang 1 1)",
 		       "big-bang: expects a handler or attribute list as 2nd argument, but given: 1; other arguments were: 1");
 
@@ -4084,7 +4084,7 @@ var runTests = function() {
 		       "(make-struct-type)",
 		       "make-struct-type: expects 4 or 5 or 6 or 7 or 8 or 9 or 10 arguments, but given 0");
 	
-	queueErrorTest("make-struct-type give wrong arg a",
+	queueErrorTest("make-struct-type give wrong arg type",
 		       "(make-struct-type 1 1 1 1)",
 		       "make-struct-type: expects a symbol as 1st argument, but given: 1; other arguments were: 1 1 1");
 
@@ -4092,7 +4092,7 @@ var runTests = function() {
 		       "(make-struct-field-accessor)",
 		       "make-struct-field-accessor: expects 2 or 3 arguments, but given 0");
 	
-	queueErrorTest("make-struct-field-accessor given wrong arg a",
+	queueErrorTest("make-struct-field-accessor given wrong arg type",
 		       "(make-struct-field-accessor 1 1 1)",
 		       "make-struct-field-accessor: expects an accessor procedure that requires a field index as 1st argument, but given: 1; other arguments were: 1 1");
 
