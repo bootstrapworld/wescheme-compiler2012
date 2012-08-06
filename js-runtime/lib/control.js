@@ -922,7 +922,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     		new types.Message([new types.ColoredPart(procValue.name ? procValue.name : "#<case-lambda-procedure>", locationList.first()),
                                ": expects [",
                                acceptableParameterArity.join(', '),
-                               "] arguments, given ",
+                               "] arguments, but given ",
                                n,
                                new types.GradientPart(argColoredParts)]),	
     		[]));
@@ -954,7 +954,7 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     		new types.Message([new types.ColoredPart(procValue.name, locationList.first()),
                     ": expects ",
                     acceptableParameterArity.join(' or '),
-                    " arguments, given ",
+                    " arguments, but given ",
                     n,
                 ((argColoredParts.length > 0) ? ": " : ""),
                 ((argColoredParts.length > 0) ? new types.GradientPart(argColoredParts) : "")]),

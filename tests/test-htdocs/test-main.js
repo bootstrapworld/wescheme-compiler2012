@@ -3687,2116 +3687,2116 @@ var runTests = function() {
 
         queueErrorTest("test mis-application 1",
                        "(define (double x) (+ x x)) (double double)",
-                       "+: expects type number as 1st argument, given: #<procedure:double>; other arguments were: #<procedure:double>");
+                       "+: expects a number as 1st argument, but given: #<procedure:double>; other arguments were: #<procedure:double>");
 
         queueErrorTest("test mis-application 2",
                        "(define (double x) (+ x x)) (double double 25)",
-                       "double: expects 1 argument, given 2: #<procedure:double> 25");
+                       "double: expects 1 argument, but given 2: #<procedure:double> 25");
 
 
 
 
         
 
-        queueErrorTest("test type error in map",
+        queueErrorTest("test a error in map",
                        '(map add1 (list "1"))',
-                       'add1: expects type number as 1st argument, given: "1"');
+                       'add1: expects a number as 1st argument, but given: "1"');
                        
 
         queueErrorTest("test non-boolean in if test position",
                        "(if 3 'four 'five)",
-                       'the value 3 is not a boolean value.');
+                       'if: expected a boolean value, but found: 3');
 
         queueErrorTest("test non-boolean in 'or'",
                        "(or 42 4)",
-                       'the value 42 is not a boolean value.');
+                       'or: expected a boolean value, but found: 42');
 
         queueErrorTest("test non-boolean in 'or', second position",
                        "(or #f 4)",
-                       'the value 4 is not a boolean value.');
+                       'or: expected a boolean value, but found: 4');
 
         queueErrorTest("test non-boolean in 'and'",
                        "(and 'blah 4)",
-                       "the value blah is not a boolean value.");
+                       "and: expected a boolean value, but found: blah");
 
         queueErrorTest("test non-boolean in 'and', second position",
                        "(and #t 'not-bool)",
-                       "the value not-bool is not a boolean value.");
+                       "and: expected a boolean value, but found: not-bool");
     
 	queueErrorTest("beside given 1 arg",
 		       "(beside 5)",
-		       "beside: expects at least 2 arguments, given 1: 5");
+		       "beside: expects at least 2 arguments, but given 1: 5");
 	
 	queueErrorTest("beside given 3 non-image args",
 		       "(beside 2 3 3)",
-		       "beside: expects type image as 1st argument, given: 2; other arguments were: 3 3");
+		       "beside: expects an image as 1st argument, but given: 2; other arguments were: 3 3");
 	
 	queueErrorTest("beside given bad args, correct number",
 		       "(beside 1 1)",
-		       "beside: expects type image as 1st argument, given: 1; other arguments were: 1");
+		       "beside: expects an image as 1st argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("beside given 0 args",
 		       "(beside)",
-		       "beside: expects at least 2 arguments, given 0");
+		       "beside: expects at least 2 arguments, but given 0");
 
 	queueErrorTest("beside/align give too few args",
 		       "(beside/align 3 3)",
-		       "beside/align: expects at least 3 arguments, given 2: 3 3");
+		       "beside/align: expects at least 3 arguments, but given 2: 3 3");
 	queueErrorTest("beside/align given bad args",
 		       "(beside/align 3 3 3 3 3 3)",
-		       "beside/align: expects type y-place as 1st argument, given: 3; other arguments were: 3 3 3 3 3");
+		       "beside/align: expects a y-place as 1st argument, but given: 3; other arguments were: 3 3 3 3 3");
 
 	queueErrorTest("beside/align given bad args, correct number",
 		       "(beside/align 1 1 1)",
-		       "beside/align: expects type y-place as 1st argument, given: 1; other arguments were: 1 1");
+		       "beside/align: expects a y-place as 1st argument, but given: 1; other arguments were: 1 1");
 
 	queueErrorTest("above given 0 args",
 		       "(above)",
-		       "above: expects at least 2 arguments, given 0");
+		       "above: expects at least 2 arguments, but given 0");
 	
 	queueErrorTest("above given bad args",
 		      "(above 2 1 1)",
-		      "above: expects type image as 1st argument, given: 2; other arguments were: 1 1");
+		      "above: expects an image as 1st argument, but given: 2; other arguments were: 1 1");
 	
 	queueErrorTest("above given bad args, correct number",
 		       "(above 1 1)",
-		       "above: expects type image as 1st argument, given: 1; other arguments were: 1");
+		       "above: expects an image as 1st argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("above/align given no args",
 		       "(above/align)",
-		       "above/align: expects at least 3 arguments, given 0");
+		       "above/align: expects at least 3 arguments, but given 0");
 
 	queueErrorTest("above/align given bad args, correct number",
 		       "(above/align 1 1 1)",
-		       "above/align: expects type x-place as 1st argument, given: 1; other arguments were: 1 1");
+		       "above/align: expects a x-place as 1st argument, but given: 1; other arguments were: 1 1");
 
 	queueErrorTest("above/align given too many args, all bad",
 		      "(above/align 1 1 1 1 1)",
-		      "above/align: expects type x-place as 1st argument, given: 1; other arguments were: 1 1 1 1"); 
+		      "above/align: expects a x-place as 1st argument, but given: 1; other arguments were: 1 1 1 1"); 
 
 	queueErrorTest("rotate given no args",
 		       "(rotate)",
-		       "rotate: expects 2 arguments, given 0");
+		       "rotate: expects 2 arguments, but given 0");
 	
 	queueErrorTest("rotate given correct number of bad args",
 		       "(rotate 1 1)",
-		       "rotate: expects type image as 2nd argument, given: 1; other arguments were: 1");
+		       "rotate: expects an image as 2nd argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("rotate given too many args",
 		       "(rotate 1 1 1 1 1 1)",
-		       "rotate: expects 2 arguments, given 6: 1 1 1 1 1 1");
+		       "rotate: expects 2 arguments, but given 6: 1 1 1 1 1 1");
 
 	queueErrorTest("crop given no args",
 		       "(crop)",
-		       "crop: expects 5 arguments, given 0");
+		       "crop: expects 5 arguments, but given 0");
 	
 	queueErrorTest("crop given correct # args, but bad args",
 		       "(crop 1 1 1 1 1)",
-		       "crop: expects type image as 5th argument, given: 1; other arguments were: 1 1 1 1");
+		       "crop: expects an image as 5th argument, but given: 1; other arguments were: 1 1 1 1");
 	
 	queueErrorTest("frame given no args",
 		       "(frame)",
-		       "frame: expects 1 argument, given 0");
+		       "frame: expects 1 argument, but given 0");
 
 	queueErrorTest("frame given correct number args, but bad args",
 		       "(frame 1)",
-		       "frame: expects type image as 1st argument, given: 1");
+		       "frame: expects an image as 1st argument, but given: 1");
 
 	queueErrorTest("frame given too many args",
 		       "(frame 1 1)",
-		       "frame: expects 1 argument, given 2: 1 1");
+		       "frame: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("flip-vertical given no args",
 		       "(flip-vertical)",
-		       "flip-vertical: expects 1 argument, given 0");
+		       "flip-vertical: expects 1 argument, but given 0");
 
 	queueErrorTest("flip-vertical given correct amount of args, but bad args",
 		       "(flip-vertical 1)",
-		       "flip-vertical: expects type image as 1st argument, given: 1");
+		       "flip-vertical: expects an image as 1st argument, but given: 1");
 
 	queueErrorTest("flip-vertical given too many args",
 		       "(flip-vertical 1 1)",
-		       "flip-vertical: expects 1 argument, given 2: 1 1");
+		       "flip-vertical: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("flip-horizontal given no args",
 		       "(flip-horizontal)",
-		       "flip-horizontal: expects 1 argument, given 0");
+		       "flip-horizontal: expects 1 argument, but given 0");
 
 	queueErrorTest("flip-horizontal given correct amount of args, but bad args",
 		       "(flip-horizontal 1)",
-		       "flip-horizontal: expects type image as 1st argument, given: 1");
+		       "flip-horizontal: expects an image as 1st argument, but given: 1");
 
 	queueErrorTest("flip-horizontal given too many args",
 		       "(flip-horizontal 1 1)",
-		       "flip-horizontal: expects 1 argument, given 2: 1 1");
+		       "flip-horizontal: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("text given no args",
 		       "(text)",
-		       "text: expects 3 arguments, given 0");
+		       "text: expects 3 arguments, but given 0");
 
 	queueErrorTest("text given correct # args, but bad args",
 		       "(text 1 1 1)",
-		       "text: expects type string as 1st argument, given: 1; other arguments were: 1 1");
+		       "text: expects a string as 1st argument, but given: 1; other arguments were: 1 1");
 
 	queueErrorTest("text given too many args",
 		       "(text 1 1 1 1)",
-		       "text: expects 3 arguments, given 4: 1 1 1 1");
+		       "text: expects 3 arguments, but given 4: 1 1 1 1");
 
 	queueErrorTest("text/font given bad number of args",
 		       "(text/font 1)",
-		       "text/font: expects 8 arguments, given 1: 1");
+		       "text/font: expects 8 arguments, but given 1: 1");
 
 	queueErrorTest("text/font given bad but correct amount of args",
 		       "(text/font 1 1 1 1 1 1 1 1)",
-		       "text/font: expects type string as 1st argument, given: 1; other arguments were: 1 1 1 1 1 1 1");
+		       "text/font: expects a string as 1st argument, but given: 1; other arguments were: 1 1 1 1 1 1 1");
 
 	queueErrorTest("bitmap/url given bad amount of args",
 		       "(bitmap/url)",
-		       "image-url: expects 1 argument, given 0");
+		       "image-url: expects 1 argument, but given 0");
 
-	queueErrorTest("bitmap/url given correct amount of args, but bad types",
+	queueErrorTest("bitmap/url given correct amount of args, but bad as",
 		       "(bitmap/url 1)",
-		       "image-url: expects type string as 1st argument, given: 1");
+		       "image-url: expects a string as 1st argument, but given: 1");
 
 	queueErrorTest("video-url given bad amount of args",
 		       "(video-url)",
-		       "video-url: expects 1 argument, given 0");
+		       "video-url: expects 1 argument, but given 0");
 	
-	queueErrorTest("video-url given correct arg amount, but bad types",
+	queueErrorTest("video-url given correct arg amount, but bad as",
 		       "(video-url 1)",
-		       "video-url: expects type string as 1st argument, given: 1");
+		       "video-url: expects a string as 1st argument, but given: 1");
 
 	queueErrorTest("image-width given no args",
 		       "(image-width)",
-		       "image-width: expects 1 argument, given 0");
+		       "image-width: expects 1 argument, but given 0");
 
-	queueErrorTest("image-width given correct arg amount, but bad types",
+	queueErrorTest("image-width given correct arg amount, but bad as",
 		       "(image-width 1)",
-		       "image-width: expects type image as 1st argument, given: 1");
+		       "image-width: expects an image as 1st argument, but given: 1");
 
 	queueErrorTest("image-height given no args",
 		       "(image-height)",
-		       "image-height: expects 1 argument, given 0");
+		       "image-height: expects 1 argument, but given 0");
 
-	queueErrorTest("image-height given correct arg amount, but bad types",
+	queueErrorTest("image-height given correct arg amount, but bad as",
 		       "(image-height 1)",
-		       "image-height: expects type image as 1st argument, given: 1");
+		       "image-height: expects an image as 1st argument, but given: 1");
 
 	queueErrorTest("image-baseline given no args",
 		       "(image-baseline)",
-		       "image-baseline: expects 1 argument, given 0");
+		       "image-baseline: expects 1 argument, but given 0");
 
-	queueErrorTest("image-baseline given correct arg amount, but bad types",
+	queueErrorTest("image-baseline given correct arg amount, but bad as",
 		       "(image-baseline 1)",
-		       "image-baseline: expects type image as 1st argument, given: 1");
+		       "image-baseline: expects an image as 1st argument, but given: 1");
 	
 	queueErrorTest("color-list->image bad arg amount",
 		       "(color-list->image)",
-		       "color-list->image: expects 5 arguments, given 0");
+		       "color-list->image: expects 5 arguments, but given 0");
 
-	queueErrorTest("color-list->bitmap bad arg type",
+	queueErrorTest("color-list->bitmap bad arg a",
 		       "(color-list->bitmap 1 1 1 1 1)",
-		       "color-list->bitmap: expects 3 arguments, given 5: 1 1 1 1 1");
+		       "color-list->bitmap: expects 3 arguments, but given 5: 1 1 1 1 1");
 
 	queueErrorTest("color-list->bitmap bad arg amount",
 		       "(color-list->bitmap)",
-		       "color-list->bitmap: expects 3 arguments, given 0");
+		       "color-list->bitmap: expects 3 arguments, but given 0");
 
-	queueErrorTest("color-list->image bad arg type",
+	queueErrorTest("color-list->image bad arg a",
 		       "(color-list->image 1 1 1 1 1)",
-		       "color-list->image: expects type list of image as 1st argument, given: 1");
+		       "color-list->image: expects a list of image as 1st argument, but given: 1");
 	
 	queueErrorTest("mode? no args",
 		       "(mode?)",
-		       "mode?: expects 1 argument, given 0");
+		       "mode?: expects 1 argument, but given 0");
 	
 	queueErrorTest("mode? too many args",
 		       "(mode? 1 1)",
-		       "mode?: expects 1 argument, given 2: 1 1");
+		       "mode?: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("image-color? no args",
 		       "(image-color?)",
-		       "image-color?: expects 1 argument, given 0");
+		       "image-color?: expects 1 argument, but given 0");
 	
 	queueErrorTest("image-color? too many args",
 		       "(image-color? 1 1)",
-		       "image-color?: expects 1 argument, given 2: 1 1");
+		       "image-color?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("name->color no args",
 		       "(name->color)",
-		       "name->color: expects 1 argument, given 0");
+		       "name->color: expects 1 argument, but given 0");
 	
 	queueErrorTest("name->color too many args",
 		       "(name->color 1 1)",
-		       "name->color: expects 1 argument, given 2: 1 1");
+		       "name->color: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("x-place? no args",
 		       "(x-place?)",
-		       "x-place?: expects 1 argument, given 0");
+		       "x-place?: expects 1 argument, but given 0");
 	
 	queueErrorTest("x-place? too many args",
 		       "(x-place? 1 1)",
-		       "x-place?: expects 1 argument, given 2: 1 1");
+		       "x-place?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("y-place? no args",
 		       "(y-place?)",
-		       "y-place?: expects 1 argument, given 0");
+		       "y-place?: expects 1 argument, but given 0");
 	
 	queueErrorTest("y-place? too many args",
 		       "(y-place? 1 1)",
-		       "y-place?: expects 1 argument, given 2: 1 1");
+		       "y-place?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("angle? no args",
 		       "(angle?)",
-		       "angle?: expects 1 argument, given 0");
+		       "angle?: expects 1 argument, but given 0");
 
 	queueErrorTest("angle? too many args",
 		       "(angle? 1 1)",
-		       "angle?: expects 1 argument, given 2: 1 1");
+		       "angle?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("side-count? no args",
 		       "(side-count?)",
-		       "side-count?: expects 1 argument, given 0");
+		       "side-count?: expects 1 argument, but given 0");
 
 	queueErrorTest("side-count? too many args",
 		       "(side-count? 1 1)",
-		       "side-count?: expects 1 argument, given 2: 1 1");
+		       "side-count?: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("step-count? no args",
 		       "(step-count?)",
-		       "step-count?: expects 1 argument, given 0");
+		       "step-count?: expects 1 argument, but given 0");
 
 	queueErrorTest("step-count? too many args",
 		       "(step-count? 1 1)",
-		       "step-count?: expects 1 argument, given 2: 1 1");
+		       "step-count?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("on-tick bad args amount",
 		       "(on-tick)",
-		       "on-tick: expects 1 or 2 arguments, given 0");
+		       "on-tick: expects 1 or 2 arguments, but given 0");
 
 	queueErrorTest("on-tick 1 arg",
 		       "(on-tick 1)", 
-		       "on-tick: expects type procedure as 1st argument, given: 1");
+		       "on-tick: expects a procedure as 1st argument, but given: 1");
 
 	queueErrorTest("on-tick 2 args",
 		       "(on-tick 1 2)",
-		       "on-tick: expects type procedure as 1st argument, given: 1; other arguments were: 2");
+		       "on-tick: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
 	
 	queueErrorTest("on-tick! bad args amount",
 		       "(on-tick!)",
-		       "on-tick!: expects 2 or 3 arguments, given 0");
+		       "on-tick!: expects 2 or 3 arguments, but given 0");
 	
 	queueErrorTest("on-tick! given 2 bad args",
 		       "(on-tick! 1 2)",
-		       "on-tick!: expects type procedure as 1st argument, given: 1; other arguments were: 2");
+		       "on-tick!: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
 	
 	queueErrorTest("on-tick! given 3 bad args",
 		       "(on-tick! 1 2 3)",
-		       "on-tick!: expects type procedure as 1st argument, given: 1; other arguments were: 2 3");
+		       "on-tick!: expects a procedure as 1st argument, but given: 1; other arguments were: 2 3");
 
 	queueErrorTest("on-tap bad arg amount",
 		       "(on-tap)",
-		       "on-tap: expects 1 argument, given 0");
+		       "on-tap: expects 1 argument, but given 0");
 
-	queueErrorTest("on-tap bad arg type",
+	queueErrorTest("on-tap bad arg a",
 		       "(on-tap 1)",
-		       "on-tap: expects type procedure as 1st argument, given: 1");
+		       "on-tap: expects a procedure as 1st argument, but given: 1");
 
 	queueErrorTest("on-tilt bad arg amount",
 		       "(on-tilt)",
-		       "on-tilt: expects 1 argument, given 0");
+		       "on-tilt: expects 1 argument, but given 0");
 
-	queueErrorTest("on-tilt bad arg type",
+	queueErrorTest("on-tilt bad arg a",
 		       "(on-tilt 1)",
-		       "on-tilt: expects type procedure as 1st argument, given: 1");
+		       "on-tilt: expects a procedure as 1st argument, but given: 1");
 
 	queueErrorTest("on-key bad arg amount",
 		       "(on-key)",
-		       "on-key: expects 1 argument, given 0");
+		       "on-key: expects 1 argument, but given 0");
 	
-	queueErrorTest("on-key bad arg type",
+	queueErrorTest("on-key bad arg a",
 		       "(on-key 1)",
-		       "on-key: expects type procedure as 1st argument, given: 1");
+		       "on-key: expects a procedure as 1st argument, but given: 1");
 
 	queueErrorTest("on-key! bad arg amount",
 		       "(on-key!)",
-		       "on-key!: expects 2 arguments, given 0");
+		       "on-key!: expects 2 arguments, but given 0");
 	
-	queueErrorTest("on-key! bad arg type",
+	queueErrorTest("on-key! bad arg a",
 		       "(on-key! 1 1)",
-		       "on-key!: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+		       "on-key!: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("stop-when bad arg amount",
 		       "(stop-when)",
-		       "stop-when: expects 1 argument, given 0");
+		       "stop-when: expects 1 argument, but given 0");
 	
-	queueErrorTest("stop-when bad arg type",
+	queueErrorTest("stop-when bad arg a",
 		       "(stop-when 1)",
-		       "stop-when: expects type procedure as 1st argument, given: 1");
+		       "stop-when: expects a procedure as 1st argument, but given: 1");
 /*
 	queueErrorTest("stop-when! bad arg amount",
 		       "(stop-when!)",
-		       "stop-when!: expects 2 arguments, given 0");
+		       "stop-when!: expects 2 arguments, but given 0");
 	
-	queueErrorTest("stop-when! bad arg type",
+	queueErrorTest("stop-when! bad arg a",
 		       "(stop-when! 1 1)",
-		       "stop-when!: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+		       "stop-when!: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
 */
 	queueErrorTest("on-redraw bad arg amount",
 		       "(on-redraw)",
-		       "on-redraw: expects 1 argument, given 0");
+		       "on-redraw: expects 1 argument, but given 0");
 
-	queueErrorTest("on-redraw bad arg type",
+	queueErrorTest("on-redraw bad arg a",
 		       "(on-redraw 1)",
-		       "on-redraw: expects type procedure as 1st argument, given: 1");
+		       "on-redraw: expects a procedure as 1st argument, but given: 1");
 
 
 
 	queueErrorTest("on-draw bad arg amount",
 		       "(on-draw)",
-		       "on-draw: expects 1 or 2 arguments, given 0");
+		       "on-draw: expects 1 or 2 arguments, but given 0");
 	
-	queueErrorTest("on-draw bad arg type",
+	queueErrorTest("on-draw bad arg a",
 		       "(on-draw 1)",
-		       "on-draw: expects type procedure as 1st argument, given: 1");
+		       "on-draw: expects a procedure as 1st argument, but given: 1");
 
-	queueErrorTest("on-draw bad arg types",
+	queueErrorTest("on-draw bad arg as",
 		       "(on-draw 1 2)",
-		       "on-draw: expects type procedure as 1st argument, given: 1; other arguments were: 2");
+		       "on-draw: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
 
 	queueErrorTest("initial-effect bad arg amount (no args)",
 		       "(initial-effect)",
-		       "initial-effect: expects 1 argument, given 0");
+		       "initial-effect: expects 1 argument, but given 0");
 
 	queueErrorTest("initial-effect too many args",
 		       "(initial-effect 1 2)",
-		       "initial-effect: expects 1 argument, given 2: 1 2");
+		       "initial-effect: expects 1 argument, but given 2: 1 2");
 
 	queueErrorTest("big-bang given no arguments",
 		       "(big-bang)",
-		       "big-bang: expects at least 1 argument, given 0");
+		       "big-bang: expects at least 1 argument, but given 0");
 
-	queueErrorTest("big-bang given wrong type of arg as 2nd arg",
+	queueErrorTest("big-bang given wrong a of arg as 2nd arg",
 		       "(big-bang 1 1)",
-		       "big-bang: expects type handler or attribute list as 2nd argument, given: 1; other arguments were: 1");
+		       "big-bang: expects a handler or attribute list as 2nd argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("make-struct-type wrong number of args",
 		       "(make-struct-type)",
-		       "make-struct-type: expects 4 or 5 or 6 or 7 or 8 or 9 or 10 arguments, given 0");
+		       "make-struct-type: expects 4 or 5 or 6 or 7 or 8 or 9 or 10 arguments, but given 0");
 	
-	queueErrorTest("make-struct-type give wrong arg type",
+	queueErrorTest("make-struct-type give wrong arg a",
 		       "(make-struct-type 1 1 1 1)",
-		       "make-struct-type: expects type symbol as 1st argument, given: 1; other arguments were: 1 1 1");
+		       "make-struct-type: expects a symbol as 1st argument, but given: 1; other arguments were: 1 1 1");
 
 	queueErrorTest("make-struct-field-accessor wrong number of args",
 		       "(make-struct-field-accessor)",
-		       "make-struct-field-accessor: expects 2 or 3 arguments, given 0");
+		       "make-struct-field-accessor: expects 2 or 3 arguments, but given 0");
 	
-	queueErrorTest("make-struct-field-accessor given wrong arg type",
+	queueErrorTest("make-struct-field-accessor given wrong arg a",
 		       "(make-struct-field-accessor 1 1 1)",
-		       "make-struct-field-accessor: expects type accessor procedure that requires a field index as 1st argument, given: 1; other arguments were: 1 1");
+		       "make-struct-field-accessor: expects an accessor procedure that requires a field index as 1st argument, but given: 1; other arguments were: 1 1");
 
 	queueErrorTest("make-struct-field-accessor given 2 wrong args",
 		       "(make-struct-field-accessor 1 1)", 
-		       "make-struct-field-accessor: expects type accessor procedure that requires a field index as 1st argument, given: 1; other arguments were: 1");
+		       "make-struct-field-accessor: expects an accessor procedure that requires a field index as 1st argument, but given: 1; other arguments were: 1");
 
-	queueErrorTest("make-struct-field-mutator given 2 args, bad type",
+	queueErrorTest("make-struct-field-mutator given 2 args, bad a",
 		       "(make-struct-field-mutator 1 1)",
-		       "make-struct-field-mutator: expects type mutator procedure that requires a field index as 1st argument, given: 1; other arguments were: 1");
+		       "make-struct-field-mutator: expects a mutator procedure that requires a field index as 1st argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("make-struct-field-mutator given no args",
 		       "(make-struct-field-mutator)",
-		       "make-struct-field-mutator: expects 2 or 3 arguments, given 0");
+		       "make-struct-field-mutator: expects 2 or 3 arguments, but given 0");
 
-	queueErrorTest("make-struct-field-mutator given 3 args, bad type",
+	queueErrorTest("make-struct-field-mutator given 3 args, bad a",
 		       "(make-struct-field-mutator 1 1 1)",
-		       "make-struct-field-mutator: expects type mutator procedure that requires a field index as 1st argument, given: 1; other arguments were: 1 1");
+		       "make-struct-field-mutator: expects a mutator procedure that requires a field index as 1st argument, but given: 1; other arguments were: 1 1");
 
 	queueErrorTest("procedure-arity given no args",
 		       "(procedure-arity)",
-		       "procedure-arity: expects 1 argument, given 0");
+		       "procedure-arity: expects 1 argument, but given 0");
 
-	queueErrorTest("procedure-arity given bad arg type",
+	queueErrorTest("procedure-arity given bad arg a",
 		       "(procedure-arity 1)",
-		       "procedure-arity: expects type procedure as 1st argument, given: 1");
+		       "procedure-arity: expects a procedure as 1st argument, but given: 1");
 	
 	queueErrorTest("procedure-arity given way too many args",
 		       "(procedure-arity 1 1 1 1 1 1 1 1 1 1)",
-		       "procedure-arity: expects 1 argument, given 10: 1 1 1 1 1 1 1 1 1 1");
+		       "procedure-arity: expects 1 argument, but given 10: 1 1 1 1 1 1 1 1 1 1");
 
 	queueErrorTest("apply given no args",
 		       "(apply)",
-		       "apply: expects at least 2 arguments, given 0");
+		       "apply: expects at least 2 arguments, but given 0");
 
-	queueErrorTest("apply given bad arg types",
+	queueErrorTest("apply given bad arg as",
 		       "(apply 1 1)",
-		       "apply: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+		       "apply: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
 	
-	queueErrorTest("apply given bad arg type for second arg",
+	queueErrorTest("apply given bad arg a for second arg",
 		       "(apply add1 1)",
-		       "apply: expects type list as 2nd argument, given: 1; other arguments were: #<procedure:add1>");
+		       "apply: expects a list as 2nd argument, but given: 1; other arguments were: #<procedure:add1>");
 
-	queueErrorTest("compose given bad arg type",
+	queueErrorTest("compose given bad arg a",
 		       "(compose 1)",
-		       "compose: expects type procedure as 1st argument, given: 1");
+		       "compose: expects a procedure as 1st argument, but given: 1");
 	
-	queueErrorTest("compose given bad 2nd arg type",
+	queueErrorTest("compose given bad 2nd arg a",
 		       "(compose add1 1)",
-		       "compose: expects type procedure as 2nd argument, given: 1; other arguments were: #<procedure:add1>");
+		       "compose: expects a procedure as 2nd argument, but given: 1; other arguments were: #<procedure:add1>");
 	
 	queueErrorTest("current-inexact-milliseconds given too many args",
 		       "(current-inexact-milliseconds 1)",
-		       "current-inexact-milliseconds: expects 0 arguments, given 1: 1");
+		       "current-inexact-milliseconds: expects 0 arguments, but given 1: 1");
 
 	queueErrorTest("current-seconds given too many args",
 		       "(current-seconds 1)",
-		       "current-seconds: expects 0 arguments, given 1: 1");	
+		       "current-seconds: expects 0 arguments, but given 1: 1");	
 
 	queueErrorTest("not given no args",
 		       "(not)",
-		       "not: expects 1 argument, given 0");
+		       "not: expects 1 argument, but given 0");
 	
 	queueErrorTest("not given too many args",
 		       "(not 1 1)",
-		       "not: expects 1 argument, given 2: 1 1");
+		       "not: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("random given too many args",
 		       "(random 1 1)",
-		       "random: expects 0 or 1 arguments, given 2: 1 1");
+		       "random: expects 0 or 1 arguments, but given 2: 1 1");
 	
-	queueErrorTest("random given bad arg type",
+	queueErrorTest("random given bad arg a",
 		       "(random add1)",
-		       "random: expects type non-negative exact integer as 1st argument, given: #<procedure:add1>");
+		       "random: expects a non-negative exact integer as 1st argument, but given: #<procedure:add1>");
 
-	queueErrorTest("sleep given bad arg type",
+	queueErrorTest("sleep given bad arg a",
 		       "(sleep add1)",
-		       "sleep: expects type non-negative real number as 1st argument, given: #<procedure:add1>");
+		       "sleep: expects a non-negative real number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("sleep given too many args",
 		       "(sleep 1 2)",
-		       "sleep: expects 0 or 1 arguments, given 2: 1 2");
+		       "sleep: expects 0 or 1 arguments, but given 2: 1 2");
 	
 	queueErrorTest("identity given no args",
 		       "(identity)",
-		       "identity: expects 1 argument, given 0");
+		       "identity: expects 1 argument, but given 0");
 	
 	queueErrorTest("identity given too many args",
 		       "(identity 2 2)",
-		       "identity: expects 1 argument, given 2: 2 2");
+		       "identity: expects 1 argument, but given 2: 2 2");
 	
 	queueErrorTest("raise given no args",
 		       "(raise)",
-		       "raise: expects 1 argument, given 0");
+		       "raise: expects 1 argument, but given 0");
 	
 	queueErrorTest("raise given too many args",
 		       "(raise 1 1)",
-		       "raise: expects 1 argument, given 2: 1 1");
+		       "raise: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("error given no args",
 		       "(error)",
-		       "error: expects at least 1 argument, given 0");
+		       "error: expects at least 1 argument, but given 0");
 	
-	queueErrorTest("error given bad type",
+	queueErrorTest("error given bad a",
 		       "(error 1)",
-		       "error: expects type symbol or string as 1st argument, given: 1");
+		       "error: expects a symbol or string as 1st argument, but given: 1");
 	
 	queueErrorTest("make-exn given no args",
 		       "(make-exn)",
-		       "make-exn: expects 2 arguments, given 0");
+		       "make-exn: expects 2 arguments, but given 0");
 	
-	queueErrorTest("make-exn given bad arg types",
+	queueErrorTest("make-exn given bad arg as",
 		       "(make-exn 1 1)",
-		       "exn: expects argument of type continuation mark set, given: 1");
+		       "exn: expects argument of type continuation mark set, but given: 1");
 	
 	queueErrorTest("* given bad arg",
 		       "(* add1)",
-		       "*: expects type number as 1st argument, given: #<procedure:add1>");
+		       "*: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("/ given bad arg",
 		       "(/ add1)",
-		       "/: expects type number as 1st argument, given: #<procedure:add1>");
+		       "/: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("- given bad arg",
 		       "(- add1)",
-		       "-: expects type number as 1st argument, given: #<procedure:add1>");
+		       "-: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("+ given bad arg",
 		       "(+ add1)",
-		       "+: expects type number as 1st argument, given: #<procedure:add1>");
+		       "+: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("/ given no args",
 		       "(/)",
-		       "/: expects at least 1 argument, given 0");
+		       "/: expects at least 1 argument, but given 0");
 
 	queueErrorTest("- given no args",
 		       "(-)",
-		       "-: expects at least 1 argument, given 0");
+		       "-: expects at least 1 argument, but given 0");
  
 	queueErrorTest("= given no args",
 		       "(=)",
-		       "=: expects at least 2 arguments, given 0");
+		       "=: expects at least 2 arguments, but given 0");
 
 	queueErrorTest("= given bad 2nd arg",
 		       "(= 1 sub1)",
-		       "=: expects type number as 2nd argument, given: #<procedure:sub1>; other arguments were: 1");
+		       "=: expects a number as 2nd argument, but given: #<procedure:sub1>; other arguments were: 1");
 	
 	queueErrorTest("= given bad first arg",
 		       "(= sub1 1)",
-		       "=: expects type number as 1st argument, given: #<procedure:sub1>; other arguments were: 1");
+		       "=: expects a number as 1st argument, but given: #<procedure:sub1>; other arguments were: 1");
 	
 	queueErrorTest("=~ given no args",
 		       "(=~)",
-		       "=~: expects 3 arguments, given 0");
+		       "=~: expects 3 arguments, but given 0");
 	
-	queueErrorTest("=~ given bad types",
+	queueErrorTest("=~ given bad as",
 		       "(=~ add1 sub1 add1)",
-		       "=~: expects type real as 1st argument, given: #<procedure:add1>; other arguments were: #<procedure:sub1> #<procedure:add1>");
+		       "=~: expects a real as 1st argument, but given: #<procedure:add1>; other arguments were: #<procedure:sub1> #<procedure:add1>");
 	
 	queueErrorTest("sub1 given no args",
 		       "(sub1)",
-		       "sub1: expects 1 argument, given 0");
+		       "sub1: expects 1 argument, but given 0");
 	
 	queueErrorTest("sub1 given a bad arg",
 		       "(sub1 add1)",
-		       "sub1: expects type number as 1st argument, given: #<procedure:add1>");
+		       "sub1: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("sub1 given too many args",
 		       "(sub1 1 1 1)",
-		       "sub1: expects 1 argument, given 3: 1 1 1");
+		       "sub1: expects 1 argument, but given 3: 1 1 1");
 	
 	queueErrorTest("add1 given too many args",
 		       "(add1 1 1 1)",
-		       "add1: expects 1 argument, given 3: 1 1 1");
+		       "add1: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("add1 given no args",
 		       "(add1)",
-		       "add1: expects 1 argument, given 0");
+		       "add1: expects 1 argument, but given 0");
 	
 	queueErrorTest("add1 given a bad arg",
 		       "(add1 add1)",
-		       "add1: expects type number as 1st argument, given: #<procedure:add1>");
+		       "add1: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 
 	queueErrorTest("< given no args",
 		       "(<)",
-		       "<: expects at least 2 arguments, given 0");
+		       "<: expects at least 2 arguments, but given 0");
 
 	queueErrorTest("< given 1 bad arg",
 		       "(< add1 1)",
-		       "<: expects type number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "<: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("< given 1 bad arg (2nd arg)",
 		       "(< 1 add1)",
-		       "<: expects type number as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "<: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("< given too few args",
 		       "(< 1)",
-		       "<: expects at least 2 arguments, given 1: 1");
+		       "<: expects at least 2 arguments, but given 1: 1");
 
 	queueErrorTest("> given no args",
 		       "(>)",
-		       ">: expects at least 2 arguments, given 0");
+		       ">: expects at least 2 arguments, but given 0");
 
 	queueErrorTest("> given 1 bad arg",
 		       "(> add1 1)",
-		       ">: expects type number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       ">: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("> given 1 bad arg (2nd arg)",
 		       "(> 1 add1)",
-		       ">: expects type number as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       ">: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("> given too few args",
 		       "(> 1)",
-		       ">: expects at least 2 arguments, given 1: 1");
+		       ">: expects at least 2 arguments, but given 1: 1");
 
 
 	queueErrorTest("<= given no args",
 		       "(<=)",
-		       "<=: expects at least 2 arguments, given 0");
+		       "<=: expects at least 2 arguments, but given 0");
 	
 	queueErrorTest("<= given bad arg (first arg))",
 		       "(<= add1 1)",
-		       "<=: expects type number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "<=: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("<= given 1 bad arg (2nd arg)",
 		       "(<= 1 add1)",
-		       "<=: expects type number as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "<=: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("<= given too few args",
 		       "(<= 1)",
-		       "<=: expects at least 2 arguments, given 1: 1");
+		       "<=: expects at least 2 arguments, but given 1: 1");
 
 	queueErrorTest(">= given no args",
 		       "(>=)",
-		       ">=: expects at least 2 arguments, given 0");
+		       ">=: expects at least 2 arguments, but given 0");
 	
 	queueErrorTest(">= given bad arg (first arg))",
 		       "(>= add1 1)",
-		       ">=: expects type number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       ">=: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest(">= given 1 bad arg (2nd arg)",
 		       "(>= 1 add1)",
-		       ">=: expects type number as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       ">=: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest(">= given too few args",
 		       "(>= 1)",
-		       ">=: expects at least 2 arguments, given 1: 1");
+		       ">=: expects at least 2 arguments, but given 1: 1");
 	
 	queueErrorTest("abs given no args",
 		       "(abs)",
-		       "abs: expects 1 argument, given 0");
+		       "abs: expects 1 argument, but given 0");
 	
 	queueErrorTest("abs given 1 bad arg",
 		       "(abs add1)",
-		       "abs: expects type real as 1st argument, given: #<procedure:add1>");
+		       "abs: expects a real as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("abs given too many args",
 		       "(abs 1 1)",
-		       "abs: expects 1 argument, given 2: 1 1");
+		       "abs: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("quotient given no args",
 		       "(quotient)",
-		       "quotient: expects 2 arguments, given 0");
+		       "quotient: expects 2 arguments, but given 0");
 	
 	queueErrorTest("quotient given 1 bad arg (first arg))",
 		       "(quotient add1 1)",
-		       "quotient: expects type integer as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "quotient: expects an integer as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("quotient given 1 bad arg (2nd arg)",
 		       "(quotient 1 add1)",
-		       "quotient: expects type integer as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "quotient: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("quotient given too many args",
 		       "(quotient 1 1 1)",
-		       "quotient: expects 2 arguments, given 3: 1 1 1");
+		       "quotient: expects 2 arguments, but given 3: 1 1 1");
 
 	queueErrorTest("remainder given no args",
 		       "(remainder)",
-		       "remainder: expects 2 arguments, given 0");
+		       "remainder: expects 2 arguments, but given 0");
 	
 	queueErrorTest("remainder given 1 bad arg (first arg))",
 		       "(remainder add1 1)",
-		       "remainder: expects type integer as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "remainder: expects an integer as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("remainder given 1 bad arg (2nd arg)",
 		       "(remainder 1 add1)",
-		       "remainder: expects type integer as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "remainder: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("remainder given too many args",
 		       "(remainder 1 1 1)",
-		       "remainder: expects 2 arguments, given 3: 1 1 1");
+		       "remainder: expects 2 arguments, but given 3: 1 1 1");
 
 	queueErrorTest("modulo given no args",
 		       "(modulo)",
-		       "modulo: expects 2 arguments, given 0");
+		       "modulo: expects 2 arguments, but given 0");
 	
 	queueErrorTest("modulo given 1 bad arg (first arg))",
 		       "(modulo add1 1)",
-		       "modulo: expects type integer as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "modulo: expects an integer as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("modulo given 1 bad arg (2nd arg)",
 		       "(modulo 1 add1)",
-		       "modulo: expects type integer as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "modulo: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("modulo given too many args",
 		       "(modulo 1 1 1)",
-		       "modulo: expects 2 arguments, given 3: 1 1 1");
+		       "modulo: expects 2 arguments, but given 3: 1 1 1");
 	
 	queueErrorTest("max given no args",
 		       "(max)",
-		       "max: expects at least 1 argument, given 0");
+		       "max: expects at least 1 argument, but given 0");
 	
 	queueErrorTest("max given 1 bad arg",
 		       "(max add1)",
-		       "max: expects type real as 1st argument, given: #<procedure:add1>");
+		       "max: expects a real as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("max given 1 good 1 bad arg",
 		       "(max 1 add1)",
-		       "max: expects type real as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "max: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("min given no args",
 		       "(min)",
-		       "min: expects at least 1 argument, given 0");
+		       "min: expects at least 1 argument, but given 0");
 	
 	queueErrorTest("min given 1 bad arg",
 		       "(min add1)",
-		       "min: expects type real as 1st argument, given: #<procedure:add1>");
+		       "min: expects a real as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("min given 1 good 1 bad arg",
 		       "(min 1 add1)",
-		       "min: expects type real as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "min: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("gcd given no args",
 		       "(gcd)",
-		       "gcd: expects at least 1 argument, given 0");
+		       "gcd: expects at least 1 argument, but given 0");
 	
 	queueErrorTest("gcd given 1 bad arg",
 		       "(gcd add1)",
-		       "gcd: expects type integer as 1st argument, given: #<procedure:add1>");
+		       "gcd: expects an integer as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("gcd given 1 good 1 bad arg",
 		       "(gcd 1 add1)",
-		       "gcd: expects type integer as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "gcd: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 
 	queueErrorTest("lcm given no args",
 		       "(lcm)",
-		       "lcm: expects at least 1 argument, given 0");
+		       "lcm: expects at least 1 argument, but given 0");
 	
 	queueErrorTest("lcm given 1 bad arg",
 		       "(lcm add1)",
-		       "lcm: expects type integer as 1st argument, given: #<procedure:add1>");
+		       "lcm: expects an integer as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("lcm given 1 good 1 bad arg",
 		       "(lcm 1 add1)",
-		       "lcm: expects type integer as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "lcm: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("floor given no args",
 		       "(floor)",
-		       "floor: expects 1 argument, given 0");
+		       "floor: expects 1 argument, but given 0");
 	
 	queueErrorTest("floor given 1 bad arg",
 		       "(floor add1)",
-		       "floor: expects type real as 1st argument, given: #<procedure:add1>");
+		       "floor: expects a real as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("floor given too many args",
 		       "(floor 1 1 1)",
-		       "floor: expects 1 argument, given 3: 1 1 1");
+		       "floor: expects 1 argument, but given 3: 1 1 1");
 	
 	queueErrorTest("ceiling given no args",
 		       "(ceiling)",
-		       "ceiling: expects 1 argument, given 0");
+		       "ceiling: expects 1 argument, but given 0");
 	
 	queueErrorTest("ceiling given 1 bad arg",
 		       "(ceiling add1)",
-		       "ceiling: expects type real as 1st argument, given: #<procedure:add1>");
+		       "ceiling: expects a real as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("ceiling given too many args",
 		       "(ceiling 1 1 1)",
-		       "ceiling: expects 1 argument, given 3: 1 1 1");
+		       "ceiling: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("round given no args",
 		       "(round)",
-		       "round: expects 1 argument, given 0");
+		       "round: expects 1 argument, but given 0");
 	
 	queueErrorTest("round given 1 bad arg",
 		       "(round add1)",
-		       "round: expects type real as 1st argument, given: #<procedure:add1>");
+		       "round: expects a real as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("round given too many args",
 		       "(round 1 1 1)",
-		       "round: expects 1 argument, given 3: 1 1 1");
+		       "round: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("numerator given no args",
 		       "(numerator)",
-		       "numerator: expects 1 argument, given 0");
+		       "numerator: expects 1 argument, but given 0");
 	
 	queueErrorTest("numerator given 1 bad arg",
 		       "(numerator add1)",
-		       "numerator: expects type rational number as 1st argument, given: #<procedure:add1>");
+		       "numerator: expects a rational number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("numerator given too many args",
 		       "(numerator 1 1 1)",
-		       "numerator: expects 1 argument, given 3: 1 1 1");
+		       "numerator: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("denominator given no args",
 		       "(denominator)",
-		       "denominator: expects 1 argument, given 0");
+		       "denominator: expects 1 argument, but given 0");
 	
 	queueErrorTest("denominator given 1 bad arg",
 		       "(denominator add1)",
-		       "denominator: expects type rational number as 1st argument, given: #<procedure:add1>");
+		       "denominator: expects a rational number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("denominator given too many args",
 		       "(denominator 1 1 1)",
-		       "denominator: expects 1 argument, given 3: 1 1 1");
+		       "denominator: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("expt given no args",
 		       "(expt)",
-		       "expt: expects 2 arguments, given 0");
+		       "expt: expects 2 arguments, but given 0");
 	
 	queueErrorTest("expt given bad first arg, valid 2nd arg",
 		       "(expt add1 1)",
-		       "expt: expects type number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "expt: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	queueErrorTest("expt given valid 1st arg, bad 2nd arg",
 		       "(expt 1 add1)",
-		       "expt: expects type number as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "expt: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 
 	queueErrorTest("expt given too many args",
 		       "(expt 1 1 1)",
-		       "expt: expects 2 arguments, given 3: 1 1 1");
+		       "expt: expects 2 arguments, but given 3: 1 1 1");
 	
 	queueErrorTest("exp given no args",
 		       "(exp)",
-		       "exp: expects 1 argument, given 0");
+		       "exp: expects 1 argument, but given 0");
 	
 	queueErrorTest("exp given 1 bad arg",
 		       "(exp add1)",
-		       "exp: expects type number as 1st argument, given: #<procedure:add1>");
+		       "exp: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("exp given too many bad args",
 		       "(exp 1 1)",
-		       "exp: expects 1 argument, given 2: 1 1");
+		       "exp: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("log given no args",
 		       "(log)",
-		       "log: expects 1 argument, given 0");
+		       "log: expects 1 argument, but given 0");
 
 	queueErrorTest("log given 1 bad arg",
 		       "(log add1)",
-		       "log: expects type number as 1st argument, given: #<procedure:add1>");
+		       "log: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("log given too many args",
 		       "(log 1 1)",
-		       "log: expects 1 argument, given 2: 1 1");
+		       "log: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("sin given no args",
 		       "(sin)",
-		       "sin: expects 1 argument, given 0");
+		       "sin: expects 1 argument, but given 0");
 	
 	queueErrorTest("sin given 1 bad arg",
 		       "(sin add1)",
-		       "sin: expects type number as 1st argument, given: #<procedure:add1>");
+		       "sin: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("sin given too many args",
 		       "(sin 1 1)",
-		       "sin: expects 1 argument, given 2: 1 1");
+		       "sin: expects 1 argument, but given 2: 1 1");
 //next trig func
 	
 		queueErrorTest("cos given no args",
 		       "(cos)",
-		       "cos: expects 1 argument, given 0");
+		       "cos: expects 1 argument, but given 0");
 	
 	queueErrorTest("cos given 1 bad arg",
 		       "(cos add1)",
-		       "cos: expects type number as 1st argument, given: #<procedure:add1>");
+		       "cos: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cos given too many args",
 		       "(cos 1 1)",
-		       "cos: expects 1 argument, given 2: 1 1");
+		       "cos: expects 1 argument, but given 2: 1 1");
 //next trig func
 
 	queueErrorTest("tan given no args",
 		       "(tan)",
-		       "tan: expects 1 argument, given 0");
+		       "tan: expects 1 argument, but given 0");
 	
 	queueErrorTest("tan given 1 bad arg",
 		       "(tan add1)",
-		       "tan: expects type number as 1st argument, given: #<procedure:add1>");
+		       "tan: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("tan given too many args",
 		       "(tan 1 1)",
-		       "tan: expects 1 argument, given 2: 1 1");
+		       "tan: expects 1 argument, but given 2: 1 1");
 //next trig func
 
 	queueErrorTest("asin given no args",
 		       "(asin)",
-		       "asin: expects 1 argument, given 0");
+		       "asin: expects 1 argument, but given 0");
 	
 	queueErrorTest("asin given 1 bad arg",
 		       "(asin add1)",
-		       "asin: expects type number as 1st argument, given: #<procedure:add1>");
+		       "asin: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("asin given too many args",
 		       "(asin 1 1)",
-		       "asin: expects 1 argument, given 2: 1 1");
+		       "asin: expects 1 argument, but given 2: 1 1");
 //next trig func
 
 	queueErrorTest("acos given no args",
 		       "(acos)",
-		       "acos: expects 1 argument, given 0");
+		       "acos: expects 1 argument, but given 0");
 	
 	queueErrorTest("acos given 1 bad arg",
 		       "(acos add1)",
-		       "acos: expects type number as 1st argument, given: #<procedure:add1>");
+		       "acos: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("acos given too many args",
 		       "(acos 1 1)",
-		       "acos: expects 1 argument, given 2: 1 1");
+		       "acos: expects 1 argument, but given 2: 1 1");
 //next trig func
 
 	queueErrorTest("atan given no args",
 		       "(atan)",
-		       "atan: expects 1 argument, given 0");
+		       "atan: expects 1 argument, but given 0");
 	
 	queueErrorTest("atan given 1 bad arg",
 		       "(atan add1)",
-		       "atan: expects type number as 1st argument, given: #<procedure:add1>");
+		       "atan: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("atan given too many args",
 		       "(atan 1 1)",
-		       "atan: expects 1 argument, given 2: 1 1");
+		       "atan: expects 1 argument, but given 2: 1 1");
 //next trig func
 		    
 	
 	queueErrorTest("sinh given no args",
 		       "(sinh)",
-		       "sinh: expects 1 argument, given 0");
+		       "sinh: expects 1 argument, but given 0");
 	
 	queueErrorTest("sinh given 1 bad arg",
 		       "(sinh add1)",
-		       "sinh: expects type number as 1st argument, given: #<procedure:add1>");
+		       "sinh: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("sinh given too many args",
 		       "(sinh 1 1)",
-		       "sinh: expects 1 argument, given 2: 1 1");
+		       "sinh: expects 1 argument, but given 2: 1 1");
 //next trig func
 	
 	queueErrorTest("cosh given no args",
 		       "(cosh)",
-		       "cosh: expects 1 argument, given 0");
+		       "cosh: expects 1 argument, but given 0");
 	
 	queueErrorTest("cosh given 1 bad arg",
 		       "(cosh add1)",
-		       "cosh: expects type number as 1st argument, given: #<procedure:add1>");
+		       "cosh: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cosh given too many args",
 		       "(cosh 1 1)",
-		       "cosh: expects 1 argument, given 2: 1 1");
+		       "cosh: expects 1 argument, but given 2: 1 1");
   	    
 	queueErrorTest("sqr given no args",
 		       "(sqr)",
-		       "sqr: expects 1 argument, given 0");
+		       "sqr: expects 1 argument, but given 0");
 	
 	queueErrorTest("sqr given 1 bad arg",
 		       "(sqr add1)",
-		       "sqr: expects type number as 1st argument, given: #<procedure:add1>");
+		       "sqr: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("sqr given too many args",
 		       "(sqr 1 1)",
-		       "sqr: expects 1 argument, given 2: 1 1");
+		       "sqr: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("sqrt given no args",
 		       "(sqrt)",
-		       "sqrt: expects 1 argument, given 0");
+		       "sqrt: expects 1 argument, but given 0");
 
 	queueErrorTest("sqrt given 1 bad arg",
 		       "(sqrt add1)",
-		       "sqrt: expects type number as 1st argument, given: #<procedure:add1>");
+		       "sqrt: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("sqrt given too many args",
 		       "(sqrt 1 1)",
-		       "sqrt: expects 1 argument, given 2: 1 1");
+		       "sqrt: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("integer-sqrt given no args",
 		       "(integer-sqrt)",
-		       "integer-sqrt: expects 1 argument, given 0");
+		       "integer-sqrt: expects 1 argument, but given 0");
 
 	queueErrorTest("integer-sqrt given 1 bad arg",
 		       "(integer-sqrt add1)",
-		       "integer-sqrt: expects type integer as 1st argument, given: #<procedure:add1>");
+		       "integer-sqrt: expects an integer as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("integer-sqrt given too many args",
 		       "(integer-sqrt 1 1)",
-		       "integer-sqrt: expects 1 argument, given 2: 1 1");
+		       "integer-sqrt: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("make-rectangular given no args",
 		       "(make-rectangular)",
-		       "make-rectangular: expects 2 arguments, given 0");
+		       "make-rectangular: expects 2 arguments, but given 0");
 	
 	queueErrorTest("make-rectangular given bad first arg, good 2nd",
 		       "(make-rectangular add1 1)",
-		       "make-rectangular: expects type real as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "make-rectangular: expects a real as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	
 	queueErrorTest("make-rectangular given good first, bad second arg",
 		       "(make-rectangular 1 add1)",
-		       "make-rectangular: expects type real as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "make-rectangular: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 
 	queueErrorTest("make-rectangular given too many args",
 		       "(make-rectangular 1 1 1 1 1)",
-		       "make-rectangular: expects 2 arguments, given 5: 1 1 1 1 1");
+		       "make-rectangular: expects 2 arguments, but given 5: 1 1 1 1 1");
 	
 	queueErrorTest("make-polar given no args",
 		       "(make-polar)",
-		       "make-polar: expects 2 arguments, given 0");
+		       "make-polar: expects 2 arguments, but given 0");
 	
 	queueErrorTest("make-polar given bad first arg, good 2nd",
 		       "(make-polar add1 1)",
-		       "make-polar: expects type real as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "make-polar: expects a real as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 	
 	
 	queueErrorTest("make-polar given good first, bad second arg",
 		       "(make-polar 1 add1)",
-		       "make-polar: expects type real as 2nd argument, given: #<procedure:add1>; other arguments were: 1");
+		       "make-polar: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
 
 	queueErrorTest("make-polar given too many args",
 		       "(make-polar 1 1 1 1 1)",
-		       "make-polar: expects 2 arguments, given 5: 1 1 1 1 1");
+		       "make-polar: expects 2 arguments, but given 5: 1 1 1 1 1");
 	
 	queueErrorTest("real-part given no args",
 		       "(real-part)",
-		       "real-part: expects 1 argument, given 0");
+		       "real-part: expects 1 argument, but given 0");
 	
 	queueErrorTest("real-part given bad arg",
 		       "(real-part add1)",
-		       "real-part: expects type number as 1st argument, given: #<procedure:add1>");
+		       "real-part: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("real-part given too many args",
 		       "(real-part 1 1)",
-		       "real-part: expects 1 argument, given 2: 1 1");
+		       "real-part: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("imag-part given no args",
 		       "(imag-part)",
-		       "imag-part: expects 1 argument, given 0");
+		       "imag-part: expects 1 argument, but given 0");
 	
 	queueErrorTest("imag-part given bad arg",
 		       "(imag-part add1)",
-		       "imag-part: expects type number as 1st argument, given: #<procedure:add1>");
+		       "imag-part: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("imag-part given too many args",
 		       "(imag-part 1 1)",
-		       "imag-part: expects 1 argument, given 2: 1 1");
+		       "imag-part: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("angle given no args",
 		       "(angle)",
-		       "angle: expects 1 argument, given 0");
+		       "angle: expects 1 argument, but given 0");
 	
 	queueErrorTest("angle given bad arg",
 		       "(angle add1)",
-		       "angle: expects type number as 1st argument, given: #<procedure:add1>");
+		       "angle: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("angle given too many args",
 		       "(angle 1 1)",
-		       "angle: expects 1 argument, given 2: 1 1");
+		       "angle: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("magnitude given no args",
 		       "(magnitude)",
-		       "magnitude: expects 1 argument, given 0");
+		       "magnitude: expects 1 argument, but given 0");
 	
 	queueErrorTest("magnitude given bad arg",
 		       "(magnitude add1)",
-		       "magnitude: expects type number as 1st argument, given: #<procedure:add1>");
+		       "magnitude: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("magnitude given too many args",
 		       "(magnitude 1 1)",
-		       "magnitude: expects 1 argument, given 2: 1 1");	
+		       "magnitude: expects 1 argument, but given 2: 1 1");	
 
 	queueErrorTest("conjugate given no args",
 		       "(conjugate)",
-		       "conjugate: expects 1 argument, given 0");
+		       "conjugate: expects 1 argument, but given 0");
 	
 	queueErrorTest("conjugate given bad arg",
 		       "(conjugate add1)",
-		       "conjugate: expects type number as 1st argument, given: #<procedure:add1>");
+		       "conjugate: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("conjugate given too many args",
 		       "(conjugate 1 1)",
-		       "conjugate: expects 1 argument, given 2: 1 1");
+		       "conjugate: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("sgn given no args",
 		       "(sgn)",
-		       "sgn: expects 1 argument, given 0");
+		       "sgn: expects 1 argument, but given 0");
 	
 	queueErrorTest("sgn given bad arg",
 		       "(sgn add1)",
-		       "sgn: expects type real number as 1st argument, given: #<procedure:add1>");
+		       "sgn: expects a real number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("sgn given too many args",
 		       "(sgn 1 1)",
-		       "sgn: expects 1 argument, given 2: 1 1");	
+		       "sgn: expects 1 argument, but given 2: 1 1");	
 
 	queueErrorTest("inexact->exact given no args",
 		       "(inexact->exact)",
-		       "inexact->exact: expects 1 argument, given 0");
+		       "inexact->exact: expects 1 argument, but given 0");
 	
 	queueErrorTest("inexact->exact given bad arg",
 		       "(inexact->exact add1)",
-		       "inexact->exact: expects type number as 1st argument, given: #<procedure:add1>");
+		       "inexact->exact: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("inexact->exact given too many args",
 		       "(inexact->exact 1 1)",
-		       "inexact->exact: expects 1 argument, given 2: 1 1");
+		       "inexact->exact: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("exact->inexact given no args",
 		       "(exact->inexact)",
-		       "exact->inexact: expects 1 argument, given 0");
+		       "exact->inexact: expects 1 argument, but given 0");
 	
 	queueErrorTest("exact->inexact given bad arg",
 		       "(exact->inexact add1)",
-		       "exact->inexact: expects type number as 1st argument, given: #<procedure:add1>");
+		       "exact->inexact: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("exact->inexact given too many args",
 		       "(exact->inexact 1 1)",
-		       "exact->inexact: expects 1 argument, given 2: 1 1");
+		       "exact->inexact: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("number->string given no args",
 		       "(number->string)",
-		       "number->string: expects 1 argument, given 0");
+		       "number->string: expects 1 argument, but given 0");
 	
 	queueErrorTest("number->string given bad arg",
 		       "(number->string add1)",
-		       "number->string: expects type number as 1st argument, given: #<procedure:add1>");
+		       "number->string: expects a number as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("number->string given too many args",
 		       "(number->string 1 1)",
-		       "number->string: expects 1 argument, given 2: 1 1");
+		       "number->string: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("string->number given no args",
 		       "(string->number)",
-		       "string->number: expects 1 argument, given 0");
+		       "string->number: expects 1 argument, but given 0");
 	
 	queueErrorTest("string->number given bad arg",
 		       "(string->number add1)",
-		       "string->number: expects type string as 1st argument, given: #<procedure:add1>");
+		       "string->number: expects a string as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("string->number given too many args",
 		       "(string->number 1 1)",
-		       "string->number: expects 1 argument, given 2: 1 1");
+		       "string->number: expects 1 argument, but given 2: 1 1");
 
 
 	queueErrorTest("xml->s-exp given no args",
 		       "(xml->s-exp)",
-		       "xml->s-exp: expects 1 argument, given 0");
+		       "xml->s-exp: expects 1 argument, but given 0");
 	
 	queueErrorTest("xml->s-exp given bad arg",
 		       "(xml->s-exp add1)",
-		       "xml->s-exp: expects type string as 1st argument, given: #<procedure:add1>");
+		       "xml->s-exp: expects a string as 1st argument, but given: #<procedure:add1>");
 
 	queueErrorTest("xml->s-exp given too many args",
 		       "(xml->s-exp 1 1)",
-		       "xml->s-exp: expects 1 argument, given 2: 1 1");
+		       "xml->s-exp: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("procedure? given no args",
 		       "(procedure?)",
-		       "procedure?: expects 1 argument, given 0");
+		       "procedure?: expects 1 argument, but given 0");
 	
 	queueErrorTest("procedure? too many args",
 		       "(procedure? 1 1)",
-		       "procedure?: expects 1 argument, given 2: 1 1");
+		       "procedure?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 
 	queueErrorTest("pair? given no args",
 		       "(pair?)",
-		       "pair?: expects 1 argument, given 0");
+		       "pair?: expects 1 argument, but given 0");
 	
 	queueErrorTest("pair? too many args",
 		       "(pair? 1 1)",
-		       "pair?: expects 1 argument, given 2: 1 1");
+		       "pair?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 
 	queueErrorTest("cons? given no args",
 		       "(cons?)",
-		       "cons?: expects 1 argument, given 0");
+		       "cons?: expects 1 argument, but given 0");
 	
 	queueErrorTest("cons? too many args",
 		       "(cons? 1 1)",
-		       "cons?: expects 1 argument, given 2: 1 1");
+		       "cons?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 
 	queueErrorTest("empty? given no args",
 		       "(empty?)",
-		       "empty?: expects 1 argument, given 0");
+		       "empty?: expects 1 argument, but given 0");
 	
 	queueErrorTest("empty? too many args",
 		       "(empty? 1 1)",
-		       "empty?: expects 1 argument, given 2: 1 1");
+		       "empty?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("null? given no args",
 		       "(null?)",
-		       "null?: expects 1 argument, given 0");
+		       "null?: expects 1 argument, but given 0");
 	
 	queueErrorTest("null? too many args",
 		       "(null? 1 1)",
-		       "null?: expects 1 argument, given 2: 1 1");
+		       "null?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("undefined? given no args",
 		       "(undefined?)",
-		       "undefined?: expects 1 argument, given 0");
+		       "undefined?: expects 1 argument, but given 0");
 	
 	queueErrorTest("undefined? too many args",
 		       "(undefined? 1 1)",
-		       "undefined?: expects 1 argument, given 2: 1 1");
+		       "undefined?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 /*
 	queueErrorTest("void? given no args",
 		       "(void?)",
-		       "void?: expects 1 argument, given 0");
+		       "void?: expects 1 argument, but given 0");
 	
 	queueErrorTest("void? too many args",
 		       "(void? 1 1)",
-		       "void?: expects 1 argument, given 2: 1 1");
+		       "void?: expects 1 argument, but given 2: 1 1");
 */
 //next predicate
 	queueErrorTest("symbol? given no args",
 		       "(symbol?)",
-		       "symbol?: expects 1 argument, given 0");
+		       "symbol?: expects 1 argument, but given 0");
 	
 	queueErrorTest("symbol? too many args",
 		       "(symbol? 1 1)",
-		       "symbol?: expects 1 argument, given 2: 1 1");
+		       "symbol?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("string? given no args",
 		       "(string?)",
-		       "string?: expects 1 argument, given 0");
+		       "string?: expects 1 argument, but given 0");
 	
 	queueErrorTest("string? too many args",
 		       "(string? 1 1)",
-		       "string?: expects 1 argument, given 2: 1 1");
+		       "string?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("char? given no args",
 		       "(char?)",
-		       "char?: expects 1 argument, given 0");
+		       "char?: expects 1 argument, but given 0");
 	
 	queueErrorTest("char? too many args",
 		       "(char? 1 1)",
-		       "char?: expects 1 argument, given 2: 1 1");
+		       "char?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("boolean? given no args",
 		       "(boolean?)",
-		       "boolean?: expects 1 argument, given 0");
+		       "boolean?: expects 1 argument, but given 0");
 	
 	queueErrorTest("boolean? too many args",
 		       "(boolean? 1 1)",
-		       "boolean?: expects 1 argument, given 2: 1 1");
+		       "boolean?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("vector? given no args",
 		       "(vector?)",
-		       "vector?: expects 1 argument, given 0");
+		       "vector?: expects 1 argument, but given 0");
 	
 	queueErrorTest("vector? too many args",
 		       "(vector? 1 1)",
-		       "vector?: expects 1 argument, given 2: 1 1");
+		       "vector?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("struct? given no args",
 		       "(struct?)",
-		       "struct?: expects 1 argument, given 0");
+		       "struct?: expects 1 argument, but given 0");
 	
 	queueErrorTest("struct? too many args",
 		       "(struct? 1 1)",
-		       "struct?: expects 1 argument, given 2: 1 1");
+		       "struct?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("eof-object? given no args",
 		       "(eof-object?)",
-		       "eof-object?: expects 1 argument, given 0");
+		       "eof-object?: expects 1 argument, but given 0");
 	
 	queueErrorTest("eof-object? too many args",
 		       "(eof-object? 1 1)",
-		       "eof-object?: expects 1 argument, given 2: 1 1");
+		       "eof-object?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("posn? given no args",
 		       "(posn?)",
-		       "posn?: expects 1 argument, given 0");
+		       "posn?: expects 1 argument, but given 0");
 	
 	queueErrorTest("posn? too many args",
 		       "(posn? 1 1)",
-		       "posn?: expects 1 argument, given 2: 1 1");
+		       "posn?: expects 1 argument, but given 2: 1 1");
 /*
 //next predicate
 	queueErrorTest("bytes? given no args",
 		       "(bytes?)",
-		       "bytes?: expects 1 argument, given 0");
+		       "bytes?: expects 1 argument, but given 0");
 	
 	queueErrorTest("bytes? too many args",
 		       "(bytes? 1 1)",
-		       "bytes?: expects 1 argument, given 2: 1 1");
+		       "bytes?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("byte? given no args",
 		       "(byte?)",
-		       "byte?: expects 1 argument, given 0");
+		       "byte?: expects 1 argument, but given 0");
 	
 	queueErrorTest("byte? too many args",
 		       "(byte? 1 1)",
-		       "byte?: expects 1 argument, given 2: 1 1");
+		       "byte?: expects 1 argument, but given 2: 1 1");
 */
 //next predicate
 	queueErrorTest("number? given no args",
 		       "(number?)",
-		       "number?: expects 1 argument, given 0");
+		       "number?: expects 1 argument, but given 0");
 	
 	queueErrorTest("number? too many args",
 		       "(number? 1 1)",
-		       "number?: expects 1 argument, given 2: 1 1");
+		       "number?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("complex? given no args",
 		       "(complex?)",
-		       "complex?: expects 1 argument, given 0");
+		       "complex?: expects 1 argument, but given 0");
 	
 	queueErrorTest("complex? too many args",
 		       "(complex? 1 1)",
-		       "complex?: expects 1 argument, given 2: 1 1");
+		       "complex?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 	queueErrorTest("real? given no args",
 		       "(real?)",
-		       "real?: expects 1 argument, given 0");
+		       "real?: expects 1 argument, but given 0");
 	
 	queueErrorTest("rational? too many args",
 		       "(rational? 1 1)",
-		       "rational?: expects 1 argument, given 2: 1 1");
+		       "rational?: expects 1 argument, but given 2: 1 1");
 
 //next predicate
 
 
 	queueErrorTest("integer? given no args",
 		       "(integer?)",
-		       "integer?: expects 1 argument, given 0");
+		       "integer?: expects 1 argument, but given 0");
 	
 
 	queueErrorTest("integer? too many args",
 		       "(integer? 1 1)",
-		       "integer?: expects 1 argument, given 2: 1 1");
+		       "integer?: expects 1 argument, but given 2: 1 1");
 
 
 	queueErrorTest("exact? given no args",
 		       "(exact?)",
-		       "exact?: expects 1 argument, given 0");
+		       "exact?: expects 1 argument, but given 0");
 	
 	queueErrorTest("exact? given a bad arg",
 		       "(exact? add1)",
-		       "exact?: expects type number as 1st argument, given: #<procedure:add1>");
+		       "exact?: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("exact? given too many args",
 		       "(exact? 1 1)",
-		       "exact?: expects 1 argument, given 2: 1 1");
+		       "exact?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("inexact? given no args",
 		       "(inexact?)",
-		       "inexact?: expects 1 argument, given 0");
+		       "inexact?: expects 1 argument, but given 0");
 	
 	queueErrorTest("inexact? given a bad arg",
 		       "(inexact? add1)",
-		       "inexact?: expects type number as 1st argument, given: #<procedure:add1>");
+		       "inexact?: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("inexact? given too many args",
 		       "(inexact? 1 1)",
-		       "inexact?: expects 1 argument, given 2: 1 1");
+		       "inexact?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("odd? given no args",
 		       "(odd?)",
-		       "odd?: expects 1 argument, given 0");
+		       "odd?: expects 1 argument, but given 0");
 	
 	queueErrorTest("odd? given a bad arg",
 		       "(odd? add1)",
-		       "odd?: expects type integer as 1st argument, given: #<procedure:add1>");
+		       "odd?: expects an integer as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("odd? given too many args",
 		       "(odd? 1 1)",
-		       "odd?: expects 1 argument, given 2: 1 1");
+		       "odd?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("even? given no args",
 		       "(even?)",
-		       "even?: expects 1 argument, given 0");
+		       "even?: expects 1 argument, but given 0");
 	
 	queueErrorTest("even? given a bad arg",
 		       "(even? add1)",
-		       "even?: expects type integer as 1st argument, given: #<procedure:add1>");
+		       "even?: expects an integer as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("even? given too many args",
 		       "(even? 1 1)",
-		       "even?: expects 1 argument, given 2: 1 1");
+		       "even?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("zero? given no args",
 		       "(zero?)",
-		       "zero?: expects 1 argument, given 0");
+		       "zero?: expects 1 argument, but given 0");
 	
 	queueErrorTest("zero? given a bad arg",
 		       "(zero? add1)",
-		       "zero?: expects type number as 1st argument, given: #<procedure:add1>");
+		       "zero?: expects a number as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("zero? given too many args",
 		       "(zero? 1 1)",
-		       "zero?: expects 1 argument, given 2: 1 1");
+		       "zero?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("positive? given no args",
 		       "(positive?)",
-		       "positive?: expects 1 argument, given 0");
+		       "positive?: expects 1 argument, but given 0");
 	
 	queueErrorTest("positive? given a bad arg",
 		       "(positive? add1)",
-		       "positive?: expects type real as 1st argument, given: #<procedure:add1>");
+		       "positive?: expects a real as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("positive? given too many args",
 		       "(positive? 1 1)",
-		       "positive?: expects 1 argument, given 2: 1 1");
+		       "positive?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("negative? given no args",
 		       "(negative?)",
-		       "negative?: expects 1 argument, given 0");
+		       "negative?: expects 1 argument, but given 0");
 	
 	queueErrorTest("negative? given a bad arg",
 		       "(negative? add1)",
-		       "negative?: expects type real as 1st argument, given: #<procedure:add1>");
+		       "negative?: expects a real as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("negative? given too many args",
 		       "(negative? 1 1)",
-		       "negative?: expects 1 argument, given 2: 1 1");
+		       "negative?: expects 1 argument, but given 2: 1 1");
 
 	queueErrorTest("box? given no args",
 		       "(box?)",
-		       "box?: expects 1 argument, given 0");
+		       "box?: expects 1 argument, but given 0");
 	
 	queueErrorTest("box? given too many args",
 		       "(box? 2 2)",
-		       "box?: expects 1 argument, given 2: 2 2");
+		       "box?: expects 1 argument, but given 2: 2 2");
 	
 	queueErrorTest("hash? given no args",
 		       "(hash?)",
-		       "hash?: expects 1 argument, given 0");
+		       "hash?: expects 1 argument, but given 0");
 	
 	queueErrorTest("hash? given too many args",
 		       "(hash? 2 2)",
-		       "hash?: expects 1 argument, given 2: 2 2");
+		       "hash?: expects 1 argument, but given 2: 2 2");
 
 	queueErrorTest("eq? given no args",
 		       "(eq?)",
-		       "eq?: expects 2 arguments, given 0");
+		       "eq?: expects 2 arguments, but given 0");
 	
 	queueErrorTest("eq? given too many args",
 		       "(eq? 2 2 2)",
-		       "eq?: expects 2 arguments, given 3: 2 2 2");
+		       "eq?: expects 2 arguments, but given 3: 2 2 2");
 
 	queueErrorTest("eq? given one arg",
 		       "(eq? 1)",
-		       "eq?: expects 2 arguments, given 1: 1");
+		       "eq?: expects 2 arguments, but given 1: 1");
 
 	queueErrorTest("eqv? given no args",
 		       "(eqv?)",
-		       "eqv?: expects 2 arguments, given 0");
+		       "eqv?: expects 2 arguments, but given 0");
 	
 	queueErrorTest("eqv? given too many args",
 		       "(eqv? 2 2 2)",
-		       "eqv?: expects 2 arguments, given 3: 2 2 2");
+		       "eqv?: expects 2 arguments, but given 3: 2 2 2");
 
 	queueErrorTest("eqv? given one arg",
 		       "(eqv? 1)",
-		       "eqv?: expects 2 arguments, given 1: 1");
+		       "eqv?: expects 2 arguments, but given 1: 1");
 
 	queueErrorTest("equal? given no args",
 		       "(equal?)",
-		       "equal?: expects 2 arguments, given 0");
+		       "equal?: expects 2 arguments, but given 0");
 	
 	queueErrorTest("equal? given too many args",
 		       "(equal? 2 2 2)",
-		       "equal?: expects 2 arguments, given 3: 2 2 2");
+		       "equal?: expects 2 arguments, but given 3: 2 2 2");
 
 	queueErrorTest("equal? given one arg",
 		       "(equal? 1)",
-		       "equal?: expects 2 arguments, given 1: 1");
+		       "equal?: expects 2 arguments, but given 1: 1");
 	
 	queueErrorTest("equal~? given no args",
 		       "(equal~?)",
-		       "equal~?: expects 3 arguments, given 0");
+		       "equal~?: expects 3 arguments, but given 0");
 
 	queueErrorTest("equal~? given too many args",
 		       "(equal~? 1 1 1 1)",
-		       "equal~?: expects 3 arguments, given 4: 1 1 1 1");
+		       "equal~?: expects 3 arguments, but given 4: 1 1 1 1");
 	
-	queueErrorTest("equal~? given bad arg type for 3rd arg",
+	queueErrorTest("equal~? given bad arg a for 3rd arg",
 		       "(equal~? add1 sub1 add1)",
-		       "equal~?: expects type non-negative number as 3rd argument, given: #<procedure:add1>; other arguments were: #<procedure:add1> #<procedure:sub1>");
+		       "equal~?: expects a non-negative number as 3rd argument, but given: #<procedure:add1>; other arguments were: #<procedure:add1> #<procedure:sub1>");
 	
 	queueErrorTest("false? given no args",
 		       "(false?)",
-		       "false?: expects 1 argument, given 0");
+		       "false?: expects 1 argument, but given 0");
 	
 	queueErrorTest("false? given too many args",
 		       "(false? 1 1)",
-		       "false?: expects 1 argument, given 2: 1 1");
+		       "false?: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("symbol=? given no args",
 		       "(symbol=?)",
-		       "symbol=?: expects 2 arguments, given 0");
+		       "symbol=?: expects 2 arguments, but given 0");
 	
 	queueErrorTest("symbol=? given too many args",
 		       "(symbol=? 1 1 1)",
-		       "symbol=?: expects 2 arguments, given 3: 1 1 1");
+		       "symbol=?: expects 2 arguments, but given 3: 1 1 1");
 
 	queueErrorTest("symbol=? given bad first arg",
 		       "(symbol=? add1 sub1)",
-		       "symbol=?: expects type symbol as 1st argument, given: #<procedure:add1>; other arguments were: #<procedure:sub1>");
+		       "symbol=?: expects a symbol as 1st argument, but given: #<procedure:add1>; other arguments were: #<procedure:sub1>");
 
 	queueErrorTest("symbol=? given bad 2nd arg",
 		       "(symbol=? 'asdf sub1)",
-		       "symbol=?: expects type symbol as 2nd argument, given: #<procedure:sub1>; other arguments were: asdf");
+		       "symbol=?: expects a symbol as 2nd argument, but given: #<procedure:sub1>; other arguments were: asdf");
 
 	queueErrorTest("cons given no args",
 		       "(cons)",
-		       "cons: expects 2 arguments, given 0");
+		       "cons: expects 2 arguments, but given 0");
 	
 	queueErrorTest("cons given too many args",
 		       "(cons 1 1 1)",
-		       "cons: expects 2 arguments, given 3: 1 1 1");
+		       "cons: expects 2 arguments, but given 3: 1 1 1");
 
 	queueErrorTest("car given no args",
 		       "(car)",
-		       "car: expects 1 argument, given 0");
+		       "car: expects 1 argument, but given 0");
 
 	queueErrorTest("car given bad arg",
 		       "(car add1)",
-		       "car: expects type pair as 1st argument, given: #<procedure:add1>");
+		       "car: expects a pair as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("car given too many args",
 		       "(car 1 1 1)",
-		       "car: expects 1 argument, given 3: 1 1 1");
+		       "car: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 
 	queueErrorTest("cdr given no args",
 		       "(cdr)",
-		       "cdr: expects 1 argument, given 0");
+		       "cdr: expects 1 argument, but given 0");
 
 	queueErrorTest("cdr given bad arg",
 		       "(cdr add1)",
-		       "cdr: expects type pair as 1st argument, given: #<procedure:add1>");
+		       "cdr: expects a pair as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cdr given too many args",
 		       "(cdr 1 1 1)",
-		       "cdr: expects 1 argument, given 3: 1 1 1");
+		       "cdr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("caar given no args",
 		       "(caar)",
-		       "caar: expects 1 argument, given 0");
+		       "caar: expects 1 argument, but given 0");
 
 	queueErrorTest("caar given bad arg",
 		       "(caar add1)",
-		       "caar: expects type caarable value as 1st argument, given: #<procedure:add1>");
+		       "caar: expects a caarable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("caar given too many args",
 		       "(caar 1 1 1)",
-		       "caar: expects 1 argument, given 3: 1 1 1");
+		       "caar: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cadr given no args",
 		       "(cadr)",
-		       "cadr: expects 1 argument, given 0");
+		       "cadr: expects 1 argument, but given 0");
 
 	queueErrorTest("cadr given bad arg",
 		       "(cadr add1)",
-		       "cadr: expects type cadrable value as 1st argument, given: #<procedure:add1>");
+		       "cadr: expects a cadrable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cadr given too many args",
 		       "(cadr 1 1 1)",
-		       "cadr: expects 1 argument, given 3: 1 1 1");
+		       "cadr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cdar given no args",
 		       "(cdar)",
-		       "cdar: expects 1 argument, given 0");
+		       "cdar: expects 1 argument, but given 0");
 
 	queueErrorTest("cdar given bad arg",
 		       "(cdar add1)",
-		       "cdar: expects type cdarable value as 1st argument, given: #<procedure:add1>");
+		       "cdar: expects a cdarable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cdar given too many args",
 		       "(cdar 1 1 1)",
-		       "cdar: expects 1 argument, given 3: 1 1 1");
+		       "cdar: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cddr given no args",
 		       "(cddr)",
-		       "cddr: expects 1 argument, given 0");
+		       "cddr: expects 1 argument, but given 0");
 
 	queueErrorTest("cddr given bad arg",
 		       "(cddr add1)",
-		       "cddr: expects type cddrable value as 1st argument, given: #<procedure:add1>");
+		       "cddr: expects a cddrable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cddr given too many args",
 		       "(cddr 1 1 1)",
-		       "cddr: expects 1 argument, given 3: 1 1 1");
+		       "cddr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("caaar given no args",
 		       "(caaar)",
-		       "caaar: expects 1 argument, given 0");
+		       "caaar: expects 1 argument, but given 0");
 
 	queueErrorTest("caaar given bad arg",
 		       "(caaar add1)",
-		       "caaar: expects type caaarable value as 1st argument, given: #<procedure:add1>");
+		       "caaar: expects a caaarable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("caaar given too many args",
 		       "(caaar 1 1 1)",
-		       "caaar: expects 1 argument, given 3: 1 1 1");
+		       "caaar: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("caadr given no args",
 		       "(caadr)",
-		       "caadr: expects 1 argument, given 0");
+		       "caadr: expects 1 argument, but given 0");
 
 	queueErrorTest("caadr given bad arg",
 		       "(caadr add1)",
-		       "caadr: expects type caadrable value as 1st argument, given: #<procedure:add1>");
+		       "caadr: expects a caadrable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("caadr given too many args",
 		       "(caadr 1 1 1)",
-		       "caadr: expects 1 argument, given 3: 1 1 1");
+		       "caadr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cadar given no args",
 		       "(cadar)",
-		       "cadar: expects 1 argument, given 0");
+		       "cadar: expects 1 argument, but given 0");
 
 	queueErrorTest("cadar given bad arg",
 		       "(cadar add1)",
-		       "cadar: expects type cadarable value as 1st argument, given: #<procedure:add1>");
+		       "cadar: expects a cadarable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cadar given too many args",
 		       "(cadar 1 1 1)",
-		       "cadar: expects 1 argument, given 3: 1 1 1");
+		       "cadar: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cdaar given no args",
 		       "(cdaar)",
-		       "cdaar: expects 1 argument, given 0");
+		       "cdaar: expects 1 argument, but given 0");
 
 	queueErrorTest("cdaar given bad arg",
 		       "(cdaar add1)",
-		       "cdaar: expects type cdaarable value as 1st argument, given: #<procedure:add1>");
+		       "cdaar: expects a cdaarable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cdaar given too many args",
 		       "(cdaar 1 1 1)",
-		       "cdaar: expects 1 argument, given 3: 1 1 1");
+		       "cdaar: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cdadr given no args",
 		       "(cdadr)",
-		       "cdadr: expects 1 argument, given 0");
+		       "cdadr: expects 1 argument, but given 0");
 
 	queueErrorTest("cdadr given bad arg",
 		       "(cdadr add1)",
-		       "cdadr: expects type cdadrable value as 1st argument, given: #<procedure:add1>");
+		       "cdadr: expects a cdadrable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cdadr given too many args",
 		       "(cdadr 1 1 1)",
-		       "cdadr: expects 1 argument, given 3: 1 1 1");
+		       "cdadr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cddar given no args",
 		       "(cddar)",
-		       "cddar: expects 1 argument, given 0");
+		       "cddar: expects 1 argument, but given 0");
 
 	queueErrorTest("cddar given bad arg",
 		       "(cddar add1)",
-		       "cddar: expects type cddarable value as 1st argument, given: #<procedure:add1>");
+		       "cddar: expects a cddarable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cddar given too many args",
 		       "(cddar 1 1 1)",
-		       "cddar: expects 1 argument, given 3: 1 1 1");
+		       "cddar: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("caddr given no args",
 		       "(caddr)",
-		       "caddr: expects 1 argument, given 0");
+		       "caddr: expects 1 argument, but given 0");
 
 	queueErrorTest("caddr given bad arg",
 		       "(caddr add1)",
-		       "caddr: expects type caddrable value as 1st argument, given: #<procedure:add1>");
+		       "caddr: expects a caddrable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("caddr given too many args",
 		       "(caddr 1 1 1)",
-		       "caddr: expects 1 argument, given 3: 1 1 1");
+		       "caddr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cdddr given no args",
 		       "(cdddr)",
-		       "cdddr: expects 1 argument, given 0");
+		       "cdddr: expects 1 argument, but given 0");
 
 	queueErrorTest("cdddr given bad arg",
 		       "(cdddr add1)",
-		       "cdddr: expects type cdddrable value as 1st argument, given: #<procedure:add1>");
+		       "cdddr: expects a cdddrable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cdddr given too many args",
 		       "(cdddr 1 1 1)",
-		       "cdddr: expects 1 argument, given 3: 1 1 1");
+		       "cdddr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("cadddr given no args",
 		       "(cadddr)",
-		       "cadddr: expects 1 argument, given 0");
+		       "cadddr: expects 1 argument, but given 0");
 
 	queueErrorTest("cadddr given bad arg",
 		       "(cadddr add1)",
-		       "cadddr: expects type cadddrable value as 1st argument, given: #<procedure:add1>");
+		       "cadddr: expects a cadddrable value as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("cadddr given too many args",
 		       "(cadddr 1 1 1)",
-		       "cadddr: expects 1 argument, given 3: 1 1 1");
+		       "cadddr: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("rest given no args",
 		       "(rest)",
-		       "rest: expects 1 argument, given 0");
+		       "rest: expects 1 argument, but given 0");
 
 	queueErrorTest("rest given bad arg",
 		       "(rest add1)",
-		       "rest: expects type non-empty list as 1st argument, given: #<procedure:add1>");
+		       "rest: expects a non-empty list as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("rest given too many args",
 		       "(rest 1 1 1)",
-		       "rest: expects 1 argument, given 3: 1 1 1");
+		       "rest: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("first given no args",
 		       "(first)",
-		       "first: expects 1 argument, given 0");
+		       "first: expects 1 argument, but given 0");
 
 	queueErrorTest("first given bad arg",
 		       "(first add1)",
-		       "first: expects type non-empty list as 1st argument, given: #<procedure:add1>");
+		       "first: expects a non-empty list as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("first given too many args",
 		       "(first 1 1 1)",
-		       "first: expects 1 argument, given 3: 1 1 1");
+		       "first: expects 1 argument, but given 3: 1 1 1");
 //next list primitive
 	
 	queueErrorTest("second given no args",
 		       "(second)",
-		       "second: expects 1 argument, given 0");
+		       "second: expects 1 argument, but given 0");
 	
 	queueErrorTest("second given bad arg",
 		       "(second add1)",
-		       "second: expects type list with 2 or more elements as 1st argument, given: #<procedure:add1>");
+		       "second: expects a list with 2 or more elements as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("second given too many args",
 		       "(second 1 1 1)",
-		       "second: expects 1 argument, given 3: 1 1 1");
+		       "second: expects 1 argument, but given 3: 1 1 1");
 	
 	queueErrorTest("third given no args",
 		       "(third)",
-		       "third: expects 1 argument, given 0");
+		       "third: expects 1 argument, but given 0");
 	
 	queueErrorTest("third given bad arg",
 		       "(third add1)",
-		       "third: expects type list with 3 or more elements as 1st argument, given: #<procedure:add1>");
+		       "third: expects a list with 3 or more elements as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("third given too many args",
 		       "(third 1 1 1)",
-		       "third: expects 1 argument, given 3: 1 1 1");
+		       "third: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("fourth given no args",
 		       "(fourth)",
-		       "fourth: expects 1 argument, given 0");
+		       "fourth: expects 1 argument, but given 0");
 	
 	queueErrorTest("fourth given bad arg",
 		       "(fourth add1)",
-		       "fourth: expects type list with 4 or more elements as 1st argument, given: #<procedure:add1>");
+		       "fourth: expects a list with 4 or more elements as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("fourth given too many args",
 		       "(fourth 1 1 1)",
-		       "fourth: expects 1 argument, given 3: 1 1 1");
+		       "fourth: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("fifth given no args",
 		       "(fifth)",
-		       "fifth: expects 1 argument, given 0");
+		       "fifth: expects 1 argument, but given 0");
 	
 	queueErrorTest("fifth given bad arg",
 		       "(fifth add1)",
-		       "fifth: expects type list with 5 or more elements as 1st argument, given: #<procedure:add1>");
+		       "fifth: expects a list with 5 or more elements as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("fifth given too many args",
 		       "(fifth 1 1 1)",
-		       "fifth: expects 1 argument, given 3: 1 1 1");
+		       "fifth: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("sixth given no args",
 		       "(sixth)",
-		       "sixth: expects 1 argument, given 0");
+		       "sixth: expects 1 argument, but given 0");
 	
 	queueErrorTest("sixth given bad arg",
 		       "(sixth add1)",
-		       "sixth: expects type list with 6 or more elements as 1st argument, given: #<procedure:add1>");
+		       "sixth: expects a list with 6 or more elements as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("sixth given too many args",
 		       "(sixth 1 1 1)",
-		       "sixth: expects 1 argument, given 3: 1 1 1");
+		       "sixth: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("seventh given no args",
 		       "(seventh)",
-		       "seventh: expects 1 argument, given 0");
+		       "seventh: expects 1 argument, but given 0");
 	
 	queueErrorTest("seventh given bad arg",
 		       "(seventh add1)",
-		       "seventh: expects type list with 7 or more elements as 1st argument, given: #<procedure:add1>");
+		       "seventh: expects a list with 7 or more elements as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("seventh given too many args",
 		       "(seventh 1 1 1)",
-		       "seventh: expects 1 argument, given 3: 1 1 1");
+		       "seventh: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("eighth given no args",
 		       "(eighth)",
-		       "eighth: expects 1 argument, given 0");
+		       "eighth: expects 1 argument, but given 0");
 	
 	queueErrorTest("eighth given bad arg",
 		       "(eighth add1)",
-		       "eighth: expects type list with 8 or more elements as 1st argument, given: #<procedure:add1>");
+		       "eighth: expects a list with 8 or more elements as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("eighth given too many args",
 		       "(eighth 1 1 1)",
-		       "eighth: expects 1 argument, given 3: 1 1 1");
+		       "eighth: expects 1 argument, but given 3: 1 1 1");
 
 	queueErrorTest("length given no args",
 		       "(length)",
-		       "length: expects 1 argument, given 0");
+		       "length: expects 1 argument, but given 0");
 	
 	queueErrorTest("length given a bad arg",
 		       "(length add1)",
-		       "length: expects type list as 1st argument, given: #<procedure:add1>");
+		       "length: expects a list as 1st argument, but given: #<procedure:add1>");
 	
 	queueErrorTest("length given too many args",
 		       "(length 1 1)",
-		       "length: expects 1 argument, given 2: 1 1");
+		       "length: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("list? given no args",
 		       "(list?)",
-		       "list?: expects 1 argument, given 0");
+		       "list?: expects 1 argument, but given 0");
 	
 	queueErrorTest("list? given too many args",
 		       "(list? 1 1 1)",
-		       "list?: expects 1 argument, given 3: 1 1 1");
+		       "list?: expects 1 argument, but given 3: 1 1 1");
 	
 	queueErrorTest("list* given no args",
 		       "(list*)",
-		       "list*: expects at least 1 argument, given 0");
+		       "list*: expects at least 1 argument, but given 0");
 	
 	queueErrorTest("list* given too many args",
 		       "(list* 1 1 1)",
-		       "list*: expects type list as 3rd argument, given: 1; other arguments were: 1 1");
+		       "list*: expects a list as 3rd argument, but given: 1; other arguments were: 1 1");
 	
 	queueErrorTest("list-ref given no args",
 		       "(list-ref)",
-		       "list-ref: expects 2 arguments, given 0");
+		       "list-ref: expects 2 arguments, but given 0");
 	
 	queueErrorTest("list-ref given too many args",
 		       "(list-ref 1 1 1)",
-		       "list-ref: expects 2 arguments, given 3: 1 1 1");
+		       "list-ref: expects 2 arguments, but given 3: 1 1 1");
 
 	queueErrorTest("list-ref given bad arg for first arg",
 			"(list-ref add1 1)",
-			"list-ref: expects type list as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+			"list-ref: expects a list as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 
 	queueErrorTest("list-ref given bad arg for second arg",
 		       "(list-ref (list) add1)",
-		       "list-ref: expects type non-negative exact integer as 2nd argument, given: #<procedure:add1>; other arguments were: empty");
+		       "list-ref: expects a non-negative exact integer as 2nd argument, but given: #<procedure:add1>; other arguments were: empty");
 	
 	queueErrorTest("append given bad args",
 		       "(append sub1 add1)",
-		       "append: expects type list as 1st argument, given: #<procedure:sub1>; other arguments were: #<procedure:add1>")
+		       "append: expects a list as 1st argument, but given: #<procedure:sub1>; other arguments were: #<procedure:add1>")
 
 	queueErrorTest("reverse given no args",
 		       "(reverse)",
-		       "reverse: expects 1 argument, given 0");
+		       "reverse: expects 1 argument, but given 0");
 	
 	queueErrorTest("reverse given too many args",
 		       "(reverse 1 1)",
-		       "reverse: expects 1 argument, given 2: 1 1");
+		       "reverse: expects 1 argument, but given 2: 1 1");
 	
 	queueErrorTest("reverse given bad arg",
 		       "(reverse add1)",
-		       "reverse: expects type list as 1st argument, given: #<procedure:add1>");
+		       "reverse: expects a list as 1st argument, but given: #<procedure:add1>");
 
 
 	queueErrorTest("underlay given no args",
 		       "(underlay)",
-		       "underlay: expects at least 2 arguments, given 0");
+		       "underlay: expects at least 2 arguments, but given 0");
 	
 	queueErrorTest("underlay given bad first arg",
 		       "(underlay 1 1 1)",
-		       "underlay: expects type image as 1st argument, given: 1; other arguments were: 1 1");
+		       "underlay: expects an image as 1st argument, but given: 1; other arguments were: 1 1");
 
 	queueErrorTest("underlay given not enough args",
 		       "(underlay 1)",
-		       "underlay: expects at least 2 arguments, given 1: 1");
+		       "underlay: expects at least 2 arguments, but given 1: 1");
 	
 	queueErrorTest("underlay/xy given no args",
 		       "(underlay/xy)",
-		       "underlay/xy: expects 4 arguments, given 0");
+		       "underlay/xy: expects 4 arguments, but given 0");
 	
 	queueErrorTest("underlay/xy given bad first arg",
 		       "(underlay/xy 1 1 1 1)",
-		       "underlay/xy: expects type image as 1st argument, given: 1; other arguments were: 1 1 1");
+		       "underlay/xy: expects an image as 1st argument, but given: 1; other arguments were: 1 1 1");
 
 	queueErrorTest("underlay/xy given too many args",
 		       "(underlay/xy 1 1 1 1 1)",
-		       "underlay/xy: expects 4 arguments, given 5: 1 1 1 1 1");
+		       "underlay/xy: expects 4 arguments, but given 5: 1 1 1 1 1");
 
 	queueErrorTest("underlay/align given no args",
 		       "(underlay/align)",
-		       "underlay/align: expects at least 4 arguments, given 0");
+		       "underlay/align: expects at least 4 arguments, but given 0");
 	
 	queueErrorTest("underlay/align given bad first arg",
 		       "(underlay/align 1 1 1 1 1)",
-		       "underlay/align: expects type x-place as 1st argument, given: 1; other arguments were: 1 1 1 1");
+		       "underlay/align: expects a x-place as 1st argument, but given: 1; other arguments were: 1 1 1 1");
 
 	queueErrorTest("scale given no args",
 		       "(scale)",
-		       "scale: expects 2 arguments, given 0");
+		       "scale: expects 2 arguments, but given 0");
 
 	queueErrorTest("scale given too many args",
 		       "(scale 1 1 1)",
-		       "scale: expects 2 arguments, given 3: 1 1 1");
+		       "scale: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("scale given bad second arg type",
+	queueErrorTest("scale given bad second arg a",
 		       "(scale 1 1)",
-		       "scale: expects type image as 2nd argument, given: 1; other arguments were: 1");
+		       "scale: expects an image as 2nd argument, but given: 1; other arguments were: 1");
 	
 
-	queueErrorTest("scale given bad first arg type",
+	queueErrorTest("scale given bad first arg a",
 		       "(scale add1 1)",
-		       "scale: expects type finite real number as 1st argument, given: #<procedure:add1>; other arguments were: 1");
+		       "scale: expects a finite real number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
 
 	queueErrorTest("scale/xy given no args",
 		       "(scale/xy)",
-		       "scale/xy: expects 3 arguments, given 0");
+		       "scale/xy: expects 3 arguments, but given 0");
 	
-	queueErrorTest("scale/xy given bad 3rd arg type",
+	queueErrorTest("scale/xy given bad 3rd arg a",
 		       "(scale/xy 1 1 1)",
-		       "scale/xy: expects type image as 3rd argument, given: 1; other arguments were: 1 1");
+		       "scale/xy: expects an image as 3rd argument, but given: 1; other arguments were: 1 1");
 	
 	queueErrorTest("scale/xy given too many args",
 		       "(scale/xy 1 1 1 1)",
-		       "scale/xy: expects 3 arguments, given 4: 1 1 1 1");
+		       "scale/xy: expects 3 arguments, but given 4: 1 1 1 1");
 
 	queueErrorTest("andmap given no args",
 		       "(andmap)",
-		       "andmap: expects at least 2 arguments, given 0");
+		       "andmap: expects at least 2 arguments, but given 0");
 	
-	queueErrorTest("andmap given bad first arg type",
+	queueErrorTest("andmap given bad first arg a",
 		       "(andmap 1 1)",
-		       "andmap: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+		       "andmap: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
 
-	queueErrorTest("andmap given bad 2nd arg type",
+	queueErrorTest("andmap given bad 2nd arg a",
 		       "(andmap add1 sub1)",
-		       "andmap: expects type list as 2nd argument, given: #<procedure:sub1>; other arguments were: #<procedure:add1>");
+		       "andmap: expects a list as 2nd argument, but given: #<procedure:sub1>; other arguments were: #<procedure:add1>");
 	
 	queueErrorTest("ormap given no args",
 		       "(ormap)",
-		       "ormap: expects at least 2 arguments, given 0");
+		       "ormap: expects at least 2 arguments, but given 0");
 	
-	queueErrorTest("ormap given bad first arg type",
+	queueErrorTest("ormap given bad first arg a",
 		       "(ormap 1 1)",
-		       "ormap: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+		       "ormap: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
 
-	queueErrorTest("ormap given bad 2nd arg type",
+	queueErrorTest("ormap given bad 2nd arg a",
 		       "(ormap add1 sub1)",
-		       "ormap: expects type list as 2nd argument, given: #<procedure:sub1>; other arguments were: #<procedure:add1>");	
+		       "ormap: expects a list as 2nd argument, but given: #<procedure:sub1>; other arguments were: #<procedure:add1>");	
 
 
 	queueErrorTest("memq given no args",
 		       "(memq)",
-		       "memq: expects 2 arguments, given 0");
+		       "memq: expects 2 arguments, but given 0");
 	
 	queueErrorTest("memq given too many args",
 		       "(memq 1 1 1)",
-		       "memq: expects 2 arguments, given 3: 1 1 1");
+		       "memq: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("memq given bad second arg type",
+	queueErrorTest("memq given bad second arg a",
 		       "(memq 1 1)",
-		       "memq: expects type list as 2nd argument, given: 1; other arguments were: 1");
+		       "memq: expects a list as 2nd argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("memv given no args",
 		       "(memv)",
-		       "memv: expects 2 arguments, given 0");
+		       "memv: expects 2 arguments, but given 0");
 	
 	queueErrorTest("memv given too many args",
 		       "(memv 1 1 1)",
-		       "memv: expects 2 arguments, given 3: 1 1 1");
+		       "memv: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("memv given bad second arg type",
+	queueErrorTest("memv given bad second arg a",
 		       "(memv 1 1)",
-		       "memv: expects type list as 2nd argument, given: 1; other arguments were: 1");	
+		       "memv: expects a list as 2nd argument, but given: 1; other arguments were: 1");	
 
 
 	queueErrorTest("member given no args",
 		       "(member)",
-		       "member: expects 2 arguments, given 0");
+		       "member: expects 2 arguments, but given 0");
 	
 	queueErrorTest("member given too many args",
 		       "(member 1 1 1)",
-		       "member: expects 2 arguments, given 3: 1 1 1");
+		       "member: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("member given bad second arg type",
+	queueErrorTest("member given bad second arg a",
 		       "(member 1 1)",
-		       "member: expects type list as 2nd argument, given: 1; other arguments were: 1");
+		       "member: expects a list as 2nd argument, but given: 1; other arguments were: 1");
 
 
 	queueErrorTest("member? given no args",
 		       "(member?)",
-		       "member?: expects 2 arguments, given 0");
+		       "member?: expects 2 arguments, but given 0");
 	
 	queueErrorTest("member? given too many args",
 		       "(member? 1 1 1)",
-		       "member?: expects 2 arguments, given 3: 1 1 1");
+		       "member?: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("member? given bad second arg type",
+	queueErrorTest("member? given bad second arg a",
 		       "(member? 1 1)",
-		       "member?: expects type list as 2nd argument, given: 1; other arguments were: 1");
+		       "member?: expects a list as 2nd argument, but given: 1; other arguments were: 1");
 
 
 	queueErrorTest("memf given no args",
 		       "(memf)",
-		       "memf: expects 2 arguments, given 0");
+		       "memf: expects 2 arguments, but given 0");
 	
 	queueErrorTest("memf given too many args",
 		       "(memf 1 1 1)",
-		       "memf: expects 2 arguments, given 3: 1 1 1");
+		       "memf: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("memf given bad first arg type",
+	queueErrorTest("memf given bad first arg a",
 		       "(memf 1 1)",
-		       "memf: expects type procedure as 1st argument, given: 1; other arguments were: 1");
+		       "memf: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
 
 
 	queueErrorTest("assq given no args",
 		       "(assq)",
-		       "assq: expects 2 arguments, given 0");
+		       "assq: expects 2 arguments, but given 0");
 	
 	queueErrorTest("assq given too many args",
 		       "(assq 1 1 1)",
-		       "assq: expects 2 arguments, given 3: 1 1 1");
+		       "assq: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("assq given bad second arg type",
+	queueErrorTest("assq given bad second arg a",
 		       "(assq 1 1)",
-		       "assq: expects type list of pair as 2nd argument, given: 1; other arguments were: 1");	
+		       "assq: expects a list of pair as 2nd argument, but given: 1; other arguments were: 1");	
 
 	queueErrorTest("assv given no args",
 		       "(assv)",
-		       "assv: expects 2 arguments, given 0");
+		       "assv: expects 2 arguments, but given 0");
 	
 	queueErrorTest("assv given too many args",
 		       "(assv 1 1 1)",
-		       "assv: expects 2 arguments, given 3: 1 1 1");
+		       "assv: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("assv given bad second arg type",
+	queueErrorTest("assv given bad second arg a",
 		       "(assv 1 1)",
-		       "assv: expects type list of pair as 2nd argument, given: 1; other arguments were: 1");
+		       "assv: expects a list of pair as 2nd argument, but given: 1; other arguments were: 1");
 
 
 	queueErrorTest("assoc given no args",
 		       "(assoc)",
-		       "assoc: expects 2 arguments, given 0");
+		       "assoc: expects 2 arguments, but given 0");
 	
 	queueErrorTest("assoc given too many args",
 		       "(assoc 1 1 1)",
-		       "assoc: expects 2 arguments, given 3: 1 1 1");
+		       "assoc: expects 2 arguments, but given 3: 1 1 1");
 	
-	queueErrorTest("assoc given bad second arg type",
+	queueErrorTest("assoc given bad second arg a",
 		       "(assoc 1 1)",
-		       "assoc: expects type list of pair as 2nd argument, given: 1; other arguments were: 1");
+		       "assoc: expects a list of pair as 2nd argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("remove given no args",
 		       "(remove)",
-		       "remove: expects 2 arguments, given 0");
+		       "remove: expects 2 arguments, but given 0");
 	
 	queueErrorTest("remove given too many args",
 		       "(remove 1 1 1)",
-		       "remove: expects 2 arguments, given 3: 1 1 1");
+		       "remove: expects 2 arguments, but given 3: 1 1 1");
 	
 	queueErrorTest("remove given bad second arg",
 		       "(remove 1 1)",
-		       "remove: expects type list as 2nd argument, given: 1; other arguments were: 1");
+		       "remove: expects a list as 2nd argument, but given: 1; other arguments were: 1");
 
 
         queueErrorTest("test check-expect functions",
@@ -5805,15 +5805,15 @@ var runTests = function() {
 
         queueErrorTest("test check-expect arity",
                        "(check-expect 1 2 3)",
-                       'check-expect: expects 2 arguments, given 3: 1 2 3');
+                       'check-expect: expects 2 arguments, but given 3: 1 2 3');
 
         queueErrorTest("test check-expect arity",
                        "(check-expect )",
-                       'check-expect: expects 2 arguments, given 0');
+                       'check-expect: expects 2 arguments, but given 0');
 
         queueErrorTest("test check-within nonneg real",
                        "(check-within 2 1 -3)",
-                       'check-within requires a non-negative real number for range, given -3.');
+                       'check-within requires a non-negative real number for range, but given -3.');
 
          queueErrorTest("test check-within functions",
                        "(check-within + - 2)",
@@ -5821,40 +5821,40 @@ var runTests = function() {
 
          queueErrorTest("test check-within arity",
                        "(check-within 3 3 3 3 3 3 3 3 3 3 3)",
-                        'check-within: expects 3 arguments, given 11: 3 3 3 3 3 3 3 3 3 3 3');
+                        'check-within: expects 3 arguments, but given 11: 3 3 3 3 3 3 3 3 3 3 3');
          /*
          queueErrorTest("test print arity",
                        '(print "hello" "world")',
-                        'print: expects 1 argument, given 2: "hello" "world"');
+                        'print: expects 1 argument, but given 2: "hello" "world"');
             */
          queueErrorTest("test write arity",
                         "(write 1 2 3 4 5)",
-                        "write: expects 1 or 2 arguments, given 5: 1 2 3 4 5");
+                        "write: expects 1 or 2 arguments, but given 5: 1 2 3 4 5");
 
          queueErrorTest("test write arity",
                         "(write )",
-                        "write: expects 1 or 2 arguments, given 0");
+                        "write: expects 1 or 2 arguments, but given 0");
 
         queueErrorTest("test display arity",
                         "(display 1 2 3 4 5)",
-                        "display: expects 1 or 2 arguments, given 5: 1 2 3 4 5");
+                        "display: expects 1 or 2 arguments, but given 5: 1 2 3 4 5");
 
         queueErrorTest("test display arity",
                         "(display )",
-                        "display: expects 1 or 2 arguments, given 0");
+                        "display: expects 1 or 2 arguments, but given 0");
 
         queueErrorTest("test for-each arity",
                         "(for-each )",
-                        "for-each: expects at least 2 arguments, given 0");
+                        "for-each: expects at least 2 arguments, but given 0");
 
         queueErrorTest("test for-each arity 2",
                         "(for-each 1 2 3 4 5)",
-                         "for-each: expects type procedure as 1st argument, given: 1; other arguments were: 2 3 4 5");
+                         "for-each: expects a procedure as 1st argument, but given: 1; other arguments were: 2 3 4 5");
 
 
-        queueErrorTest("test for-each type",
+        queueErrorTest("test for-each a",
                         "(for-each 1 2)",
-                         "for-each: expects type procedure as 1st argument, given: 1; other arguments were: 2");
+                         "for-each: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
 
 
 
@@ -5864,189 +5864,189 @@ var runTests = function() {
 //map
         queueErrorTest("test map with function that cannot be applied to elements in list",
                        "(map add1 (list \"hello\" \"world\"))",
-                       'add1: expects type number as 1st argument, given: "hello"');
+                       'add1: expects a number as 1st argument, but given: "hello"');
 //filter
         queueErrorTest("test filter without procedure as 1st argument",
                        "(filter 2 (list 2 3 4))",
-                       'filter: expects type procedure (arity 1) as 1st argument, given: 2; other arguments were: (list 2 3 4)');
+                       'filter: expects a procedure (arity 1) as 1st argument, but given: 2; other arguments were: (list 2 3 4)');
 
 //foldl
-        queueErrorTest("test foldl with arguments of wrong type",
+        queueErrorTest("test foldl with arguments of wrong a",
                        "(foldl + \"1\" (list 2 3))",
-                       '+: expects type number as 2nd argument, given: "1"; other arguments were: 2');
+                       '+: expects a number as 2nd argument, but given: "1"; other arguments were: 2');
 
-        queueErrorTest("test foldl with arguments of wrong type",
+        queueErrorTest("test foldl with arguments of wrong a",
                        "(foldl 1 7 (list 2 3))",
-                       'foldl: expects type procedure as 1st argument, given: 1; other arguments were: 7 (list 2 3)');
+                       'foldl: expects a procedure as 1st argument, but given: 1; other arguments were: 7 (list 2 3)');
 
 //foldr
-        queueErrorTest("test foldr with arguments of wrong type",
+        queueErrorTest("test foldr with arguments of wrong a",
                        "(foldr 1 2 (list 3))",
-                       'foldr: expects type procedure as 1st argument, given: 1; other arguments were: 2 (list 3)');
+                       'foldr: expects a procedure as 1st argument, but given: 1; other arguments were: 2 (list 3)');
 
-        queueErrorTest("test foldr with arguments of wrong type",
+        queueErrorTest("test foldr with arguments of wrong a",
                        "(foldr + \"hello\" (list 1 2 3))",
-                       '+: expects type number as 2nd argument, given: "hello"; other arguments were: 3');
+                       '+: expects a number as 2nd argument, but given: "hello"; other arguments were: 3');
 
 //argmax
         queueErrorTest("test argmax with empty list",
                        "(argmax 2 '())",
-                       'argmax: expects type procedure as 1st argument, given: 2; other arguments were: empty');
+                       'argmax: expects a procedure as 1st argument, but given: 2; other arguments were: empty');
 
         queueErrorTest("test argmax with first argument not a procedure",
                        "(argmax 2 (list 2))",
-                       'argmax: expects type procedure as 1st argument, given: 2; other arguments were: (list 2)');
+                       'argmax: expects a procedure as 1st argument, but given: 2; other arguments were: (list 2)');
 
         queueErrorTest("test argmax with second argument not a list",
                        "(argmax car 2)",
-                       'argmax: expects type non-empty list as 2nd argument, given: 2; other arguments were: #<procedure:car>');
+                       'argmax: expects a non-empty list as 2nd argument, but given: 2; other arguments were: #<procedure:car>');
 
 //argmin
         queueErrorTest("test argmin with empty list",
                        "(argmin 2 '())",
-                       'argmin: expects type procedure as 1st argument, given: 2; other arguments were: empty');
+                       'argmin: expects a procedure as 1st argument, but given: 2; other arguments were: empty');
 
         queueErrorTest("test argmin with first argument not a procedure",
                        "(argmin 2 (list 2))",
-                       'argmin: expects type procedure as 1st argument, given: 2; other arguments were: (list 2)');
+                       'argmin: expects a procedure as 1st argument, but given: 2; other arguments were: (list 2)');
 
         queueErrorTest("test argmin with second argument not a list",
                        "(argmin car 2)",
-                       'argmin: expects type non-empty list as 2nd argument, given: 2; other arguments were: #<procedure:car>');
+                       'argmin: expects a non-empty list as 2nd argument, but given: 2; other arguments were: #<procedure:car>');
 
 //build-list
         queueErrorTest("test build-list with first argument not a number",
                        "(build-list \"number\" add1)",
-                       "build-list: expects type non-negative exact integer as 1st argument, given: \"number\"; other arguments were: #<procedure:add1>");
+                       "build-list: expects a non-negative exact integer as 1st argument, but given: \"number\"; other arguments were: #<procedure:add1>");
 
         queueErrorTest("test build-list with second argument not a proc",
                        "(build-list 2 6)",
-                       'build-list: expects type procedure as 2nd argument, given: 6; other arguments were: 2');
+                       'build-list: expects a procedure as 2nd argument, but given: 6; other arguments were: 2');
 
 //make-hash 
 
         queueErrorTest("test make-hash with listof listof pairs not first argument",
                        "(make-hash 1)",
-                       'make-hash: expects type list of list of pairs as 1st argument, given: 1');
+                       'make-hash: expects a list of list of pairs as 1st argument, but given: 1');
 
         queueErrorTest("test make-hash with 2 arguments instead of 0 or 1",
                        "(make-hash (list (list 1 \"hello\") (list 2 \"world\") (list 3 \"today\")) 2)",
-                       'make-hash: expects 0 or 1 arguments, given 2: (list (list 1 "hello") (list 2 "world") (list 3 "today")) 2');
+                       'make-hash: expects 0 or 1 arguments, but given 2: (list (list 1 "hello") (list 2 "world") (list 3 "today")) 2');
 
 
 //hash-set!
 
         queueErrorTest("test hash-set! with first argument not a hash",
                        "(hash-set! 5 2 \"bird\")",
-                       'hash-set!: expects type hash as 1st argument, given: 5; other arguments were: 2 "bird"');
+                       'hash-set!: expects a hash as 1st argument, but given: 5; other arguments were: 2 "bird"');
 
         queueErrorTest("test hash-set! with wrong arity",
                        "(hash-set!)",
-                       'hash-set!: expects 3 arguments, given 0');
+                       'hash-set!: expects 3 arguments, but given 0');
 
 //hash-ref 
         queueErrorTest("test hash-ref with wrong arity",
                        "(hash-ref \"thing\")",
-                       'hash-ref: expects 2 or 3 arguments, given 1: thing');
+                       'hash-ref: expects 2 or 3 arguments, but given 1: thing');
 
         queueErrorTest("test hash-ref with 1st argument not a hash",
                        "(hash-ref \"imma hash\" 2)",
-                       'hash-ref: expects type hash as 1st argument, given: "imma hash"; other arguments were: 2');
+                       'hash-ref: expects a hash as 1st argument, but given: "imma hash"; other arguments were: 2');
 
 //hash-remove!
         queueErrorTest("test hash-remove! with wrong arity",
                        "(hash-remove!)",
-                       'hash-remove: expects 2 arguments, given 0');
+                       'hash-remove: expects 2 arguments, but given 0');
 
         queueErrorTest("test hash-remove! with wrong 1st argument not hash",
                        "(hash-remove! 2 2)",
-                       'hash-remove!: expects type hash as 1st argument, given: 2; other arguments were: 2');
+                       'hash-remove!: expects a hash as 1st argument, but given: 2; other arguments were: 2');
 
 //hash-map
 
         queueErrorTest("test hash-map with wrong arity",
                        "(hash-map)",
-                       'hash-map: expects 2 arguments, given 0');
+                       'hash-map: expects 2 arguments, but given 0');
 
         queueErrorTest("test hash-map with wrong first argument not hash",
                        "(hash-map 2 cons)",
-                       'hash-map: expects type hash as 1st argument, given: 2; other arguments were: #<procedure:cons>');
+                       'hash-map: expects a hash as 1st argument, but given: 2; other arguments were: #<procedure:cons>');
 
         queueErrorTest("test hash-map with wrong 2nd argument not proc",
                        "(hash-map (make-hash (list (list 1 100) (list 2 200) (list 3 300))) 2)",
-                       'hash-map: expects type procedure as 2nd argument, given: 2; other arguments were: #hash((1 . (list 100)) (2 . (list 200)) (3 . (list 300)))');
+                       'hash-map: expects a procedure as 2nd argument, but given: 2; other arguments were: #hash((1 . (list 100)) (2 . (list 200)) (3 . (list 300)))');
 
 //hash-for-each
 
         queueErrorTest("test hash-for-each with wrong arity",
                        "(hash-for-each)",
-                       'hash-for-each: expects 2 arguments, given 0');
+                       'hash-for-each: expects 2 arguments, but given 0');
 
         queueErrorTest("test hash-for-each with wrong 1st argument not proc",
                        "(hash-for-each \"imma hash brown\" cons)",
-                       'hash-for-each: expects type hash as 1st argument, given: "imma hash brown"; other arguments were: #<procedure:cons>');
+                       'hash-for-each: expects a hash as 1st argument, but given: "imma hash brown"; other arguments were: #<procedure:cons>');
 
         queueErrorTest("test hash-for-each with wrong 2nd argument not proc",
                        "(hash-for-each (make-hash) \"add\")",
-                       'hash-for-each: expects type procedure as 2nd argument, given: "add"; other arguments were: #hash()');
+                       'hash-for-each: expects a procedure as 2nd argument, but given: "add"; other arguments were: #hash()');
 
 //make-string
 
         queueErrorTest("test make-string with wrong arity",
                        "(make-string)",
-                       'make-string: expects 2 arguments, given 0');
+                       'make-string: expects 2 arguments, but given 0');
 
         queueErrorTest("test make-string with 1st argument not exact integer",
                        "(make-string 2.5 2)",
-                       'make-string: expects type non-negative exact integer as 1st argument, given: 5/2; other arguments were: 2');
+                       'make-string: expects a non-negative exact integer as 1st argument, but given: 5/2; other arguments were: 2');
 
         queueErrorTest("test make-string with 2nd argument not char",
                        "(make-string 3 2)",
-                       'make-string: expects type char as 2nd argument, given: 2; other arguments were: 3');
+                       'make-string: expects a char as 2nd argument, but given: 2; other arguments were: 3');
 
 //replicate
 
         queueErrorTest("test replicate with wrong arity",
                        "(replicate)",
-                       'replicate: expects 2 arguments, given 0');
+                       'replicate: expects 2 arguments, but given 0');
 
         queueErrorTest("test replicate with 1st argument not exact integer",
                        "(replicate 2.1 \"World\")",
-                       'replicate: expects type non-negative exact integer as 1st argument, given: 21/10; other arguments were: "World"');
+                       'replicate: expects a non-negative exact integer as 1st argument, but given: 21/10; other arguments were: "World"');
 
         queueErrorTest("test replicate with 2nd argument not string",
                        "(replicate 2 1)",
-                       'replicate: expects type string as 2nd argument, given: 1; other arguments were: 2');
+                       'replicate: expects a string as 2nd argument, but given: 1; other arguments were: 2');
 
 //string
 
         queueErrorTest("test string with 1st argument not char",
                        "(string 1)",
-                       'string: expects type char as 1st argument, given: 1');
+                       'string: expects a char as 1st argument, but given: 1');
 
 //string-length
 
         queueErrorTest("test string-length with wrong arity",
                        "(string-length)",
-                       'string-length: expects 1 argument, given 0');
+                       'string-length: expects 1 argument, but given 0');
 
         queueErrorTest("test string-length with 1st argument not string",
                        "(string-length 2)",
-                       'string-length: expects type string as 1st argument, given: 2');
+                       'string-length: expects a string as 1st argument, but given: 2');
 
 //string-ref
 
         queueErrorTest("test string-ref with wrong arity",
                        "(string-ref)",
-                       'string-ref: expects 2 arguments, given 0');
+                       'string-ref: expects 2 arguments, but given 0');
 
         queueErrorTest("test string-ref with 1st argument not string",
                        "(string-ref 2 2)",
-                       'string-ref: expects type string as 1st argument, given: 2; other arguments were: 2');
+                       'string-ref: expects a string as 1st argument, but given: 2; other arguments were: 2');
 
         queueErrorTest("test string-ref with 1st argument not string",
                        "(string-ref \"hello\" \"world\")",
-                       'string-ref: expects type non-negative exact integer as 2nd argument, given: "world"; other arguments were: "hello"');
+                       'string-ref: expects a non-negative exact integer as 2nd argument, but given: "world"; other arguments were: "hello"');
 
         //out of bounds
 
@@ -6055,162 +6055,162 @@ var runTests = function() {
 
         queueErrorTest("test string=? with 1st argument not string",
                        "(string=? 42 \"hello\")",
-                       'string=?: expects type string as 1st argument, given: 42; other arguments were: "hello"');
+                       'string=?: expects a string as 1st argument, but given: 42; other arguments were: "hello"');
 
         queueErrorTest("test string=? with 2nd argument not string",
                        "(string=? \"thing\" 42)",
-                       'string=?: expects type string as 2nd argument, given: 42; other arguments were: "thing"');
+                       'string=?: expects a string as 2nd argument, but given: 42; other arguments were: "thing"');
 
         queueErrorTest("test string=? with wrong arity",
                        "(string=?)",
-                       'string=?: expects at least 2 arguments, given 0');
+                       'string=?: expects at least 2 arguments, but given 0');
 
 //string-ci=?
 
         queueErrorTest("test string-ci=? with wrong arity",
                        "(string-ci=?)",
-                       'string-ci=?: expects at least 2 arguments, given 0');
+                       'string-ci=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string-ci=? with 1st argument not string",
                        "(string-ci=? 4 \"thing\")",
-                       'string-ci=?: expects type string as 1st argument, given: 4; other arguments were: "thing"');
+                       'string-ci=?: expects a string as 1st argument, but given: 4; other arguments were: "thing"');
 
         queueErrorTest("test string-ci=? with 1st argument not string",
                        "(string-ci=? \"thing\" 2)",
-                       'string-ci=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+                       'string-ci=?: expects a string as 2nd argument, but given: 2; other arguments were: "thing"');
 
 //string<?
 
         queueErrorTest("test string<? with wrong arity",
                        "(string<?)",
-                       'string<?: expects at least 2 arguments, given 0');
+                       'string<?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string<? with 1st argument not string",
                        "(string<? \"thing\" 4)",
-                       'string<?: expects type string as 2nd argument, given: 4; other arguments were: "thing"');
+                       'string<?: expects a string as 2nd argument, but given: 4; other arguments were: "thing"');
 
         queueErrorTest("test string<? with 1st argument not string",
                        "(string<? 4 \"thing\")",
-                       'string<?: expects type string as 1st argument, given: 4; other arguments were: "thing"');
+                       'string<?: expects a string as 1st argument, but given: 4; other arguments were: "thing"');
 
 //string>?
 
         queueErrorTest("test string>? with wrong arity",
                        "(string>?)",
-                       'string>?: expects at least 2 arguments, given 0');
+                       'string>?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string>? with 1st argument not string",
                        "(string>? 3 \"thing\")",
-                       'string>?: expects type string as 1st argument, given: 3; other arguments were: "thing"');
+                       'string>?: expects a string as 1st argument, but given: 3; other arguments were: "thing"');
 
         queueErrorTest("test string>? with 1st argument not string",
                        "(string>? \"thing\" 3)",
-                       'string>?: expects type string as 2nd argument, given: 3; other arguments were: "thing"');
+                       'string>?: expects a string as 2nd argument, but given: 3; other arguments were: "thing"');
 
 
 //string<=?
 
         queueErrorTest("test string<=? with wrong arity",
                        "(string<=?)",
-                       'string<=?: expects at least 2 arguments, given 0');
+                       'string<=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string<=? with 1st argument not string",
                        "(string<=? 3 \"thing\")",
-                       'string<=?: expects type string as 1st argument, given: 3; other arguments were: "thing"');
+                       'string<=?: expects a string as 1st argument, but given: 3; other arguments were: "thing"');
 
         queueErrorTest("test string>? with 1st argument not string",
                        "(string>? \"thing\" 3)",
-                       'string>?: expects type string as 2nd argument, given: 3; other arguments were: "thing"');
+                       'string>?: expects a string as 2nd argument, but given: 3; other arguments were: "thing"');
 
 //string>=?
 
         queueErrorTest("test string>=? with wrong arity",
                        "(string>=?)",
-                       'string>=?: expects at least 2 arguments, given 0');
+                       'string>=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string>=? with 1st argument not string",
                        "(string>=? 2 \"thing\")",
-                       'string>=?: expects type string as 1st argument, given: 2; other arguments were: "thing"');
+                       'string>=?: expects a string as 1st argument, but given: 2; other arguments were: "thing"');
 
         queueErrorTest("test string>=? with 1st argument not string",
                        "(string>=? \"thing\" 2)",
-                       'string>=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+                       'string>=?: expects a string as 2nd argument, but given: 2; other arguments were: "thing"');
 
 
 //string-ci<?
 
         queueErrorTest("test string-ci<? with wrong arity",
                        "(string-ci<?)",
-                       'string-ci<?: expects at least 2 arguments, given 0');
+                       'string-ci<?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string-ci<? with 1st argument not string",
                        "(string-ci<? 1 \"thing\")",
-                       'string-ci<?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+                       'string-ci<?: expects a string as 1st argument, but given: 1; other arguments were: "thing"');
 
         queueErrorTest("test string-ci<? with 1st argument not string",
                        "(string-ci<? \"thing\" 2)",
-                       'string-ci<?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+                       'string-ci<?: expects a string as 2nd argument, but given: 2; other arguments were: "thing"');
 
 
 //string-ci>?
 
         queueErrorTest("test string-ci>? with wrong arity",
                        "(string-ci>?)",
-                       'string-ci>?: expects at least 2 arguments, given 0');
+                       'string-ci>?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string-ci>? with 1st argument not string",
                        "(string-ci>? 1 \"thing\")",
-                       'string-ci>?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+                       'string-ci>?: expects a string as 1st argument, but given: 1; other arguments were: "thing"');
 
         queueErrorTest("test string-ci>? with 1st argument not string",
                        "(string-ci>? \"thing\" 2)",
-                       'string-ci>?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+                       'string-ci>?: expects a string as 2nd argument, but given: 2; other arguments were: "thing"');
 
 //string-ci<=?
 
         queueErrorTest("test string-ci<=? with wrong arity",
                        "(string-ci<=?)",
-                       'string-ci<=?: expects at least 2 arguments, given 0');
+                       'string-ci<=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string-ci<=? with 1st argument not string",
                        "(string-ci<=? 1 \"thing\")",
-                       'string-ci<=?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+                       'string-ci<=?: expects a string as 1st argument, but given: 1; other arguments were: "thing"');
 
         queueErrorTest("test string-ci<=? with 1st argument not string",
                        "(string-ci<=? \"thing\" 2)",
-                       'string-ci<=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+                       'string-ci<=?: expects a string as 2nd argument, but given: 2; other arguments were: "thing"');
 
 //string-ci>=?
 
         queueErrorTest("test string-ci>=? with wrong arity",
                        "(string-ci>=?)",
-                       'string-ci>=?: expects at least 2 arguments, given 0');
+                       'string-ci>=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("test string-ci>=? with 1st argument not string",
                        "(string-ci>=? 1 \"thing\")",
-                       'string-ci>=?: expects type string as 1st argument, given: 1; other arguments were: "thing"');
+                       'string-ci>=?: expects a string as 1st argument, but given: 1; other arguments were: "thing"');
 
         queueErrorTest("test string-ci>=? with 1st argument not string",
                        "(string-ci>=? \"thing\" 2)",
-                       'string-ci>=?: expects type string as 2nd argument, given: 2; other arguments were: "thing"');
+                       'string-ci>=?: expects a string as 2nd argument, but given: 2; other arguments were: "thing"');
 
 //substring
 
         queueErrorTest("test substring with wrong arity",
                        "(substring)",
-                       'substring: expects 2 or 3 arguments, given 0');
+                       'substring: expects 2 or 3 arguments, but given 0');
 
         queueErrorTest("test substring with 1st argument not string",
                        "(substring 1 1 2)",
-                       'substring: expects type string as 1st argument, given: 1; other arguments were: 1 2');
+                       'substring: expects a string as 1st argument, but given: 1; other arguments were: 1 2');
 
         queueErrorTest("test substring with 2nd argument not string",
                        "(substring \"hello\" \"world\" 2)",
-                       'substring: expects type non-negative exact integer as 2nd argument, given: "world"; other arguments were: "hello" 2');
+                       'substring: expects a non-negative exact integer as 2nd argument, but given: "world"; other arguments were: "hello" 2');
 
         queueErrorTest("test substring with 3rd argument not string",
                        "(substring \"hello\" 2 \"world\")",
-                       'substring: expects type non-negative exact integer as 3rd argument, given: "world"; other arguments were: "hello" 2');                
+                       'substring: expects a non-negative exact integer as 3rd argument, but given: "world"; other arguments were: "hello" 2');                
 
         queueErrorTest("test substring with index out of bounds",
                        "(substring \"thing\" 0 53)",
@@ -6221,215 +6221,215 @@ var runTests = function() {
 
         queueErrorTest("test string-append with first argument not a string",
                        "(string-append 1 \"2\")",
-                       'string-append: expects type string as 1st argument, given: 1; other arguments were: "2"');
+                       'string-append: expects a string as 1st argument, but given: 1; other arguments were: "2"');
 
         queueErrorTest("test string-append with an argument not a string",
                        "(string-append \"1\" \"2\" \"3\" \"4\" 5)",
-                       'string-append: expects type string as 5th argument, given: 5; other arguments were: "1" "2" "3" "4"');
+                       'string-append: expects a string as 5th argument, but given: 5; other arguments were: "1" "2" "3" "4"');
 
 //string->list
 
         queueErrorTest("test string->list with wrong arity",
                        "(string->list)",
-                       'string->list: expects 1 argument, given 0');
+                       'string->list: expects 1 argument, but given 0');
 
         queueErrorTest("test string->list with first argument not a string",
                        "(string->list 2)",
-                       'string->list: expects type string as 1st argument, given: 2');
+                       'string->list: expects a string as 1st argument, but given: 2');
 
 //list->string
 
         queueErrorTest("test list->string with first argument not a string",
                        "(list->string)",
-                       'list->string: expects 1 argument, given 0');
+                       'list->string: expects 1 argument, but given 0');
 
         queueErrorTest("test list->string with first argument not list of char",
                        "(list->string (list 1 2 3))",
-                       'list->string: expects type list of char as 1st argument, given: (list 1 2 3)');
+                       'list->string: expects a list of char as 1st argument, but given: (list 1 2 3)');
 
 //string-copy
 
         queueErrorTest("test string-copy with wrong arity",
                        "(string-copy)",
-                       'string-copy: expects 1 argument, given 0');
+                       'string-copy: expects 1 argument, but given 0');
 
         queueErrorTest("test string-copy with 1st argument not string",
                        "(string-copy 2)",
-                       'string-copy: expects type string as 1st argument, given: 2');
+                       'string-copy: expects a string as 1st argument, but given: 2');
 
 //string->symbol
 
         queueErrorTest("test string->symbol with wrong arity",
                        "(string->symbol)",
-                       'string->symbol: expects 1 argument, given 0');
+                       'string->symbol: expects 1 argument, but given 0');
 
         queueErrorTest("test string->symbol with 1st argument not string",
                        "(string->symbol 2)",
-                       'string->symbol: expects type string as 1st argument, given: 2');
+                       'string->symbol: expects a string as 1st argument, but given: 2');
 
 //symbol->string
 
         queueErrorTest("test symbol->string with wrong arity",
                        "(symbol->string)",
-                       'symbol->string: expects 1 argument, given 0');
+                       'symbol->string: expects 1 argument, but given 0');
 
         queueErrorTest("test symbol->string with 1st argument not string",
                        "(symbol->string 2)",
-                       'symbol->string: expects type symbol as 1st argument, given: 2');
+                       'symbol->string: expects a symbol as 1st argument, but given: 2');
 
 //format
 
         queueErrorTest("test format with wrong arity",
                        "(format)",
-                       'format: expects at least 1 argument, given 0');
+                       'format: expects at least 1 argument, but given 0');
 
         queueErrorTest("test format with 1st argument not string",
                        "(format 1)",
-                       'format: expects type string as 1st argument, given: 1');
+                       'format: expects a string as 1st argument, but given: 1');
 
 //printf
 
         queueErrorTest("test bad inputs to big-bang",
                        "(big-bang 1 on-tick add1)",
-                       "big-bang: expects type handler or attribute list as 2nd argument, given: #<procedure:on-tick>; other arguments were: 1 #<procedure:add1>");
+                       "big-bang: expects a handler or attribute list as 2nd argument, but given: #<procedure:on-tick>; other arguments were: 1 #<procedure:add1>");
 
         queueErrorTest("too many arguments",
                        "(define (f x) (* x x)) (f 3 4)",
-                       "f: expects 1 argument, given 2: 3 4");
+                       "f: expects 1 argument, but given 2: 3 4");
 
         queueErrorTest("test printf with wrong arity",
                        "(printf)",
-                       'printf: expects at least 1 argument, given 0');
+                       'printf: expects at least 1 argument, but given 0');
 
         queueErrorTest("test printf with 1st argument not string",
                        "(printf 1)",
-                       'printf: expects type string as 1st argument, given: 1');
+                       'printf: expects a string as 1st argument, but given: 1');
 
 //string->int
 
         queueErrorTest("test string->int with wrong arity",
                        "(string->int)",
-                       'string->int: expects 1 argument, given 0');
+                       'string->int: expects 1 argument, but given 0');
 
         queueErrorTest("test string->int with 1st argument not string",
                        "(string->int 1)",
-                       'string->int: expects type 1-letter string as 1st argument, given: 1');
+                       'string->int: expects a 1-letter string as 1st argument, but given: 1');
 
         queueErrorTest("test string->int with 1st argument not 1-letter string",
                        "(string->int \"23\")",
-                       'string->int: expects type 1-letter string as 1st argument, given: "23"');
+                       'string->int: expects a 1-letter string as 1st argument, but given: "23"');
 
 //int->string
 
         queueErrorTest("test int->string with wrong arity",
                        "(int->string)",
-                       'int->string: expects 1 argument, given 0');
+                       'int->string: expects 1 argument, but given 0');
 
         queueErrorTest("test int->string with 1st argument not exact integer",
                        "(int->string \"1\")",
-                       'int->string: expects type exact integer in [0,55295] or [57344,1114111] as 1st argument, given: "1"');
+                       'int->string: expects an exact integer in [0,55295] or [57344,1114111] as 1st argument, but given: "1"');
 
 //explode
 
         queueErrorTest("explode with wrong arity",
                        "(explode)",
-                       'explode: expects 1 argument, given 0');
+                       'explode: expects 1 argument, but given 0');
 
         queueErrorTest("test explode with 1st argument not string",
                        "(explode 123)",
-                       'explode: expects type string as 1st argument, given: 123');
+                       'explode: expects a string as 1st argument, but given: 123');
 
 //implode
 
         queueErrorTest("implode with wrong arity",
                        "(implode)",
-                       'implode: expects 1 argument, given 0');
+                       'implode: expects 1 argument, but given 0');
 
         queueErrorTest("test implode with 1st argument not list of 1-letter strings",
                        "(implode \"h235s\")",
-                       'implode: expects type list of 1-letter strings as 1st argument, given: "h235s"');
+                       'implode: expects a list of 1-letter strings as 1st argument, but given: "h235s"');
 
 //string-alphabetic? 
 
         queueErrorTest("string-alphabetic? with wrong arity",
                        "(string-alphabetic?)",
-                       'string-alphabetic?: expects 1 argument, given 0');
+                       'string-alphabetic?: expects 1 argument, but given 0');
 
         queueErrorTest("string-alphabetic? 1st argument not string",
                        "(string-alphabetic? 123)",
-                       'string-alphabetic?: expects type string as 1st argument, given: 123');
+                       'string-alphabetic?: expects a string as 1st argument, but given: 123');
 
 //string-ith
     
         queueErrorTest("string-ith with wrong arity",
                        "(string-ith)",
-                       'string-ith: expects 2 arguments, given 0');
+                       'string-ith: expects 2 arguments, but given 0');
 
         queueErrorTest("string-ith 1st argument not string",
                        "(string-ith 1 2)",
-                       'string-ith: expects type string as 1st argument, given: 1; other arguments were: 2');
+                       'string-ith: expects a string as 1st argument, but given: 1; other arguments were: 2');
 
         queueErrorTest("string-ith 2nd argument not exact integer",
                        "(string-ith \"hello\" 1.5)",
-                       'string-ith: expects type exact integer in [0, length of the given string minus 1 (4)] as 2nd argument, given: 3/2; other arguments were: "hello"');
+                       'string-ith: expects an exact integer in [0, length of the given string minus 1 (4)] as 2nd argument, but given: 3/2; other arguments were: "hello"');
 
         queueErrorTest("string-ith index out of bounds",
                        "(string-ith \"hello\" 5)",
-                       'string-ith: expects type exact integer in [0, length of the given string minus 1 (4)] as 2nd argument, given: 5; other arguments were: "hello"');
+                       'string-ith: expects an exact integer in [0, length of the given string minus 1 (4)] as 2nd argument, but given: 5; other arguments were: "hello"');
 
 //string-lower-case?
 
         queueErrorTest("string-lower-case? with wrong arity",
                        "(string-lower-case?)",
-                       'string-lower-case?: expects 1 argument, given 0');
+                       'string-lower-case?: expects 1 argument, but given 0');
 
         queueErrorTest("string-lower-case? with 1st argument not string",
                        "(string-lower-case? 2)",
-                       'string-lower-case?: expects type string as 1st argument, given: 2');
+                       'string-lower-case?: expects a string as 1st argument, but given: 2');
 
 //string-numeric?
 
         queueErrorTest("string-numeric? with wrong arity",
                        "(string-numeric?)",
-                       'string-numeric?: expects 1 argument, given 0');
+                       'string-numeric?: expects 1 argument, but given 0');
 
         queueErrorTest("tring-numeric? with 1st argument not string",
                        "(string-numeric? 2)",
-                       'string-numeric?: expects type string as 1st argument, given: 2');
+                       'string-numeric?: expects a string as 1st argument, but given: 2');
 
 
 //string-upper-case?
 
         queueErrorTest("string-upper-case? with wrong arity",
                        "(string-upper-case?)",
-                       'string-upper-case?: expects 1 argument, given 0');
+                       'string-upper-case?: expects 1 argument, but given 0');
 
         queueErrorTest("string-upper-case? with 1st argument not string",
                        "(string-upper-case? 2)",
-                       'string-upper-case?: expects type string as 1st argument, given: 2');
+                       'string-upper-case?: expects a string as 1st argument, but given: 2');
 //string-whitespace?
 
         queueErrorTest("string-whitespace? with wrong arity",
                        "(string-whitespace?)",
-                       'string-whitespace?: expects 1 argument, given 0');
+                       'string-whitespace?: expects 1 argument, but given 0');
 
         queueErrorTest("string-whitespace? with 1st argument not string",
                        "(string-whitespace? 2)",
-                       'string-whitespace?: expects type string as 1st argument, given: 2');
+                       'string-whitespace?: expects a string as 1st argument, but given: 2');
 
 //build-string
 
         queueErrorTest("build-string with wrong arity",
                        "(build-string)",
-                       'build-string: expects 2 arguments, given 0');
+                       'build-string: expects 2 arguments, but given 0');
 
         queueErrorTest("build-string? with 1st argument not non-negative exact integer",
                        "(build-string \"hello\" 2)",
-                       'build-string: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2');
+                       'build-string: expects a non-negative exact integer as 1st argument, but given: "hello"; other arguments were: 2');
 
         queueErrorTest("build-string? with 2nd argument not a proc",
                        "(build-string 5 \"hello\")",
-                       'build-string: expects type procedure as 2nd argument, given: "hello"; other arguments were: 5');
+                       'build-string: expects a procedure as 2nd argument, but given: "hello"; other arguments were: 5');
 
 //string->immutable-string DNE
 
@@ -6471,11 +6471,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("make-vector with wrong arity",
                        "(make-vector)",
-                       'make-vector: expects 2 arguments, given 0');
+                       'make-vector: expects 2 arguments, but given 0');
 
         queueErrorTest("make-vector with 1st argument not non-negative exact integer",
                        "(make-vector \"size\" 2)",
-                       'make-vector: expects type non-negative exact integer as 1st argument, given: "size"; other arguments were: 2');
+                       'make-vector: expects a non-negative exact integer as 1st argument, but given: "size"; other arguments were: 2');
 
 //PRIMITIVES['vector']
 
@@ -6483,25 +6483,25 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("vector-length with wrong arity",
                        "(vector-length)",
-                       'vector-length: expects 1 argument, given 0');
+                       'vector-length: expects 1 argument, but given 0');
 
         queueErrorTest("vector-length with 1st argument not vector",
                        "(vector-length 1)",
-                       'vector-length: expects type vector as 1st argument, given: 1');
+                       'vector-length: expects a vector as 1st argument, but given: 1');
 
 //PRIMITIVES['vector-ref']
 
         queueErrorTest("vector-ref with wrong arity",
                        "(vector-ref)",
-                       'vector-ref: expects 2 arguments, given 0');
+                       'vector-ref: expects 2 arguments, but given 0');
 
         queueErrorTest("vector-ref with 1st argument not vector",
                        "(vector-ref 1 2)",
-                       'vector-ref: expects type vector as 1st argument, given: 1; other arguments were: 2');
+                       'vector-ref: expects a vector as 1st argument, but given: 1; other arguments were: 2');
 
         queueErrorTest("vector-ref with 2nd argument not non-negative ",
                        "(vector-ref (make-vector 1) 2.2)",
-                       'make-vector: expects 2 arguments, given 1: 1');
+                       'make-vector: expects 2 arguments, but given 1: 1');
 
         queueErrorTest("vector-ref with index out of bounds",
                        "(vector-ref (vector 1) 7)",
@@ -6511,759 +6511,759 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("vector-set! with wrong arity",
                        "(vector-set! )",
-                       'vector-set!: expects 3 arguments, given 0');
+                       'vector-set!: expects 3 arguments, but given 0');
 
         queueErrorTest("vector-length with 1st argument not vector",
                        "(vector-length 1)",
-                       'vector-length: expects type vector as 1st argument, given: 1');
+                       'vector-length: expects a vector as 1st argument, but given: 1');
 
 
 //PRIMITIVES['vector->list']
 
         queueErrorTest("vector->list with wrong arity",
                        "(vector->list)",
-                       'vector->list: expects 1 argument, given 0');
+                       'vector->list: expects 1 argument, but given 0');
 
         queueErrorTest("vector->list with 1st argument not vector",
                        "(vector->list 1)",
-                       'vector->list: expects type vector as 1st argument, given: 1');
+                       'vector->list: expects a vector as 1st argument, but given: 1');
 
 //PRIMITIVES['list->vector']
 
         queueErrorTest("build-vector with wrong arity",
                        "(build-vector)",
-                       'build-vector: expects 2 arguments, given 0');
+                       'build-vector: expects 2 arguments, but given 0');
 
         queueErrorTest("list->vector with 1st argument not vector",
                        "(list->vector 1)",
-                       'list->vector: expects type list as 1st argument, given: 1');
+                       'list->vector: expects a list as 1st argument, but given: 1');
 
 //PRIMITIVES['build-vector']
 
         queueErrorTest("build-vector with wrong arity",
                        "(build-vector)",
-                       'build-vector: expects 2 arguments, given 0');
+                       'build-vector: expects 2 arguments, but given 0');
 
         queueErrorTest("build-vector with 1st argument not non-negative exact integer",
                        "(build-vector \"hello\" 2)",
-                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2');
+                       'build-vector: expects a non-negative exact integer as 1st argument, but given: "hello"; other arguments were: 2');
 
         queueErrorTest("build-vector with 2nd argument not a proc",
                        "(build-vector \"hello\" 2)",
-                       'build-vector: expects type non-negative exact integer as 1st argument, given: "hello"; other arguments were: 2');
+                       'build-vector: expects a non-negative exact integer as 1st argument, but given: "hello"; other arguments were: 2');
 
 
 //PRIMITIVES['char=?']
 
         queueErrorTest("char=? with wrong arity",
                        "(char=?)",
-                       'char=?: expects at least 2 arguments, given 0');
+                       'char=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char=? with 1st argument not char",
                        '(char=? "hello")',
-                       'char=?: expects at least 2 arguments, given 1: hello');
+                       'char=?: expects at least 2 arguments, but given 1: hello');
 
 //PRIMITIVES['char<?'] 
 
         queueErrorTest("char<? with wrong arity",
                        "(char<?)",
-                       'char<?: expects at least 2 arguments, given 0');
+                       'char<?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char<? with 1st argument not char",
                        "(char<? add1 #\\a)",
-                       'char<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char<? with 2nd argument not char",
                        "(char<? #\\a add1)",
-                       'char<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char>?'] 
 
         queueErrorTest("char>? with wrong arity",
                        "(char>?)",
-                       'char>?: expects at least 2 arguments, given 0');
+                       'char>?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char>? with 1st argument not char",
                        "(char>? add1 #\\a)",
-                       'char>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char>? with 2nd argument not char",
                        "(char>? #\\a add1)",
-                       'char>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char<=?']
 
         queueErrorTest("char<=? with wrong arity",
                        "(char<=?)",
-                       'char<=?: expects at least 2 arguments, given 0');
+                       'char<=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char<=? with 1st argument not char",
                        "(char<=? add1 #\\a)",
-                       'char<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char<=? with 2nd argument not char",
                        "(char<=? #\\a add1)",
-                       'char<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char>=?']
 
         queueErrorTest("char>=? with wrong arity",
                        "(char>=?)",
-                       'char>=?: expects at least 2 arguments, given 0');
+                       'char>=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char>=? with 1st argument not char",
                        "(char>=? add1 #\\a)",
-                       'char>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char>=? with 2nd argument not char",
                        "(char>=? #\\a add1)",
-                       'char>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 
 //PRIMITIVES['char-ci=?'] 
 
         queueErrorTest("char-ci=? with wrong arity",
                        "(char-ci=?)",
-                       'char-ci=?: expects at least 2 arguments, given 0');
+                       'char-ci=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char-ci=? with 1st argument not char",
                        "(char-ci=? add1 #\\a)",
-                       'char-ci=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci=? with 2nd argument not char",
                        "(char-ci=? #\\a add1)",
-                       'char-ci=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 
 //PRIMITIVES['char-ci<?'] 
 
         queueErrorTest("char-ci<? with wrong arity",
                        "(char-ci<?)",
-                       'char-ci<?: expects at least 2 arguments, given 0');
+                       'char-ci<?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char-ci<? with 1st argument not char",
                        "(char-ci<? add1 #\\a)",
-                       'char-ci<?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci<? with 2nd argument not char",
                        "(char-ci<? #\\a add1)",
-                       'char-ci<?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci>?'] 
 
         queueErrorTest("char-ci>? with wrong arity",
                        "(char-ci>?)",
-                       'char-ci>?: expects at least 2 arguments, given 0');
+                       'char-ci>?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char-ci>? with 1st argument not char",
                        "(char-ci>? add1 #\\a)",
-                       'char-ci>?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci>? with 2nd argument not char",
                        "(char-ci>? #\\a add1)",
-                       'char-ci>?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci<=?'] 
 
         queueErrorTest("char-ci<=? with wrong arity",
                        "(char-ci<=?)",
-                       'char-ci<=?: expects at least 2 arguments, given 0');
+                       'char-ci<=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char-ci<=? with 1st argument not char",
                        "(char-ci<=? add1 #\\a)",
-                       'char-ci<=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci<=? with 2nd argument not char",
                        "(char-ci<=? #\\a add1)",
-                       'char-ci<=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci>=?'] 
 
         queueErrorTest("char-ci>=? with wrong arity",
                        "(char-ci>=?)",
-                       'char-ci>=?: expects at least 2 arguments, given 0');
+                       'char-ci>=?: expects at least 2 arguments, but given 0');
 
         queueErrorTest("char-ci>=? with 1st argument not char",
                        "(char-ci>=? add1 #\\a)",
-                       'char-ci>=?: expects type char as 1st argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci>=? with 2nd argument not char",
                        "(char-ci>=? #\\a add1)",
-                       'char-ci>=?: expects type char as 2nd argument, given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-alphabetic?'] 
 
         queueErrorTest("char-alphabetic? with wrong arity",
                        "(char-alphabetic?)",
-                       'char-alphabetic?: expects 1 argument, given 0');
+                       'char-alphabetic?: expects 1 argument, but given 0');
 
         queueErrorTest("char-alphabetic? with 1st argument not char",
                        "(char-alphabetic? add1)",
-                       'char-alphabetic?: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char-alphabetic?: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['char-numeric?'] 
 
         queueErrorTest("char-numeric? with wrong arity",
                        "(char-numeric?)",
-                       'char-numeric?: expects 1 argument, given 0');
+                       'char-numeric?: expects 1 argument, but given 0');
 
         queueErrorTest("char-numeric? with 1st argument not char",
                        "(char-numeric? add1)",
-                       'char-numeric?: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char-numeric?: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['char-whitespace?']
 
         queueErrorTest("char-whitespace? with wrong arity",
                        "(char-whitespace?)",
-                       'char-whitespace?: expects 1 argument, given 0');
+                       'char-whitespace?: expects 1 argument, but given 0');
 
         queueErrorTest("char-whitespace? with 1st argument not char",
                        "(char-whitespace? add1)",
-                       'char-whitespace?: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char-whitespace?: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['char-upper-case?'] 
 
         queueErrorTest("char-upper-case? with wrong arity",
                        "(char-upper-case?)",
-                       'char-upper-case?: expects 1 argument, given 0');
+                       'char-upper-case?: expects 1 argument, but given 0');
 
         queueErrorTest("char-upper-case? with 1st argument not char",
                        "(char-upper-case? add1)",
-                       'char-upper-case?: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char-upper-case?: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['char-lower-case?'] 
 
         queueErrorTest("char-lower-case? with wrong arity",
                        "(char-lower-case?)",
-                       'char-lower-case?: expects 1 argument, given 0');
+                       'char-lower-case?: expects 1 argument, but given 0');
 
         queueErrorTest("char-lower-case? with 1st argument not char",
                        "(char-lower-case? add1)",
-                       'char-lower-case?: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char-lower-case?: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['char->integer'] 
 
         queueErrorTest("char->integer with wrong arity",
                        "(char->integer)",
-                       'char->integer: expects 1 argument, given 0');
+                       'char->integer: expects 1 argument, but given 0');
 
         queueErrorTest("char->integer with 1st argument not char",
                        "(char->integer add1)",
-                       'char->integer: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char->integer: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['integer->char'] 
 
         queueErrorTest("integer->char with wrong arity",
                        "(integer->char)",
-                       'integer->char: expects 1 argument, given 0');
+                       'integer->char: expects 1 argument, but given 0');
 
         queueErrorTest("integer->char with 1st argument not integer",
                        "(integer->char add1)",
-                       'integer->char: expects type exact integer in [0,#x10FFFF], not in [#xD800,#xDFFF] as 1st argument, given: #<procedure:add1>');
+                       'integer->char: expects an exact integer in [0,#x10FFFF], not in [#xD800,#xDFFF] as 1st argument, but given: #<procedure:add1>');
 //perhaps change the error message so hex does not show
 
 //PRIMITIVES['char-upcase']
 
         queueErrorTest("char-upcaser with wrong arity",
                        "(char-upcase)",
-                       'char-upcase: expects 1 argument, given 0');
+                       'char-upcase: expects 1 argument, but given 0');
 
         queueErrorTest("char-upcase with 1st argument not char",
                        "(char-upcase add1)",
-                       'char-upcase: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char-upcase: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['char-downcase'] 
 
         queueErrorTest("char-downcase with wrong arity",
                        "(char-downcase)",
-                       'char-downcase: expects 1 argument, given 0');
+                       'char-downcase: expects 1 argument, but given 0');
 
         queueErrorTest("char-downcase with 1st argument not char",
                        "(char-downcase add1)",
-                       'char-downcase: expects type char as 1st argument, given: #<procedure:add1>');
+                       'char-downcase: expects a char as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['make-posn'] 
 
         queueErrorTest("make-posn with wrong arity",
                        "(make-posn)",
-                       'make-posn: expects 2 arguments, given 0');
+                       'make-posn: expects 2 arguments, but given 0');
 
 //PRIMITIVES['posn-x']
 
         queueErrorTest("posn-x with wrong arity",
                        "(posn-x)",
-                       'posn-x: expects 1 argument, given 0');
+                       'posn-x: expects 1 argument, but given 0');
 
         queueErrorTest("posn-x with 1st argument not posn",
                        "(posn-x add1)",
-                       'posn-x: expects type posn as 1st argument, given: #<procedure:add1>');
+                       'posn-x: expects a posn as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['posn-y'] 
 
         queueErrorTest("posn-y with wrong arity",
                        "(posn-y)",
-                       'posn-y: expects 1 argument, given 0');
+                       'posn-y: expects 1 argument, but given 0');
 
         queueErrorTest("posn-y with 1st argument not posn",
                        "(posn-y add1)",
-                       'posn-y: expects type posn as 1st argument, given: #<procedure:add1>');
+                       'posn-y: expects a posn as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['key=?'] 
 
         queueErrorTest("key=? with wrong arity",
                        "(key=?)",
-                       'key=?: expects 2 arguments, given 0');
+                       'key=?: expects 2 arguments, but given 0');
 
 //PRIMITIVES['image?'] 
 
         queueErrorTest("image? with wrong arity",
                        "(image?)",
-                       'image?: expects 1 argument, given 0');
+                       'image?: expects 1 argument, but given 0');
 
 //PRIMITIVES['make-color']
 
         queueErrorTest("make-color with wrong arity",
                        "(make-color)",
-                       'make-color: expects 3 or 4 arguments, given 0');
+                       'make-color: expects 3 or 4 arguments, but given 0');
 
         queueErrorTest("make-color with 1st argument not a number between 0 and 255",
                        "(make-color 256 1 2 3)",
-                       'make-color: expects type number between 0 and 255 as 1st argument, given: 256; other arguments were: 1 2 3');
+                       'make-color: expects a number between 0 and 255 as 1st argument, but given: 256; other arguments were: 1 2 3');
 
         queueErrorTest("make-color with 2nd argument not a number between 0 and 255",
                        "(make-color 255 256 2 3)",
-                       'make-color: expects type number between 0 and 255 as 2nd argument, given: 256; other arguments were: 255 2 3');
+                       'make-color: expects a number between 0 and 255 as 2nd argument, but given: 256; other arguments were: 255 2 3');
 
 
         queueErrorTest("make-color with 3rd argument not a number between 0 and 255",
                        "(make-color 255 255 256 3)",
-                       'make-color: expects type number between 0 and 255 as 3rd argument, given: 256; other arguments were: 255 255 3');
+                       'make-color: expects a number between 0 and 255 as 3rd argument, but given: 256; other arguments were: 255 255 3');
 
         queueErrorTest("make-color with 4th argument not a number between 0 and 255",
                        "(make-color 255 255 255 256)",
-                       'make-color: expects type number between 0 and 255 as 4th argument, given: 256; other arguments were: 255 255 255');
+                       'make-color: expects a number between 0 and 255 as 4th argument, but given: 256; other arguments were: 255 255 255');
 
 //PRIMITIVES['color-red']
 
         queueErrorTest("color-red with wrong arity",
                        "(color-red)",
-                       'color-red: expects 1 argument, given 0');
+                       'color-red: expects 1 argument, but given 0');
 
         queueErrorTest("color-red with 1st argument not color",
                        "(color-red add1)",
-                       'color-red: expects type color as 1st argument, given: #<procedure:add1>');
+                       'color-red: expects a color as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['color-green'] 
 
         queueErrorTest("color-green with wrong arity",
                        "(color-green)",
-                       'color-green: expects 1 argument, given 0');
+                       'color-green: expects 1 argument, but given 0');
 
         queueErrorTest("color-green with 1st argument not color",
                        "(color-green add1)",
-                       'color-green: expects type color as 1st argument, given: #<procedure:add1>');
+                       'color-green: expects a color as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['color-blue'] 
 
         queueErrorTest("color-blue with wrong arity",
                        "(color-blue)",
-                       'color-blue: expects 1 argument, given 0');
+                       'color-blue: expects 1 argument, but given 0');
 
         queueErrorTest("color-blue with 1st argument not color",
                        "(color-blue add1)",
-                       'color-blue: expects type color as 1st argument, given: #<procedure:add1>');
+                       'color-blue: expects a color as 1st argument, but given: #<procedure:add1>');
 
 //PRIMITIVES['color-alpha']
 
         queueErrorTest("color-alpha with wrong arity",
                        "(color-alpha)",
-                       'color-alpha: expects 1 argument, given 0');
+                       'color-alpha: expects 1 argument, but given 0');
 
         queueErrorTest("color-alpha with 1st argument not color",
                        "(color-alpha add1)",
-                       'color-alpha: expects type color as 1st argument, given: #<procedure:add1>');
+                       'color-alpha: expects a color as 1st argument, but given: #<procedure:add1>');
 
 
 //PRIMITIVES['empty-scene'] 
 
         queueErrorTest("empty-scene with wrong arity",
                        "(empty-scene)",
-                       'empty-scene: expects 2 arguments, given 0');
+                       'empty-scene: expects 2 arguments, but given 0');
 
         queueErrorTest("empty-scene with 1st argument not non-negative number",
                        "(empty-scene add1 2)",
-                       'empty-scene: expects type non-negative number as 1st argument, given: #<procedure:add1>; other arguments were: 2');
+                       'empty-scene: expects a non-negative number as 1st argument, but given: #<procedure:add1>; other arguments were: 2');
 
         queueErrorTest("empty-scene with 2nd argument not non-negative number",
                        "(empty-scene 0 add1)",
-                       'empty-scene: expects type non-negative number as 2nd argument, given: #<procedure:add1>; other arguments were: 0');
+                       'empty-scene: expects a non-negative number as 2nd argument, but given: #<procedure:add1>; other arguments were: 0');
 
 //PRIMITIVES['place-image']
 
         queueErrorTest("empty-scene with wrong arity",
                        "(empty-scene)",
-                       'empty-scene: expects 2 arguments, given 0');
+                       'empty-scene: expects 2 arguments, but given 0');
 
         queueErrorTest("empty-scene with 1st argument not non-negative number",
                        "(empty-scene add1 2)",
-                       'empty-scene: expects type non-negative number as 1st argument, given: #<procedure:add1>; other arguments were: 2');
+                       'empty-scene: expects a non-negative number as 1st argument, but given: #<procedure:add1>; other arguments were: 2');
 
         queueErrorTest("empty-scene with 2nd argument not non-negative number",
                        "(empty-scene 0 add1)",
-                       'empty-scene: expects type non-negative number as 2nd argument, given: #<procedure:add1>; other arguments were: 0');
+                       'empty-scene: expects a non-negative number as 2nd argument, but given: #<procedure:add1>; other arguments were: 0');
 
 //PRIMITIVES['place-image/align']
 
         queueErrorTest("place-image/align with wrong arity",
                        "(place-image/align)",
-                       'place-image/align: expects 6 arguments, given 0');
+                       'place-image/align: expects 6 arguments, but given 0');
 
         queueErrorTest("place-image/align with 1st argument not image",
                        "(place-image/align add1 2 3 4 5 6)",
-                       'place-image/align: expects type image as 1st argument, given: #<procedure:add1>; other arguments were: 2 3 4 5 6');
+                       'place-image/align: expects an image as 1st argument, but given: #<procedure:add1>; other arguments were: 2 3 4 5 6');
 
         queueErrorTest("place-image/align with 2nd argument not real number",
                        "(place-image/align (circle 50 \"solid\" \"red\") \"hello\" 3 4 5 6)",
-                       'place-image/align: expects type real number as 2nd argument, given: "hello"; other arguments were: <image> 3 4 5 6');
+                       'place-image/align: expects a real number as 2nd argument, but given: "hello"; other arguments were: <image> 3 4 5 6');
 
         queueErrorTest("place-image/align with 3rd argument not real number",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 \"hello\" 4 5 6)",
-                       'place-image/align: expects type real number as 3rd argument, given: "hello"; other arguments were: <image> 2 4 5 6');
+                       'place-image/align: expects a real number as 3rd argument, but given: "hello"; other arguments were: <image> 2 4 5 6');
 
         queueErrorTest("place-image/align with 4th argument not x-place",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 3 (make-posn 2 3) 5 6)",
-                       'place-image/align: expects type x-place as 4th argument, given: (posn 2 3); other arguments were: <image> 2 3 5 6');
+                       'place-image/align: expects a x-place as 4th argument, but given: (posn 2 3); other arguments were: <image> 2 3 5 6');
 
         queueErrorTest("place-image/alignwith 5th argument not y-place",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 3 \"left\" 5 6)",
-                       'place-image/align: expects type y-place as 5th argument, given: 5; other arguments were: <image> 2 3 "left" 6');
+                       'place-image/align: expects a y-place as 5th argument, but given: 5; other arguments were: <image> 2 3 "left" 6');
 
         queueErrorTest("place-image/align with 6th argument not image",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 3 \"left\" \"top\" add1)",
-                       'place-image/align: expects type image as 6th argument, given: #<procedure:add1>; other arguments were: <image> 2 3 "left" "top"');
+                       'place-image/align: expects an image as 6th argument, but given: #<procedure:add1>; other arguments were: <image> 2 3 "left" "top"');
 
 //PRIMITIVES['scene+line'] 
 
         queueErrorTest("scene+line with wrong arity",
                        "(scene+line)",
-                       'scene+line: expects 6 arguments, given 0');
+                       'scene+line: expects 6 arguments, but given 0');
 
 
 //PRIMITIVES['put-pinhole'] 
 
         queueErrorTest("put-pinhole with wrong arity",
                        "(put-pinhole)",
-                       'put-pinhole: expects 3 arguments, given 0');
+                       'put-pinhole: expects 3 arguments, but given 0');
 
         queueErrorTest("put-pinhole with 1st argument not image",
                        "(put-pinhole 1 2 3)",
-                       'put-pinhole: expects type image as 1st argument, given: 1; other arguments were: 2 3');
+                       'put-pinhole: expects an image as 1st argument, but given: 1; other arguments were: 2 3');
 
         queueErrorTest("put-pinhole with 2nd argument not image",
                        "(put-pinhole (circle 50 \"solid\" \"red\") add1 3)",
-                       'put-pinhole: expects type real as 2nd argument, given: #<procedure:add1>; other arguments were: <image> 3');
+                       'put-pinhole: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: <image> 3');
 
         queueErrorTest("put-pinhole with 3rd argument not image",
                        "(put-pinhole (circle 50 \"solid\" \"red\") 1 add1)",
-                       'put-pinhole: expects type real as 3rd argument, given: #<procedure:add1>; other arguments were: <image> 1');
+                       'put-pinhole: expects a real as 3rd argument, but given: #<procedure:add1>; other arguments were: <image> 1');
 
 //PRIMITIVES['circle']
 
         queueErrorTest("circle with wrong arity",
                        "(circle)",
-                       'circle: expects 3 arguments, given 0');
+                       'circle: expects 3 arguments, but given 0');
 
         queueErrorTest("circle with 1st argument not non-negative number",
                        "(circle \"foo\" 2 3)",
-                       'circle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3');
+                       'circle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3');
 
         queueErrorTest("circle with 2nd argument not style",
                        "(circle 1 2 3)",
-                       'circle: expects type style as 2nd argument, given: 2; other arguments were: 1 3');
+                       'circle: expects a style as 2nd argument, but given: 2; other arguments were: 1 3');
 
         queueErrorTest("circle with 3rd argument not colour",
                        "(circle 1 \"solid\" add1)",
-                       'circle: expects type color as 3rd argument, given: #<procedure:add1>; other arguments were: 1 "solid"');
+                       'circle: expects a color as 3rd argument, but given: #<procedure:add1>; other arguments were: 1 "solid"');
 
 //PRIMITIVES['star']
 
         queueErrorTest("star with wrong arity",
                        "(star)",
-                       'star: expects 5 or 3 arguments, given 0');
+                       'star: expects 5 or 3 arguments, but given 0');
 
         queueErrorTest("star with 1st argument not non-negative number",
                        "(star \"hello\" 2 3)",
-                       'star: expects type non-negative number as 1st argument, given: "hello"; other arguments were: 2 3');
+                       'star: expects a non-negative number as 1st argument, but given: "hello"; other arguments were: 2 3');
 
         queueErrorTest("star with 2nd argument not image",
                        "(star 1 2 3)",
-                       'star: expects type style as 2nd argument, given: 2; other arguments were: 1 3');
+                       'star: expects a style as 2nd argument, but given: 2; other arguments were: 1 3');
 
         queueErrorTest("star with 3rd argument not colour",
                        "(star 1 \"solid\" add1)",
-                       'star: expects type color as 3rd argument, given: #<procedure:add1>; other arguments were: 1 "solid"');
+                       'star: expects a color as 3rd argument, but given: #<procedure:add1>; other arguments were: 1 "solid"');
 
 //PRIMITIVES['radial-star'] 
 
         queueErrorTest("radial-star with wrong arity",
                        "(radial-star)",
-                       'radial-star: expects 5 arguments, given 0');
+                       'radial-star: expects 5 arguments, but given 0');
 
         queueErrorTest("radial-star with 1st argument not positive integer greater than or equal to 2",
                        "(radial-star 1 2 3 4 5)",
-                       'radial-star: expects type positive integer greater than or equal to 2 as 1st argument, given: 1; other arguments were: 2 3 4 5');
+                       'radial-star: expects a positive integer greater than or equal to 2 as 1st argument, but given: 1; other arguments were: 2 3 4 5');
 
         queueErrorTest("star with 2nd argument not positive number",
                        "(radial-star 5 \"foo\" 3 4 5)",
-                       'radial-star: expects type positive number as 2nd argument, given: "foo"; other arguments were: 5 3 4 5');
+                       'radial-star: expects a positive number as 2nd argument, but given: "foo"; other arguments were: 5 3 4 5');
 
         queueErrorTest("star with 3rd argument not positive number",
                        "(radial-star 5 4 \"foo\" 4 5)",
-                       'radial-star: expects type positive number as 3rd argument, given: "foo"; other arguments were: 5 4 4 5');
+                       'radial-star: expects a positive number as 3rd argument, but given: "foo"; other arguments were: 5 4 4 5');
 
         queueErrorTest("star with 4th argument not style",
                        "(radial-star 5 4 2 \"foo\" 5)",
-                       'radial-star: expects type style as 4th argument, given: "foo"; other arguments were: 5 4 2 5');
+                       'radial-star: expects a style as 4th argument, but given: "foo"; other arguments were: 5 4 2 5');
 
         queueErrorTest("star with 5th argument not colour",
                        "(radial-star 5 4 2 \"solid\" \"foo\")",
-                       'radial-star: expects type color as 5th argument, given: "foo"; other arguments were: 5 4 2 "solid"');
+                       'radial-star: expects a color as 5th argument, but given: "foo"; other arguments were: 5 4 2 "solid"');
 
 //PRIMITIVES['nw:rectangle']
 
         queueErrorTest("nw:rectangle wrong arity",
                        "(nw:rectangle)",
-                       'nw:rectangle: expects 4 arguments, given 0');
+                       'nw:rectangle: expects 4 arguments, but given 0');
 
         queueErrorTest("radial-star with 1st argument non-negative number",
                        "(nw:rectangle \"foo\" 2 3 4)",
-                       'nw:rectangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+                       'nw:rectangle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("star with 2nd argument not non-negative number",
                        "(nw:rectangle 2 \"foo\" 3 4)",
-                       'nw:rectangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+                       'nw:rectangle: expects a non-negative number as 2nd argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("star with 3rd argument not style",
                        "(nw:rectangle 2 5 add1 4)",
-                       'nw:rectangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'nw:rectangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("star with 4th argument not colour",
                        "(nw:rectangle 2 5 \"outline\" \"focus\")",
-                       'nw:rectangle: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
+                       'nw:rectangle: expects a color as 4th argument, but given: "focus"; other arguments were: 2 5 "outline"');
 
 // PRIMITIVES['rectangle'] 
 
         queueErrorTest("rectangle wrong arity",
                        "(rectangle)",
-                       'rectangle: expects 4 arguments, given 0');
+                       'rectangle: expects 4 arguments, but given 0');
 
         queueErrorTest("rectangle with 1st argument non-negative number",
                        "(rectangle \"foo\" 2 3 4)",
-                       'rectangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+                       'rectangle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("rectangle with 2nd argument not non-negative number",
                        "(rectangle 2 \"foo\" 3 4)",
-                       'rectangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+                       'rectangle: expects a non-negative number as 2nd argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("rectangle with 3rd argument not style",
                        "(rectangle 2 5 add1 4)",
-                       'rectangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'rectangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("rectangle with 4th argument not colour",
                        "(rectangle 2 5 \"outline\" \"focus\")",
-                       'rectangle: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
+                       'rectangle: expects a color as 4th argument, but given: "focus"; other arguments were: 2 5 "outline"');
 
 // PRIMITIVES['regular-polygon'] 
 
         queueErrorTest("regular-polygon wrong arity",
                        "(regular-polygon)",
-                       'regular-polygon: expects 4 arguments, given 0');
+                       'regular-polygon: expects 4 arguments, but given 0');
 
         queueErrorTest("rectangle with 1st argument not non-negative number",
                        "(regular-polygon \"foo\" 2 3 4)",
-                       'regular-polygon: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+                       'regular-polygon: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("rectangle with 2nd argument not positive integer greater than or equal to 3",
                        "(regular-polygon 2 \"foo\" 3 4)",
-                       'regular-polygon: expects type positive integer greater than or equal to 3 as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+                       'regular-polygon: expects a positive integer greater than or equal to 3 as 2nd argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("regular-polygon with 3rd argument not style",
                        "(regular-polygon 2 5 add1 4)",
-                       'regular-polygon: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'regular-polygon: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("regular-polygonwith 4th argument not colour",
                        "(regular-polygon 2 5 \"outline\" \"focus\")",
-                       'regular-polygon: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
+                       'regular-polygon: expects a color as 4th argument, but given: "focus"; other arguments were: 2 5 "outline"');
 
 // PRIMITIVES['star-polygon'] 
 
         queueErrorTest("star-polygon wrong arity",
                        "(star-polygon)",
-                       'star-polygon: expects 5 arguments, given 0');
+                       'star-polygon: expects 5 arguments, but given 0');
 
         queueErrorTest("star-polygon with 1st argument not non-negative number",
                        "(star-polygon \"foo\" 2 3 4 5)",
-                       'star-polygon: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4 5');
+                       'star-polygon: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3 4 5');
 
         queueErrorTest("star-polygon with 2nd argument not positive integer greater than or equal to 3",
                        "(star-polygon 2 \"foo\" 3 4 5)",
-                       'star-polygon: expects type positive integer greater than or equal to 3 as 2nd argument, given: "foo"; other arguments were: 2 3 4 5');
+                       'star-polygon: expects a positive integer greater than or equal to 3 as 2nd argument, but given: "foo"; other arguments were: 2 3 4 5');
 
         queueErrorTest("star-polygon with 3rd argument not positive integer greater than or equal to 1",
                        "(star-polygon 2 5 add1 4 5)",
-                       'star-polygon: expects type positive integer greater than or equal to 1 as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4 5');
+                       'star-polygon: expects a positive integer greater than or equal to 1 as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4 5');
 
         queueErrorTest("star-polygon with 4th argument not style",
                        "(star-polygon 2 5 5 add1 5)",
-                       'star-polygon: expects type style as 4th argument, given: #<procedure:add1>; other arguments were: 2 5 5 5');
+                       'star-polygon: expects a style as 4th argument, but given: #<procedure:add1>; other arguments were: 2 5 5 5');
 
         queueErrorTest("star-polygon with 5th argument not colour",
                        "(star-polygon 2 5 5 \"outline\" \"focus\")",
-                       'star-polygon: expects type color as 5th argument, given: "focus"; other arguments were: 2 5 5 "outline"');
+                       'star-polygon: expects a color as 5th argument, but given: "focus"; other arguments were: 2 5 5 "outline"');
 
 // PRIMITIVES['rhombus'] 
 
         queueErrorTest("rhombus wrong arity",
                        "(rhombus)",
-                       'rhombus: expects 4 arguments, given 0');
+                       'rhombus: expects 4 arguments, but given 0');
 
         queueErrorTest("rhombus with 1st argument non-negative number",
                        "(rhombus \"foo\" 2 3 4)",
-                       'rhombus: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 2 3 4');
+                       'rhombus: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("star with 2nd argument not non-negative number",
                        "(rhombus 2 \"foo\" 3 4)",
-                       'rhombus: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 2 3 4');
+                       'rhombus: expects a non-negative number as 2nd argument, but given: "foo"; other arguments were: 2 3 4');
 
         queueErrorTest("rhombus with 3rd argument not style",
                        "(rhombus 2 5 add1 4)",
-                       'rhombus: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'rhombus: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("rhombus with 4th argument not colour",
                        "(rhombus 2 5 \"outline\" \"focus\")",
-                       'rhombus: expects type color as 4th argument, given: "focus"; other arguments were: 2 5 "outline"');
+                       'rhombus: expects a color as 4th argument, but given: "focus"; other arguments were: 2 5 "outline"');
 
 
 // PRIMITIVES['square'] 
 
         queueErrorTest("square wrong arity",
                        "(square)",
-                       'square: expects 3 arguments, given 0');
+                       'square: expects 3 arguments, but given 0');
 
         queueErrorTest("square with 1st argument non-negative number",
                        "(square \"foo\" 3 4)",
-                       'square: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4');
+                       'square: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 3 4');
 
         queueErrorTest("square with 2nd argument not style",
                        "(square 2 add1 4)",
-                       'square: expects type style as 2nd argument, given: #<procedure:add1>; other arguments were: 2 4');
+                       'square: expects a style as 2nd argument, but given: #<procedure:add1>; other arguments were: 2 4');
 
         queueErrorTest("square with 3rd argument not colour",
                        "(square 2 \"outline\" \"focus\")",
-                       'square: expects type color as 3rd argument, given: "focus"; other arguments were: 2 "outline"');
+                       'square: expects a color as 3rd argument, but given: "focus"; other arguments were: 2 "outline"');
 
 // PRIMITIVES['triangle'] 
 
         queueErrorTest("triangle wrong arity",
                        "(triangle)",
-                       'triangle: expects 3 arguments, given 0');
+                       'triangle: expects 3 arguments, but given 0');
 
         queueErrorTest("triangle with 1st argument non-negative number",
                        "(triangle \"foo\" 3 4)",
-                       'triangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4');
+                       'triangle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 3 4');
 
         queueErrorTest("triangle with 2nd argument not style",
                        "(triangle 2 add1 4)",
-                       'triangle: expects type style as 2nd argument, given: #<procedure:add1>; other arguments were: 2 4');
+                       'triangle: expects a style as 2nd argument, but given: #<procedure:add1>; other arguments were: 2 4');
 
         queueErrorTest("triangle with 3rd argument not colour",
                        "(triangle 2 \"outline\" \"focus\")",
-                       'triangle: expects type color as 3rd argument, given: "focus"; other arguments were: 2 "outline"');
+                       'triangle: expects a color as 3rd argument, but given: "focus"; other arguments were: 2 "outline"');
 
 // PRIMITIVES['right-triangle'] 
 
         queueErrorTest("right-triangle wrong arity",
                        "(right-triangle)",
-                       'right-triangle: expects 4 arguments, given 0');
+                       'right-triangle: expects 4 arguments, but given 0');
 
         queueErrorTest("right-triangle with 1st argument non-negative number",
                        "(right-triangle \"foo\" 3 4 3)",
-                       'right-triangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4 3');
+                       'right-triangle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 3 4 3');
 
         queueErrorTest("right-triangle with 2nd argument non-negative number",
                        "(right-triangle 5 \"foo\" 3 4)",
-                       'right-triangle: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 5 3 4');
+                       'right-triangle: expects a non-negative number as 2nd argument, but given: "foo"; other arguments were: 5 3 4');
 
         queueErrorTest("right-triangle with 3rd argument not style",
                        "(right-triangle 2 4 add1 4)",
-                       'right-triangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4 4');
+                       'right-triangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("right-triangle with 4th argument not colour",
                        "(right-triangle 5 2 \"outline\" \"focus\")",
-                       'right-triangle: expects type color as 4th argument, given: "focus"; other arguments were: 5 2 "outline"');
+                       'right-triangle: expects a color as 4th argument, but given: "focus"; other arguments were: 5 2 "outline"');
 
 // PRIMITIVES['isosceles-triangle'] 
 
 
         queueErrorTest("isosceles-triangle wrong arity",
                        "(isosceles-triangle)",
-                       'isosceles-triangle: expects 4 arguments, given 0');
+                       'isosceles-triangle: expects 4 arguments, but given 0');
 
         queueErrorTest("isosceles-triangle with 1st argument not non-negative number",
                        "(isosceles-triangle \"foo\" 3 4 3)",
-                       'isosceles-triangle: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4 3');
+                       'isosceles-triangle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 3 4 3');
 
         queueErrorTest("isosceles-triangle with 2nd argument not finite real number between 0 and 360",
                        "(isosceles-triangle 5 \"foo\" 3 4)",
-                       'isosceles-triangle: expects type finite real number between 0 and 360 as 2nd argument, given: "foo"; other arguments were: 5 3 4');
+                       'isosceles-triangle: expects a finite real number between 0 and 360 as 2nd argument, but given: "foo"; other arguments were: 5 3 4');
 
         queueErrorTest("isosceles-triangle with 3rd argument not style",
                        "(isosceles-triangle 2 4 add1 4)",
-                       'isosceles-triangle: expects type style as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4 4');
+                       'isosceles-triangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("isosceles-triangle with 4th argument not colour",
                        "(isosceles-triangle 5 2 \"outline\" \"focus\")",
-                       'isosceles-triangle: expects type color as 4th argument, given: "focus"; other arguments were: 5 2 "outline"');
+                       'isosceles-triangle: expects a color as 4th argument, but given: "focus"; other arguments were: 5 2 "outline"');
 
 // PRIMITIVES['ellipse'] 
 
         queueErrorTest("ellipse wrong arity",
                        "(ellipse)",
-                       'ellipse: expects 4 arguments, given 0');
+                       'ellipse: expects 4 arguments, but given 0');
 
         queueErrorTest("ellipse with 1st argument not non-negative number",
                        "(ellipse \"foo\" 3 4 3)",
-                       'ellipse: expects type non-negative number as 1st argument, given: "foo"; other arguments were: 3 4 3');
+                       'ellipse: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 3 4 3');
 
         queueErrorTest("ellipse with 2nd argument not non-negative number",
                        "(ellipse 5 \"foo\" 3 4)",
-                       'ellipse: expects type non-negative number as 2nd argument, given: "foo"; other arguments were: 5 3 4');
+                       'ellipse: expects a non-negative number as 2nd argument, but given: "foo"; other arguments were: 5 3 4');
 
         queueErrorTest("ellipse with 3rd argument not string",
                        "(ellipse 2 4 add1 4)",
-                       'ellipse: expects type string as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4 4');
+                       'ellipse: expects a string as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("ellipse with 4th argument not colour",
                        "(ellipse 5 2 \"outline\" \"focus\")",
-                       'ellipse: expects type color as 4th argument, given: "focus"; other arguments were: 5 2 "outline"');
+                       'ellipse: expects a color as 4th argument, but given: "focus"; other arguments were: 5 2 "outline"');
 
 // PRIMITIVES['line'] 
 
         queueErrorTest("line wrong arity",
                        "(line)",
-                       'line: expects 3 arguments, given 0');
+                       'line: expects 3 arguments, but given 0');
 
         queueErrorTest("line 1st argument not finite real",
                        "(line \"foo\" 3 4)",
-                       'line: expects type finite real number as 1st argument, given: "foo"; other arguments were: 3 4');
+                       'line: expects a finite real number as 1st argument, but given: "foo"; other arguments were: 3 4');
 
         queueErrorTest("line with 2nd argument not finite real",
                        "(line 5 \"foo\" 3)",
-                       'line: expects type finite real number as 2nd argument, given: "foo"; other arguments were: 5 3');
+                       'line: expects a finite real number as 2nd argument, but given: "foo"; other arguments were: 5 3');
 
         queueErrorTest("line with 3rd argument not colour",
                        "(line 2 4 add1)",
-                       'line: expects type color as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4');
+                       'line: expects a color as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4');
 
         //////////////////////////////////////////////////////////////////////
 

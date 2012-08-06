@@ -751,7 +751,7 @@ PRIMITIVES['check-within'] =
 		 false, false,
 		 function(aState, actual, expected, range) {
 		 	if ( !isNonNegativeReal(range) ) {
-				var msg = helpers.format('check-within requires a non-negative real number for range, given ~s.',
+				var msg = helpers.format('check-within requires a non-negative real number for range, but given ~s.',
 							 [range]);
 				raise( types.incompleteExn(types.exnFailContract, msg, []) );
 			}
