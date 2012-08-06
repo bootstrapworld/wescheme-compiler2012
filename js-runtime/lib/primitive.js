@@ -670,7 +670,7 @@ PRIMITIVES['verify-boolean-branch-value'] =
 				 new types.Message([new types.ColoredPart(name, nameLoc), 
 						    ": expected a boolean value, but found: ",
 						    new types.ColoredPart(types.toWrittenString(x),
-                                                                          aLoc),
+                                                                          aLoc)
                                                     
 						   ]),
                                  []));  
