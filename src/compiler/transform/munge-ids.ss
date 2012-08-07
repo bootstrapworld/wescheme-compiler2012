@@ -2,7 +2,6 @@
 
 
 (require "anormal-frag-helpers.ss")
-(require "../rbtree.ss")
 (require "../../collects/moby/runtime/stx.ss")
 
 ;; format strings to modify symbols
@@ -34,15 +33,15 @@
                                                    new-name
                                                    (third expr)))])
            (foldl (lambda (old-proc new-proc a-tree)
-                    (rbtree-insert symbol< a-tree old-proc new-proc))
-                  (rbtree-insert symbol< base-tree (second expr) new-name)
+                    (hash-set a-tree old-proc new-proc))
+                  (hash-set base-tree (second expr) new-name)
                   orig-procs
                   new-procs))]
         [(equal? (first expr) 'define)
          (let ([name (if (cons? (second expr))
                          (first (second expr))
                          (second expr))])
-           (rbtree-insert symbol< base-tree name
+           (hash-set base-tree name
                           (string->symbol (format def-prepend (gensym) name))))]
         [else base-tree])))
 
@@ -54,14 +53,12 @@
 (define (replace-ids expr replacements)
   (cond
     ;; if we have an identifier we might need to replace it
-    [(symbol? (stx-e expr)) (if (false? (rbtree-lookup symbol<
-                                                       replacements
-                                                       (stx-e expr)))
+    [(symbol? (stx-e expr)) (if (not (hash-has-key? replacements
+                                                    (stx-e expr)))
                                 expr
                                 (datum->stx false
-                                            (second (rbtree-lookup symbol<
-                                                                   replacements
-                                                                   (stx-e expr)))
+                                            (hash-ref replacements
+                                                              (stx-e expr))
                                             (stx-loc expr)))]
     ;; if we have a list, cheeck the first element of the list
     [(stx:list? expr)
@@ -78,12 +75,11 @@
                                    (rest (stx->datum (second expr-list)))
                                    empty))]
                  [new-replacements (foldl (lambda (symb a-tree)
-                                            (rbtree-insert symbol<
-                                                           a-tree
-                                                           symb
-                                                           (string->symbol
-                                                            (format arg-prepend
-                                                                    symb))))
+                                            (hash-set a-tree
+                                                      symb
+                                                      (string->symbol
+                                                       (format arg-prepend
+                                                               symb))))
                                           replacements
                                           new-args)])
             (datum->stx false
@@ -132,7 +128,7 @@
 (define (munge-identifiers expr)
   (begin
     (reset-gensym)
-    (replace-ids expr (foldl get-id-tree empty-rbtree (stx->datum expr)))))
+    (replace-ids expr (foldl get-id-tree (make-immutable-hash) (stx->datum expr)))))
 
 
 (provide/contract [munge-identifiers (stx:list? . -> . stx:list?)])

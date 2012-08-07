@@ -1,9 +1,9 @@
-#lang s-exp "lang.ss"
+#lang racket/base
 
-(define pair? cons?)
-
-(require "rbtree.ss")
-(require "helpers.ss")
+(require "helpers.ss"
+         racket/contract
+         racket/local
+         racket/bool)
 (require "../collects/moby/runtime/stx.ss")
 (require "../collects/moby/runtime/error-struct.ss")
 (require "../collects/moby/runtime/binding.ss")
@@ -11,7 +11,7 @@
 
 ;; An env collects a set of bindings.
 (define-struct env (bindings))
-(define empty-env (make-env empty-rbtree))
+(define empty-env (make-env (make-immutable-hash)))
 
 
 
@@ -19,30 +19,26 @@
 (define (env-extend an-env new-binding)
   (cond
     [(binding:constant? new-binding)
-     (make-env (rbtree-insert symbol< 
-                              (env-bindings an-env) 
-                              (binding-id new-binding)
-                              new-binding))]
+     (make-env (hash-set (env-bindings an-env) 
+                         (binding-id new-binding)
+                         new-binding))]
     [(binding:function? new-binding)
-     (make-env (rbtree-insert symbol< 
-                              (env-bindings an-env) 
-                              (binding-id new-binding)
-                              new-binding))]
+     (make-env (hash-set (env-bindings an-env) 
+                         (binding-id new-binding)
+                         new-binding))]
     [(binding:structure? new-binding)
-     (make-env (rbtree-insert symbol< 
-                              (env-bindings an-env) 
-                              (binding-id new-binding)
-                              new-binding))]))
+     (make-env (hash-set (env-bindings an-env) 
+                         (binding-id new-binding)
+                         new-binding))]))
 
 
 
 ;; env-lookup: env symbol -> (or/c binding false)
 (define (env-lookup an-env name)
-  (local [(define result (rbtree-lookup symbol< (env-bindings an-env) name))]
-    (cond [(pair? result)
-           (second result)]
-          [else
-           false])))
+  (cond [(hash-has-key? (env-bindings an-env) name)
+         (hash-ref (env-bindings an-env) name)]
+        [else
+         false]))
 
 
 ;; env-contains?: env symbol -> boolean
@@ -54,7 +50,7 @@
 ;; env-keys: env -> (listof symbol)
 ;; Produces the keys in the environment.
 (define (env-keys an-env)
-  (map first (rbtree->list (env-bindings an-env))))
+  (hash-keys (env-bindings an-env)))
 
 
 
@@ -63,7 +59,7 @@
 ;; Extends the environment with a new constant binding.
 (define (env-extend-constant an-env id module-source loc)
   (env-extend an-env
-              (make-binding:constant id module-source empty loc)))
+              (make-binding:constant id module-source '() loc)))
 
 
 ;; env-extend-function: env symbol (or/c string false) number boolean? Loc -> env
@@ -74,7 +70,7 @@
                                      module-source
                                      min-arity 
                                      var-arity?
-                                     empty
+                                     '()
                                      false
                                      loc)))
 

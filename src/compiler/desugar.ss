@@ -6,7 +6,6 @@
 (require "pinfo.ss")
 (require "env.ss")
 (require "modules.ss")
-(require "rbtree.ss")
 (require "../collects/moby/runtime/stx.ss")
 (require "../collects/moby/runtime/error-struct.ss")
 
@@ -21,26 +20,24 @@
                                ))
 
 
-(define-struct syntax-env (entries))   ;;   (rbtree of symbol * syntax-binding)
+(define-struct syntax-env (entries))   ;;   (hash of symbol * syntax-binding)
 
 
-(define empty-syntax-env (make-syntax-env empty-rbtree))
+(define empty-syntax-env (make-syntax-env (make-immutable-hash)))
 
 ;; syntax-env-lookup: syntax-env symbol -> (or false/c syntax-binding)
 (define (syntax-env-lookup a-syntax-env an-id)
   (begin
-    (rbtree-ref symbol< 
-                (syntax-env-entries a-syntax-env)
-                an-id
-                #f)))
+    (hash-ref (syntax-env-entries a-syntax-env)
+              an-id
+              #f)))
 
 ;; syntax-env-add: syntax-env symbol syntax-binding -> syntax-env
 (define (syntax-env-add a-syntax-env an-id a-binding)
   (make-syntax-env 
-   (rbtree-insert symbol< 
-                  (syntax-env-entries a-syntax-env)
-                  an-id
-                  a-binding)))
+   (hash-set (syntax-env-entries a-syntax-env)
+             an-id
+             a-binding)))
 
 
 (define (loc->vec a-loc)

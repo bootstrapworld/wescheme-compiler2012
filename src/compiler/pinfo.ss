@@ -1,10 +1,13 @@
-#lang s-exp "lang.ss"
+#lang racket/base
 
+(require racket/bool
+         racket/local
+         racket/contract
+         (only-in racket/list empty? first rest second))
 (require "env.ss")
 (require "toplevel.ss")
 (require "helpers.ss")
 (require "modules.ss")
-(require "rbtree.ss")
 (require "labeled-translation.ss")
 (require "../collects/moby/runtime/error-struct.ss")
 (require "../collects/moby/runtime/permission-struct.ss")
@@ -54,19 +57,19 @@
 ;; An empty pinfo that doesn't know any toplevel environment bindings.
 (define empty-pinfo
   (make-pinfo empty-env
-              empty 
-              empty-rbtree
+              '() 
+              (make-immutable-hash)
               '()
               0
-              empty-rbtree
-              empty-rbtree
-              empty-rbtree
+              (make-immutable-hash)
+              (make-immutable-hash)
+              (make-immutable-hash)
               true
               true
               default-module-resolver
               default-module-path-resolver
               default-current-module-path
-              empty))
+              '()))
 
 
 
@@ -74,7 +77,7 @@
 ;; pinfo-used-bindings: pinfo -> (listof binding)
 ;; Returns the list of used bindings computed from the program analysis.
 (define (pinfo-used-bindings a-pinfo)
-  (map second (rbtree->list (pinfo-used-bindings-hash a-pinfo))))
+  (hash-values (pinfo-used-bindings-hash a-pinfo)))
 
 
 
@@ -98,7 +101,7 @@
    (pinfo-declared-permissions a-pinfo)))
 
 
-;; pinfo-update-defined-names: pinfo rbtree -> pinfo
+;; pinfo-update-defined-names: pinfo hash -> pinfo
 ;; Updates the provided names of a pinfo.
 (define (pinfo-update-provided-names a-pinfo provided-names)
   (make-pinfo
@@ -117,7 +120,7 @@
    (pinfo-current-module-path a-pinfo)
    (pinfo-declared-permissions a-pinfo)))
 
-;; pinfo-update-defined-names: pinfo rbtree -> pinfo
+;; pinfo-update-defined-names: pinfo hash -> pinfo
 ;; Updates the defined names of a pinfo.
 (define (pinfo-update-defined-names a-pinfo defined-names)
   (make-pinfo
@@ -252,11 +255,10 @@
               (add1 (pinfo-gensym-counter a-pinfo))
               (pinfo-provided-names a-pinfo)
               (pinfo-defined-names a-pinfo)
-              (rbtree-insert expression<? 
-                             (pinfo-shared-expressions a-pinfo) 
-                             a-shared-expression 
-                             (make-labeled-translation (pinfo-gensym-counter a-pinfo)
-                                                       a-translation))
+              (hash-set (pinfo-shared-expressions a-pinfo) 
+                        a-shared-expression 
+                        (make-labeled-translation (pinfo-gensym-counter a-pinfo)
+                                                  a-translation))
               (pinfo-with-location-emits? a-pinfo)
               (pinfo-allow-redefinition? a-pinfo)
               (pinfo-module-resolver a-pinfo)
@@ -294,10 +296,9 @@
                  (pinfo-free-variables a-pinfo)
                  (pinfo-gensym-counter a-pinfo)
                  (pinfo-provided-names a-pinfo)
-                 (rbtree-insert symbol< 
-                                (pinfo-defined-names a-pinfo)
-                                (binding-id a-binding)
-                                a-binding)
+                 (hash-set (pinfo-defined-names a-pinfo)
+                           (binding-id a-binding)
+                           a-binding)
                  (pinfo-shared-expressions a-pinfo)
                  (pinfo-with-location-emits? a-pinfo)
                  (pinfo-allow-redefinition? a-pinfo)
@@ -370,10 +371,9 @@
 (define (pinfo-accumulate-binding-use a-binding a-pinfo)
   (make-pinfo (pinfo-env a-pinfo)
               (pinfo-modules a-pinfo)
-              (rbtree-insert symbol<
-                             (pinfo-used-bindings-hash a-pinfo)
-                             (binding-id a-binding)
-                             a-binding)
+              (hash-set (pinfo-used-bindings-hash a-pinfo)
+                        (binding-id a-binding)
+                        a-binding)
               (pinfo-free-variables a-pinfo)
               (pinfo-gensym-counter a-pinfo)
               (pinfo-provided-names a-pinfo)
@@ -442,7 +442,7 @@
   (local [;; unique: (listof X) -> (listof X)
           (define (unique lst)
             (cond [(empty? lst)
-                   empty]
+                   '()]
                   [(member? (first lst)
                             (rest lst))
                    (unique (rest lst))]
@@ -466,7 +466,7 @@
                     [(binding:constant? a-binding)
                      (append (binding:constant-permissions a-binding)
                              permissions)]))
-            empty
+            '()
             (pinfo-used-bindings a-pinfo)))))
 
 
@@ -519,16 +519,13 @@
   (local [;; lookup-provide-binding-in-definition-bindings: provide-binding compiled-program -> (listof binding)
           ;; Lookup the provided bindings.
           (define (lookup-provide-binding-in-definition-bindings a-provide-binding)
-            (local [(define list-or-false
-                      (rbtree-lookup symbol<
-                                     (pinfo-defined-names a-pinfo)
-                                     (stx-e (provide-binding-stx a-provide-binding))))
-                    
-                    (define the-binding
+            (local [(define the-binding
                       (cond
-                        [(list? list-or-false)
+                        [(hash-has-key? (pinfo-defined-names a-pinfo)
+                                        (stx-e (provide-binding-stx a-provide-binding)))
                          (check-binding-compatibility a-provide-binding
-                                                      (second list-or-false))]
+                                                      (hash-ref (pinfo-defined-names a-pinfo)
+                                        (stx-e (provide-binding-stx a-provide-binding))))]
                         [else
                          (raise (make-moby-error (stx-loc (provide-binding-stx a-provide-binding))
                                                  (make-moby-error-type:provided-name-not-defined
@@ -537,7 +534,7 @@
                     ;; ref: symbol -> binding
                     ;; Lookup the binding, given the symbolic identifier.
                     (define (ref id)
-                      (second (rbtree-lookup symbol< (pinfo-defined-names a-pinfo) id)))]
+                      (hash-ref (pinfo-defined-names a-pinfo) id))]
               (cond
                 [(provide-binding:struct-id? a-provide-binding)
                  (append (list the-binding
@@ -575,23 +572,22 @@
                                (stx-e (provide-binding-stx a-provide-binding)))))])]
               [else
                a-binding]))]
-    (rbtree-fold (pinfo-provided-names a-pinfo)
-                 (lambda (id a-provide-binding acc)
-                   (append (map decorate-with-permissions
-                                (lookup-provide-binding-in-definition-bindings a-provide-binding))
-                         acc))
-                 empty)))
+    (for/fold ([acc '()])
+              ([(id a-provide-binding) (in-hash (pinfo-provided-names a-pinfo))])
+      (append (map decorate-with-permissions
+                   (lookup-provide-binding-in-definition-bindings a-provide-binding))
+              acc))))
 
 
 
 (provide/contract [struct pinfo ([env env?]
                                  [modules (listof module-binding?)]
-                                 [used-bindings-hash rbtree?]
+                                 [used-bindings-hash hash?]
                                  [free-variables (listof symbol?)]
                                  [gensym-counter number?]
-                                 [provided-names rbtree?]
-                                 [defined-names rbtree?]
-                                 [shared-expressions rbtree?]
+                                 [provided-names hash?]
+                                 [defined-names hash?]
+                                 [shared-expressions hash?]
                                  
                                  [with-location-emits? boolean?]
                                  [allow-redefinition? boolean?]
@@ -615,8 +611,8 @@
 
                   [pinfo-accumulate-declared-permission (symbol? permission? pinfo? . -> . pinfo?)]
 
-                  [pinfo-update-provided-names (pinfo? rbtree? . -> . pinfo?)]
-                  [pinfo-update-defined-names (pinfo? rbtree? . -> . pinfo?)]
+                  [pinfo-update-provided-names (pinfo? hash? . -> . pinfo?)]
+                  [pinfo-update-defined-names (pinfo? hash? . -> . pinfo?)]
                   [pinfo-update-env (pinfo? env? . -> . pinfo?)]
                   [pinfo-update-with-location-emits? (pinfo? boolean? . -> . pinfo?)]
                   [pinfo-update-allow-redefinition? (pinfo? boolean? . -> . pinfo?)]

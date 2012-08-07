@@ -1,18 +1,15 @@
-#lang s-exp "lang.ss"
+#lang racket/base
 
-(require "rbtree.ss")
+(require racket/local
+         racket/contract
+         (only-in racket/bool true false)
+         (only-in racket/list empty? rest first second empty third))
 (require "../collects/moby/runtime/stx.ss")
 (require "../collects/moby/runtime/error-struct.ss")
 
-(define pair? cons?)
 
 ;; A program is a (listof (or/c defn? expr? library-require? provide-statement? require-permission?))
 
-(define (list? datum)
-  (or (empty? datum)
-      (and
-       (pair? datum)
-       (list? (rest datum)))))
 
 
 ;; symbol<: symbol symbol -> boolean
@@ -179,11 +176,11 @@
   (stx-begins-with? an-sexp 'require))
 
 
-;; java-identifiers: (rbtreeof symbol boolean)
+;; java-identifiers: (hashof symbol boolean)
 (define java-identifiers
-  (foldl (lambda (sym an-rbtree)
-           (rbtree-insert symbol< an-rbtree sym true))
-         empty-rbtree
+  (foldl (lambda (sym a-hash)
+           (hash-set a-hash sym true))
+         (make-immutable-hash)
          
          '(abstract  continue  	for  	new  	switch
                      assert 	default 	goto 	package 	synchronized
@@ -200,11 +197,11 @@
                      debugger)))
 
 
-;; special-character-mappings: (rbtreeof char string)
+;; special-character-mappings: (hashof char string)
 (define special-character-mappings
-  (foldl (lambda (ch+translation an-rbtree)
-           (rbtree-insert char<? an-rbtree (first ch+translation) (second ch+translation)))
-         empty-rbtree
+  (foldl (lambda (ch+translation a-hash)
+           (hash-set a-hash (first ch+translation) (second ch+translation)))
+         (make-immutable-hash)
          '((#\- "_dash_")
            (#\_ "_underline_")
            (#\? "_question_")
@@ -230,8 +227,8 @@
 ;; Special character mappings for identifiers.
 (define (translate-special-character ch)
   (cond
-    [(cons? (rbtree-lookup char<? special-character-mappings ch))
-     (second (rbtree-lookup char<? special-character-mappings ch))]
+    [(hash-has-key? special-character-mappings ch)
+     (hash-ref special-character-mappings ch)]
     [else
      (string ch)]))
 
@@ -239,7 +236,7 @@
 ;; identifier->munged-java-identifier: symbol -> symbol
 (define (identifier->munged-java-identifier an-id)
   (cond
-    [(cons? (rbtree-lookup symbol< java-identifiers an-id))
+    [(hash-has-key? java-identifiers an-id)
      (string->symbol (string-append "_" (symbol->string an-id) "_"))]
     [else
      (local [(define (maybe-prepend-hyphen chars)
@@ -276,16 +273,6 @@
 (define (remove-leading-whitespace a-str)
   (remove-leading-whitespace/list (string->list a-str)))
 
-
-;; take: (listof X) number -> (listof X)
-;; Produces a list of the first n elmeents of a-list.
-(define (take a-list n)
-  (cond
-    [(= n 0)
-     empty]
-    [else
-     (cons (first a-list)
-           (take (rest a-list) (sub1 n)))]))
 
 
 ;; list-tail: (listof X) number -> (listof X)
@@ -658,7 +645,6 @@
                   [require-permission? (any/c . -> . boolean?)]
                   [library-require? (any/c . -> . boolean?)]
                   [provide-statement? (any/c . -> . boolean?)]
-                  [take ((listof any/c) number? . -> . (listof any/c))]
                   [list-tail ((listof any/c) number? . -> . (listof any/c))]
                   
                   [expression<? (expression? expression? . -> . boolean?)]
