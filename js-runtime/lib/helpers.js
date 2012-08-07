@@ -184,17 +184,18 @@ var helpers = {};
 				var locs = locations;
 				var i;
 
-				//ARGS IS INCONSISTENT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				//REALLY INCONSISTENT!!!!!! SOMETIMES IT HAS STATE FIRST, SOMETIMES IS HAS A PRIMPROC LAST
-				//and when there's a state, it's apparently not an array, so .slice(1) doesn't work
-
 				//getting the actual arguments from args
 				var actualArgs = [];
 				for(i = 0; i < args.length; i++) {
-					if(! (state.isState(args[i]))){
+					if((! (state.isState(args[i])))
+					   && 
+					   (!((args[i].name !== undefined) && args[i].name === ""))) {
+					   	if(args[i].name) console.log("args[i].name is ", args[i].name);
 						actualArgs.push(args[i]);
 					} 
 				}
+				console.log("now, actualArgs is ", actualArgs);
+				window.wtf = args[2];
 				for(i = 0; i < actualArgs.length; i++){
 					if(! (locs.isEmpty())){
 						if(i != (pos -1)) {
@@ -229,8 +230,9 @@ var helpers = {};
 
 
 			if(args) { 
+				console.log("args is ", args);
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
-
+				console.log("argColoredParts is ", argColoredParts);
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([

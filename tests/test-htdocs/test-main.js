@@ -4091,7 +4091,7 @@ var runTests = function() {
 	
 	queueErrorTest("make-struct-field-accessor given wrong arg type",
 		       "(make-struct-field-accessor 1 1 1)",
-		       "make-struct-field-accessor: expects an accessor function name that requires a field index as 1st argument, but given: 1; other arguments were: 1 1");
+		       "make-struct-field-accessor: expects an accessor procedure that requires a field index as 1st argument, but given: 1; other arguments were: 1 1");
 
 	queueErrorTest("make-struct-field-accessor given 2 wrong args",
 		       "(make-struct-field-accessor 1 1)", 
