@@ -1,11 +1,14 @@
-#lang scheme/base
-(require scheme/contract)
+#lang racket/base
+(require racket/contract)
 
 ;; a jsexp is either a ht, a vec, or a datum.
 (define-struct ht (name key-values) #:transparent)
 (define-struct vec (items) #:transparent)
 (define-struct int (v) #:transparent)
 (define-struct lit (v) #:transparent)
+
+
+
 
 (define (jsexp? x)
   (or (ht? x)
@@ -36,9 +39,16 @@
 
 
 
-(provide/contract [struct ht ([name symbol?]
-                              [key-values (listof (list/c symbol? jsexp?))])]
-                  [struct vec ([items (listof jsexp?)])]
-		  [struct int ([v number?])]
-                  [struct lit ([v lit-value?])]
-                  [jsexp? (any/c . -> . boolean?)])
+(provide [struct-out ht]
+         [struct-out vec]
+         [struct-out int]
+         [struct-out lit]
+         jsexp?)
+
+;; Turning off these contracts to see if they affect compilation time significantly.
+#;(provide [contract-out [struct ht ([name symbol?]
+                                   [key-values (listof (list/c symbol? jsexp?))])]
+                       [struct vec ([items (listof jsexp?)])]
+                       [struct int ([v number?])]
+                       [struct lit ([v lit-value?])]
+                       [jsexp? (any/c . -> . boolean?)]])

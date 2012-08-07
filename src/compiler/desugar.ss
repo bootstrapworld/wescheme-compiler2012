@@ -6,7 +6,6 @@
 (require "pinfo.ss")
 (require "env.ss")
 (require "modules.ss")
-(require "rbtree.ss")
 (require "../collects/moby/runtime/stx.ss")
 (require "../collects/moby/runtime/error-struct.ss")
 
@@ -21,26 +20,24 @@
                                ))
 
 
-(define-struct syntax-env (entries))   ;;   (rbtree of symbol * syntax-binding)
+(define-struct syntax-env (entries))   ;;   (hash of symbol * syntax-binding)
 
 
-(define empty-syntax-env (make-syntax-env empty-rbtree))
+(define empty-syntax-env (make-syntax-env (make-immutable-hash)))
 
 ;; syntax-env-lookup: syntax-env symbol -> (or false/c syntax-binding)
 (define (syntax-env-lookup a-syntax-env an-id)
   (begin
-    (rbtree-ref symbol< 
-                (syntax-env-entries a-syntax-env)
-                an-id
-                #f)))
+    (hash-ref (syntax-env-entries a-syntax-env)
+              an-id
+              #f)))
 
 ;; syntax-env-add: syntax-env symbol syntax-binding -> syntax-env
 (define (syntax-env-add a-syntax-env an-id a-binding)
   (make-syntax-env 
-   (rbtree-insert symbol< 
-                  (syntax-env-entries a-syntax-env)
-                  an-id
-                  a-binding)))
+   (hash-set (syntax-env-entries a-syntax-env)
+             an-id
+             a-binding)))
 
 
 (define (loc->vec a-loc)
@@ -473,9 +470,12 @@
        (raise (make-moby-error (stx-loc expr)
                                (make-Message
                                 (make-ColoredPart (symbol->string (stx-e (first (stx-e expr)))) (stx-loc (first (stx-e expr))))
-                                ": expects at least 2 arguments, but found "
+                                ": expects at least 2 arguments, but given  " 
                                 (if (= (length (stx-e expr)) 2)
-                                    (make-ColoredPart "only 1" (stx-loc (second (stx-e expr))))
+                                    "1: "
+                                    "")
+                                (if (= (length (stx-e expr)) 2)
+                                    (make-ColoredPart  (stx-e (second (stx-e expr))) (stx-loc (second (stx-e expr))))
                                     "0"))))]     
       [else
        (local [(define boolean-chain-stx (first (stx-e expr)))

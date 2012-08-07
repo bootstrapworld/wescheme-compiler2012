@@ -1,17 +1,16 @@
-#lang scheme/base
+#lang racket/base
 
 ;; This program translates advanced-level Scheme into mzscheme-vm's bytecode.
 
-(require scheme/local
-         scheme/bool
-         scheme/contract
-         scheme/match
+(require racket/local
+         racket/bool
+         racket/contract
+         racket/match
          (only-in scheme/list empty first second third fourth empty? rest))
 
 
 (require "../desugar.ss")
 (require "../analyzer.ss")
-(require "../rbtree.ss")
 (require (prefix-in binding: "../../collects/moby/runtime/binding.ss"))
 
 
@@ -115,21 +114,17 @@
          
          [free-variables (pinfo-free-variables pinfo)]
          
-         [local-defined-names (rbtree-keys (pinfo-defined-names pinfo))]
+         [local-defined-names (hash-keys (pinfo-defined-names pinfo))]
          
          [module-or-toplevel-defined-bindings 
-          (rbtree-fold (pinfo-used-bindings-hash pinfo)
-                       (lambda (name a-binding acc)
-                         #;(printf "~s ~s ~s\n"  
-                                   a-binding
-                                   (binding:binding-id a-binding)
-                                   (binding:binding-module-source a-binding))
+          (for/fold ([acc '()])
+                    ([(name a-binding) (in-hash (pinfo-used-bindings-hash pinfo))])
                          (cond
                            [(and (binding:binding-module-source a-binding)
                                  (not (member a-binding required-module-bindings)))
                             (cons a-binding acc)]
-                           [else acc]))
-                       '())])
+                           [else acc]))])
+
 
     (values (bcode:make-prefix 0 (append (list #f)
                                          (map bcode:make-global-bucket free-variables)

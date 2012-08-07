@@ -5,7 +5,6 @@
 (require "env.ss")
 (require "pinfo.ss")
 (require "helpers.ss")
-(require "rbtree.ss")
 (require "../collects/moby/runtime/permission-struct.ss")
 (require "../collects/moby/runtime/binding.ss")
 (require "../collects/moby/runtime/stx.ss")
@@ -118,33 +117,30 @@
            (cond
              [(symbol? (stx-e a-clause))
               (begin 
-                (unless (rbtree-member? symbol< (pinfo-defined-names a-pinfo) (stx-e a-clause))
+                (unless (hash-has-key?  (pinfo-defined-names a-pinfo) (stx-e a-clause))
                   (raise (make-moby-error (stx-loc a-clause)
                                           (make-moby-error-type:provided-name-not-defined
                                            (stx-e a-clause)))))
                 (pinfo-update-provided-names a-pinfo
-                                             (rbtree-insert symbol<
-                                                            (pinfo-provided-names a-pinfo)
-                                                            (stx-e a-clause)
-                                                            (make-provide-binding:id a-clause))))]
+                                             (hash-set (pinfo-provided-names a-pinfo)
+                                                       (stx-e a-clause)
+                                                       (make-provide-binding:id a-clause))))]
              [(stx-begins-with? a-clause 'struct-out)
               (cond
                 [(and (= (length (stx-e a-clause)) 2)
                       (symbol? (stx-e (second (stx-e a-clause)))))
                  (begin
-                   (unless (and (rbtree-member? symbol< (pinfo-defined-names a-pinfo) 
-                                                (stx-e (second (stx-e a-clause))))
+                   (unless (and (hash-has-key? (pinfo-defined-names a-pinfo) 
+                                               (stx-e (second (stx-e a-clause))))
                                 (binding:structure?
-                                 (rbtree-ref symbol< 
-                                             (pinfo-defined-names a-pinfo) 
+                                 (hash-ref (pinfo-defined-names a-pinfo) 
                                              (stx-e (second (stx-e a-clause)))
                                              #f)))
                      (raise (make-moby-error (stx-loc a-clause)
                                              (make-moby-error-type:provided-structure-not-structure
                                               (stx-e (second (stx-e a-clause)))))))
                    (pinfo-update-provided-names a-pinfo
-                                                (rbtree-insert symbol<
-                                                               (pinfo-provided-names a-pinfo)
+                                                (hash-set (pinfo-provided-names a-pinfo)
                                                                (stx-e (second (stx-e a-clause)))
                                                                (make-provide-binding:struct-id 
                                                                 (second (stx-e a-clause))))))]

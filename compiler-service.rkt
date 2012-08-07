@@ -10,7 +10,7 @@
          file/gzip
          racket/port
          "find-paren-loc.rkt"
-         ;; profile
+         ;profile
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
          "src/compiler/mzscheme-vm/private/json.ss"
@@ -79,10 +79,10 @@
   (with-handlers ([void 
                    (lambda (exn)
                      (cond
-                       [(jsonp-request? request)
-                        (handle-json-exception-response request exn)]
-                       [else 
-                        (handle-exception-response request exn)]))])
+                      [(jsonp-request? request)
+                       (handle-json-exception-response request exn)]
+                      [else 
+                       (handle-exception-response request exn)]))])
     (let*-values ([(program-name)
                    (string->symbol
                     (extract-binding/single 'name (request-bindings request)))]
@@ -94,6 +94,7 @@
              (handle-json-response request program-name program-input-port)]
             [else
              (handle-response request program-name program-input-port)]))))
+
 
 
 
