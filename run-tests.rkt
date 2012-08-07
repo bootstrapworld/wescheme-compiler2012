@@ -12,6 +12,7 @@
          scheme/match
          scheme/list
          racket/cmdline
+         "this-runtime-version.rkt"
          ;; profile
          "find-paren-loc.rkt"
          "src/compiler/mzscheme-vm/write-support.ss"
@@ -129,7 +130,9 @@
 (define (handle-json-response request program-name program-input-port)
   (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")]
                [(compiled-program-port) (open-output-bytes)])
-    (let ([pinfo (compile/port program-input-port compiled-program-port #:name program-name)])
+    (let ([pinfo (compile/port program-input-port compiled-program-port
+                               #:name program-name
+                               #:runtime-version THIS-RUNTIME-VERSION)])
       (fprintf output-port "~a(~a);" 
                (extract-binding/single 'callback (request-bindings request))
                (format-output (get-output-bytes compiled-program-port)
@@ -304,7 +307,9 @@
 (define (handle-response request program-name program-input-port)
   (let-values  ([(response output-port) (make-port-response #:mime-type #"text/plain")]
                 [(program-output-port) (open-output-bytes)])
-    (let ([pinfo (compile/port program-input-port program-output-port #:name program-name)])    
+    (let ([pinfo (compile/port program-input-port program-output-port
+                               #:name program-name
+                               #:runtime-version THIS-RUNTIME-VERSION)])    
       (display (format-output (get-output-bytes program-output-port) pinfo request) output-port)
       (close-output-port output-port)
       response)))

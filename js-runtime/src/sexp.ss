@@ -42,6 +42,11 @@
 ;; jsexp->js/port: jsexp -> void
 (define (jsexp->js/port a-jsexp op)
   (match a-jsexp
+    [(struct cmt (message rest))
+     (display "/* " op)
+     (display message op)
+     (display " */\n" op)
+     (jsexp->js/port rest op)]
     [(struct ht (name pairs))
      (display "{" op)
      (port-for-each/comma-separate key-value->js

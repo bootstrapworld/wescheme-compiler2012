@@ -1,8 +1,8 @@
-#lang scheme/base
+#lang racket/base
 
-(require scheme/match
-         scheme/contract
-         scheme/list
+(require racket/match
+         racket/contract
+         racket/list
          "bytecode-structs.ss"
          "jsexp.ss"
          "primitive-table.ss"
@@ -22,7 +22,7 @@
 
 
 
-;; compile-top: top -> jsexp
+;; compile-top: top string -> jsexp
 (define (compile-top a-top)
   (parameterize ([seen-indirects (make-hasheq)])
     (match a-top
@@ -31,13 +31,11 @@
               ;; WARNING: Order dependent!  We need compile-code to run first
               ;; since it initializes the seen-indirects parameter.
               [compiled-indirects (emit-indirects)])
-         (void)
          (make-ht 'compilation-top
                   `((max-let-depth ,(make-int max-let-depth))
                     (prefix ,(compile-prefix prefix))
                     (compiled-indirects ,compiled-indirects)
                     (code ,compiled-code))))])))
-
 
 ;; emit-indirects: -> jsexp
 ;; Writes out all the indirect lambdas that we've seen.

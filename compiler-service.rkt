@@ -10,6 +10,7 @@
          file/gzip
          racket/port
          "find-paren-loc.rkt"
+         "this-runtime-version.rkt"
          ;profile
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
@@ -113,7 +114,9 @@
   (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
                                                            #:with-gzip? (request-accepts-gzip-encoding? request))]
                [(compiled-program-port) (open-output-bytes)])
-    (let ([pinfo (compile/port program-input-port compiled-program-port #:name program-name)])
+    (let ([pinfo (compile/port program-input-port compiled-program-port
+                               #:name program-name
+                               #:runtime-version THIS-RUNTIME-VERSION)])
       (fprintf output-port "~a(~a);" 
                (extract-binding/single 'callback (request-bindings request))
                (format-output (get-output-bytes compiled-program-port)
@@ -285,7 +288,9 @@
   (let-values  ([(response output-port) (make-port-response #:mime-type #"text/plain"
                                                             #:with-gzip? (request-accepts-gzip-encoding? request))]
                 [(program-output-port) (open-output-bytes)])
-    (let ([pinfo (compile/port program-input-port program-output-port #:name program-name)])    
+    (let ([pinfo (compile/port program-input-port program-output-port
+                               #:name program-name
+                               #:runtime-version THIS-RUNTIME-VERSION)])    
       (display (format-output (get-output-bytes program-output-port) pinfo request) output-port)
       (close-output-port output-port)
       response)))
