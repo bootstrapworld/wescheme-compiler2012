@@ -190,11 +190,9 @@ var helpers = {};
 					if((! (state.isState(args[i])))
 					   && 
 					   (!((args[i].name !== undefined) && args[i].name === ""))) {
-					   	if(args[i].name) console.log("args[i].name is ", args[i].name);
 						actualArgs.push(args[i]);
 					} 
 				}
-				console.log("now, actualArgs is ", actualArgs);
 				window.wtf = args[2];
 				for(i = 0; i < actualArgs.length; i++){
 					if(! (locs.isEmpty())){

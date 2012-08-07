@@ -790,11 +790,9 @@ var helpers = {};
 					if((! (state.isState(args[i])))
 					   && 
 					   (!((args[i].name !== undefined) && args[i].name === ""))) {
-					   	if(args[i].name) console.log("args[i].name is ", args[i].name);
 						actualArgs.push(args[i]);
 					} 
 				}
-				console.log("now, actualArgs is ", actualArgs);
 				window.wtf = args[2];
 				for(i = 0; i < actualArgs.length; i++){
 					if(! (locs.isEmpty())){
@@ -20784,8 +20782,6 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
     if ( !types.isFunction(procValue) ) {
 	    var argStr = getArgStr('; arguments were:');
         var positionStack = state.captureCurrentContinuationMarks(aState).ref(types.symbol('moby-application-position-key'));
-        
-        console.log("positionStack is ", positionStack);
        
         var locationList = positionStack[positionStack.length - 1];
         var locs = locationList;
