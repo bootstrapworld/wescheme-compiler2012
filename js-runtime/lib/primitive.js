@@ -1446,7 +1446,7 @@ PRIMITIVES['/'] =
        			}
        			raise( types.incompleteExn(types.exnFailContractDivisionByZero, 
 												new types.Message([new types.ColoredPart('/', func),
-													": division by ",
+													": cannot divide by ",
 													new types.ColoredPart("zero", locationList.first())]),
 												[]) );
 
@@ -3183,7 +3183,7 @@ PRIMITIVES['make-string'] =
 		 false, false,
 		 function(aState, n, c) {
 		 	check(aState, n, isNatural, 'make-string', 'non-negative exact integer', 1, arguments);
-			check(aState, c, isChar, 'make-string', 'char', 2, arguments);
+			check(aState, c, isChar, 'make-string', 'character', 2, arguments);
 
 			var ret = [];
 			for (var i = 0; jsnums.lessThan(i, n); i++) {
@@ -3215,7 +3215,7 @@ PRIMITIVES['string'] =
 		 0,
 		 true, false,
 		 function(aState, chars) {
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'string', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'string', 'character', i+1, chars);});
 
 			var ret = [];
 			for (var i = 0; i < chars.length; i++) {
@@ -3539,7 +3539,7 @@ PRIMITIVES['list->string'] =
 		 1,
 		 false, false,
 		 function(aState, lst) {
-		 	checkListOf(aState, lst, isChar, 'list->string', 'char', 1);
+		 	checkListOf(aState, lst, isChar, 'list->string', 'character', 1);
 
 			var ret = [];
 			while( !lst.isEmpty() ) {
@@ -3766,7 +3766,7 @@ PRIMITIVES['string-set!'] =
 		 	check(aState, str, function(x) { return isString(x) && typeof x != 'string'; },
 			      'string-set!', 'mutable string', 1, arguments);
 			check(aState, k, isNatural, 'string-set!', 'non-negative exact integer', 2, arguments);
-			check(aState, c, isChar, 'string-set!', 'char', 3, arguments);
+			check(aState, c, isChar, 'string-set!', 'character', 3, arguments);
 
 			if ( jsnums.greaterThanOrEqual(k, str.length) ) {
 				var msg = ('string-set!: index ' + n + ' out of range ' +
@@ -3786,7 +3786,7 @@ PRIMITIVES['string-fill!'] =
 		 function(aState, str, c) {
 		 	check(aState, str, function(x) { return isString(x) && typeof x != 'string'; },
 			      'string-fill!', 'mutable string', 1, arguments);
-			check(aState, c, isChar, 'string-fill!', 'char', 2, arguments);
+			check(aState, c, isChar, 'string-fill!', 'character', 2, arguments);
 
 			for (var i = 0; i < str.length; i++) {
 				str.set(i, c.val);
@@ -4200,7 +4200,7 @@ PRIMITIVES['char=?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char=?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char=?', 'character', i+1, chars);});
 
 			return compare(chars, function(c1, c2) {return c1.val === c2.val;});
 		 });
@@ -4213,7 +4213,7 @@ PRIMITIVES['char<?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char<?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char<?', 'character', i+1, chars);});
 
 			return compare(chars, function(c1, c2) {return c1.val < c2.val;});
 		 });
@@ -4226,7 +4226,7 @@ PRIMITIVES['char>?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char>?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char>?', 'character', i+1, chars);});
 
 			return compare(chars, function(c1, c2) {return c1.val > c2.val;});
 		 });
@@ -4239,7 +4239,7 @@ PRIMITIVES['char<=?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char<=?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char<=?', 'character', i+1, chars);});
 
 			return compare(chars, function(c1, c2) {return c1.val <= c2.val;});
 		 });
@@ -4252,7 +4252,7 @@ PRIMITIVES['char>=?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char>=?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char>=?', 'character', i+1, chars);});
 
 			return compare(chars, function(c1, c2) {return c1.val >= c2.val;});
 		 });
@@ -4265,7 +4265,7 @@ PRIMITIVES['char-ci=?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci=?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci=?', 'character', i+1, chars);});
 
 			return compare(chars,
 				function(c1, c2) {
@@ -4281,7 +4281,7 @@ PRIMITIVES['char-ci<?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci<?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci<?', 'character', i+1, chars);});
 
 			return compare(chars,
 				function(c1, c2) {
@@ -4297,7 +4297,7 @@ PRIMITIVES['char-ci>?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci>?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci>?', 'character', i+1, chars);});
 
 			return compare(chars,
 				function(c1, c2) {
@@ -4313,7 +4313,7 @@ PRIMITIVES['char-ci<=?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci<=?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci<=?', 'character', i+1, chars);});
 
 			return compare(chars,
 				function(c1, c2) {
@@ -4329,7 +4329,7 @@ PRIMITIVES['char-ci>=?'] =
 		 function(aState, char1, char2, chars) {
 		 	chars.unshift(char2);
 			chars.unshift(char1);
-			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci>=?', 'char', i+1, chars);});
+			arrayEach(chars, function(c, i) {check(aState, c, isChar, 'char-ci>=?', 'character', i+1, chars);});
 
 			return compare(chars,
 				function(c1, c2) {
@@ -4343,7 +4343,7 @@ PRIMITIVES['char-alphabetic?'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char-alphabetic?', 'char', 1);
+		 	check(aState, c, isChar, 'char-alphabetic?', 'character', 1);
 			return isAlphabeticString(c.val);
 		 });
 
@@ -4353,7 +4353,7 @@ PRIMITIVES['char-numeric?'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char-numeric?', 'char', 1);
+		 	check(aState, c, isChar, 'char-numeric?', 'character', 1);
 			return (c.val >= '0' && c.val <= '9');
 		 });
 
@@ -4363,7 +4363,7 @@ PRIMITIVES['char-whitespace?'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char-whitespace?', 'char', 1);
+		 	check(aState, c, isChar, 'char-whitespace?', 'character', 1);
 			return isWhitespaceString(c.val);
 		 });
 
@@ -4373,7 +4373,7 @@ PRIMITIVES['char-upper-case?'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char-upper-case?', 'char', 1);
+		 	check(aState, c, isChar, 'char-upper-case?', 'character', 1);
 			return (isAlphabeticString(c.val) && c.val.toUpperCase() === c.val);
 		 });
 
@@ -4383,7 +4383,7 @@ PRIMITIVES['char-lower-case?'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char-lower-case?', 'char', 1);
+		 	check(aState, c, isChar, 'char-lower-case?', 'character', 1);
 			return (isAlphabeticString(c.val) && c.val.toLowerCase() === c.val);
 		 });
 
@@ -4393,7 +4393,7 @@ PRIMITIVES['char->integer'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char->integer', 'char', 1);
+		 	check(aState, c, isChar, 'char->integer', 'character', 1);
 			return c.val.charCodeAt(0);
 		 });
 
@@ -4424,7 +4424,7 @@ PRIMITIVES['char-upcase'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char-upcase', 'char', 1);
+		 	check(aState, c, isChar, 'char-upcase', 'character', 1);
 			return types['char']( c.val.toUpperCase() );
 		 });
 
@@ -4434,7 +4434,7 @@ PRIMITIVES['char-downcase'] =
 		 1,
 		 false, false,
 		 function(aState, c) {
-		 	check(aState, c, isChar, 'char-downcase', 'char', 1);
+		 	check(aState, c, isChar, 'char-downcase', 'character', 1);
 			return types['char']( c.val.toLowerCase() );
 		 });
 
@@ -4692,7 +4692,7 @@ PRIMITIVES['circle'] =
 		 false, false,
 		 function(aState, aRadius, aStyle, aColor) {
 			check(aState, aRadius, isNonNegativeReal, "circle", "non-negative number", 1, arguments);
-			check(aState, aStyle, isMode, "circle", "style", 2, arguments);
+			check(aState, aStyle, isMode, "circle", 'style ("solid" or "outline")', 2, arguments);
 			check(aState, aColor, isColor, "circle", "color", 3, arguments);
 
 
@@ -4720,7 +4720,7 @@ PRIMITIVES['star'] =
 			  check(aState, inner, 
 				isNonNegativeReal, "star",
 				"non-negative number", 3, arguments);
-			  check(aState, m, isMode, "star", "style", 4, arguments);
+			  check(aState, m, isMode, "star", 'style ("solid" or "outline")', 4, arguments);
 			  check(aState, c, isColor, "star", "color", 5, arguments);
 			  if (colorDb.get(c)) {
 			      c = colorDb.get(c);
@@ -4738,7 +4738,7 @@ PRIMITIVES['star'] =
 		      function(aState, sideLength, mode, color) {
 			  check(aState, sideLength, isNonNegativeReal,
 				"star", "non-negative number", 1, arguments);
-			  check(aState, mode, isMode, "star", "style", 2, arguments);
+			  check(aState, mode, isMode, "star", 'style ("solid" or "outline")', 2, arguments);
 			  check(aState, color, isColor, "star", "color", 3, arguments);
 			  if (colorDb.get(color)) {
 			      color = colorDb.get(color);
@@ -4763,7 +4763,7 @@ new PrimProc('radial-star',
 									"radial-star", "positive number", 2, arguments);
 			 check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
 									"radial-star", "positive number", 3, arguments);
-			 check(aState, aStyle, isMode, "radial-star", "style", 4, arguments);
+			 check(aState, aStyle, isMode, "radial-star", 'style ("solid" or "outline")', 4, arguments);
 			 check(aState, aColor, isColor, "radial-star", "color", 5, arguments);
 			 
 			 if (colorDb.get(aColor)) {
@@ -4784,7 +4784,7 @@ PRIMITIVES['nw:rectangle'] =
 		 function(aState, w, h, s, c) {
 			check(aState, w, isNonNegativeReal, "nw:rectangle", "non-negative number", 1, arguments);
 			check(aState, h, isNonNegativeReal, "nw:rectangle", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "nw:rectangle", "style", 3, arguments);
+			check(aState, s, isMode, "nw:rectangle", 'style ("solid" or "outline")', 3, arguments);
 			check(aState, c, isColor, "nw:rectangle", "color", 4, arguments);
 
 			if (colorDb.get(c)) {
@@ -4804,7 +4804,7 @@ PRIMITIVES['rectangle'] =
 		 function(aState, w, h, s, c) {
 			check(aState, w, isNonNegativeReal, "rectangle", "non-negative number", 1, arguments);
 			check(aState, h, isNonNegativeReal, "rectangle", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "rectangle", "style", 3, arguments);
+			check(aState, s, isMode, "rectangle", 'style ("solid" or "outline")', 3, arguments);
 			check(aState, c, isColor, "rectangle", "color", 4, arguments);
 
 			if (colorDb.get(c)) {
@@ -4822,7 +4822,7 @@ new PrimProc('regular-polygon',
 			 function(aState, length, count, s, c) {
 			 check(aState, length,	isNonNegativeReal,	"regular-polygon", "non-negative number", 1, arguments);
 			 check(aState, count,	isSideCount,		"regular-polygon", "positive integer greater than or equal to 3", 2, arguments);
-			 check(aState, s,		isMode, "regular-polygon", "style", 3, arguments);
+			 check(aState, s,		isMode, "regular-polygon", 'style ("solid" or "outline")', 3, arguments);
 			 check(aState, c,		isColor, "regular-polygon", "color", 4, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4843,7 +4843,7 @@ new PrimProc('star-polygon',
 			 check(aState, length,	isNonNegativeReal,	"star-polygon", "non-negative number", 1, arguments);
 			 check(aState, count,	isSideCount,		"star-polygon", "positive integer greater than or equal to 3", 2, arguments);
 			 check(aState, step,	isStepCount,		"star-polygon", "positive integer greater than or equal to 1", 3, arguments);
-			 check(aState, s,		isMode,				"star-polygon", "style", 4, arguments);
+			 check(aState, s,		isMode,				"star-polygon", 'style ("solid" or "outline")', 4, arguments);
 			 check(aState, c,		isColor,			"star-polygon", "color", 5, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4863,7 +4863,7 @@ new PrimProc('rhombus',
 			 function(aState, l, a, s, c) {
 			 check(aState, l, isNonNegativeReal, "rhombus", "non-negative number", 1, arguments);
 			 check(aState, a, isNonNegativeReal, "rhombus", "non-negative number", 2, arguments);
-			 check(aState, s, isMode, "rhombus", "style", 3, arguments);
+			 check(aState, s, isMode, "rhombus", 'style ("solid" or "outline")', 3, arguments);
 			 check(aState, c, isColor, "rhombus", "color", 4, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4878,7 +4878,7 @@ new PrimProc('square',
 			 false, false,
 			 function(aState, l, s, c) {
 			 check(aState, l, isNonNegativeReal, "square", "non-negative number", 1, arguments);
-			 check(aState, s, isMode, "square", "style", 2, arguments);
+			 check(aState, s, isMode, "square", 'style ("solid" or "outline")', 2, arguments);
 			 check(aState, c, isColor, "square", "color", 3, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4893,7 +4893,7 @@ PRIMITIVES['triangle'] =
 		 false, false,
 		 function(aState, s, m, c) {
 			check(aState, s, isNonNegativeReal, "triangle", "non-negative number", 1, arguments);
-			check(aState, m, isMode, "triangle", "style", 2, arguments);
+			check(aState, m, isMode, "triangle", 'style ("solid" or "outline")', 2, arguments);
 			check(aState, c, isColor, "triangle", "color", 3, arguments);
 			if (colorDb.get(c)) {
 				c = colorDb.get(c);
@@ -4912,7 +4912,7 @@ new PrimProc('right-triangle',
 			 function(aState, side1, side2, s, c) {
 			 check(aState, side1, isNonNegativeReal, "right-triangle", "non-negative number", 1, arguments);
 			 check(aState, side2, isNonNegativeReal, "right-triangle", "non-negative number", 2, arguments);
-			 check(aState, s, isMode, "right-triangle", "style", 3, arguments);
+			 check(aState, s, isMode, "right-triangle", 'style ("solid" or "outline")', 3, arguments);
 			 check(aState, c, isColor, "right-triangle", "color", 4, arguments);
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
@@ -4928,7 +4928,7 @@ new PrimProc('isosceles-triangle',
 			 function(aState, side, angle, s, c) {
 			 check(aState, side, isNonNegativeReal, "isosceles-triangle", "non-negative number", 1, arguments);
 			 check(aState, angle, isAngle, "isosceles-triangle", "finite real number between 0 and 360", 2, arguments);
-			 check(aState, s, isMode, "isosceles-triangle", "style", 3, arguments);
+			 check(aState, s, isMode, "isosceles-triangle", 'style ("solid" or "outline")', 3, arguments);
 			 check(aState, c, isColor, "isosceles-triangle", "color", 4, arguments);
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
@@ -5325,7 +5325,7 @@ new PrimProc('text/font',
 			 check(aState, aFace,	function(x) {return isString(x) || !x;},		
 											"text/font", "face",	4, arguments);
 			 check(aState, aFamily,	isFontFamily,	"text/font", "family",	5, arguments);
-			 check(aState, aStyle,	isFontStyle,	"text/font", "style",	6, arguments);
+			 check(aState, aStyle,	isFontStyle,	"text/font", 'style ("solid" or "outline")',	6, arguments);
 			 check(aState, aWeight,	isFontWeight,	"text/font", "weight",	7, arguments);
 			 check(aState, aUnderline,isBoolean,	"text/font", "underline?",8, arguments);
 			 
@@ -5692,7 +5692,7 @@ PRIMITIVES['step-count?']	= new PrimProc('step-count?', 1, false, false,
 // 		 false, false,
 // 		 function(aRadius, aStyle, aColor) {
 // 			check(aState, aRadius, isNonNegativeReal, "circle", "non-negative number", 1, arguments);
-// 			check(aState, aStyle, isStyle, "circle", "style", 2, arguments);
+// 			check(aState, aStyle, isStyle, "circle", 'style ("solid" or "outline")', 2, arguments);
 // 			check(aState, aColor, isColor, "circle", "color", 3, arguments);
 
 
@@ -5714,7 +5714,7 @@ PRIMITIVES['step-count?']	= new PrimProc('step-count?', 1, false, false,
 // 			      "star", "positive number", 2, arguments);
 // 			check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
 // 			      "star", "positive number", 2, arguments);
-// 			check(aState, aStyle, isStyle, "star", "style", 4, arguments);
+// 			check(aState, aStyle, isStyle, "star", 'style ("solid" or "outline")', 4, arguments);
 // 			check(aState, aColor, isColor, "star", "color", 5, arguments);
 
 // 			if (colorDb.get(aColor)) {
@@ -5735,7 +5735,7 @@ PRIMITIVES['step-count?']	= new PrimProc('step-count?', 1, false, false,
 // 		 function(w, h, s, c) {
 // 			check(aState, w, isNonNegativeReal, "nw:rectangle", "non-negative number", 1, arguments);
 // 			check(aState, h, isNonNegativeReal, "nw:rectangle", "non-negative number", 2, arguments);
-// 			check(aState, s, isStyle, "nw:rectangle", "style", 3, arguments);
+// 			check(aState, s, isStyle, "nw:rectangle", 'style ("solid" or "outline")', 3, arguments);
 // 			check(aState, c, isColor, "nw:rectangle", "color", 4, arguments);
 
 // 			if (colorDb.get(c)) {
@@ -5755,7 +5755,7 @@ PRIMITIVES['step-count?']	= new PrimProc('step-count?', 1, false, false,
 // 		 function(w, h, s, c) {
 // 			check(aState, w, isNonNegativeReal, "rectangle", "non-negative number", 1, arguments);
 // 			check(aState, h, isNonNegativeReal, "rectangle", "non-negative number", 2, arguments);
-// 			check(aState, s, isStyle, "rectangle", "style", 3, arguments);
+// 			check(aState, s, isStyle, "rectangle", 'style ("solid" or "outline")', 3, arguments);
 // 			check(aState, c, isColor, "rectangle", "color", 4, arguments);
 
 // 			if (colorDb.get(c)) {
@@ -5773,7 +5773,7 @@ PRIMITIVES['step-count?']	= new PrimProc('step-count?', 1, false, false,
 // 		 false, false,
 // 		 function(r, s, c) {
 // 			check(aState, r, isNonNegativeReal, "triangle", "non-negative number", 1, arguments);
-// 			check(aState, s, isStyle, "triangle", "style", 2, arguments);
+// 			check(aState, s, isStyle, "triangle", 'style ("solid" or "outline")', 2, arguments);
 // 			check(aState, c, isColor, "triangle", "color", 3, arguments);
 // 			if (colorDb.get(c)) {
 // 				c = colorDb.get(c);
@@ -5988,7 +5988,7 @@ PRIMITIVES['on-tick'] =
 			  1,
 			  false, false,
 			  function(aState, f) {
-			      check(aState, f, isFunction, "on-tick", "procedure", 1);
+			      check(aState, f, isFunction, "on-tick", "function name", 1);
 			      return new OnTickBang(f,
 						    new PrimProc('', 1, false, false,
 								 function(aState, w) { return types.effectDoNothing(); }),
@@ -5998,7 +5998,7 @@ PRIMITIVES['on-tick'] =
 			  2,
 			  false, false,
 			  function(aState, f, aDelay) {
-			      check(aState, f, isFunction, "on-tick", "procedure", 1, arguments);
+			      check(aState, f, isFunction, "on-tick", "function name", 1, arguments);
 			      check(aState, aDelay, isNonNegativeReal, "on-tick", "non-negative number", 2, arguments);
 			      return new OnTickBang(f,
 						    new PrimProc('', 1, false, false,
@@ -6014,16 +6014,16 @@ PRIMITIVES['on-tick!'] =
 		      2,
 		      false, false,
 		      function(aState, handler, effectHandler) {
-			  check(aState, handler, isFunction, "on-tick!", "procedure", 1, arguments);
-			  check(aState, effectHandler, isFunction, "on-tick!","procedure", 2, arguments);
+			  check(aState, handler, isFunction, "on-tick!", "function name", 1, arguments);
+			  check(aState, effectHandler, isFunction, "on-tick!","function name", 2, arguments);
 			  return new OnTickBang(handler, effectHandler, DEFAULT_TICK_DELAY);
 		      }),
 	 new PrimProc('on-tick!',
 		      3,
 		      false, false,
 		      function(aState, handler, effectHandler, aDelay)  {
-			  check(aState, handler, isFunction, "on-tick!", "procedure", 1, arguments);
-			  check(aState, effectHandler, isFunction, "on-tick!","procedure", 2, arguments);
+			  check(aState, handler, isFunction, "on-tick!", "function name", 1, arguments);
+			  check(aState, effectHandler, isFunction, "on-tick!","function name", 2, arguments);
 			  check(aState, aDelay, isNonNegativeReal, "on-tick!", "non-negative number", 3, arguments);
 			  return new OnTickBang(handler, effectHandler, aDelay);
 		      }) ]);
@@ -6074,7 +6074,7 @@ PRIMITIVES['on-redraw'] =
 		 1,
 		 false, false,
 		 function(aState, f) {
-		     check(aState, f, isFunction, 'on-redraw', 'procedure', 1);
+		     check(aState, f, isFunction, 'on-redraw', "function name", 1);
 		     return new (WorldConfigOption.extend({
 				 init: function() {
 				     this._super('on-redraw');
@@ -6092,7 +6092,7 @@ PRIMITIVES['to-draw'] =
 		 1,
 		 false, false,
 		 function(aState, f) {
-		     check(aState, f, isFunction, 'to-draw', 'procedure', 1);
+		     check(aState, f, isFunction, 'to-draw', "function name", 1);
 		     return new (WorldConfigOption.extend({
 				 init: function() {
 				     this._super('on-redraw');
@@ -6113,7 +6113,7 @@ PRIMITIVES['on-draw'] =
 		      1,
 		      false, false,
 		      function(aState, domHandler) {
-			  check(aState, domHandler, isFunction, 'on-draw', 'procedure', 1);
+			  check(aState, domHandler, isFunction, 'on-draw', "function name", 1);
 			  return new (WorldConfigOption.extend({
 				    init: function() {
 					this._super('on-draw');
@@ -6127,8 +6127,8 @@ PRIMITIVES['on-draw'] =
 		      2,
 		      false, false,
 		      function(aState, domHandler, styleHandler) {
-		 	  check(aState, domHandler, isFunction, 'on-draw', 'procedure', 1, arguments);
-			  check(aState, styleHandler, isFunction, 'on-draw', 'procedure', 2, arguments);
+		 	  check(aState, domHandler, isFunction, 'on-draw', "function name", 1, arguments);
+			  check(aState, styleHandler, isFunction, 'on-draw', "function name", 2, arguments);
 			  return new (WorldConfigOption.extend({
 				    init: function() {
 					this._super('on-draw');
@@ -6200,8 +6200,8 @@ PRIMITIVES['js-div'] =
 
 var jsButtonBang = function(funName) {
     return function(aState, worldUpdateF, effectF, attribList) {
-		check(aState, worldUpdateF, isFunction, funName, 'procedure', 1);
-		check(aState, effectF, isFunction, funName, 'procedure', 2);
+		check(aState, worldUpdateF, isFunction, funName, "function name", 1);
+		check(aState, effectF, isFunction, funName, "function name", 2);
 		checkListOf(undefined, attribList, isAssocList, funName, '(listof X Y)', 3);
 
 		var attribs = attribList ? assocListToHash(attribList) : {};
@@ -6233,7 +6233,7 @@ PRIMITIVES['js-button!'] =
 
 var jsInput = function(type, updateF, attribList) {
 	check(aState, type, isString, 'js-input', 'string', 1);
-	check(aState, updateF, isFunction, 'js-input', 'procedure', 2);
+	check(aState, updateF, isFunction, 'js-input', "function name", 2);
 	checkListOf(undefined, attribList, isAssocList, 'js-input', '(listof X Y)', 3);
 
 	var attribs = attribList ? assocListToHash(attribList) : {};
@@ -6289,7 +6289,7 @@ PRIMITIVES['js-text'] =
 
 var jsSelect = function(optionList, updateF, attribList) {
 	checkListOf(undefined, optionList, isString, 'js-select', 'listof string', 1);
-	check(aState, updateF, isFunction, 'js-select', 'procedure', 2);
+	check(aState, updateF, isFunction, 'js-select', "function name", 2);
 	checkListOf(undefined, attribList, isAssocList, 'js-select', '(listof X Y)', 3);
 
 	var attribs = attribList ? assocListToHash(attribList) : {};
@@ -6307,45 +6307,6 @@ PRIMITIVES['js-select'] =
                        new PrimProc('js-select', 3, false, false, function(aState, optionList, updateF, attribList) { return jsSelect(optionList, updateF, attribList); })]);
 
 
-/*
-PRIMITIVES['big-bang'] =
-PRIMITIVES['js-big-bang'] =
-    new PrimProc('js-big-bang',
-		 1,
-		 true, true,
-		 function(aState, initW, handlers) {
-		 	arrayEach(handlers,
-				function(x, i) {
-					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'js-big-bang', 'handler or attribute list', i+2);
-				});
-		     var unwrappedConfigs = 
-			 helpers.map(function(x) {
-					if ( isWorldConfigOption(x) ) {
-						return function(config) { return x.configure(config); };
-					}
-					else {
-						return x;
-					}
-			 	     },
-				     handlers);
-		     aState.v = PAUSE(function(restarter, caller) {
-				 var bigBangController;
-				 var onBreak = function() {
-				     bigBangController.breaker();
-				 }
-				 aState.addBreakRequestedListener(onBreak);
-				 bigBangController = jsworld.MobyJsworld.bigBang(initW, 
-							     aState.getToplevelNodeHook()(),
-							     unwrappedConfigs,
-							     caller, 
-							     function(v) {
-								 aState.removeBreakRequestedListener(onBreak);
-								 restarter(v);
-							     });
-		     })
-		 });
-*/
 PRIMITIVES['big-bang'] =
 PRIMITIVES['js-big-bang'] =
     new PrimProc('big-bang',
@@ -6355,7 +6316,7 @@ PRIMITIVES['js-big-bang'] =
 		 	arrayEach(handlers,
 				function(x, i) {
 					check(aState, x, function(y) { return isWorldConfigOption(y) || isList(y) || types.isWorldConfig(y); },
-					      'big-bang', 'handler or attribute list', i+2, [aState, initW].concat(handlers));
+					      'big-bang', 'handler', i+2, [aState, initW].concat(handlers));
 				});
 		     var unwrappedConfigs = 
 			 helpers.map(function(x) {
@@ -6438,7 +6399,7 @@ PRIMITIVES['make-world-config'] =
 		 true, false,
 		 function(aState, startup, shutdown, handlers) {
 		 	var allArgs = [startup, shutdown].concat(handlers);
-		 	check(aState, startup, isFunction, 'make-world-config', 'procedure', 1, allArgs);
+		 	check(aState, startup, isFunction, 'make-world-config', "function name", 1, allArgs);
 			check(aState, shutdown, procArityContains(1), 'make-world-config', 'procedure (arity 1)', 2, allArgs);
 			arrayEach(handlers, function(x, i) { check(aState, x, isFunction, 'make-world-config', 'handler', i+3, allArgs); });
 
@@ -6465,7 +6426,7 @@ PRIMITIVES['make-effect-type'] =
 		check(aState, superType, function(x) { return x === false || types.isEffectType(x) },
 		      'make-effect-type', 'effect type or #f', 2, userArgs);
 		check(aState, fieldCnt, isNatural, 'make-effect-type', 'exact non-negative integer', 3, userArgs);
-		check(aState, impl, isFunction, 'make-effect-type', 'procedure', 4, userArgs);
+		check(aState, impl, isFunction, 'make-effect-type', "function name", 4, userArgs);
 //		checkListOf(aState, handlerIndices, isNatural, 'make-effect-type', 'exact non-negative integer', 5);
 		check(aState, guard, function(x) { return x === false || isFunction(x); }, 'make-effect-type', 'procedure or #f', 6, userArgs);
 		// Check the number of arguments on the guard
@@ -6529,7 +6490,7 @@ PRIMITIVES['make-render-effect-type'] =
 		check(aState, superType, function(x) { return x === false || types.isEffectType(x) },
 		      'make-render-effect-type', 'effect type or #f', 2, userArgs);
 		check(aState, fieldCnt, isNatural, 'make-render-effect-type', 'exact non-negative integer', 3, userArgs);
-		check(aState, impl, isFunction, 'make-render-effect-type', 'procedure', 4, userArgs);
+		check(aState, impl, isFunction, 'make-render-effect-type', "function name", 4, userArgs);
 		check(aState, guard, function(x) { return x === false || isFunction(x); }, 'make-render-effect-type', 'procedure or #f', 6, userArgs);
 		// Check the number of arguments on the guard
 		var numberOfGuardArgs = fieldCnt + 1 + (superType ? superType.numberOfArgs : 0);
@@ -6681,7 +6642,7 @@ PRIMITIVES['procedure->cps-js-fun'] =
 		 1,
 		 false, false,
 		 function(aState, proc) {
-		 	check(aState, proc, isFunction, 'procedure->cps-js-fun', 'procedure', 1);
+		 	check(aState, proc, isFunction, 'procedure->cps-js-fun', "function name", 1);
 
 			var caller = makeCaller(aState);
 			return types.jsObject(proc.name + ' (cps)', function() {
@@ -6698,7 +6659,7 @@ PRIMITIVES['procedure->void-js-fun'] =
 		 1,
 		 false, false,
 		 function(aState, proc) {
-		 	check(aState, proc, isFunction, 'procedure->void-js-fun', 'procedure', 1);
+		 	check(aState, proc, isFunction, 'procedure->void-js-fun', "function name", 1);
 
 			var caller = makeCaller(aState);
 			return types.jsObject(proc.name + ' (void)', function() {

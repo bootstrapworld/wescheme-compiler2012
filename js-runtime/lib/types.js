@@ -1592,7 +1592,7 @@ var liftToplevelToFunctionValue = function(primitiveF,
 	    return this === other; 
 	}
 	lifted.toWrittenString = function(cache) { 
-	    return "#<procedure:" + name + ">";
+	    return "#<function:" + name + ">";
 	};
 	lifted.toDisplayedString = lifted.toWrittenString;
 	lifted.procedureArity = procedureArityDescription;
@@ -1672,9 +1672,9 @@ var ClosureValue = function(name, locs, numParams, paramTypes, isRest, closureVa
 
 ClosureValue.prototype.toString = function() {
     if (this.name !== Empty.EMPTY) {
-	return helpers.format("#<procedure:~a>", [this.name]);
+	return helpers.format("#<function:~a>", [this.name]);
     } else {
-	return "#<procedure>";
+	return "#<function>";
     }
 };
 
@@ -1702,9 +1702,9 @@ var ContinuationClosureValue = function(vstack, cstack) {
 
 ContinuationClosureValue.prototype.toString = function() {
     if (this.name !== Empty.EMPTY) {
-	return helpers.format("#<procedure:~a>", [this.name]);
+	return helpers.format("#<function:~a>", [this.name]);
     } else {
-	return "#<procedure>";
+	return "#<function>";
     }
 };
 
@@ -1883,21 +1883,21 @@ var PrimProc = function(name, numParams, isRest, assignsToValueRegister, impl) {
 };
 
 PrimProc.prototype.toString = function() {
-    return ("#<procedure:" + this.name + ">");
+    return ("#<function:" + this.name + ">");
 };
 
 PrimProc.prototype.toWrittenString = function(cache) {
-    return ("#<procedure:" + this.name + ">");
+    return ("#<function:" + this.name + ">");
 };
 
 PrimProc.prototype.toDisplayedString = function(cache) {
-    return ("#<procedure:" + this.name + ">");
+    return ("#<function:" + this.name + ">");
 };
 
 
 PrimProc.prototype.toDomNode = function(cache) {
     var div = document.createElement("span");
-    div.appendChild(document.createTextNode("#<procedure:"+ this.name +">"));
+    div.appendChild(document.createTextNode("#<function:"+ this.name +">"));
     return div;
 };
 
@@ -1910,16 +1910,16 @@ var CasePrimitive = function(name, cases) {
 
 CasePrimitive.prototype.toDomNode = function(cache) {
     var div = document.createElement("span");
-    div.appendChild(document.createTextNode("#<procedure:"+ this.name +">"));
+    div.appendChild(document.createTextNode("#<function:"+ this.name +">"));
     return div;    
 };
 
 CasePrimitive.prototype.toWrittenString = function(cache) {
-    return ("#<procedure:" + this.name + ">");
+    return ("#<function:" + this.name + ">");
 };
 
 CasePrimitive.prototype.toDisplayedString = function(cache) {
-    return ("#<procedure:" + this.name + ">");
+    return ("#<function:" + this.name + ">");
 };
 
 

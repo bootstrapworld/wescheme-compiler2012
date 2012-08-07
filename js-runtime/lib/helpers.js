@@ -9,7 +9,7 @@ var helpers = {};
 
 	var format = function(formatStr, args, functionName) {
 		var throwFormatError = function() {
-			functionName = functionName || '#<procedure>';
+			functionName = functionName || '#<function>';
 			var matches = formatStr.match(new RegExp('~[sSaA]', 'g'));
 			var expectedNumberOfArgs = matches == null ? 0 : matches.length;
 			var errorStrBuffer = [functionName + ': format string requires ' + expectedNumberOfArgs
