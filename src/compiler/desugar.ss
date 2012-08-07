@@ -470,9 +470,12 @@
        (raise (make-moby-error (stx-loc expr)
                                (make-Message
                                 (make-ColoredPart (symbol->string (stx-e (first (stx-e expr)))) (stx-loc (first (stx-e expr))))
-                                ": expects at least 2 arguments, but found "
+                                ": expects at least 2 arguments, but given  " 
                                 (if (= (length (stx-e expr)) 2)
-                                    (make-ColoredPart "only 1" (stx-loc (second (stx-e expr))))
+                                    "1: "
+                                    "")
+                                (if (= (length (stx-e expr)) 2)
+                                    (make-ColoredPart  (stx-e (second (stx-e expr))) (stx-loc (second (stx-e expr))))
                                     "0"))))]     
       [else
        (local [(define boolean-chain-stx (first (stx-e expr)))
