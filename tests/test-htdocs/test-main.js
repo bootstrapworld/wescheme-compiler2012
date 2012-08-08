@@ -1728,7 +1728,7 @@ var runTests = function() {
 		                runtime.string('#\\b 0+2i b'));
                        
 		       testPrim('format', id, ['~s ~a', primitive.getPrimitive('+'), primitive.getPrimitive('format')],
-		                runtime.string('#<procedure:+> #<procedure:format>'));
+		                runtime.string('#<function:+> #<function:format>'));
 		       
 		       var box1 = types.box('junk');
 		       var box2 = types.box(box1);
@@ -3676,6 +3676,8 @@ var runTests = function() {
                   "false")
 
 
+
+
         queueErrorTest("set! is not enabled, part 1",
                        "set!",
                        "set!: this variable is not defined")
@@ -3687,18 +3689,13 @@ var runTests = function() {
 
         queueErrorTest("test mis-application 1",
                        "(define (double x) (+ x x)) (double double)",
-                       "+: expects a number as 1st argument, but given: #<procedure:double>; other arguments were: #<procedure:double>");
+                       "+: expects a number as 1st argument, but given: #<function:double>; other arguments were: #<function:double>");
 
         queueErrorTest("test mis-application 2",
                        "(define (double x) (+ x x)) (double double 25)",
-                       "double: expects 1 argument, but given 2: #<procedure:double> 25");
+                       "double: expects 1 argument, but given 2: #<function:double> 25");
 
-
-
-
-        
-
-        queueErrorTest("test a error in map",
+       queueErrorTest("test a error in map",
                        '(map add1 (list "1"))',
                        'add1: expects a number as 1st argument, but given: "1"');
                        
@@ -3976,11 +3973,11 @@ var runTests = function() {
 
 	queueErrorTest("on-tick 1 arg",
 		       "(on-tick 1)", 
-		       "on-tick: expects a procedure as 1st argument, but given: 1");
+		       "on-tick: expects a function name as 1st argument, but given: 1");
 
 	queueErrorTest("on-tick 2 args",
 		       "(on-tick 1 2)",
-		       "on-tick: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
+		       "on-tick: expects a function name as 1st argument, but given: 1; other arguments were: 2");
 	
 	queueErrorTest("on-tick! bad args amount",
 		       "(on-tick!)",
@@ -3988,11 +3985,11 @@ var runTests = function() {
 	
 	queueErrorTest("on-tick! given 2 bad args",
 		       "(on-tick! 1 2)",
-		       "on-tick!: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
+		       "on-tick!: expects a function name as 1st argument, but given: 1; other arguments were: 2");
 	
 	queueErrorTest("on-tick! given 3 bad args",
 		       "(on-tick! 1 2 3)",
-		       "on-tick!: expects a procedure as 1st argument, but given: 1; other arguments were: 2 3");
+		       "on-tick!: expects a function name as 1st argument, but given: 1; other arguments were: 2 3");
 
 	queueErrorTest("on-tap bad arg amount",
 		       "(on-tap)",
@@ -4000,7 +3997,7 @@ var runTests = function() {
 
 	queueErrorTest("on-tap bad arg a",
 		       "(on-tap 1)",
-		       "on-tap: expects a procedure as 1st argument, but given: 1");
+		       "on-tap: expects a function name as 1st argument, but given: 1");
 
 	queueErrorTest("on-tilt bad arg amount",
 		       "(on-tilt)",
@@ -4008,7 +4005,7 @@ var runTests = function() {
 
 	queueErrorTest("on-tilt bad arg a",
 		       "(on-tilt 1)",
-		       "on-tilt: expects a procedure as 1st argument, but given: 1");
+		       "on-tilt: expects a function name as 1st argument, but given: 1");
 
 	queueErrorTest("on-key bad arg amount",
 		       "(on-key)",
@@ -4016,7 +4013,7 @@ var runTests = function() {
 	
 	queueErrorTest("on-key bad arg a",
 		       "(on-key 1)",
-		       "on-key: expects a procedure as 1st argument, but given: 1");
+		       "on-key: expects a function name as 1st argument, but given: 1");
 
 	queueErrorTest("on-key! bad arg amount",
 		       "(on-key!)",
@@ -4024,7 +4021,7 @@ var runTests = function() {
 	
 	queueErrorTest("on-key! bad arg a",
 		       "(on-key! 1 1)",
-		       "on-key!: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
+		       "on-key!: expects a function name as 1st argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("stop-when bad arg amount",
 		       "(stop-when)",
@@ -4032,7 +4029,7 @@ var runTests = function() {
 	
 	queueErrorTest("stop-when bad arg a",
 		       "(stop-when 1)",
-		       "stop-when: expects a procedure as 1st argument, but given: 1");
+		       "stop-when: expects a function name as 1st argument, but given: 1");
 /*
 	queueErrorTest("stop-when! bad arg amount",
 		       "(stop-when!)",
@@ -4040,7 +4037,7 @@ var runTests = function() {
 	
 	queueErrorTest("stop-when! bad arg a",
 		       "(stop-when! 1 1)",
-		       "stop-when!: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
+		       "stop-when!: expects a function name as 1st argument, but given: 1; other arguments were: 1");
 */
 	queueErrorTest("on-redraw bad arg amount",
 		       "(on-redraw)",
@@ -4048,7 +4045,7 @@ var runTests = function() {
 
 	queueErrorTest("on-redraw bad arg a",
 		       "(on-redraw 1)",
-		       "on-redraw: expects a procedure as 1st argument, but given: 1");
+		       "on-redraw: expects a function name as 1st argument, but given: 1");
 
 
 
@@ -4058,11 +4055,11 @@ var runTests = function() {
 	
 	queueErrorTest("on-draw bad arg a",
 		       "(on-draw 1)",
-		       "on-draw: expects a procedure as 1st argument, but given: 1");
+		       "on-draw: expects a function name as 1st argument, but given: 1");
 
 	queueErrorTest("on-draw bad arg as",
 		       "(on-draw 1 2)",
-		       "on-draw: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
+		       "on-draw: expects a function name as 1st argument, but given: 1; other arguments were: 2");
 
 	queueErrorTest("initial-effect bad arg amount (no args)",
 		       "(initial-effect)",
@@ -4078,7 +4075,7 @@ var runTests = function() {
 
 	queueErrorTest("big-bang given wrong type of arg as 2nd arg",
 		       "(big-bang 1 1)",
-		       "big-bang: expects a handler or attribute list as 2nd argument, but given: 1; other arguments were: 1");
+		       "big-bang: expects a handler as 2nd argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("make-struct-type wrong number of args",
 		       "(make-struct-type)",
@@ -4118,7 +4115,7 @@ var runTests = function() {
 
 	queueErrorTest("procedure-arity given bad arg a",
 		       "(procedure-arity 1)",
-		       "procedure-arity: expects a procedure as 1st argument, but given: 1");
+		       "procedure-arity: expects a function name as 1st argument, but given: 1");
 	
 	queueErrorTest("procedure-arity given way too many args",
 		       "(procedure-arity 1 1 1 1 1 1 1 1 1 1)",
@@ -4130,19 +4127,19 @@ var runTests = function() {
 
 	queueErrorTest("apply given bad arg as",
 		       "(apply 1 1)",
-		       "apply: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
+		       "apply: expects a function name as 1st argument, but given: 1; other arguments were: 1");
 	
 	queueErrorTest("apply given bad arg a for second arg",
 		       "(apply add1 1)",
-		       "apply: expects a list as 2nd argument, but given: 1; other arguments were: #<procedure:add1>");
+		       "apply: expects a list as 2nd argument, but given: 1; other arguments were: #<function:add1>");
 
 	queueErrorTest("compose given bad arg a",
 		       "(compose 1)",
-		       "compose: expects a procedure as 1st argument, but given: 1");
+		       "compose: expects a function name as 1st argument, but given: 1");
 	
 	queueErrorTest("compose given bad 2nd arg a",
 		       "(compose add1 1)",
-		       "compose: expects a procedure as 2nd argument, but given: 1; other arguments were: #<procedure:add1>");
+		       "compose: expects a function name as 2nd argument, but given: 1; other arguments were: #<function:add1>");
 	
 	queueErrorTest("current-inexact-milliseconds given too many args",
 		       "(current-inexact-milliseconds 1)",
@@ -4166,11 +4163,11 @@ var runTests = function() {
 	
 	queueErrorTest("random given bad arg a",
 		       "(random add1)",
-		       "random: expects a non-negative exact integer as 1st argument, but given: #<procedure:add1>");
+		       "random: expects a non-negative exact integer as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("sleep given bad arg a",
 		       "(sleep add1)",
-		       "sleep: expects a non-negative real number as 1st argument, but given: #<procedure:add1>");
+		       "sleep: expects a non-negative real number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("sleep given too many args",
 		       "(sleep 1 2)",
@@ -4210,23 +4207,27 @@ var runTests = function() {
 	
 	queueErrorTest("* given bad arg",
 		       "(* add1)",
-		       "*: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "*: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("/ given bad arg",
 		       "(/ add1)",
-		       "/: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "/: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("- given bad arg",
 		       "(- add1)",
-		       "-: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "-: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("+ given bad arg",
 		       "(+ add1)",
-		       "+: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "+: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("/ given no args",
 		       "(/)",
 		       "/: expects at least 1 argument, but given 0");
+
+    queueErrorTest("/ given no args",
+               "(/ 5 0)",
+               "/: cannot divide by zero");
 
 	queueErrorTest("- given no args",
 		       "(-)",
@@ -4238,11 +4239,11 @@ var runTests = function() {
 
 	queueErrorTest("= given bad 2nd arg",
 		       "(= 1 sub1)",
-		       "=: expects a number as 2nd argument, but given: #<procedure:sub1>; other arguments were: 1");
+		       "=: expects a number as 2nd argument, but given: #<function:sub1>; other arguments were: 1");
 	
 	queueErrorTest("= given bad first arg",
 		       "(= sub1 1)",
-		       "=: expects a number as 1st argument, but given: #<procedure:sub1>; other arguments were: 1");
+		       "=: expects a number as 1st argument, but given: #<function:sub1>; other arguments were: 1");
 	
 	queueErrorTest("=~ given no args",
 		       "(=~)",
@@ -4250,7 +4251,7 @@ var runTests = function() {
 	
 	queueErrorTest("=~ given bad as",
 		       "(=~ add1 sub1 add1)",
-		       "=~: expects a real as 1st argument, but given: #<procedure:add1>; other arguments were: #<procedure:sub1> #<procedure:add1>");
+		       "=~: expects a real as 1st argument, but given: #<function:add1>; other arguments were: #<function:sub1> #<function:add1>");
 	
 	queueErrorTest("sub1 given no args",
 		       "(sub1)",
@@ -4258,7 +4259,7 @@ var runTests = function() {
 	
 	queueErrorTest("sub1 given a bad arg",
 		       "(sub1 add1)",
-		       "sub1: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "sub1: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("sub1 given too many args",
 		       "(sub1 1 1 1)",
@@ -4274,7 +4275,7 @@ var runTests = function() {
 	
 	queueErrorTest("add1 given a bad arg",
 		       "(add1 add1)",
-		       "add1: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "add1: expects a number as 1st argument, but given: #<function:add1>");
 	
 
 	queueErrorTest("< given no args",
@@ -4283,11 +4284,11 @@ var runTests = function() {
 
 	queueErrorTest("< given 1 bad arg",
 		       "(< add1 1)",
-		       "<: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "<: expects a number as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("< given 1 bad arg (2nd arg)",
 		       "(< 1 add1)",
-		       "<: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "<: expects a number as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("< given too few args",
 		       "(< 1)",
@@ -4299,11 +4300,11 @@ var runTests = function() {
 
 	queueErrorTest("> given 1 bad arg",
 		       "(> add1 1)",
-		       ">: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       ">: expects a number as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("> given 1 bad arg (2nd arg)",
 		       "(> 1 add1)",
-		       ">: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       ">: expects a number as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("> given too few args",
 		       "(> 1)",
@@ -4316,11 +4317,11 @@ var runTests = function() {
 	
 	queueErrorTest("<= given bad arg (first arg))",
 		       "(<= add1 1)",
-		       "<=: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "<=: expects a number as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("<= given 1 bad arg (2nd arg)",
 		       "(<= 1 add1)",
-		       "<=: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "<=: expects a number as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("<= given too few args",
 		       "(<= 1)",
@@ -4332,11 +4333,11 @@ var runTests = function() {
 	
 	queueErrorTest(">= given bad arg (first arg))",
 		       "(>= add1 1)",
-		       ">=: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       ">=: expects a number as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest(">= given 1 bad arg (2nd arg)",
 		       "(>= 1 add1)",
-		       ">=: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       ">=: expects a number as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest(">= given too few args",
 		       "(>= 1)",
@@ -4348,7 +4349,7 @@ var runTests = function() {
 	
 	queueErrorTest("abs given 1 bad arg",
 		       "(abs add1)",
-		       "abs: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "abs: expects a real as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("abs given too many args",
 		       "(abs 1 1)",
@@ -4360,11 +4361,11 @@ var runTests = function() {
 	
 	queueErrorTest("quotient given 1 bad arg (first arg))",
 		       "(quotient add1 1)",
-		       "quotient: expects an integer as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "quotient: expects an integer as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("quotient given 1 bad arg (2nd arg)",
 		       "(quotient 1 add1)",
-		       "quotient: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "quotient: expects an integer as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("quotient given too many args",
 		       "(quotient 1 1 1)",
@@ -4376,11 +4377,11 @@ var runTests = function() {
 	
 	queueErrorTest("remainder given 1 bad arg (first arg))",
 		       "(remainder add1 1)",
-		       "remainder: expects an integer as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "remainder: expects an integer as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("remainder given 1 bad arg (2nd arg)",
 		       "(remainder 1 add1)",
-		       "remainder: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "remainder: expects an integer as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("remainder given too many args",
 		       "(remainder 1 1 1)",
@@ -4392,11 +4393,11 @@ var runTests = function() {
 	
 	queueErrorTest("modulo given 1 bad arg (first arg))",
 		       "(modulo add1 1)",
-		       "modulo: expects an integer as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "modulo: expects an integer as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("modulo given 1 bad arg (2nd arg)",
 		       "(modulo 1 add1)",
-		       "modulo: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "modulo: expects an integer as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("modulo given too many args",
 		       "(modulo 1 1 1)",
@@ -4408,11 +4409,11 @@ var runTests = function() {
 	
 	queueErrorTest("max given 1 bad arg",
 		       "(max add1)",
-		       "max: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "max: expects a real as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("max given 1 good 1 bad arg",
 		       "(max 1 add1)",
-		       "max: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "max: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("min given no args",
 		       "(min)",
@@ -4420,11 +4421,11 @@ var runTests = function() {
 	
 	queueErrorTest("min given 1 bad arg",
 		       "(min add1)",
-		       "min: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "min: expects a real as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("min given 1 good 1 bad arg",
 		       "(min 1 add1)",
-		       "min: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "min: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("gcd given no args",
 		       "(gcd)",
@@ -4432,11 +4433,11 @@ var runTests = function() {
 	
 	queueErrorTest("gcd given 1 bad arg",
 		       "(gcd add1)",
-		       "gcd: expects an integer as 1st argument, but given: #<procedure:add1>");
+		       "gcd: expects an integer as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("gcd given 1 good 1 bad arg",
 		       "(gcd 1 add1)",
-		       "gcd: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "gcd: expects an integer as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 
 	queueErrorTest("lcm given no args",
 		       "(lcm)",
@@ -4444,11 +4445,11 @@ var runTests = function() {
 	
 	queueErrorTest("lcm given 1 bad arg",
 		       "(lcm add1)",
-		       "lcm: expects an integer as 1st argument, but given: #<procedure:add1>");
+		       "lcm: expects an integer as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("lcm given 1 good 1 bad arg",
 		       "(lcm 1 add1)",
-		       "lcm: expects an integer as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "lcm: expects an integer as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("floor given no args",
 		       "(floor)",
@@ -4456,7 +4457,7 @@ var runTests = function() {
 	
 	queueErrorTest("floor given 1 bad arg",
 		       "(floor add1)",
-		       "floor: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "floor: expects a real as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("floor given too many args",
 		       "(floor 1 1 1)",
@@ -4468,7 +4469,7 @@ var runTests = function() {
 	
 	queueErrorTest("ceiling given 1 bad arg",
 		       "(ceiling add1)",
-		       "ceiling: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "ceiling: expects a real as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("ceiling given too many args",
 		       "(ceiling 1 1 1)",
@@ -4480,7 +4481,7 @@ var runTests = function() {
 	
 	queueErrorTest("round given 1 bad arg",
 		       "(round add1)",
-		       "round: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "round: expects a real as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("round given too many args",
 		       "(round 1 1 1)",
@@ -4492,7 +4493,7 @@ var runTests = function() {
 	
 	queueErrorTest("numerator given 1 bad arg",
 		       "(numerator add1)",
-		       "numerator: expects a rational number as 1st argument, but given: #<procedure:add1>");
+		       "numerator: expects a rational number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("numerator given too many args",
 		       "(numerator 1 1 1)",
@@ -4504,7 +4505,7 @@ var runTests = function() {
 	
 	queueErrorTest("denominator given 1 bad arg",
 		       "(denominator add1)",
-		       "denominator: expects a rational number as 1st argument, but given: #<procedure:add1>");
+		       "denominator: expects a rational number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("denominator given too many args",
 		       "(denominator 1 1 1)",
@@ -4516,11 +4517,11 @@ var runTests = function() {
 	
 	queueErrorTest("expt given bad first arg, valid 2nd arg",
 		       "(expt add1 1)",
-		       "expt: expects a number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "expt: expects a number as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	queueErrorTest("expt given valid 1st arg, bad 2nd arg",
 		       "(expt 1 add1)",
-		       "expt: expects a number as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "expt: expects a number as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 
 	queueErrorTest("expt given too many args",
 		       "(expt 1 1 1)",
@@ -4532,7 +4533,7 @@ var runTests = function() {
 	
 	queueErrorTest("exp given 1 bad arg",
 		       "(exp add1)",
-		       "exp: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "exp: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("exp given too many bad args",
 		       "(exp 1 1)",
@@ -4544,7 +4545,7 @@ var runTests = function() {
 
 	queueErrorTest("log given 1 bad arg",
 		       "(log add1)",
-		       "log: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "log: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("log given too many args",
 		       "(log 1 1)",
@@ -4556,7 +4557,7 @@ var runTests = function() {
 	
 	queueErrorTest("sin given 1 bad arg",
 		       "(sin add1)",
-		       "sin: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "sin: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("sin given too many args",
 		       "(sin 1 1)",
@@ -4569,7 +4570,7 @@ var runTests = function() {
 	
 	queueErrorTest("cos given 1 bad arg",
 		       "(cos add1)",
-		       "cos: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "cos: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cos given too many args",
 		       "(cos 1 1)",
@@ -4582,7 +4583,7 @@ var runTests = function() {
 	
 	queueErrorTest("tan given 1 bad arg",
 		       "(tan add1)",
-		       "tan: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "tan: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("tan given too many args",
 		       "(tan 1 1)",
@@ -4595,7 +4596,7 @@ var runTests = function() {
 	
 	queueErrorTest("asin given 1 bad arg",
 		       "(asin add1)",
-		       "asin: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "asin: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("asin given too many args",
 		       "(asin 1 1)",
@@ -4608,7 +4609,7 @@ var runTests = function() {
 	
 	queueErrorTest("acos given 1 bad arg",
 		       "(acos add1)",
-		       "acos: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "acos: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("acos given too many args",
 		       "(acos 1 1)",
@@ -4621,7 +4622,7 @@ var runTests = function() {
 	
 	queueErrorTest("atan given 1 bad arg",
 		       "(atan add1)",
-		       "atan: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "atan: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("atan given too many args",
 		       "(atan 1 1)",
@@ -4635,7 +4636,7 @@ var runTests = function() {
 	
 	queueErrorTest("sinh given 1 bad arg",
 		       "(sinh add1)",
-		       "sinh: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "sinh: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("sinh given too many args",
 		       "(sinh 1 1)",
@@ -4648,7 +4649,7 @@ var runTests = function() {
 	
 	queueErrorTest("cosh given 1 bad arg",
 		       "(cosh add1)",
-		       "cosh: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "cosh: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cosh given too many args",
 		       "(cosh 1 1)",
@@ -4660,7 +4661,7 @@ var runTests = function() {
 	
 	queueErrorTest("sqr given 1 bad arg",
 		       "(sqr add1)",
-		       "sqr: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "sqr: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("sqr given too many args",
 		       "(sqr 1 1)",
@@ -4672,7 +4673,7 @@ var runTests = function() {
 
 	queueErrorTest("sqrt given 1 bad arg",
 		       "(sqrt add1)",
-		       "sqrt: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "sqrt: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("sqrt given too many args",
 		       "(sqrt 1 1)",
@@ -4684,7 +4685,7 @@ var runTests = function() {
 
 	queueErrorTest("integer-sqrt given 1 bad arg",
 		       "(integer-sqrt add1)",
-		       "integer-sqrt: expects an integer as 1st argument, but given: #<procedure:add1>");
+		       "integer-sqrt: expects an integer as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("integer-sqrt given too many args",
 		       "(integer-sqrt 1 1)",
@@ -4696,12 +4697,12 @@ var runTests = function() {
 	
 	queueErrorTest("make-rectangular given bad first arg, good 2nd",
 		       "(make-rectangular add1 1)",
-		       "make-rectangular: expects a real as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "make-rectangular: expects a real as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	
 	queueErrorTest("make-rectangular given good first, bad second arg",
 		       "(make-rectangular 1 add1)",
-		       "make-rectangular: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "make-rectangular: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 
 	queueErrorTest("make-rectangular given too many args",
 		       "(make-rectangular 1 1 1 1 1)",
@@ -4713,12 +4714,12 @@ var runTests = function() {
 	
 	queueErrorTest("make-polar given bad first arg, good 2nd",
 		       "(make-polar add1 1)",
-		       "make-polar: expects a real as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "make-polar: expects a real as 1st argument, but given: #<function:add1>; other arguments were: 1");
 	
 	
 	queueErrorTest("make-polar given good first, bad second arg",
 		       "(make-polar 1 add1)",
-		       "make-polar: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "make-polar: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: 1");
 
 	queueErrorTest("make-polar given too many args",
 		       "(make-polar 1 1 1 1 1)",
@@ -4730,7 +4731,7 @@ var runTests = function() {
 	
 	queueErrorTest("real-part given bad arg",
 		       "(real-part add1)",
-		       "real-part: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "real-part: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("real-part given too many args",
 		       "(real-part 1 1)",
@@ -4742,7 +4743,7 @@ var runTests = function() {
 	
 	queueErrorTest("imag-part given bad arg",
 		       "(imag-part add1)",
-		       "imag-part: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "imag-part: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("imag-part given too many args",
 		       "(imag-part 1 1)",
@@ -4754,7 +4755,7 @@ var runTests = function() {
 	
 	queueErrorTest("angle given bad arg",
 		       "(angle add1)",
-		       "angle: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "angle: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("angle given too many args",
 		       "(angle 1 1)",
@@ -4766,7 +4767,7 @@ var runTests = function() {
 	
 	queueErrorTest("magnitude given bad arg",
 		       "(magnitude add1)",
-		       "magnitude: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "magnitude: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("magnitude given too many args",
 		       "(magnitude 1 1)",
@@ -4778,7 +4779,7 @@ var runTests = function() {
 	
 	queueErrorTest("conjugate given bad arg",
 		       "(conjugate add1)",
-		       "conjugate: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "conjugate: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("conjugate given too many args",
 		       "(conjugate 1 1)",
@@ -4790,7 +4791,7 @@ var runTests = function() {
 	
 	queueErrorTest("sgn given bad arg",
 		       "(sgn add1)",
-		       "sgn: expects a real number as 1st argument, but given: #<procedure:add1>");
+		       "sgn: expects a real number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("sgn given too many args",
 		       "(sgn 1 1)",
@@ -4802,7 +4803,7 @@ var runTests = function() {
 	
 	queueErrorTest("inexact->exact given bad arg",
 		       "(inexact->exact add1)",
-		       "inexact->exact: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "inexact->exact: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("inexact->exact given too many args",
 		       "(inexact->exact 1 1)",
@@ -4814,7 +4815,7 @@ var runTests = function() {
 	
 	queueErrorTest("exact->inexact given bad arg",
 		       "(exact->inexact add1)",
-		       "exact->inexact: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "exact->inexact: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("exact->inexact given too many args",
 		       "(exact->inexact 1 1)",
@@ -4826,7 +4827,7 @@ var runTests = function() {
 	
 	queueErrorTest("number->string given bad arg",
 		       "(number->string add1)",
-		       "number->string: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "number->string: expects a number as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("number->string given too many args",
 		       "(number->string 1 1)",
@@ -4838,7 +4839,7 @@ var runTests = function() {
 	
 	queueErrorTest("string->number given bad arg",
 		       "(string->number add1)",
-		       "string->number: expects a string as 1st argument, but given: #<procedure:add1>");
+		       "string->number: expects a string as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("string->number given too many args",
 		       "(string->number 1 1)",
@@ -4851,7 +4852,7 @@ var runTests = function() {
 	
 	queueErrorTest("xml->s-exp given bad arg",
 		       "(xml->s-exp add1)",
-		       "xml->s-exp: expects a string as 1st argument, but given: #<procedure:add1>");
+		       "xml->s-exp: expects a string as 1st argument, but given: #<function:add1>");
 
 	queueErrorTest("xml->s-exp given too many args",
 		       "(xml->s-exp 1 1)",
@@ -5059,7 +5060,7 @@ var runTests = function() {
 	
 	queueErrorTest("exact? given a bad arg",
 		       "(exact? add1)",
-		       "exact?: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "exact?: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("exact? given too many args",
 		       "(exact? 1 1)",
@@ -5071,7 +5072,7 @@ var runTests = function() {
 	
 	queueErrorTest("inexact? given a bad arg",
 		       "(inexact? add1)",
-		       "inexact?: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "inexact?: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("inexact? given too many args",
 		       "(inexact? 1 1)",
@@ -5083,7 +5084,7 @@ var runTests = function() {
 	
 	queueErrorTest("odd? given a bad arg",
 		       "(odd? add1)",
-		       "odd?: expects an integer as 1st argument, but given: #<procedure:add1>");
+		       "odd?: expects an integer as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("odd? given too many args",
 		       "(odd? 1 1)",
@@ -5095,7 +5096,7 @@ var runTests = function() {
 	
 	queueErrorTest("even? given a bad arg",
 		       "(even? add1)",
-		       "even?: expects an integer as 1st argument, but given: #<procedure:add1>");
+		       "even?: expects an integer as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("even? given too many args",
 		       "(even? 1 1)",
@@ -5107,7 +5108,7 @@ var runTests = function() {
 	
 	queueErrorTest("zero? given a bad arg",
 		       "(zero? add1)",
-		       "zero?: expects a number as 1st argument, but given: #<procedure:add1>");
+		       "zero?: expects a number as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("zero? given too many args",
 		       "(zero? 1 1)",
@@ -5119,7 +5120,7 @@ var runTests = function() {
 	
 	queueErrorTest("positive? given a bad arg",
 		       "(positive? add1)",
-		       "positive?: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "positive?: expects a real as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("positive? given too many args",
 		       "(positive? 1 1)",
@@ -5131,7 +5132,7 @@ var runTests = function() {
 	
 	queueErrorTest("negative? given a bad arg",
 		       "(negative? add1)",
-		       "negative?: expects a real as 1st argument, but given: #<procedure:add1>");
+		       "negative?: expects a real as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("negative? given too many args",
 		       "(negative? 1 1)",
@@ -5199,7 +5200,7 @@ var runTests = function() {
 	
 	queueErrorTest("equal~? given bad arg a for 3rd arg",
 		       "(equal~? add1 sub1 add1)",
-		       "equal~?: expects a non-negative number as 3rd argument, but given: #<procedure:add1>; other arguments were: #<procedure:add1> #<procedure:sub1>");
+		       "equal~?: expects a non-negative number as 3rd argument, but given: #<function:add1>; other arguments were: #<function:add1> #<function:sub1>");
 	
 	queueErrorTest("false? given no args",
 		       "(false?)",
@@ -5219,11 +5220,11 @@ var runTests = function() {
 
 	queueErrorTest("symbol=? given bad first arg",
 		       "(symbol=? add1 sub1)",
-		       "symbol=?: expects a symbol as 1st argument, but given: #<procedure:add1>; other arguments were: #<procedure:sub1>");
+		       "symbol=?: expects a symbol as 1st argument, but given: #<function:add1>; other arguments were: #<function:sub1>");
 
 	queueErrorTest("symbol=? given bad 2nd arg",
 		       "(symbol=? 'asdf sub1)",
-		       "symbol=?: expects a symbol as 2nd argument, but given: #<procedure:sub1>; other arguments were: asdf");
+		       "symbol=?: expects a symbol as 2nd argument, but given: #<function:sub1>; other arguments were: asdf");
 
 	queueErrorTest("cons given no args",
 		       "(cons)",
@@ -5239,7 +5240,7 @@ var runTests = function() {
 
 	queueErrorTest("car given bad arg",
 		       "(car add1)",
-		       "car: expects a pair as 1st argument, but given: #<procedure:add1>");
+		       "car: expects a pair as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("car given too many args",
 		       "(car 1 1 1)",
@@ -5252,7 +5253,7 @@ var runTests = function() {
 
 	queueErrorTest("cdr given bad arg",
 		       "(cdr add1)",
-		       "cdr: expects a pair as 1st argument, but given: #<procedure:add1>");
+		       "cdr: expects a pair as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cdr given too many args",
 		       "(cdr 1 1 1)",
@@ -5265,7 +5266,7 @@ var runTests = function() {
 
 	queueErrorTest("caar given bad arg",
 		       "(caar add1)",
-		       "caar: expects a caarable value as 1st argument, but given: #<procedure:add1>");
+		       "caar: expects a caarable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("caar given too many args",
 		       "(caar 1 1 1)",
@@ -5278,7 +5279,7 @@ var runTests = function() {
 
 	queueErrorTest("cadr given bad arg",
 		       "(cadr add1)",
-		       "cadr: expects a cadrable value as 1st argument, but given: #<procedure:add1>");
+		       "cadr: expects a cadrable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cadr given too many args",
 		       "(cadr 1 1 1)",
@@ -5291,7 +5292,7 @@ var runTests = function() {
 
 	queueErrorTest("cdar given bad arg",
 		       "(cdar add1)",
-		       "cdar: expects a cdarable value as 1st argument, but given: #<procedure:add1>");
+		       "cdar: expects a cdarable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cdar given too many args",
 		       "(cdar 1 1 1)",
@@ -5304,7 +5305,7 @@ var runTests = function() {
 
 	queueErrorTest("cddr given bad arg",
 		       "(cddr add1)",
-		       "cddr: expects a cddrable value as 1st argument, but given: #<procedure:add1>");
+		       "cddr: expects a cddrable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cddr given too many args",
 		       "(cddr 1 1 1)",
@@ -5317,7 +5318,7 @@ var runTests = function() {
 
 	queueErrorTest("caaar given bad arg",
 		       "(caaar add1)",
-		       "caaar: expects a caaarable value as 1st argument, but given: #<procedure:add1>");
+		       "caaar: expects a caaarable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("caaar given too many args",
 		       "(caaar 1 1 1)",
@@ -5330,7 +5331,7 @@ var runTests = function() {
 
 	queueErrorTest("caadr given bad arg",
 		       "(caadr add1)",
-		       "caadr: expects a caadrable value as 1st argument, but given: #<procedure:add1>");
+		       "caadr: expects a caadrable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("caadr given too many args",
 		       "(caadr 1 1 1)",
@@ -5343,7 +5344,7 @@ var runTests = function() {
 
 	queueErrorTest("cadar given bad arg",
 		       "(cadar add1)",
-		       "cadar: expects a cadarable value as 1st argument, but given: #<procedure:add1>");
+		       "cadar: expects a cadarable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cadar given too many args",
 		       "(cadar 1 1 1)",
@@ -5356,7 +5357,7 @@ var runTests = function() {
 
 	queueErrorTest("cdaar given bad arg",
 		       "(cdaar add1)",
-		       "cdaar: expects a cdaarable value as 1st argument, but given: #<procedure:add1>");
+		       "cdaar: expects a cdaarable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cdaar given too many args",
 		       "(cdaar 1 1 1)",
@@ -5369,7 +5370,7 @@ var runTests = function() {
 
 	queueErrorTest("cdadr given bad arg",
 		       "(cdadr add1)",
-		       "cdadr: expects a cdadrable value as 1st argument, but given: #<procedure:add1>");
+		       "cdadr: expects a cdadrable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cdadr given too many args",
 		       "(cdadr 1 1 1)",
@@ -5382,7 +5383,7 @@ var runTests = function() {
 
 	queueErrorTest("cddar given bad arg",
 		       "(cddar add1)",
-		       "cddar: expects a cddarable value as 1st argument, but given: #<procedure:add1>");
+		       "cddar: expects a cddarable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cddar given too many args",
 		       "(cddar 1 1 1)",
@@ -5395,7 +5396,7 @@ var runTests = function() {
 
 	queueErrorTest("caddr given bad arg",
 		       "(caddr add1)",
-		       "caddr: expects a caddrable value as 1st argument, but given: #<procedure:add1>");
+		       "caddr: expects a caddrable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("caddr given too many args",
 		       "(caddr 1 1 1)",
@@ -5408,7 +5409,7 @@ var runTests = function() {
 
 	queueErrorTest("cdddr given bad arg",
 		       "(cdddr add1)",
-		       "cdddr: expects a cdddrable value as 1st argument, but given: #<procedure:add1>");
+		       "cdddr: expects a cdddrable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cdddr given too many args",
 		       "(cdddr 1 1 1)",
@@ -5421,7 +5422,7 @@ var runTests = function() {
 
 	queueErrorTest("cadddr given bad arg",
 		       "(cadddr add1)",
-		       "cadddr: expects a cadddrable value as 1st argument, but given: #<procedure:add1>");
+		       "cadddr: expects a cadddrable value as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("cadddr given too many args",
 		       "(cadddr 1 1 1)",
@@ -5434,7 +5435,7 @@ var runTests = function() {
 
 	queueErrorTest("rest given bad arg",
 		       "(rest add1)",
-		       "rest: expects a non-empty list as 1st argument, but given: #<procedure:add1>");
+		       "rest: expects a non-empty list as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("rest given too many args",
 		       "(rest 1 1 1)",
@@ -5447,7 +5448,7 @@ var runTests = function() {
 
 	queueErrorTest("first given bad arg",
 		       "(first add1)",
-		       "first: expects a non-empty list as 1st argument, but given: #<procedure:add1>");
+		       "first: expects a non-empty list as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("first given too many args",
 		       "(first 1 1 1)",
@@ -5460,7 +5461,7 @@ var runTests = function() {
 	
 	queueErrorTest("second given bad arg",
 		       "(second add1)",
-		       "second: expects a list with 2 or more elements as 1st argument, but given: #<procedure:add1>");
+		       "second: expects a list with 2 or more elements as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("second given too many args",
 		       "(second 1 1 1)",
@@ -5472,7 +5473,7 @@ var runTests = function() {
 	
 	queueErrorTest("third given bad arg",
 		       "(third add1)",
-		       "third: expects a list with 3 or more elements as 1st argument, but given: #<procedure:add1>");
+		       "third: expects a list with 3 or more elements as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("third given too many args",
 		       "(third 1 1 1)",
@@ -5484,7 +5485,7 @@ var runTests = function() {
 	
 	queueErrorTest("fourth given bad arg",
 		       "(fourth add1)",
-		       "fourth: expects a list with 4 or more elements as 1st argument, but given: #<procedure:add1>");
+		       "fourth: expects a list with 4 or more elements as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("fourth given too many args",
 		       "(fourth 1 1 1)",
@@ -5496,7 +5497,7 @@ var runTests = function() {
 	
 	queueErrorTest("fifth given bad arg",
 		       "(fifth add1)",
-		       "fifth: expects a list with 5 or more elements as 1st argument, but given: #<procedure:add1>");
+		       "fifth: expects a list with 5 or more elements as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("fifth given too many args",
 		       "(fifth 1 1 1)",
@@ -5508,7 +5509,7 @@ var runTests = function() {
 	
 	queueErrorTest("sixth given bad arg",
 		       "(sixth add1)",
-		       "sixth: expects a list with 6 or more elements as 1st argument, but given: #<procedure:add1>");
+		       "sixth: expects a list with 6 or more elements as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("sixth given too many args",
 		       "(sixth 1 1 1)",
@@ -5520,7 +5521,7 @@ var runTests = function() {
 	
 	queueErrorTest("seventh given bad arg",
 		       "(seventh add1)",
-		       "seventh: expects a list with 7 or more elements as 1st argument, but given: #<procedure:add1>");
+		       "seventh: expects a list with 7 or more elements as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("seventh given too many args",
 		       "(seventh 1 1 1)",
@@ -5532,7 +5533,7 @@ var runTests = function() {
 	
 	queueErrorTest("eighth given bad arg",
 		       "(eighth add1)",
-		       "eighth: expects a list with 8 or more elements as 1st argument, but given: #<procedure:add1>");
+		       "eighth: expects a list with 8 or more elements as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("eighth given too many args",
 		       "(eighth 1 1 1)",
@@ -5544,7 +5545,7 @@ var runTests = function() {
 	
 	queueErrorTest("length given a bad arg",
 		       "(length add1)",
-		       "length: expects a list as 1st argument, but given: #<procedure:add1>");
+		       "length: expects a list as 1st argument, but given: #<function:add1>");
 	
 	queueErrorTest("length given too many args",
 		       "(length 1 1)",
@@ -5576,15 +5577,15 @@ var runTests = function() {
 
 	queueErrorTest("list-ref given bad arg for first arg",
 			"(list-ref add1 1)",
-			"list-ref: expects a list as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+			"list-ref: expects a list as 1st argument, but given: #<function:add1>; other arguments were: 1");
 
 	queueErrorTest("list-ref given bad arg for second arg",
 		       "(list-ref (list) add1)",
-		       "list-ref: expects a non-negative exact integer as 2nd argument, but given: #<procedure:add1>; other arguments were: empty");
+		       "list-ref: expects a non-negative exact integer as 2nd argument, but given: #<function:add1>; other arguments were: empty");
 	
 	queueErrorTest("append given bad args",
 		       "(append sub1 add1)",
-		       "append: expects a list as 1st argument, but given: #<procedure:sub1>; other arguments were: #<procedure:add1>")
+		       "append: expects a list as 1st argument, but given: #<function:sub1>; other arguments were: #<function:add1>")
 
 	queueErrorTest("reverse given no args",
 		       "(reverse)",
@@ -5596,7 +5597,7 @@ var runTests = function() {
 	
 	queueErrorTest("reverse given bad arg",
 		       "(reverse add1)",
-		       "reverse: expects a list as 1st argument, but given: #<procedure:add1>");
+		       "reverse: expects a list as 1st argument, but given: #<function:add1>");
 
 
 	queueErrorTest("underlay given no args",
@@ -5646,7 +5647,7 @@ var runTests = function() {
 
 	queueErrorTest("scale given bad first arg a",
 		       "(scale add1 1)",
-		       "scale: expects a finite real number as 1st argument, but given: #<procedure:add1>; other arguments were: 1");
+		       "scale: expects a finite real number as 1st argument, but given: #<function:add1>; other arguments were: 1");
 
 	queueErrorTest("scale/xy given no args",
 		       "(scale/xy)",
@@ -5666,11 +5667,11 @@ var runTests = function() {
 	
 	queueErrorTest("andmap given bad first arg a",
 		       "(andmap 1 1)",
-		       "andmap: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
+		       "andmap: expects a function name as 1st argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("andmap given bad 2nd arg a",
 		       "(andmap add1 sub1)",
-		       "andmap: expects a list as 2nd argument, but given: #<procedure:sub1>; other arguments were: #<procedure:add1>");
+		       "andmap: expects a list as 2nd argument, but given: #<function:sub1>; other arguments were: #<function:add1>");
 	
 	queueErrorTest("ormap given no args",
 		       "(ormap)",
@@ -5678,11 +5679,11 @@ var runTests = function() {
 	
 	queueErrorTest("ormap given bad first arg a",
 		       "(ormap 1 1)",
-		       "ormap: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
+		       "ormap: expects a function name as 1st argument, but given: 1; other arguments were: 1");
 
 	queueErrorTest("ormap given bad 2nd arg a",
 		       "(ormap add1 sub1)",
-		       "ormap: expects a list as 2nd argument, but given: #<procedure:sub1>; other arguments were: #<procedure:add1>");	
+		       "ormap: expects a list as 2nd argument, but given: #<function:sub1>; other arguments were: #<function:add1>");	
 
 
 	queueErrorTest("memq given no args",
@@ -5746,7 +5747,7 @@ var runTests = function() {
 	
 	queueErrorTest("memf given bad first arg a",
 		       "(memf 1 1)",
-		       "memf: expects a procedure as 1st argument, but given: 1; other arguments were: 1");
+		       "memf: expects a function name as 1st argument, but given: 1; other arguments were: 1");
 
 
 	queueErrorTest("assq given no args",
@@ -5849,12 +5850,12 @@ var runTests = function() {
 
         queueErrorTest("test for-each arity 2",
                         "(for-each 1 2 3 4 5)",
-                         "for-each: expects a procedure as 1st argument, but given: 1; other arguments were: 2 3 4 5");
+                         "for-each: expects a function name as 1st argument, but given: 1; other arguments were: 2 3 4 5");
 
 
         queueErrorTest("test for-each a",
                         "(for-each 1 2)",
-                         "for-each: expects a procedure as 1st argument, but given: 1; other arguments were: 2");
+                         "for-each: expects a function name as 1st argument, but given: 1; other arguments were: 2");
 
 
 
@@ -5868,7 +5869,7 @@ var runTests = function() {
 //filter
         queueErrorTest("test filter without procedure as 1st argument",
                        "(filter 2 (list 2 3 4))",
-                       'filter: expects a procedure (arity 1) as 1st argument, but given: 2; other arguments were: (list 2 3 4)');
+                       'filter: expects a function name (arity 1) as 1st argument, but given: 2; other arguments were: (list 2 3 4)');
 
 //foldl
         queueErrorTest("test foldl with arguments of wrong a",
@@ -5877,12 +5878,12 @@ var runTests = function() {
 
         queueErrorTest("test foldl with arguments of wrong a",
                        "(foldl 1 7 (list 2 3))",
-                       'foldl: expects a procedure as 1st argument, but given: 1; other arguments were: 7 (list 2 3)');
+                       'foldl: expects a function name as 1st argument, but given: 1; other arguments were: 7 (list 2 3)');
 
 //foldr
         queueErrorTest("test foldr with arguments of wrong a",
                        "(foldr 1 2 (list 3))",
-                       'foldr: expects a procedure as 1st argument, but given: 1; other arguments were: 2 (list 3)');
+                       'foldr: expects a function name as 1st argument, but given: 1; other arguments were: 2 (list 3)');
 
         queueErrorTest("test foldr with arguments of wrong a",
                        "(foldr + \"hello\" (list 1 2 3))",
@@ -5891,37 +5892,37 @@ var runTests = function() {
 //argmax
         queueErrorTest("test argmax with empty list",
                        "(argmax 2 '())",
-                       'argmax: expects a procedure as 1st argument, but given: 2; other arguments were: empty');
+                       'argmax: expects a function name as 1st argument, but given: 2; other arguments were: empty');
 
         queueErrorTest("test argmax with first argument not a procedure",
                        "(argmax 2 (list 2))",
-                       'argmax: expects a procedure as 1st argument, but given: 2; other arguments were: (list 2)');
+                       'argmax: expects a function name as 1st argument, but given: 2; other arguments were: (list 2)');
 
         queueErrorTest("test argmax with second argument not a list",
                        "(argmax car 2)",
-                       'argmax: expects a non-empty list as 2nd argument, but given: 2; other arguments were: #<procedure:car>');
+                       'argmax: expects a non-empty list as 2nd argument, but given: 2; other arguments were: #<function:car>');
 
 //argmin
         queueErrorTest("test argmin with empty list",
                        "(argmin 2 '())",
-                       'argmin: expects a procedure as 1st argument, but given: 2; other arguments were: empty');
+                       'argmin: expects a function name as 1st argument, but given: 2; other arguments were: empty');
 
         queueErrorTest("test argmin with first argument not a procedure",
                        "(argmin 2 (list 2))",
-                       'argmin: expects a procedure as 1st argument, but given: 2; other arguments were: (list 2)');
+                       'argmin: expects a function name as 1st argument, but given: 2; other arguments were: (list 2)');
 
         queueErrorTest("test argmin with second argument not a list",
                        "(argmin car 2)",
-                       'argmin: expects a non-empty list as 2nd argument, but given: 2; other arguments were: #<procedure:car>');
+                       'argmin: expects a non-empty list as 2nd argument, but given: 2; other arguments were: #<function:car>');
 
 //build-list
         queueErrorTest("test build-list with first argument not a number",
                        "(build-list \"number\" add1)",
-                       "build-list: expects a non-negative exact integer as 1st argument, but given: \"number\"; other arguments were: #<procedure:add1>");
+                       "build-list: expects a non-negative exact integer as 1st argument, but given: \"number\"; other arguments were: #<function:add1>");
 
         queueErrorTest("test build-list with second argument not a proc",
                        "(build-list 2 6)",
-                       'build-list: expects a procedure as 2nd argument, but given: 6; other arguments were: 2');
+                       'build-list: expects a function name as 2nd argument, but given: 6; other arguments were: 2');
 
 //make-hash 
 
@@ -5970,11 +5971,11 @@ var runTests = function() {
 
         queueErrorTest("test hash-map with wrong first argument not hash",
                        "(hash-map 2 cons)",
-                       'hash-map: expects a hash as 1st argument, but given: 2; other arguments were: #<procedure:cons>');
+                       'hash-map: expects a hash as 1st argument, but given: 2; other arguments were: #<function:cons>');
 
         queueErrorTest("test hash-map with wrong 2nd argument not proc",
                        "(hash-map (make-hash (list (list 1 100) (list 2 200) (list 3 300))) 2)",
-                       'hash-map: expects a procedure as 2nd argument, but given: 2; other arguments were: #hash((1 . (list 100)) (2 . (list 200)) (3 . (list 300)))');
+                       'hash-map: expects a function name as 2nd argument, but given: 2; other arguments were: #hash((1 . (list 100)) (2 . (list 200)) (3 . (list 300)))');
 
 //hash-for-each
 
@@ -5984,11 +5985,11 @@ var runTests = function() {
 
         queueErrorTest("test hash-for-each with wrong 1st argument not proc",
                        "(hash-for-each \"imma hash brown\" cons)",
-                       'hash-for-each: expects a hash as 1st argument, but given: "imma hash brown"; other arguments were: #<procedure:cons>');
+                       'hash-for-each: expects a hash as 1st argument, but given: "imma hash brown"; other arguments were: #<function:cons>');
 
         queueErrorTest("test hash-for-each with wrong 2nd argument not proc",
                        "(hash-for-each (make-hash) \"add\")",
-                       'hash-for-each: expects a procedure as 2nd argument, but given: "add"; other arguments were: #hash()');
+                       'hash-for-each: expects a function name as 2nd argument, but given: "add"; other arguments were: #hash()');
 
 //make-string
 
@@ -6002,7 +6003,7 @@ var runTests = function() {
 
         queueErrorTest("test make-string with 2nd argument not char",
                        "(make-string 3 2)",
-                       'make-string: expects a char as 2nd argument, but given: 2; other arguments were: 3');
+                       'make-string: expects a character as 2nd argument, but given: 2; other arguments were: 3');
 
 //replicate
 
@@ -6022,7 +6023,7 @@ var runTests = function() {
 
         queueErrorTest("test string with 1st argument not char",
                        "(string 1)",
-                       'string: expects a char as 1st argument, but given: 1');
+                       'string: expects a character as 1st argument, but given: 1');
 
 //string-length
 
@@ -6245,7 +6246,7 @@ var runTests = function() {
 
         queueErrorTest("test list->string with first argument not list of char",
                        "(list->string (list 1 2 3))",
-                       'list->string: expects a list of char as 1st argument, but given: (list 1 2 3)');
+                       'list->string: expects a list of character as 1st argument, but given: (list 1 2 3)');
 
 //string-copy
 
@@ -6291,7 +6292,7 @@ var runTests = function() {
 
         queueErrorTest("test bad inputs to big-bang",
                        "(big-bang 1 on-tick add1)",
-                       "big-bang: expects a handler or attribute list as 2nd argument, but given: #<procedure:on-tick>; other arguments were: 1 #<procedure:add1>");
+                       "big-bang: expects a handler as 2nd argument, but given: #<function:on-tick>; other arguments were: 1 #<function:add1>");
 
         queueErrorTest("too many arguments",
                        "(define (f x) (* x x)) (f 3 4)",
@@ -6429,7 +6430,7 @@ var runTests = function() {
 
         queueErrorTest("build-string? with 2nd argument not a proc",
                        "(build-string 5 \"hello\")",
-                       'build-string: expects a procedure as 2nd argument, but given: "hello"; other arguments were: 5');
+                       'build-string: expects a function name as 2nd argument, but given: "hello"; other arguments were: 5');
 
 //string->immutable-string DNE
 
@@ -6571,11 +6572,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char<? with 1st argument not char",
                        "(char<? add1 #\\a)",
-                       'char<?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char<? with 2nd argument not char",
                        "(char<? #\\a add1)",
-                       'char<?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char>?'] 
 
@@ -6585,11 +6586,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char>? with 1st argument not char",
                        "(char>? add1 #\\a)",
-                       'char>?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char>? with 2nd argument not char",
                        "(char>? #\\a add1)",
-                       'char>?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char<=?']
 
@@ -6599,11 +6600,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char<=? with 1st argument not char",
                        "(char<=? add1 #\\a)",
-                       'char<=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<=?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char<=? with 2nd argument not char",
                        "(char<=? #\\a add1)",
-                       'char<=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char<=?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char>=?']
 
@@ -6613,11 +6614,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char>=? with 1st argument not char",
                        "(char>=? add1 #\\a)",
-                       'char>=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>=?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char>=? with 2nd argument not char",
                        "(char>=? #\\a add1)",
-                       'char>=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char>=?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 
 //PRIMITIVES['char-ci=?'] 
@@ -6628,11 +6629,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-ci=? with 1st argument not char",
                        "(char-ci=? add1 #\\a)",
-                       'char-ci=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci=?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci=? with 2nd argument not char",
                        "(char-ci=? #\\a add1)",
-                       'char-ci=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci=?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 
 //PRIMITIVES['char-ci<?'] 
@@ -6643,11 +6644,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-ci<? with 1st argument not char",
                        "(char-ci<? add1 #\\a)",
-                       'char-ci<?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci<? with 2nd argument not char",
                        "(char-ci<? #\\a add1)",
-                       'char-ci<?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci>?'] 
 
@@ -6657,11 +6658,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-ci>? with 1st argument not char",
                        "(char-ci>? add1 #\\a)",
-                       'char-ci>?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci>? with 2nd argument not char",
                        "(char-ci>? #\\a add1)",
-                       'char-ci>?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci<=?'] 
 
@@ -6671,11 +6672,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-ci<=? with 1st argument not char",
                        "(char-ci<=? add1 #\\a)",
-                       'char-ci<=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<=?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci<=? with 2nd argument not char",
                        "(char-ci<=? #\\a add1)",
-                       'char-ci<=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci<=?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-ci>=?'] 
 
@@ -6685,11 +6686,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-ci>=? with 1st argument not char",
                        "(char-ci>=? add1 #\\a)",
-                       'char-ci>=?: expects a char as 1st argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>=?: expects a character as 1st argument, but given: #<function:add1>; other arguments were: #\\a');
 
         queueErrorTest("char-ci>=? with 2nd argument not char",
                        "(char-ci>=? #\\a add1)",
-                       'char-ci>=?: expects a char as 2nd argument, but given: #<procedure:add1>; other arguments were: #\\a');
+                       'char-ci>=?: expects a character as 2nd argument, but given: #<function:add1>; other arguments were: #\\a');
 
 //PRIMITIVES['char-alphabetic?'] 
 
@@ -6699,7 +6700,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-alphabetic? with 1st argument not char",
                        "(char-alphabetic? add1)",
-                       'char-alphabetic?: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char-alphabetic?: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['char-numeric?'] 
 
@@ -6709,7 +6710,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-numeric? with 1st argument not char",
                        "(char-numeric? add1)",
-                       'char-numeric?: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char-numeric?: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['char-whitespace?']
 
@@ -6719,7 +6720,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-whitespace? with 1st argument not char",
                        "(char-whitespace? add1)",
-                       'char-whitespace?: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char-whitespace?: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['char-upper-case?'] 
 
@@ -6729,7 +6730,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-upper-case? with 1st argument not char",
                        "(char-upper-case? add1)",
-                       'char-upper-case?: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char-upper-case?: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['char-lower-case?'] 
 
@@ -6739,7 +6740,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-lower-case? with 1st argument not char",
                        "(char-lower-case? add1)",
-                       'char-lower-case?: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char-lower-case?: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['char->integer'] 
 
@@ -6749,7 +6750,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char->integer with 1st argument not char",
                        "(char->integer add1)",
-                       'char->integer: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char->integer: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['integer->char'] 
 
@@ -6759,7 +6760,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("integer->char with 1st argument not integer",
                        "(integer->char add1)",
-                       'integer->char: expects an exact integer in [0,#x10FFFF], not in [#xD800,#xDFFF] as 1st argument, but given: #<procedure:add1>');
+                       'integer->char: expects an exact integer in [0,#x10FFFF], not in [#xD800,#xDFFF] as 1st argument, but given: #<function:add1>');
 //perhaps change the error message so hex does not show
 
 //PRIMITIVES['char-upcase']
@@ -6770,7 +6771,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-upcase with 1st argument not char",
                        "(char-upcase add1)",
-                       'char-upcase: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char-upcase: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['char-downcase'] 
 
@@ -6780,7 +6781,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("char-downcase with 1st argument not char",
                        "(char-downcase add1)",
-                       'char-downcase: expects a char as 1st argument, but given: #<procedure:add1>');
+                       'char-downcase: expects a character as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['make-posn'] 
 
@@ -6796,7 +6797,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("posn-x with 1st argument not posn",
                        "(posn-x add1)",
-                       'posn-x: expects a posn as 1st argument, but given: #<procedure:add1>');
+                       'posn-x: expects a posn as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['posn-y'] 
 
@@ -6806,7 +6807,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("posn-y with 1st argument not posn",
                        "(posn-y add1)",
-                       'posn-y: expects a posn as 1st argument, but given: #<procedure:add1>');
+                       'posn-y: expects a posn as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['key=?'] 
 
@@ -6851,7 +6852,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("color-red with 1st argument not color",
                        "(color-red add1)",
-                       'color-red: expects a color as 1st argument, but given: #<procedure:add1>');
+                       'color-red: expects a color as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['color-green'] 
 
@@ -6861,7 +6862,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("color-green with 1st argument not color",
                        "(color-green add1)",
-                       'color-green: expects a color as 1st argument, but given: #<procedure:add1>');
+                       'color-green: expects a color as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['color-blue'] 
 
@@ -6871,7 +6872,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("color-blue with 1st argument not color",
                        "(color-blue add1)",
-                       'color-blue: expects a color as 1st argument, but given: #<procedure:add1>');
+                       'color-blue: expects a color as 1st argument, but given: #<function:add1>');
 
 //PRIMITIVES['color-alpha']
 
@@ -6881,7 +6882,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("color-alpha with 1st argument not color",
                        "(color-alpha add1)",
-                       'color-alpha: expects a color as 1st argument, but given: #<procedure:add1>');
+                       'color-alpha: expects a color as 1st argument, but given: #<function:add1>');
 
 
 //PRIMITIVES['empty-scene'] 
@@ -6892,11 +6893,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("empty-scene with 1st argument not non-negative number",
                        "(empty-scene add1 2)",
-                       'empty-scene: expects a non-negative number as 1st argument, but given: #<procedure:add1>; other arguments were: 2');
+                       'empty-scene: expects a non-negative number as 1st argument, but given: #<function:add1>; other arguments were: 2');
 
         queueErrorTest("empty-scene with 2nd argument not non-negative number",
                        "(empty-scene 0 add1)",
-                       'empty-scene: expects a non-negative number as 2nd argument, but given: #<procedure:add1>; other arguments were: 0');
+                       'empty-scene: expects a non-negative number as 2nd argument, but given: #<function:add1>; other arguments were: 0');
 
 //PRIMITIVES['place-image']
 
@@ -6906,11 +6907,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("empty-scene with 1st argument not non-negative number",
                        "(empty-scene add1 2)",
-                       'empty-scene: expects a non-negative number as 1st argument, but given: #<procedure:add1>; other arguments were: 2');
+                       'empty-scene: expects a non-negative number as 1st argument, but given: #<function:add1>; other arguments were: 2');
 
         queueErrorTest("empty-scene with 2nd argument not non-negative number",
                        "(empty-scene 0 add1)",
-                       'empty-scene: expects a non-negative number as 2nd argument, but given: #<procedure:add1>; other arguments were: 0');
+                       'empty-scene: expects a non-negative number as 2nd argument, but given: #<function:add1>; other arguments were: 0');
 
 //PRIMITIVES['place-image/align']
 
@@ -6920,7 +6921,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("place-image/align with 1st argument not image",
                        "(place-image/align add1 2 3 4 5 6)",
-                       'place-image/align: expects an image as 1st argument, but given: #<procedure:add1>; other arguments were: 2 3 4 5 6');
+                       'place-image/align: expects an image as 1st argument, but given: #<function:add1>; other arguments were: 2 3 4 5 6');
 
         queueErrorTest("place-image/align with 2nd argument not real number",
                        "(place-image/align (circle 50 \"solid\" \"red\") \"hello\" 3 4 5 6)",
@@ -6940,7 +6941,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("place-image/align with 6th argument not image",
                        "(place-image/align (circle 50 \"solid\" \"red\") 2 3 \"left\" \"top\" add1)",
-                       'place-image/align: expects an image as 6th argument, but given: #<procedure:add1>; other arguments were: <image> 2 3 "left" "top"');
+                       'place-image/align: expects an image as 6th argument, but given: #<function:add1>; other arguments were: <image> 2 3 "left" "top"');
 
 //PRIMITIVES['scene+line'] 
 
@@ -6961,11 +6962,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("put-pinhole with 2nd argument not image",
                        "(put-pinhole (circle 50 \"solid\" \"red\") add1 3)",
-                       'put-pinhole: expects a real as 2nd argument, but given: #<procedure:add1>; other arguments were: <image> 3');
+                       'put-pinhole: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: <image> 3');
 
         queueErrorTest("put-pinhole with 3rd argument not image",
                        "(put-pinhole (circle 50 \"solid\" \"red\") 1 add1)",
-                       'put-pinhole: expects a real as 3rd argument, but given: #<procedure:add1>; other arguments were: <image> 1');
+                       'put-pinhole: expects a real as 3rd argument, but given: #<function:add1>; other arguments were: <image> 1');
 
 //PRIMITIVES['circle']
 
@@ -6979,11 +6980,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("circle with 2nd argument not style",
                        "(circle 1 2 3)",
-                       'circle: expects a style as 2nd argument, but given: 2; other arguments were: 1 3');
+                       'circle: expects a style ("solid" or "outline") as 2nd argument, but given: 2; other arguments were: 1 3');
 
         queueErrorTest("circle with 3rd argument not colour",
                        "(circle 1 \"solid\" add1)",
-                       'circle: expects a color as 3rd argument, but given: #<procedure:add1>; other arguments were: 1 "solid"');
+                       'circle: expects a color as 3rd argument, but given: #<function:add1>; other arguments were: 1 "solid"');
 
 //PRIMITIVES['star']
 
@@ -6997,11 +6998,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("star with 2nd argument not image",
                        "(star 1 2 3)",
-                       'star: expects a style as 2nd argument, but given: 2; other arguments were: 1 3');
+                       'star: expects a style ("solid" or "outline") as 2nd argument, but given: 2; other arguments were: 1 3');
 
         queueErrorTest("star with 3rd argument not colour",
                        "(star 1 \"solid\" add1)",
-                       'star: expects a color as 3rd argument, but given: #<procedure:add1>; other arguments were: 1 "solid"');
+                       'star: expects a color as 3rd argument, but given: #<function:add1>; other arguments were: 1 "solid"');
 
 //PRIMITIVES['radial-star'] 
 
@@ -7023,7 +7024,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("star with 4th argument not style",
                        "(radial-star 5 4 2 \"foo\" 5)",
-                       'radial-star: expects a style as 4th argument, but given: "foo"; other arguments were: 5 4 2 5');
+                       'radial-star: expects a style ("solid" or "outline") as 4th argument, but given: "foo"; other arguments were: 5 4 2 5');
 
         queueErrorTest("star with 5th argument not colour",
                        "(radial-star 5 4 2 \"solid\" \"foo\")",
@@ -7045,7 +7046,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("star with 3rd argument not style",
                        "(nw:rectangle 2 5 add1 4)",
-                       'nw:rectangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'nw:rectangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("star with 4th argument not colour",
                        "(nw:rectangle 2 5 \"outline\" \"focus\")",
@@ -7067,7 +7068,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("rectangle with 3rd argument not style",
                        "(rectangle 2 5 add1 4)",
-                       'rectangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'rectangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("rectangle with 4th argument not colour",
                        "(rectangle 2 5 \"outline\" \"focus\")",
@@ -7089,7 +7090,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("regular-polygon with 3rd argument not style",
                        "(regular-polygon 2 5 add1 4)",
-                       'regular-polygon: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'regular-polygon: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("regular-polygonwith 4th argument not colour",
                        "(regular-polygon 2 5 \"outline\" \"focus\")",
@@ -7111,11 +7112,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("star-polygon with 3rd argument not positive integer greater than or equal to 1",
                        "(star-polygon 2 5 add1 4 5)",
-                       'star-polygon: expects a positive integer greater than or equal to 1 as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4 5');
+                       'star-polygon: expects a positive integer greater than or equal to 1 as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4 5');
 
         queueErrorTest("star-polygon with 4th argument not style",
                        "(star-polygon 2 5 5 add1 5)",
-                       'star-polygon: expects a style as 4th argument, but given: #<procedure:add1>; other arguments were: 2 5 5 5');
+                       'star-polygon: expects a style ("solid" or "outline") as 4th argument, but given: #<function:add1>; other arguments were: 2 5 5 5');
 
         queueErrorTest("star-polygon with 5th argument not colour",
                        "(star-polygon 2 5 5 \"outline\" \"focus\")",
@@ -7137,7 +7138,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("rhombus with 3rd argument not style",
                        "(rhombus 2 5 add1 4)",
-                       'rhombus: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 5 4');
+                       'rhombus: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("rhombus with 4th argument not colour",
                        "(rhombus 2 5 \"outline\" \"focus\")",
@@ -7156,7 +7157,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("square with 2nd argument not style",
                        "(square 2 add1 4)",
-                       'square: expects a style as 2nd argument, but given: #<procedure:add1>; other arguments were: 2 4');
+                       'square: expects a style ("solid" or "outline") as 2nd argument, but given: #<function:add1>; other arguments were: 2 4');
 
         queueErrorTest("square with 3rd argument not colour",
                        "(square 2 \"outline\" \"focus\")",
@@ -7174,7 +7175,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("triangle with 2nd argument not style",
                        "(triangle 2 add1 4)",
-                       'triangle: expects a style as 2nd argument, but given: #<procedure:add1>; other arguments were: 2 4');
+                       'triangle: expects a style ("solid" or "outline") as 2nd argument, but given: #<function:add1>; other arguments were: 2 4');
 
         queueErrorTest("triangle with 3rd argument not colour",
                        "(triangle 2 \"outline\" \"focus\")",
@@ -7196,7 +7197,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("right-triangle with 3rd argument not style",
                        "(right-triangle 2 4 add1 4)",
-                       'right-triangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4 4');
+                       'right-triangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("right-triangle with 4th argument not colour",
                        "(right-triangle 5 2 \"outline\" \"focus\")",
@@ -7219,7 +7220,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("isosceles-triangle with 3rd argument not style",
                        "(isosceles-triangle 2 4 add1 4)",
-                       'isosceles-triangle: expects a style as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4 4');
+                       'isosceles-triangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("isosceles-triangle with 4th argument not colour",
                        "(isosceles-triangle 5 2 \"outline\" \"focus\")",
@@ -7241,7 +7242,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("ellipse with 3rd argument not string",
                        "(ellipse 2 4 add1 4)",
-                       'ellipse: expects a string as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4 4');
+                       'ellipse: expects a string as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("ellipse with 4th argument not colour",
                        "(ellipse 5 2 \"outline\" \"focus\")",
@@ -7263,7 +7264,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("line with 3rd argument not colour",
                        "(line 2 4 add1)",
-                       'line: expects a color as 3rd argument, but given: #<procedure:add1>; other arguments were: 2 4');
+                       'line: expects a color as 3rd argument, but given: #<function:add1>; other arguments were: 2 4');
 
         //////////////////////////////////////////////////////////////////////
 

@@ -537,11 +537,13 @@
                 (compile-application-expression operator operands env pinfo-1)])
     (values (bcode:make-with-cont-mark MOBY-APPLICATION-POSITION-KEY 
                                      ;  (cons (stx->datum expr)
+                                            (append 
                                              (cons 
                                               (loc->vec (stx-loc operator))
                                               (map (lambda (rand)
                                                      (loc->vec (stx-loc rand)))
-                                                   operands));)
+                                                   operands))
+                                              (list (loc->vec (stx-loc expr))));)
                                        (bcode:make-with-cont-mark
                                         MOBY-STACK-RECORD-CONTINUATION-MARK-KEY
                                         (loc->vec (stx-loc expr))

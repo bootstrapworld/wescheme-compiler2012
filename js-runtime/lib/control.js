@@ -872,17 +872,20 @@ var selectProcedureByArity = function(aState, n, procValue, operands) {
 	    var argStr = getArgStr('; arguments were:');
         var positionStack = state.captureCurrentContinuationMarks(aState).ref(types.symbol('moby-application-position-key'));
         
+        console.log("positionStack is ", positionStack);
        
         var locationList = positionStack[positionStack.length - 1];
-        var exprLoc = positionStack[0].first().elts;
+        var locs = locationList;
+        var exprLoc;
+        while(!locs.isEmpty()){
+            exprLoc = locs.first().elts;
+            locs = locs.rest();
+        }
+
         var argColoredParts = getArgColoredParts(locationList.rest());
 
-        var openParen = [exprLoc[0], exprLoc[1], exprLoc[2], exprLoc[3], 1];
-
-        var closeParen = [exprLoc[0], exprLoc[1] + exprLoc[4] - 1, exprLoc[2], exprLoc[3] + exprLoc[4] - 1, 1];
-
-        var op = types.vector(openParen);
-        var cp = types.vector(closeParen);
+        var op = types.vector([exprLoc[0], exprLoc[1], exprLoc[2], exprLoc[3], 1]);
+        var cp = types.vector([exprLoc[0], exprLoc[1] + exprLoc[4] - 1, exprLoc[2], exprLoc[3] + exprLoc[4] - 1, 1]);
 
 	    helpers.raise(
 		types.incompleteExn(types.exnFailContract,

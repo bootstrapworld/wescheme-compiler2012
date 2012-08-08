@@ -401,49 +401,56 @@
 ;;handle-defn-values-error: stx -> ???
 (define (handle-defn-values-error a-definition)
   (let ((parts (stx-e a-definition)))
-  (cond
-    [(= 1 (length parts)) (raise (make-moby-error (stx-loc a-definition)
-                                                                 (make-Message
-                                                                  (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                  ": expects a list of identifiers and a body, but found neither")))]
-    [(= 2 (length parts)) (raise (make-moby-error (stx-loc a-definition)
-                                                                 (make-Message
-                                                                  (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                  ": expects a list of identifiers and a body, but found only "
-                                                                  (make-ColoredPart "one part" (stx-loc (second parts))))))]
-    
-    [(>  (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
-                                                                 (make-Message
-                                                                  (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                  ": expects a list of identifiers and a body, but found "
-                                                                  (make-MultiPart "extra parts" (map stx-loc (rest (rest (rest parts))))))))]
-    [(not (list? (stx-e (third parts)))) (raise (make-moby-error (stx-loc a-definition)
-                                                                 (make-Message
-                                                                  (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                  ": expects a list of identifiers and a body, but found "
-                                                                  (make-ColoredPart "a part" (stx-loc (third parts))))))]
-    [(not (list? (stx-e (second parts)))) (raise (make-moby-error (stx-loc a-definition)
-                                                                 (make-Message
-                                                                  (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                  ": expects a list of identifiers and a body, but found "
-                                                                  (make-ColoredPart "something else" (stx-loc (second parts))))))]
-    [(not (stx-list-of-symbols? (second parts))) (raise (make-moby-error (stx-loc a-definition)
-                                                                 (make-Message
-                                                                  (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                  ": expects a list of identifiers and a body, but found "
-                                                                  (make-ColoredPart "something else" (stx-loc (find-first-non-symbol (stx-e (second parts))))))))]
-    [(not (= (length (stx-e (second parts))) (- (length (stx-e (third parts))) 1))) 
-                                                                 
-     (let ((numID (length (stx-e (second parts))))
-           (numVals (length (stx-e (third parts))))) (raise (make-moby-error (stx-loc a-definition)
-                                                                 (make-Message
-                                                                  (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                  ": expected "
-                                                                  (make-MultiPart (string-append (number->string numID) (if (= 1 numID) " part" " parts")) (map stx-loc (stx-e (second parts)))) 
-                                                                  ", but found "
-                                                                  (make-MultiPart (string-append (number->string numVals) (if (= 1 numVals) " part" " parts") (map stx-loc (stx-e (third parts)))))))))]
-    
-    )))
+    (cond
+      [(= 1 (length parts)) (raise (make-moby-error (stx-loc a-definition)
+                                                    (make-Message
+                                                     (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                     ": expects a list of variables and a body, but found neither")))]
+      [(= 2 (length parts)) (raise (make-moby-error (stx-loc a-definition)
+                                                    (make-Message
+                                                     (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                     ": expects a list of variables and a body, but found only "
+                                                     (make-ColoredPart "one part" (stx-loc (second parts))))))]
+      [(not (list? (stx-e (second parts)))) (raise (make-moby-error (stx-loc a-definition)
+                                                                    (make-Message
+                                                                     (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                                     ": expects a list of variables and a body, but found "
+                                                                     (make-ColoredPart "something else" (stx-loc (second parts))))))]
+      [(not (stx-list-of-symbols? (second parts))) (raise (make-moby-error (stx-loc a-definition)
+                                                                           (make-Message
+                                                                            (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                                            ": expects a list of variables and a body, but found "
+                                                                            (make-ColoredPart "something else" 
+                                                                                              (stx-loc (find-first-non-symbol (stx-e (second parts))))))))]
+     
+      [(not (list? (stx-e (third parts)))) (raise (make-moby-error (stx-loc a-definition)
+                                                                   (make-Message
+                                                                    (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                                    ": expects a list of variables and a body, but found "
+                                                                    (make-ColoredPart "a part" (stx-loc (third parts))))))]
+       ;;TEST FOR VALUES IN FIRST PIECE
+      [(not (= (length (stx-e (second parts))) (- (length (stx-e (third parts))) 1))) 
+       (let ((numID (length (stx-e (second parts))))
+             (numVals (length (stx-e (third parts))))) (raise (make-moby-error (stx-loc a-definition)
+                                                                               (make-Message
+                                                                                (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                                                ": expected "
+                                                                                (make-MultiPart (string-append (number->string numID) 
+                                                                                                               (if (= 1 numID) " part" " parts")) 
+                                                                                                (map stx-loc (stx-e (second parts)))) 
+                                                                                ", but found "
+                                                                                (make-MultiPart (string-append (number->string numVals) 
+                                                                                                               (if (= 1 numVals) " part" " parts")) 
+                                                                                                (map stx-loc (stx-e (third parts))))))))]
+      [(>  (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
+                                                     (make-Message
+                                                      (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                      ": expects a list of variables and a body, but found "
+                                                      (make-MultiPart (string-append 
+                                                                       (if (> (length (rest (rest (rest parts)))) 1) "" "an ")
+                                                                       "extra part" 
+                                                                       (if (> (length (rest (rest (rest parts)))) 1) "s" ""))
+                                                                      (map stx-loc (rest (rest (rest parts))))))))])))
 
 
 ;;define-var?: definition -> boolean
@@ -466,33 +473,43 @@
       [(= (length parts) 1) (raise (make-moby-error (stx-loc a-definition)
                                                     (make-Message
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
-                                                     ": expected a variable name, or a function name and its variables (in parentheses), but nothing's there")))]
+                                                     ": expected a variable, or a function name and its variables (in parentheses), after define, but nothing's there")))]
       [(= (length (stx-e (second parts))) 0)
        (raise (make-moby-error (stx-loc a-definition)
                                (make-Message 
                                 (make-ColoredPart "define" (stx-loc (first parts)))                     
-                                ": expected a name for the function, but found nothing " 
-                                (make-ColoredPart "there" (stx-loc (second parts))))))]
+                                ": expected a name for the function within "
+                                (make-ColoredPart "the parentheses" (stx-loc (second parts))))))]
       
       
-      [(not (stx-list-of-symbols? (second parts)))    (raise (make-moby-error (stx-loc a-definition)
-                                                                              (make-Message
-                                                                               (make-ColoredPart "define" (stx-loc (first parts)))
-                                                                               ": expected a variable but found "
-                                                                               (make-ColoredPart "something else" (stx-loc (find-first-non-symbol (stx-e (second parts))))))))]
-      [(= (length (stx-e (second parts))) 1)
-       (raise (make-moby-error (stx-loc a-definition)
-                               (make-Message 
-                                (make-ColoredPart "define" (stx-loc (first parts)))
-                                ": expected at least one variable after the " 
-                                (make-ColoredPart "function name" (stx-loc (first (stx-e (second parts)))))
-                                ", but found none")))]
+      [(not (stx-list-of-symbols? (second parts)))    
+       (if (not (symbol? (stx-e (first (stx-e (second parts))))))
+           (raise (make-moby-error (stx-loc a-definition)
+                                   (make-Message
+                                    (make-ColoredPart "define" (stx-loc (first parts)))
+                                    ": expected a function name after the open parenthesis but found "
+                                    (make-ColoredPart "something else" 
+                                                      (stx-loc (find-first-non-symbol (stx-e (second parts))))))))
+           (raise (make-moby-error (stx-loc a-definition)
+                                   (make-Message
+                                    (make-ColoredPart "define" (stx-loc (first parts)))
+                                    ": expected a variable but found "
+                                    (make-ColoredPart "something else" 
+                                                      (stx-loc (find-first-non-symbol (stx-e (second parts)))))))))]
+      #;[(= (length (stx-e (second parts))) 1)
+         (raise (make-moby-error (stx-loc a-definition)
+                                 (make-Message 
+                                  (make-ColoredPart "define" (stx-loc (first parts)))
+                                  ": expected at least one variable after the " 
+                                  (make-ColoredPart "function name" (stx-loc (first (stx-e (second parts)))))
+                                  ", but found none")))]
       
       [(> (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
                                                      ": expected only one expression for the function body, but found " 
-                                                     (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  (map stx-loc (rest (rest (rest parts))))))))]
+                                                     (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  
+                                                                     (map stx-loc (rest (rest (rest parts))))))))]
       [(< (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
                                                     (make-Message
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
@@ -503,20 +520,20 @@
   (let ((parts (stx-e a-definition)))
     (cond
       [(not (symbol? (stx-e (second parts)))) (raise (make-moby-error (stx-loc a-definition)  
-                                                    (make-Message 
-                                                     (make-ColoredPart "define" (stx-loc (first parts)))
-                                                     ": expected a variable name but found "
-                                                     (make-ColoredPart "something else"   (stx-loc (second parts))))))] 
+                                                                      (make-Message 
+                                                                       (make-ColoredPart "define" (stx-loc (first parts)))
+                                                                       ": expected a variable but found "
+                                                                       (make-ColoredPart "something else"   (stx-loc (second parts))))))] 
       [(< (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
-                                                     ": expected an expression after the variable name "
+                                                     ": expected an expression after the variable "
                                                      (make-ColoredPart (symbol->string (stx->datum (second parts)))   (stx-loc (second parts)))
                                                      " but nothing's there")))]
       [(> (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
-                                                     ": expected only one expression after the variable name " 
+                                                     ": expected only one expression after the variable " 
                                                      (make-ColoredPart (symbol->string (stx->datum (second parts)))   (stx-loc (second parts)))
                                                      ", but found "
                                                      (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  
@@ -527,14 +544,14 @@
   (let ((parts (stx-e a-definition)))
     (cond
       [(= (length parts) 1)  (raise (make-moby-error (stx-loc a-definition)  
-                                                    (make-Message 
-                                                     (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                     ": expected the structure name after define-struct, but nothing's there")))]
+                                                     (make-Message 
+                                                      (make-ColoredPart "define-struct" (stx-loc (first parts)))
+                                                      ": expected the structure name after define-struct, but nothing's there")))]
       [(not (symbol? (stx-e (second parts)))) (raise (make-moby-error (stx-loc a-definition)  
-                                                    (make-Message 
-                                                     (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                     ": expected the structure name after define-struct, but found " 
-                                                     (make-ColoredPart "something else"   (stx-loc (second parts))))))]                                                 
+                                                                      (make-Message 
+                                                                       (make-ColoredPart "define-struct" (stx-loc (first parts)))
+                                                                       ": expected the structure name after define-struct, but found " 
+                                                                       (make-ColoredPart "something else"   (stx-loc (second parts))))))]                                                 
       [(= (length parts) 2) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define-struct" (stx-loc (first parts)))
@@ -542,30 +559,30 @@
                                                      (make-ColoredPart "structure name"   (stx-loc (second parts)))
                                                      ", but nothing's there")))]
       [(not (list? (stx-e (third parts)))) (raise (make-moby-error (stx-loc a-definition)  
-                                                    (make-Message 
-                                                     (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                     ": expected at least one field name (in parentheses) after the  " 
-                                                     (make-ColoredPart "structure name"   (stx-loc (second parts)))
-                                                     ", but found "
-                                                     (make-ColoredPart "something else" (stx-loc (third parts))))))]
+                                                                   (make-Message 
+                                                                    (make-ColoredPart "define-struct" (stx-loc (first parts)))
+                                                                    ": expected at least one field name (in parentheses) after the  " 
+                                                                    (make-ColoredPart "structure name"   (stx-loc (second parts)))
+                                                                    ", but found "
+                                                                    (make-ColoredPart "something else" (stx-loc (third parts))))))]
       [(not (stx-list-of-symbols? (third parts))) (raise (make-moby-error (stx-loc a-definition)  
-                                                    (make-Message 
-                                                     (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                     ": expected a field name, but found " 
-                                                     (make-ColoredPart "something else" (stx-loc (find-first-non-symbol (stx-e (third parts))))))))]
+                                                                          (make-Message 
+                                                                           (make-ColoredPart "define-struct" (stx-loc (first parts)))
+                                                                           ": expected a field name, but found " 
+                                                                           (make-ColoredPart "something else" (stx-loc (find-first-non-symbol (stx-e (third parts))))))))]
       [(> (length parts) 3) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define-struct" (stx-loc (first parts)))
                                                      ": expected nothing after the " 
-                                                     (make-ColoredPart (string-append "field name" (if (> 1 (length (stx-e (third parts)))) "s" ""))  (stx-loc (third parts)))
+                                                     (make-ColoredPart (string-append "field name" (if (> (length (stx-e (third parts))) 1) "s" ""))  (stx-loc (third parts)))
                                                      ", but found "
                                                      (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  
                                                                      (map stx-loc (rest (rest (rest parts))))))))])))
-      
-      
-      
-      
-      
+
+
+
+
+
 
 
 ;; symbol-stx?: any -> boolean
