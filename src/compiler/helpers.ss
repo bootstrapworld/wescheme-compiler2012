@@ -416,35 +416,34 @@
                                                                             ": expects a list of variables and a body, but found "
                                                                             (make-ColoredPart "something else" 
                                                                                               (stx-loc (find-first-non-symbol (stx-e (second parts))))))))]
-     
+      
       [(not (list? (stx-e (third parts)))) (raise (make-moby-error (stx-loc a-definition)
                                                                    (make-Message
                                                                     (make-ColoredPart "define-values" (stx-loc (first parts)))
                                                                     ": expects a list of variables and a body, but found "
                                                                     (make-ColoredPart "a part" (stx-loc (third parts))))))]
-       ;;TEST FOR VALUES IN FIRST PIECE
-      [(not (= (length (stx-e (second parts))) (- (length (stx-e (third parts))) 1))) 
-       (let ((numID (length (stx-e (second parts))))
-             (numVals (length (stx-e (third parts))))) (raise (make-moby-error (stx-loc a-definition)
-                                                                               (make-Message
-                                                                                (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                                                ": expected "
-                                                                                (make-MultiPart (string-append (number->string numID) 
-                                                                                                               (if (= 1 numID) " part" " parts")) 
-                                                                                                (map stx-loc (stx-e (second parts)))) 
-                                                                                ", but found "
-                                                                                (make-MultiPart (string-append (number->string numVals) 
-                                                                                                               (if (= 1 numVals) " part" " parts")) 
-                                                                                                (map stx-loc (stx-e (third parts))))))))]
-      [(>  (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
-                                                     (make-Message
-                                                      (make-ColoredPart "define-values" (stx-loc (first parts)))
-                                                      ": expects a list of variables and a body, but found "
-                                                      (make-MultiPart (string-append 
-                                                                       (if (> (length (rest (rest (rest parts)))) 1) "" "an ")
-                                                                       "extra part" 
-                                                                       (if (> (length (rest (rest (rest parts)))) 1) "s" ""))
-                                                                      (map stx-loc (rest (rest (rest parts))))))))])))
+       [(not (= (length (stx-e (second parts))) (- (length (stx-e (third parts))) 1))) 
+        (let ((numID (length (stx-e (second parts))))
+              (numVals (length (stx-e (third parts))))) (raise (make-moby-error (stx-loc a-definition)
+                                                                                (make-Message
+                                                                                 (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                                                 ": expected "
+                                                                                 (make-MultiPart (string-append (number->string numID) 
+                                                                                                                (if (= 1 numID) " part" " parts")) 
+                                                                                                 (map stx-loc (stx-e (second parts)))) 
+                                                                                 ", but found "
+                                                                                 (make-MultiPart (string-append (number->string numVals) 
+                                                                                                                (if (= 1 numVals) " part" " parts")) 
+                                                                                                 (map stx-loc (stx-e (third parts))))))))]
+       [(>  (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
+                                                      (make-Message
+                                                       (make-ColoredPart "define-values" (stx-loc (first parts)))
+                                                       ": expects a list of variables and a body, but found "
+                                                       (make-MultiPart (string-append 
+                                                                        (if (> (length (rest (rest (rest parts)))) 1) "" "an ")
+                                                                        "extra part" 
+                                                                        (if (> (length (rest (rest (rest parts)))) 1) "s" ""))
+                                                                       (map stx-loc (rest (rest (rest parts))))))))])))
 
 
 ;;define-var?: definition -> boolean
