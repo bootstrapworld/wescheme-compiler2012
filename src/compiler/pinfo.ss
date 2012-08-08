@@ -525,7 +525,7 @@
                                         (stx-e (provide-binding-stx a-provide-binding)))
                          (check-binding-compatibility a-provide-binding
                                                       (hash-ref (pinfo-defined-names a-pinfo)
-                                        (stx-e (provide-binding-stx a-provide-binding))))]
+                                                                (stx-e (provide-binding-stx a-provide-binding))))]
                         [else
                          (raise (make-moby-error (stx-loc (provide-binding-stx a-provide-binding))
                                                  (make-moby-error-type:provided-name-not-defined

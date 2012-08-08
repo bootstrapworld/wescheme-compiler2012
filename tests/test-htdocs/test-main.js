@@ -7270,7 +7270,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("Redefinition",
                        "(define x 3) (define x 4)",
-                       "The defined name x is being defined in the program, but it already has a definition that is not allowed to be redefined.");
+                       "x: this name has a previous definition and cannot be re-defined");
 
 
         //////////////////////////////////////////////////////////////////////
