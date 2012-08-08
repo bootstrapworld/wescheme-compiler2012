@@ -7274,6 +7274,97 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "x: this name has a previous definition and cannot be re-defined");
 
 
+
+	queueErrorTest("define as a bare expression",
+		       "define",
+		       "define: expected an open parenthesis before define");
+
+	queueErrorTest("define with no args",
+		       "(define)",
+		       "define: expected a variable, or a function name and its variables (in parentheses), after define, but nothing's there");
+	
+	queueErrorTest("define variable not given enough args",
+		       "(define a)",
+		       "define: expected an expression after the variable a but nothing's there");
+	
+	queueErrorTest("define given undefined variable",
+		       "(define x y)",
+		       "y: this variable is not defined");
+
+	queueErrorTest("define given empty parenthesis",
+		       "(define ())",
+		       "define: expected a name for the function within the parentheses");
+
+	queueErrorTest("define given too many args",
+		       "(define (x) 3 4 5)",
+		       "define: expected only one expression for the function body, but found 2 extra parts");
+
+	queueErrorTest("define given bad function name",
+		       "(define (\"x\") 3)",
+		       "define: expected a function name after the open parenthesis but found something else");
+	
+	queueErrorTest("define given bad arg",
+		       "(define (x y 7) 3)",
+		       "define: expected a variable but found something else");
+	
+	queueErrorTest("define variable given too many args",
+		       "(define x 1 2 3 4 5)",
+		       "define: expected only one expression after the variable x, but found 4 extra parts");
+	
+	queueErrorTest("define-struct given no args",
+		       "(define-struct)",
+		       "define-struct: expected the structure name after define-struct, but nothing's there");
+	
+	queueErrorTest("define-struct given not enough args",
+		       "(define-struct test)",
+		       "define-struct: expected at least one field name (in parentheses) after the structure name, but nothing's there");
+
+	queueErrorTest("define-struct given empty parenthesis",
+		       "(define-struct ())",
+		       "define-struct: expected the structure name after define-struct, but found something else");
+	
+	queueErrorTest("define-struct given too many args",
+		       "(define-struct test (p1 p2) 2 3 4 5 6)",
+		       "define-struct: expected nothing after the field names, but found 5 extra parts");
+	
+	queueErrorTest("define-struct given bad structure name",
+		       "(define-struct (name) (pr1 pr2))",
+		       "define-struct: expected the structure name after define-struct, but found something else");
+	
+	queueErrorTest("define-struct not given proper field name",
+		       "(define-struct test this func)",
+		       "define-struct: expected at least one field name (in parentheses) after the structure name, but found something else");
+
+	queueErrorTest("previous definition encountered",
+		       "(define (fox a) 3) (define (fox b) 4)",
+		       "fox: this name has a previous definition and cannot be re-defined");
+	
+	queueErrorTest("previous struct definition encountered",
+		       "(define-struct fox (a)) (define-struct fox (b))",
+		       "fox: this name has a previous definition and cannot be re-defined");
+	
+	queueErrorTest("dividing by zero",
+		       "(/ 0)",
+		       "/: cannot divide by zero");
+	
+	queueErrorTest("defining a variable with the same variable",
+		       "(define c c)",
+		       "c: this variable is not defined");
+
+	queueErrorTest("define-values given bad first part",
+		       "(define-values x (5 4))",
+		       "define-values: expects a list of variables and a body, but found something else");
+	
+	queueErrorTest("define-values given only one part",
+		       "(define-values (5 4))",
+		       "define-values: expects a list of variables and a body, but found only one part");
+
+	queueErrorTest("define-values given too many args",
+		       "(define-values (x) (values 1) 1)",
+		       "define-values: expects a list of variables and a body, but found an extra part");
+	
+
+
         //////////////////////////////////////////////////////////////////////
 
 
