@@ -21,6 +21,7 @@
          "src/collects/moby/runtime/error-struct.ss"
          "src/collects/moby/runtime/error-struct-to-dom.ss"
          "src/collects/moby/runtime/stx.ss"
+         "src/collects/moby/runtime/dom-helpers.ss"
          "js-runtime/src/sexp.ss")
 
 (define-runtime-path htdocs "servlet-htdocs")
@@ -78,12 +79,24 @@
 ;; Web service consuming programs and producing bytecode.
 (define (start request)
   (with-handlers ([void 
-                   (lambda (exn)
+                   (lambda (exn-or-moby-error)
+                     (define the-exn (if (exn? exn-or-moby-error)
+                                         exn-or-moby-error
+                                         (make-moby-failure
+                                          (format "~a"
+                                                  (string-append
+                                                   (dom-string-content
+                                                    (error-struct->dom-sexp exn-or-moby-error #f))
+                                                   "\n"
+                                                   (Loc->string (moby-error-location exn-or-moby-error))))
+                                          (current-continuation-marks)
+                                          exn-or-moby-error)))
                      (cond
                       [(jsonp-request? request)
-                       (handle-json-exception-response request exn)]
+                       (handle-json-exception-response request the-exn)]
                       [else 
-                       (handle-exception-response request exn)]))])
+                       (handle-exception-response request the-exn)]))])
+
     (let*-values ([(program-name)
                    (string->symbol
                     (extract-binding/single 'name (request-bindings request)))]
@@ -95,7 +108,6 @@
              (handle-json-response request program-name program-input-port)]
             [else
              (handle-response request program-name program-input-port)]))))
-
 
 
 
@@ -212,6 +224,7 @@
                  ("structured-error" .
                   ,(jsexpr->json (make-hash `(("location" . ,(loc->jsexpr (moby-error-location failure-val)))
                                               ("message" . ,(error-struct->jsexpr failure-val)))))))))
+
   (cond
     [(exn:fail:read? an-exn)
      (define program (get-program-text request))
@@ -250,7 +263,7 @@
 
     [(moby-failure? an-exn)
      (on-moby-failure-val (moby-failure-val an-exn))]
-    
+
     [else
      (exn-message an-exn)]))
 
@@ -344,6 +357,14 @@
     [else
      0]))
 
+
+(define (Loc->string a-loc)
+  (format "Location: line ~a, column ~a, span ~a, offset ~a, id ~s" 
+          (Loc-line a-loc)
+          (Loc-column a-loc)
+          (Loc-span a-loc)
+          (Loc-offset a-loc)
+          (Loc-id a-loc)))
 
 
 
