@@ -432,7 +432,6 @@ var Evaluator = (function() {
         } else {
             this.structuredError = undefined;
         }
-        console.log(this);
     };
 
 
