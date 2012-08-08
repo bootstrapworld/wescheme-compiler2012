@@ -228,9 +228,7 @@ var helpers = {};
 
 
 			if(args) { 
-				console.log("args is ", args);
 				var argColoredParts = getArgColoredParts(locationList.rest()); 
-				console.log("argColoredParts is ", argColoredParts);
 				if(argColoredParts.length > 0){
 				raise( types.incompleteExn(types.exnFailContract,
 							   new types.Message([

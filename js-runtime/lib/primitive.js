@@ -305,7 +305,6 @@ var onEvent = function(funName, inConfigName, numArgs) {
 
 var onEventBang = function(funName, inConfigName) {
     return function(aState, handler, effectHandler) {
-    	console.log("in OnEventBang, arguments: ", arguments);
 		check(aState, handler, isFunction, funName, 'function name', 1, arguments);
 		check(aState, effectHandler, isFunction, funName, 'function name', 2, arguments);
 		return new (WorldConfigOption.extend({
