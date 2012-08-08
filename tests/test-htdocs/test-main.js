@@ -7266,6 +7266,14 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(line 2 4 add1)",
                        'line: expects a color as 3rd argument, but given: #<function:add1>; other arguments were: 2 4');
 
+
+
+
+        queueErrorTest("Redefinition",
+                       "(define x 3) (define x 4)",
+                       "x: this name has a previous definition and cannot be re-defined");
+
+
         //////////////////////////////////////////////////////////////////////
 
 

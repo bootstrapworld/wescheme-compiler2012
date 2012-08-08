@@ -7,6 +7,8 @@
 (define-struct int (v) #:transparent)
 (define-struct lit (v) #:transparent)
 
+;; A comment (cmt) represents a comment plus associated jsexp.
+(define-struct cmt (text a-jsexp) #:transparent)
 
 
 
@@ -14,7 +16,8 @@
   (or (ht? x)
       (vec? x)
       (int? x)
-      (lit? x)))
+      (lit? x)
+      (cmt? x)))
 
 (define (lit-value? x)
   (or (boolean? x)
@@ -43,6 +46,7 @@
          [struct-out vec]
          [struct-out int]
          [struct-out lit]
+         [struct-out cmt]
          jsexp?)
 
 ;; Turning off these contracts to see if they affect compilation time significantly.

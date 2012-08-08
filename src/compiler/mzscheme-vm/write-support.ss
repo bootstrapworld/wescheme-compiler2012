@@ -16,7 +16,8 @@
          "../../collects/moby/runtime/binding.ss"
          "../pinfo.ss"
          "collections/manifest.ss"
-         "compile.ss")
+         "compile.ss"
+         "../../../this-runtime-version.rkt")
 
 (define-runtime-path mzscheme-vm-library-path "../../../js-runtime/lib")
 
@@ -94,7 +95,9 @@
   (call-with-input-file source-path 
     (lambda (in)
       (fprintf out-port "'bytecode': ")
-      (let ([pinfo (compile/port in out-port #:name module-name)])
+      (let ([pinfo (compile/port in out-port
+                                 #:name module-name
+                                 #:runtime-version THIS-RUNTIME-VERSION)])
         (fprintf out-port ", 'provides': [~a]};\n"
                  (string-join (map (lambda (a-binding)
                                      (format "~s" (symbol->string (binding-id a-binding))))

@@ -12,6 +12,7 @@
          scheme/match
          scheme/list
          racket/cmdline
+         "this-runtime-version.rkt"
          ;; profile
          "find-paren-loc.rkt"
          "src/compiler/mzscheme-vm/write-support.ss"
@@ -23,7 +24,8 @@
          "src/collects/moby/runtime/error-struct.ss"
          "src/collects/moby/runtime/error-struct-to-dom.ss"
          "src/collects/moby/runtime/stx.ss"
-         "js-runtime/src/sexp.ss")
+         "js-runtime/src/sexp.ss"
+         "src/collects/moby/runtime/dom-helpers.ss")
 
 (define-runtime-path test-htdocs "tests/test-htdocs")
 (define-runtime-path misc-runtime "js-runtime/lib")
@@ -77,12 +79,23 @@
 ;; Web service consuming programs and producing bytecode.
 (define (start request)
   (with-handlers ([void 
-                   (lambda (exn)
+                   (lambda (exn-or-moby-error)
+                     (define the-exn (if (exn? exn-or-moby-error)
+                                         exn-or-moby-error
+                                         (make-moby-failure
+                                          (format "~a"
+                                                  (string-append
+                                                   (dom-string-content
+                                                    (error-struct->dom-sexp exn-or-moby-error #f))
+                                                   "\n"
+                                                   (Loc->string (moby-error-location exn-or-moby-error))))
+                                          (current-continuation-marks)
+                                          exn-or-moby-error)))
                      (cond
                        [(jsonp-request? request)
-                        (handle-json-exception-response request exn)]
+                        (handle-json-exception-response request the-exn)]
                        [else 
-                        (handle-exception-response request exn)]))])
+                        (handle-exception-response request the-exn)]))])
     (cond
      [(url-matches? (request-uri request) "listTestPrograms")
       (list-test-programs request)]
@@ -129,7 +142,9 @@
 (define (handle-json-response request program-name program-input-port)
   (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript")]
                [(compiled-program-port) (open-output-bytes)])
-    (let ([pinfo (compile/port program-input-port compiled-program-port #:name program-name)])
+    (let ([pinfo (compile/port program-input-port compiled-program-port
+                               #:name program-name
+                               #:runtime-version THIS-RUNTIME-VERSION)])
       (fprintf output-port "~a(~a);" 
                (extract-binding/single 'callback (request-bindings request))
                (format-output (get-output-bytes compiled-program-port)
@@ -304,7 +319,9 @@
 (define (handle-response request program-name program-input-port)
   (let-values  ([(response output-port) (make-port-response #:mime-type #"text/plain")]
                 [(program-output-port) (open-output-bytes)])
-    (let ([pinfo (compile/port program-input-port program-output-port #:name program-name)])    
+    (let ([pinfo (compile/port program-input-port program-output-port
+                               #:name program-name
+                               #:runtime-version THIS-RUNTIME-VERSION)])    
       (display (format-output (get-output-bytes program-output-port) pinfo request) output-port)
       (close-output-port output-port)
       response)))
@@ -358,6 +375,15 @@
     [else
      0]))
 
+
+
+(define (Loc->string a-loc)
+  (format "Location: line ~a, column ~a, span ~a, offset ~a, id ~s" 
+          (Loc-line a-loc)
+          (Loc-column a-loc)
+          (Loc-span a-loc)
+          (Loc-offset a-loc)
+          (Loc-id a-loc)))
 
 
 
