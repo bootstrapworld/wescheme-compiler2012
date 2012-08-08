@@ -7265,6 +7265,14 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(line 2 4 add1)",
                        'line: expects type color as 3rd argument, given: #<procedure:add1>; other arguments were: 2 4');
 
+
+
+
+        queueErrorTest("Redefinition",
+                       "(define x 3) (define x 4)",
+                       "The defined name x is being defined in the program, but it already has a definition that is not allowed to be redefined.");
+
+
         //////////////////////////////////////////////////////////////////////
 
 
