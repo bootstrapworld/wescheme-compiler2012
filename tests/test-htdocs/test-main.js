@@ -1814,7 +1814,7 @@ var runTests = function() {
 
 
         runRawTest('string-upper-case?',
-v	           function() {
+	           function() {
 		       testPrim('string-upper-case?', id, ['ABCD'], true);
 		       testPrim('string-upper-case?', runtime.string, ['ADF'], true);
 		       testPrim('string-upper-case?', runtime.string, ['AbZ'], false);
