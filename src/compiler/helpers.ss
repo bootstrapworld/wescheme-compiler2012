@@ -585,7 +585,28 @@
   (and (stx? x)
        (symbol? (stx-e x))))
 
-
+;;symbol -> boolean
+(define (keyword? name) 
+  (or 
+   (symbol=? name 'cond)
+   (symbol=? name 'let)
+   (symbol=? name 'case)
+   (symbol=? name 'let*)
+   (symbol=? name 'letrec)
+   (symbol=? name 'quasiquote)
+   (symbol=? name 'unquote)
+   (symbol=? name 'unquote-splicing)
+   (symbol=? name 'local)
+   (symbol=? name 'begin)
+   (symbol=? name 'if)
+   (symbol=? name 'or)
+   (symbol=? name 'when)
+   (symbol=? name 'unless)
+   (symbol=? name 'lambda)
+   (symbol=? name 'λ)
+   (symbol=? name 'define)
+   (symbol=? name 'define-struct)
+   (symbol=? name 'define-values)))
 
 
 ;; check-duplicate-identifiers!: (listof stx) stx -> void
@@ -599,7 +620,15 @@
               [(empty? ids)
                (void)]
               [else
-               (cond [(stx? (hash-ref seen-ids (stx-e (first ids)) #f))
+               (cond 
+                 [(keyword? (stx-e (first ids)))
+                  (raise (make-moby-error (stx-loc (first ids))
+                             (make-Message 
+                              (make-ColoredPart (symbol->string (stx-e (first ids)))
+                                                (stx-loc (first ids))) 
+                              ": this is a reserved keyword and cannot be used as a variable or function name")))]
+                  
+                 [(stx? (hash-ref seen-ids (stx-e (first ids)) #f))
                       (raise (make-moby-error (stx-loc (first ids))
                                              (make-Message 
                                               (make-ColoredPart (symbol->string (stx-e caller))

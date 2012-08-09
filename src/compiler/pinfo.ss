@@ -288,23 +288,10 @@
    (symbol=? name 'define-struct)
    (symbol=? name 'define-values)))
 
-;;listof symbol -> boolean
-;;checks to see if there are any reserved keywords in the list of symbols
-(define (keywords-in-list? li)
-  (cond
-    [(empty? li) false]
-    [(keyword? (first li)) true]
-    [else (keywords-in-list? (rest li))]))
-
 ;; pinfo-accumulate-defined-binding: binding pinfo loc -> pinfo
 ;; Adds a new defined binding to a pinfo's set.
 (define (pinfo-accumulate-defined-binding a-binding a-pinfo a-loc)
   (cond
-    [(keywords-in-list? (pinfo-free-variables a-pinfo)) 
-     (raise (make-moby-error a-loc
-                             (make-Message 
-                              (make-ColoredPart (symbol->string (binding-id a-binding)) a-loc) 
-                              ": this is a reserved keyword and cannot be used as a variable or function name")))]
     [(keyword? (binding-id a-binding))
      (raise (make-moby-error a-loc
                              (make-Message 
@@ -668,6 +655,8 @@
                   [pinfo-permissions (pinfo? . -> . (listof permission?))]
  
                   [pinfo-get-exposed-bindings (pinfo? . -> . (listof binding?))]
+                  
+                  [keyword? (symbol? . -> . boolean?)]
                   
                   [struct provide-binding:id ([stx stx?])]
                   [struct provide-binding:struct-id ([stx stx?])]
