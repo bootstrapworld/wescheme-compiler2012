@@ -81,7 +81,7 @@
                (list 'quote desugar-quote))))
 
 
-  
+
 
 
 ;; desugar-program: program pinfo -> (list program pinfo)
@@ -109,7 +109,7 @@
 (define (bare-keyword? an-element)
   (and (symbol? (stx-e an-element))
        (or (eq? (stx-e an-element) 'define)
-          (eq? (stx-e an-element) 'define-struct))))
+           (eq? (stx-e an-element) 'define-struct))))
 
 
 ;; desugar-program-element: program-element pinfo -> (list (listof program-element) pinfo)
@@ -143,7 +143,7 @@
     (case-analyze-definition a-defn
                              (lambda (id args body) 
                                (begin
-                                 (check-duplicate-identifiers! (cons id args))   
+                                 (check-duplicate-identifiers! (cons id args) define-stx)   
                                  (local [(define subexpr+pinfo (desugar-expression body a-pinfo))]
                                    (list (list (datum->stx #f (list define-stx
                                                                     (datum->stx #f (cons id args)
@@ -488,7 +488,7 @@
                 (desugar-or (first desugared-exprs+pinfo) 
                             (stx-loc expr) 
                             (second desugared-exprs+pinfo)  boolean-chain-stx
- )]))])))
+                            )]))])))
 
 
 
@@ -546,12 +546,45 @@
     (check-syntax-application! expr (lambda (expr)
                                       `(lambda (x y z)
                                          (+ x (* y z)))))
+    (when (= (length (stx-e expr)) 1)
+      (let ((parts (stx-e expr)))
+        (raise (make-moby-error (stx-loc expr)
+                                (make-Message 
+                                 (make-ColoredPart "lambda" (stx-loc (first parts))) 
+                                 ": expected at least one variable (in parentheses) after lambda, but nothing's there")))))
+    (when (not (list? (stx-e (second (stx-e expr)))))
+      (let ((parts (stx-e expr)))
+        (raise (make-moby-error (stx-loc expr)
+                                (make-Message 
+                                 (make-ColoredPart "lambda" (stx-loc (first parts))) 
+                                 ": expected at least one variable (in parentheses) after lambda, but found "
+                                 (make-ColoredPart "something else" 
+                                                   (stx-loc (second parts))))))))
+    (when (not (stx-list-of-symbols? (second (stx-e expr))))
+      (let ((parts (stx-e expr)))
+        (raise (make-moby-error (stx-loc expr)
+                                (make-Message 
+                                 (make-ColoredPart "lambda" (stx-loc (first parts))) 
+                                 ": expected a list of variables after lambda, but found "
+                                 (make-ColoredPart "something else" 
+                                                   (stx-loc (find-first-non-symbol (stx-e (second parts))))))))))    
     (when (< (length (stx-e expr)) 3)
-      (raise (make-moby-error (stx-loc expr)
-                              (make-moby-error-type:lambda-too-few-elements))))
+      (let ((parts (stx-e expr)))
+        (raise (make-moby-error (stx-loc expr)
+                                (make-Message 
+                                 (make-ColoredPart "lambda" (stx-loc (first parts))) 
+                                 ": expected an expression for the function body, but nothing's there ")))))
     (when (> (length (stx-e expr)) 3)
-      (raise (make-moby-error (stx-loc expr)
-                              (make-moby-error-type:lambda-too-many-elements))))
+      (let ((parts (stx-e expr)))
+        (raise (make-moby-error (stx-loc expr)
+                                (make-Message 
+                                 (make-ColoredPart "lambda" (stx-loc (first parts))) 
+                                 ": expected only one expression for the function body, but found "
+                                 (make-MultiPart (string-append 
+                                                  (number->string (- (length parts) 3))
+                                                  " extra part"
+                                                  (if (> (- (length parts) 3) 1) "s" ""))
+                                                 (map stx-loc (rest (rest (rest parts))))))))))
     ;; Check number of elements in the lambda
     (check-single-body-stx! (rest (rest (stx-e expr))) expr)
     
@@ -559,7 +592,7 @@
     (check-list-of-identifiers! (second (stx-e expr))
                                 (first (stx-e expr))
                                 (stx-loc expr))
-    (check-duplicate-identifiers! (stx-e (second (stx-e expr))))
+    (check-duplicate-identifiers! (stx-e (second (stx-e expr))) (first (stx-e expr)))
     
     (local [(define lambda-symbol-stx (first (stx-e expr)))
             (define args (second (stx-e expr)))
@@ -643,18 +676,18 @@
 ;; desugar-set!: expr pinfo -> (list expr pinfo)
 ;; Desugars set!.
 #;(define (desugar-set! expr pinfo)
-  (begin
-    (check-syntax-application! expr (lambda (expr)
-                                      '(set! x 17)))
-    (local [(define set-symbol-stx (first (stx-e expr)))
-            (define id (second (stx-e expr)))
-            (define value (third (stx-e expr)))
-            (define desugared-value+pinfo (desugar-expression value pinfo))]
-      (list (datum->stx #f (list set-symbol-stx
-                                 id
-                                 (first desugared-value+pinfo))
-                        (stx-loc expr))
-            (second desugared-value+pinfo)))))
+    (begin
+      (check-syntax-application! expr (lambda (expr)
+                                        '(set! x 17)))
+      (local [(define set-symbol-stx (first (stx-e expr)))
+              (define id (second (stx-e expr)))
+              (define value (third (stx-e expr)))
+              (define desugared-value+pinfo (desugar-expression value pinfo))]
+        (list (datum->stx #f (list set-symbol-stx
+                                   id
+                                   (first desugared-value+pinfo))
+                          (stx-loc expr))
+              (second desugared-value+pinfo)))))
 
 
 
@@ -848,8 +881,8 @@
         [(empty? cond-clauses)
          (raise (make-moby-error (stx-loc an-expr)  ;;conditional-missing-question-answer
                                  (make-Message 
-                                               (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
-                                               ": expected at least one clause after cond, but nothing's there")))]
+                                  (make-ColoredPart "cond" (stx-loc (first (stx-e an-expr))))
+                                  ": expected at least one clause after cond, but nothing's there")))]
         [else
          (begin
            (check-clause-structures!)
@@ -910,24 +943,24 @@
          [(stx-begins-with? (first clauses) 'else)
           (if (not (empty? (rest clauses)))
               (let ((expr-locs (list (stx-loc (first (stx-e an-expr)))
-                               (make-Loc (Loc-offset (stx-loc an-expr))
-                                         (Loc-line (stx-loc an-expr))
-                                         (Loc-column (stx-loc an-expr))
-                                         1
-                                         (Loc-id (stx-loc an-expr)))
-                               (make-Loc (+ (Loc-offset (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
-                                         (Loc-line (stx-loc an-expr))
-                                         (+ (Loc-column (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
-                                         1
-                                         (Loc-id (stx-loc an-expr))))))
+                                     (make-Loc (Loc-offset (stx-loc an-expr))
+                                               (Loc-line (stx-loc an-expr))
+                                               (Loc-column (stx-loc an-expr))
+                                               1
+                                               (Loc-id (stx-loc an-expr)))
+                                     (make-Loc (+ (Loc-offset (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                               (Loc-line (stx-loc an-expr))
+                                               (+ (Loc-column (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                               1
+                                               (Loc-id (stx-loc an-expr))))))
                 (raise (make-moby-error (stx-loc (first clauses))
-                                      (make-Message 
-                                       (make-MultiPart "cond" expr-locs) ": " 
-                                       (make-ColoredPart "else clause " (stx-loc (first clauses))) 
-                                       "should be the last, but there's " 
-                                       (make-ColoredPart "another clause" (stx-loc (second clauses))) 
-                                       " after it"                                      
-                                       ))))
+                                        (make-Message 
+                                         (make-MultiPart "cond" expr-locs) ": " 
+                                         (make-ColoredPart "else clause " (stx-loc (first clauses))) 
+                                         "should be the last, but there's " 
+                                         (make-ColoredPart "another clause" (stx-loc (second clauses))) 
+                                         " after it"                                      
+                                         ))))
               (f (reverse questions/rev) 
                  (reverse answers/rev) 
                  (else-replacement-f (first (stx-e (first clauses))))
@@ -980,7 +1013,8 @@
         (check-single-body-stx! (rest (rest (stx-e a-stx))) a-stx)
         (check-duplicate-identifiers! (map (lambda (a-clause)
                                              (first (stx-e a-clause)))
-                                           (stx-e clauses-stx)))      
+                                           (stx-e clauses-stx))
+                                      (first (stx-e a-stx)))      
         (desugar-expression/expr+pinfo 
          (list (datum->stx #f (cons new-lambda-stx vals)
                            (stx-loc a-stx))
@@ -1076,7 +1110,8 @@
       (begin
         (check-single-body-stx! (rest (rest (stx-e a-stx))) a-stx)
         (check-duplicate-identifiers! (map (lambda (a-clause) (first (stx-e a-clause)))
-                                           (stx-e clauses-stx)))
+                                           (stx-e clauses-stx))
+                                      (first (stx-e a-stx)))
         (desugar-expression/expr+pinfo 
          (list (datum->stx #f 
                            (list 'local define-clauses body-stx)

@@ -548,13 +548,13 @@
       [(= (length parts) 2) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                     ": expected at least one field name (in parentheses) after the  " 
+                                                     ": expected at least one field name (in parentheses) after the " 
                                                      (make-ColoredPart "structure name"   (stx-loc (second parts)))
                                                      ", but nothing's there")))]
       [(not (list? (stx-e (third parts)))) (raise (make-moby-error (stx-loc a-definition)  
                                                                    (make-Message 
                                                                     (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                                    ": expected at least one field name (in parentheses) after the  " 
+                                                                    ": expected at least one field name (in parentheses) after the " 
                                                                     (make-ColoredPart "structure name"   (stx-loc (second parts)))
                                                                     ", but found "
                                                                     (make-ColoredPart "something else" (stx-loc (third parts))))))]
@@ -587,10 +587,10 @@
 
 
 
-;; check-duplicate-identifiers!: (listof stx) -> void
+;; check-duplicate-identifiers!: (listof stx) stx -> void
 ;; Return a list of the identifiers that are duplicated.
 ;; Also check to see that each of the ids is really a symbolic identifier.
-(define (check-duplicate-identifiers! ids)
+(define (check-duplicate-identifiers! ids caller)
   (local [(define seen-ids (make-hash))
           
           (define (loop ids)
@@ -600,9 +600,15 @@
               [else
                (cond [(stx? (hash-ref seen-ids (stx-e (first ids)) #f))
                       (raise (make-moby-error (stx-loc (first ids))
-                                              (make-moby-error-type:duplicate-identifier
-                                               (stx-e (first ids))
-                                               (stx-loc (hash-ref seen-ids (stx-e (first ids)) #f)))))]
+                                             (make-Message 
+                                              (make-ColoredPart (symbol->string (stx-e caller))
+                                                                (stx-loc caller))
+                                              ": found "
+                                              (make-ColoredPart "a variable" 
+                                                                (stx-loc (first ids)))
+                                              "that is already used "
+                                              (make-ColoredPart "here"
+                                                                (stx-loc (hash-ref seen-ids (stx-e (first ids)) #f))))))]
                      [(not (symbol? (stx-e (first ids))))
                       (raise (make-moby-error (stx-loc (first ids))
                                               (make-moby-error-type:expected-identifier (first ids))))]
@@ -665,9 +671,13 @@
                   [range (number? . -> . (listof number?))]
                   
                   
-                  [check-duplicate-identifiers! ((listof stx?)  . -> . any)]
+                  [check-duplicate-identifiers! ((listof stx?) stx? . -> . any)]
                   
                   [check-single-body-stx! ((listof stx?) stx? . -> . any)]
+                  
+                  [stx-list-of-symbols? (stx? . -> . boolean?)]
+                  [find-first-non-symbol ((listof stx?) . -> . any)]
+                  
                   [case-analyze-definition (stx? 
                                             (symbol-stx? (listof symbol-stx?) stx? . -> . any)
                                             (symbol-stx? any/c . -> . any)
