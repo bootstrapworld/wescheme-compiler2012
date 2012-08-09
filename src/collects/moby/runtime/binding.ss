@@ -22,7 +22,7 @@
    var-arity?     ;; is this vararity?
    permissions    ;; what permissions do we need to call this function?
    cps?           ;; does the function respect CPS calling conventions?
-   loc            ;;the location of the definition 
+   loc            ;; the location of the definition 
    ))
 
 
@@ -36,7 +36,7 @@
    accessors   ;; (listof symbol)
    mutators    ;; (listof symbol)
    permissions ;; (listof permission)
-   loc         ;;the location of the definition 
+   loc         ;; the location of the definition 
    ))
 
 

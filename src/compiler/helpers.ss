@@ -489,6 +489,7 @@
                                     ": expected a variable but found "
                                     (make-ColoredPart "something else" 
                                                       (stx-loc (find-first-non-symbol (stx-e (second parts)))))))))]
+      ;;removed, we support zero-arity functions 
       #;[(= (length (stx-e (second parts))) 1)
          (raise (make-moby-error (stx-loc a-definition)
                                  (make-Message 
@@ -606,7 +607,7 @@
                                               ": found "
                                               (make-ColoredPart "a variable" 
                                                                 (stx-loc (first ids)))
-                                              "that is already used "
+                                              " that is already used "
                                               (make-ColoredPart "here"
                                                                 (stx-loc (hash-ref seen-ids (stx-e (first ids)) #f))))))]
                      [(not (symbol? (stx-e (first ids))))
@@ -626,15 +627,19 @@
     [(empty? stxs)
      (raise
       (make-moby-error (stx-loc original-stx)
-                       (make-moby-error-type:generic-syntactic-error
-                        "I expected a single body in this expression, but I didn't find any."
-                        (list))))]
+                       (make-Message
+                        (make-ColoredPart (symbol->string (stx-e (first (stx-e original-stx)))) 
+                                         (stx-loc (first (stx-e original-stx))))
+                        ": expected a single body, but found none")))]
     [(not (empty? (rest stxs)))
      (raise
       (make-moby-error (stx-loc original-stx)
-                       (make-moby-error-type:generic-syntactic-error
-                        "I expected a single body in this expression, but I found more than one."
-                        (map stx-loc (rest stxs)))))]
+                       (make-Message
+                        (make-ColoredPart (symbol->string (stx-e (first (stx-e original-stx)))) 
+                                          (stx-loc (first (stx-e original-stx))))
+                        ": expected a single body, but found "
+                        (make-MultiPart "more than one" 
+                                        (map stx-loc (rest (stx-e original-stx)))))))]
     [else
      (void)]))
 

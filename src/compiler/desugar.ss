@@ -920,10 +920,16 @@
     [(> (length (stx-e expr)) expected-arity)
      (void)]
     [else
-     (raise (make-moby-error (stx-loc expr)
+     ;;the error given is not the right one
+     #;(raise (make-moby-error (stx-loc expr)
                              (make-moby-error-type:syntax-not-applied
                               expr
-                              (on-failure expr))))]))
+                              (on-failure expr))))
+     (raise (make-moby-error (stx-loc expr)
+                             (make-Message
+                              (make-ColoredPart (symbol->string (stx-e (first (stx-e expr))))
+                                                (stx-loc (first (stx-e expr))))
+                              ": expected an expression after the bindings, but nothing's there")))]))
 
 ;; make-cond-exhausted-expression: loc -> stx
 (define (make-cond-exhausted-expression a-loc)
