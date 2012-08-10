@@ -7401,7 +7401,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("lambda given lambda as variable, also no body for 2nd lambda",
 		       "(lambda (x lambda) (lambda (u)))",
-		       "lambda: expected an expression for the function body, but nothing's there");
+		       "lambda: this is a reserved keyword and cannot be used as a variable or function name");
 
         //////////////////////////////////////////////////////////////////////
 
