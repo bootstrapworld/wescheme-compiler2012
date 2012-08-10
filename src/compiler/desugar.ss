@@ -311,13 +311,16 @@
     (check-syntax-application! expr (lambda (expr)
                                       '(local [(define (f x) (* x x))]
                                          (+ (f 3) (f 4)))))
-    (check-syntax-application-arity-at-least! expr 2
-                                              (lambda (expr)
-                                                '(local [(define (f x) (* x x))]
-                                                   (+ (f 3) (f 4)))))
+    (when (= (length (stx-e expr)) 1)
+      (raise (make-moby-error (stx-loc expr)
+                              (make-Message 
+                               (make-ColoredPart "local" (stx-loc (first (stx-e expr))))
+                               ": expected at least one definition (in square brackets) after local, but nothing's there"))))
+    
     (check-single-body-stx! (rest (rest (stx-e expr))) expr)
     (local:check-all-definitions! (stx-e (second (stx-e expr)))
-                                  (stx-loc (second (stx-e expr))))
+                                  (stx-loc (second (stx-e expr)))
+                                  expr)
     (local [(define local-symbol-stx (first (stx-e expr)))
             (define defns (stx-e (second (stx-e expr))))
             (define body (third (stx-e expr)))
@@ -335,28 +338,27 @@
                               (pinfo-env pinfo))))))
 
 
-(define (local:check-all-definitions! defns a-loc)
+(define (local:check-all-definitions! defns a-loc original-stx)
   (local [(define (raise-error-not-a-list an-stx a-loc)
             (raise (make-moby-error a-loc
-                                    (make-moby-error-type:generic-syntactic-error
-                                     (format "local expects only definitions, but hasn't received a collection of them and instead received ~s."
-                                             an-stx)
-                                     
-                                     (list)))))
+                                    (make-Message 
+                                     (make-ColoredPart "local" (stx-loc (first (stx-e original-stx))))
+                                     ": expects a collection of definitions, but given "
+                                     (make-ColoredPart "something else" a-loc)))))
           
           (define (raise-error an-stx a-loc)
             (raise (make-moby-error a-loc
-                                    (make-moby-error-type:generic-syntactic-error
-                                     (format "local expects only definitions, but ~s is not a definition"
-                                             (stx->datum an-stx))
-                                     (list)))))]
+                                    (make-Message 
+                                     (make-ColoredPart "local" (stx-loc (first (stx-e original-stx))))
+                                     ": expected a definition, but given "
+                                     (make-ColoredPart "something else" (stx-loc an-stx))))))]
     (cond
       [(not (list? defns))
        (raise-error-not-a-list defns a-loc)]
       [(empty? defns)
        (void)]
       [(defn? (first defns))
-       (local:check-all-definitions! (rest defns) a-loc)]
+       (local:check-all-definitions! (rest defns) a-loc original-stx)]
       [else
        (raise-error (first defns)
                     (stx-loc (first defns)))])))
