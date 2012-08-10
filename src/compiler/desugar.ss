@@ -256,7 +256,7 @@
      (raise (make-moby-error (stx-loc expr)
                              (make-Message
                               (make-ColoredPart "( )" (stx-loc expr))
-                              ": this is not currently supported")))]
+                              ": expected a function, but nothing's there")))]
                              ;;(make-moby-error-type:unsupported-expression-form expr)))]
     
     ;; Function call/primitive operation call
