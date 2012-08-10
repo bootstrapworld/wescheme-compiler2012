@@ -5068,9 +5068,9 @@ PRIMITIVES['underlay'] =
 			checkVarArity(aState, img2, isImage, "underlay", "image", 2, arguments);
 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay", "image", i+3); }, arguments);
 
-			var img = world.Kernel.overlayImage(img2, img1, 0, 0);
+			var img = world.Kernel.overlayImage(img2, img1, "middle", "middle");
 			for (var i = 0; i < restImages.length; i++) {
-				img = world.Kernel.overlayImage(restImages[i], img, 0, 0);
+				img = world.Kernel.overlayImage(restImages[i], img, "middle", "middle");
 			}
 			return img;
 		 });
