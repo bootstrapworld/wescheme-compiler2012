@@ -1,6 +1,24 @@
 (printf "images.rkt\n")
 
 
+"These three circles (red, green, blue) should be left aligned"
+(above/align "left"
+             (circle 30 "solid" "red")
+             (above/align "left" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+
+"should be a bar graph"
+(define (make-stars number)
+  (cond [(eq? number 1) (star 12 "solid" "purple")]
+        [true (beside (star 12 "solid" "purple") (make-stars (- number 1)))] ))
+(define (bar-graph l1)
+  (cond [(empty? l1) (circle 0 "outline" "blue")]
+        [true (above/align "left" (make-stars (car l1)) (bar-graph (cdr l1)))]))
+(bar-graph '(1 3 5 3 9 5 3 4 4 3 5 2))
+
+
+
 (check-expect (image? 'blue) #f)
 (check-expect (image? (circle 20 "solid" "green")) #t)
 

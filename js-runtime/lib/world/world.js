@@ -49,14 +49,13 @@ if (typeof(world) === 'undefined') {
         }
     };
     world.Kernel.announce = function(eventName, vals) {
-        for (var i = 0; i < announceListeners.length; i++) {
+        var i;
+        for (i = 0; i < announceListeners.length; i++) {
             try {
                 announceListeners[i](eventName, vals);
             } catch (e) {}
         }
     };
-
-
 
 
 
@@ -542,7 +541,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // OverlayImage: image image placeX placeY -> image
     // Creates an image that overlays img1 on top of the
-    // other image. 
+    // other image img2.
     var OverlayImage = function(img1, img2, placeX, placeY) {
         // calculate centers using width/height, so we are scene/image agnostic
         var c1x = img1.getWidth()/2;
@@ -555,40 +554,32 @@ if (typeof(world) === 'undefined') {
         // keep absolute X and Y values
         // convert relative X,Y to absolute amounts
         // we also handle "beside" and "above"
-        if (placeX == "right")
+        if (placeX == "left") {
             X = (c1x>c2x)? img2.getWidth()-(c1x+c2x) : img1.getWidth()-(c1x+c2x);
-        else if (placeX == "left") 
+        } else if (placeX == "right") {
             X = (c1x>c2x)? img1.getWidth()-(c1x+c2x) : img2.getWidth()-(c1x+c2x);
-        else if (placeX == "beside")
+        } else if (placeX == "beside") {
             X = c1x+c2x;
-        else if (placeX == "middle" || 
-                 placeX == "center")
+        } else if (placeX == "middle" || placeX == "center") {
             X = 0;
-        else
+        } else {
             X = placeX;
+        }
         
-        if (placeY == "bottom")
+        if (placeY == "bottom") {
             Y = (c1y>c2y)? img2.getHeight()-(c1y+c2y) : img1.getHeight()-(c1y+c2y);
-        else if (placeY == "top")
+        } else if (placeY == "top") {
             Y = (c1y>c2y)? img1.getHeight()-(c1y+c2y) : img2.getHeight()-(c1y+c2y);
-        else if (placeY == "above")
+        } else if (placeY == "above") {
             Y = c1y+c2y;
-        else if (placeY == "baseline")
+        } else if (placeY == "baseline") {
             Y = img1.getBaseline()-img2.getBaseline();
-        else if (placeY == "middle" || placeY == "center")
+        } else if (placeY == "middle" || placeY == "center") {
             Y = 0;
-        else
+        } else {
             Y = placeY;
-        
-
-        // correct offsets when dealing with Scenes instead of images
-        if(isScene(img1)){
-            X = X + c1x; Y = Y + c1x;
         }
-        if(isScene(img2)){
-            X = X - c2x; Y = Y - c2x;
-        }
-        
+               
         var deltaX      = img1.pinholeX - img2.pinholeX + X;
         var deltaY      = img1.pinholeY - img2.pinholeY + Y;
 
@@ -618,6 +609,10 @@ if (typeof(world) === 'undefined') {
         this.img2.render(ctx, x + this.img2Dx, y + this.img2Dy);
         this.img1.render(ctx, x + this.img1Dx, y + this.img1Dy);
         ctx.restore();
+
+        // For debugging purposes:
+        ctx.strokeStyle = 'black';
+        ctx.strokeRect(x, y, this.width, this.height);
     };
 
     OverlayImage.prototype.isEqual = function(other, aUnionFind) {
