@@ -567,8 +567,8 @@ if (typeof(world) === 'undefined') {
             x1 = Math.max(img1.getWidth(), img2.getWidth())/2 - img1.getWidth()/2;
             x2 = Math.max(img1.getWidth(), img2.getWidth())/2 - img2.getWidth()/2;
         } else {
-            x1 = placeX;
-            x2 = 0;
+            x1 = Math.max(placeX, 0) - placeX;
+            x2 = Math.max(placeX, 0);
         }
         
         if (placeY == "top") {
@@ -587,8 +587,8 @@ if (typeof(world) === 'undefined') {
             y1 = Math.max(img1.getHeight(), img2.getHeight())/2 - img1.getHeight()/2;
             y2 = Math.max(img1.getHeight(), img2.getHeight())/2 - img2.getHeight()/2;
         } else {
-            y1 = placeY;
-            y2 = 0;
+            y1 = Math.max(placeY, 0) - placeY;
+            y2 = Math.max(placeY, 0);
         }
         
         this.width = Math.floor(Math.max(x1 + img1.getWidth(), x2 + img2.getWidth()) - Math.min(x1, x2));

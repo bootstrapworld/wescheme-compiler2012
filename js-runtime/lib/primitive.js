@@ -5022,11 +5022,10 @@ PRIMITIVES['overlay/xy'] =
 		 4,
 		 false, false,
 		 function(aState, img1, deltaX, deltaY, img2) {
-			check(aState, img1, isImage, "overlay/xy", "image", 1, arguments);
-			check(aState, deltaX, isReal, "overlay/xy", "finite real number", 2, arguments);
-			check(aState, deltaY, isReal, "overlay/xy", "finite real number", 3, arguments);
-			check(aState, img2, isImage, "overlay/xy", "image", 4, arguments);
-
+		     check(aState, img1, isImage, "overlay/xy", "image", 1, arguments);
+		     check(aState, deltaX, isReal, "overlay/xy", "finite real number", 2, arguments);
+		     check(aState, deltaY, isReal, "overlay/xy", "finite real number", 3, arguments);
+		     check(aState, img2, isImage, "overlay/xy", "image", 4, arguments);
 		     return world.Kernel.overlayImage(img1.updatePinhole(0, 0),
 						      img2.updatePinhole(0, 0),
 						      jsnums.toFixnum(deltaX),
@@ -5087,8 +5086,8 @@ PRIMITIVES['underlay/xy'] =
 		     check(aState, img2, isImage, "underlay/xy", "image", 4, arguments);                     
 		     return world.Kernel.overlayImage(img2.updatePinhole(0, 0), 
 						      img1.updatePinhole(0, 0),
-						      jsnums.toFixnum(deltaX),
-						      jsnums.toFixnum(deltaY));
+						      -jsnums.toFixnum(deltaX),
+						      -jsnums.toFixnum(deltaY));
 		 });
 
 
