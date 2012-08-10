@@ -543,90 +543,93 @@ if (typeof(world) === 'undefined') {
     // Creates an image that overlays img1 on top of the
     // other image img2.
     var OverlayImage = function(img1, img2, placeX, placeY) {
-        // calculate centers using width/height, so we are scene/image agnostic
-        var c1x = img1.getWidth()/2;
-        var c1y = img1.getHeight()/2; 
-        var c2x = img2.getWidth()/2;
-        var c2y = img2.getHeight()/2;
-        var X, Y;
+        BaseImage.call(this, 0, 0);
 
+        // An overlay image consists of width, height, x1, y1, x2, and
+        // y2.  We need to compute these based on the inputs img1,
+        // img2, placex, and placey.
 
-        // keep absolute X and Y values
-        // convert relative X,Y to absolute amounts
-        // we also handle "beside" and "above"
+        // placeX and placeY may be non-numbers, in which case their values
+        // depend on the img1 and img2 geometry.
+        
+        var x1, y1, x2, y2;
+
         if (placeX == "left") {
-            X = (c1x>c2x)? img2.getWidth()-(c1x+c2x) : img1.getWidth()-(c1x+c2x);
+            x1 = 0;
+            x2 = 0;
         } else if (placeX == "right") {
-            X = (c1x>c2x)? img1.getWidth()-(c1x+c2x) : img2.getWidth()-(c1x+c2x);
+            x1 = Math.max(img1.getWidth(), img2.getWidth()) - img1.getWidth();
+            x2 = Math.max(img1.getWidth(), img2.getWidth()) - img2.getWidth();
         } else if (placeX == "beside") {
-            X = c1x+c2x;
+            x1 = 0;
+            x2 = img1.getWidth();
         } else if (placeX == "middle" || placeX == "center") {
-            X = 0;
+            x1 = Math.max(img1.getWidth(), img2.getWidth())/2 - img1.getWidth()/2;
+            x2 = Math.max(img1.getWidth(), img2.getWidth())/2 - img2.getWidth()/2;
         } else {
-            X = placeX;
+            x1 = placeX;
+            x2 = 0;
         }
         
-        if (placeY == "bottom") {
-            Y = (c1y>c2y)? img2.getHeight()-(c1y+c2y) : img1.getHeight()-(c1y+c2y);
-        } else if (placeY == "top") {
-            Y = (c1y>c2y)? img1.getHeight()-(c1y+c2y) : img2.getHeight()-(c1y+c2y);
+        if (placeY == "top") {
+            y1 = 0;
+            y2 = 0;
+        } else if (placeY == "bottom") {
+            y1 = Math.max(img1.getHeight(), img2.getHeight()) - img1.getHeight();
+            y2 = Math.max(img1.getHeight(), img2.getHeight()) - img1.getHeight();
         } else if (placeY == "above") {
-            Y = c1y+c2y;
+            y1 = 0;
+            y2 = img1.getHeight();
         } else if (placeY == "baseline") {
-            Y = img1.getBaseline()-img2.getBaseline();
+            y1 = Math.max(img1.getBaseline(), img2.getBaseline()) - img1.getBaseline();
+            y2 = Math.max(img1.getBaseline(), img2.getBaseline()) - img1.getBaseline();
         } else if (placeY == "middle" || placeY == "center") {
-            Y = 0;
+            x1 = Math.max(img1.getHeight(), img2.getHeight())/2 - img1.getHeight()/2;
+            x2 = Math.max(img1.getHeight(), img2.getHeight())/2 - img2.getHeight()/2;
         } else {
-            Y = placeY;
+            y1 = placeY;
+            y2 = 0;
         }
-               
-        var deltaX      = img1.pinholeX - img2.pinholeX + X;
-        var deltaY      = img1.pinholeY - img2.pinholeY + Y;
-
-        var left        = Math.min(0, deltaX);
-        var top         = Math.min(0, deltaY);
-        var right       = Math.max(deltaX + img2.getWidth(), img1.getWidth());
-        var bottom      = Math.max(deltaY + img2.getHeight(), img1.getHeight());        
-        BaseImage.call(this, 
-                       Math.floor((right-left) / 2),
-                       Math.floor((bottom-top) / 2));
+        
+        this.width = Math.floor(Math.max(x1 + img1.getWidth(), x2 + img2.getWidth()) - Math.min(x1, x2));
+        this.height = Math.floor(Math.max(y1 + img1.getHeight(), y2 + img2.getHeight()) - Math.min(y1, y2));
+        this.x1 = Math.floor(x1);
+        this.y1 = Math.floor(y1);
+        this.x2 = Math.floor(x2);
+        this.y2 = Math.floor(y2);
         this.img1 = img1;
         this.img2 = img2;
-        this.width = right - left;
-        this.height = bottom - top;
-
-        this.img1Dx = -left;
-        this.img1Dy = -top;
-        this.img2Dx = deltaX - left;    
-        this.img2Dy = deltaY - top;
     };
 
     OverlayImage.prototype = heir(BaseImage.prototype);
 
-
     OverlayImage.prototype.render = function(ctx, x, y) {
         ctx.save();
-        this.img2.render(ctx, x + this.img2Dx, y + this.img2Dy);
-        this.img1.render(ctx, x + this.img1Dx, y + this.img1Dy);
+        this.img2.render(ctx, x + this.x2, y + this.y2);
+        this.img1.render(ctx, x + this.x1, y + this.y1);
         ctx.restore();
-
         // For debugging purposes:
         ctx.strokeStyle = 'black';
         ctx.strokeRect(x, y, this.width, this.height);
     };
 
     OverlayImage.prototype.isEqual = function(other, aUnionFind) {
-        return ( other instanceof OverlayImage &&
-                 this.pinholeX == other.pinholeX &&
-                 this.pinholeY == other.pinholeY &&
-                 this.width == other.width &&
-                 this.height == other.height &&
-                 this.img1Dx == other.img1Dx &&
-                 this.img1Dy == other.img1Dy &&
-                 this.img2Dx == other.img2Dx &&
-                 this.img2Dy == other.img2Dy &&
-                 types.isEqual(this.img1, other.img1, aUnionFind) &&
-                 types.isEqual(this.img2, other.img2, aUnionFind) );
+        // return ( other instanceof OverlayImage &&
+        //          this.pinholeX == other.pinholeX &&
+        //          this.pinholeY == other.pinholeY &&
+        //          this.width == other.width &&
+        //          this.height == other.height &&
+        //          this.img1Dx == other.img1Dx &&
+        //          this.img1Dy == other.img1Dy &&
+        //          this.img2Dx == other.img2Dx &&
+        //          this.img2Dy == other.img2Dy &&
+        //          types.isEqual(this.img1, other.img1, aUnionFind) &&
+        //          types.isEqual(this.img2, other.img2, aUnionFind) );
+
+
+        // FIXME
+        return this === other;
+
     };
 
 
