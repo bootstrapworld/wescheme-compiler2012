@@ -576,13 +576,13 @@ if (typeof(world) === 'undefined') {
             y2 = 0;
         } else if (placeY == "bottom") {
             y1 = Math.max(img1.getHeight(), img2.getHeight()) - img1.getHeight();
-            y2 = Math.max(img1.getHeight(), img2.getHeight()) - img1.getHeight();
+            y2 = Math.max(img1.getHeight(), img2.getHeight()) - img2.getHeight();
         } else if (placeY == "above") {
             y1 = 0;
             y2 = img1.getHeight();
         } else if (placeY == "baseline") {
             y1 = Math.max(img1.getBaseline(), img2.getBaseline()) - img1.getBaseline();
-            y2 = Math.max(img1.getBaseline(), img2.getBaseline()) - img1.getBaseline();
+            y2 = Math.max(img1.getBaseline(), img2.getBaseline()) - img2.getBaseline();
         } else if (placeY == "middle" || placeY == "center") {
             y1 = Math.max(img1.getHeight(), img2.getHeight())/2 - img1.getHeight()/2;
             y2 = Math.max(img1.getHeight(), img2.getHeight())/2 - img2.getHeight()/2;

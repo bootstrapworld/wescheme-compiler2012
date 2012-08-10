@@ -5094,30 +5094,30 @@ PRIMITIVES['underlay/xy'] =
 
 
 PRIMITIVES['underlay/align'] =
-new PrimProc('underlay/align',
-			 4,
-			 true, false,
-	     function(aState, placeX, placeY, img1, img2, restImages) {
+        new PrimProc('underlay/align',
+		     4,
+		     true, false,
+	             function(aState, placeX, placeY, img1, img2, restImages) {
 			 checkVarArity(aState, placeX, isPlaceX, "underlay/align", "x-place", 1, arguments);
 			 checkVarArity(aState, placeY, isPlaceY, "underlay/align", "y-place", 2, arguments);
 			 checkVarArity(aState, img1, isImage, "underlay/align", "image", 3, arguments);
 			 checkVarArity(aState, img2, isImage, "underlay/align", "image", 4, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay/align", "image", i+4); }, arguments);
 			 
-			 var img = world.Kernel.overlayImage(img2,
-												  img1,
-												  placeX.toString(),
-												  placeY.toString());
-			 
-			 for (var i = 0; i < restImages.length; i++)
-			 img = world.Kernel.overlayImage(restImages[i], 
-											  img,
-											  placeX.toString(), 
-											  placeY.toString());
-			 
-		     return img;
-			 });
-
+		         var img = world.Kernel.overlayImage(img2,
+						             img1,
+						             placeX.toString(),
+						             placeY.toString());
+		         
+		         for (var i = 0; i < restImages.length; i++)
+		             img = world.Kernel.overlayImage(restImages[i], 
+						             img,
+						             placeX.toString(), 
+						             placeY.toString());
+		         
+		         return img;
+	             });
+    
 
 PRIMITIVES['beside'] =
 new PrimProc('beside',
