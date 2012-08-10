@@ -316,11 +316,12 @@
                               (make-Message 
                                (make-ColoredPart "local" (stx-loc (first (stx-e expr))))
                                ": expected at least one definition (in square brackets) after local, but nothing's there"))))
-    
-    (check-single-body-stx! (rest (rest (stx-e expr))) expr)
     (local:check-all-definitions! (stx-e (second (stx-e expr)))
                                   (stx-loc (second (stx-e expr)))
                                   expr)
+    
+    (check-single-body-stx! (rest (rest (stx-e expr))) expr)
+    
     (local [(define local-symbol-stx (first (stx-e expr)))
             (define defns (stx-e (second (stx-e expr))))
             (define body (third (stx-e expr)))
