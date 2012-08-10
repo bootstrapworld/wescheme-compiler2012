@@ -24,6 +24,7 @@ if (typeof(world) === 'undefined') {
     // object, including to things like instanceof
     var clone = function(obj) {
         var C = function() {}
+        var property;
         C.prototype = obj;
         var c = new C();
         for (property in obj) {
@@ -518,7 +519,7 @@ if (typeof(world) === 'undefined') {
     VideoImage.prototype = heir(BaseImage.prototype);
 
 
-    videos = {};
+    var videos = {};
     VideoImage.makeInstance = function(path, rawVideo) {
         if (! (path in VideoImage)) {
             videos[path] = new VideoImage(path, rawVideo);
