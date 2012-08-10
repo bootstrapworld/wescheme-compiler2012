@@ -7403,6 +7403,101 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(lambda (x lambda) (lambda (u)))",
 		       "lambda: expected an expression for the function body, but nothing's there");
 
+	queueErrorTest("let given nothing",
+		       "(let)",
+		       "");
+	
+	queueErrorTest("let given empty paren",
+		       "(let ())",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let x 6)",
+		       "");
+
+	queueErrorTest("let given bad form",
+		       "(let (x) 3)",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let (x 2) 3)",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 3) (x 6)) 5)",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x x)) x)",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 3)))",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 5) (1)) 6)",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let 5 6)",
+		       "");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 2)) ())",
+		       "");
+
+	queueErrorTest("local given no args",
+		       "(local)",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local x 3)",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local (x))",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local (x) 7)",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local (x 1) 7)",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local ((x 6)))",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local ((x 6) (2)) 4)",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local 1 5)",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local ())",
+		       "");
+	
+	queueErrorTest("local given bad form",
+		       "(local ((x 1)) ())",
+		       "");
+
+	queueErrorTest("lambda used as name",
+		       "(define (f lambda) 2)",
+		       "");
+
+	queueErrorTest("let used as name",
+		       "(define (f let) 2)",
+		       "");
+
+
+	
+
         //////////////////////////////////////////////////////////////////////
 
 
