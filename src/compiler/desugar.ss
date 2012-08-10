@@ -573,7 +573,7 @@
         (raise (make-moby-error (stx-loc expr)
                                 (make-Message 
                                  (make-ColoredPart "lambda" (stx-loc (first parts))) 
-                                 ": expected an expression for the function body, but nothing's there ")))))
+                                 ": expected an expression for the function body, but nothing's there")))))
     (when (> (length (stx-e expr)) 3)
       (let ((parts (stx-e expr)))
         (raise (make-moby-error (stx-loc expr)
@@ -995,6 +995,8 @@
                                        '(let ([x 3]
                                               [y 4])
                                           (+ x y))))
+    
+    ;;this is not right- do specific checks
     (check-syntax-application-arity-at-least! a-stx 2
                                               (lambda (a-stx)
                                                 '(let ([x 3]
