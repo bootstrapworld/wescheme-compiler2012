@@ -7447,6 +7447,14 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(let ((x 2)) ())",
 		       "( ): this is not currently supported");
 
+	queueErrorTest("let given too many parts",
+		       "(let () 4 4 5 5)",
+		       "let: expected a single body, but found 3 extra parts");
+
+	queueErrorTest("local given too many parts",
+		       "(local () 4 4 5 5)",
+		       "local: expected a single body, but found 3 extra parts");
+
 	queueErrorTest("local given no args",
 		       "(local)",
 		       "local: expected at least one definition (in square brackets) after local, but nothing's there");
