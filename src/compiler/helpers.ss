@@ -593,6 +593,7 @@
    (symbol=? name 'case)
    (symbol=? name 'let*)
    (symbol=? name 'letrec)
+   (symbol=? name 'quote)
    (symbol=? name 'quasiquote)
    (symbol=? name 'unquote)
    (symbol=? name 'unquote-splicing)
@@ -667,8 +668,11 @@
                         (make-ColoredPart (symbol->string (stx-e (first (stx-e original-stx)))) 
                                           (stx-loc (first (stx-e original-stx))))
                         ": expected a single body, but found "
-                        (make-MultiPart "more than one" 
-                                        (map stx-loc (rest (stx-e original-stx)))))))]
+                        (make-MultiPart (string-append 
+                                         (number->string (length (rest (rest (rest (stx-e original-stx))))))
+                                         " extra part"
+                                         (if (> (length (rest (rest (rest (stx-e original-stx))))) 1) "s" ""))
+                                        (map stx-loc (rest (rest (rest (stx-e original-stx)))))))))]
     [else
      (void)]))
 
