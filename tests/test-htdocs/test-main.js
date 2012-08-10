@@ -7465,7 +7465,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("local given bad form",
 		       "(local (x))",
-		       "local: expected a single body, but found none");
+		       "local: expected a definition, but given something else");
 	
 	queueErrorTest("local given bad form",
 		       "(local (x) 7)",
@@ -7477,7 +7477,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("local given bad form",
 		       "(local ((x 6)))",
-		       "local: expected a single body, but found none");
+		        "local: expected a definition, but given something else");
 	
 	queueErrorTest("local given bad form",
 		       "(local ((x 6) (2)) 4)",
