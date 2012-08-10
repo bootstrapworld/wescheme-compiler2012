@@ -7489,11 +7489,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
 	queueErrorTest("lambda used as name",
 		       "(define (f lambda) 2)",
-		       "");
+		       "lambda: this is a reserved keyword and cannot be used as a variable or function name");
 
 	queueErrorTest("let used as name",
 		       "(define (f let) 2)",
-		       "");
+		       "let: this is a reserved keyword and cannot be used as a variable or function name");
 
 
 	
