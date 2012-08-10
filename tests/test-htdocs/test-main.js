@@ -7363,7 +7363,45 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(define-values (x) (values 1) 1)",
 		       "define-values: expects a list of variables and a body, but found an extra part");
 	
+	queueErrorTest("lambda given no args",
+		       "(lambda)",
+		       "lambda: expected at least one variable (in parentheses) after lambda, but nothing's there");
+	
+	queueErrorTest("lambda given extra arg no paren",
+		       "(lambda 1)",
+		       "lambda: expected at least one variable (in parentheses) after lambda, but found something else");
+	
+	queueErrorTest("lambda given 2 extra args no paren",
+		       "(lambda 1 2)",
+		       "lambda: expected at least one variable (in parentheses) after lambda, but found something else");
+	
+	queueErrorTest("lambda given empty paren",
+		       "(lambda ())",
+		       "lambda: expected an expression for the function body, but nothing's there");
+	
+	queueErrorTest("lambda given paren with bad arg type",
+		       "(lambda (1))",
+		       "lambda: expected a list of variables after lambda, but found something else");
 
+	queueErrorTest("lambda given variable, but no function body",
+		       "(lambda (x))",
+		       "lambda: expected an expression for the function body, but nothing's there");
+	
+	queueErrorTest("lambda given two identical variables",
+		       "(lambda (x x) 1)",
+		       "lambda: found a variable that is already used here");
+	
+	queueErrorTest("lambda given an extra part",
+		       "(lambda (x y) (+ y x) 1)",
+		       "lambda: expected only one expression for the function body, but found 1 extra part");
+
+	queueErrorTest("lambda given multiple variables not in paren",
+		       "(lambda x y (+ 2 y))",
+		       "lambda: expected at least one variable (in parentheses) after lambda, but found something else");
+	
+	queueErrorTest("lambda given lambda as variable, also no body for 2nd lambda",
+		       "(lambda (x lambda) (lambda (u)))",
+		       "lambda: expected an expression for the function body, but nothing's there");
 
         //////////////////////////////////////////////////////////////////////
 

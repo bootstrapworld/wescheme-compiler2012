@@ -489,6 +489,7 @@
                                     ": expected a variable but found "
                                     (make-ColoredPart "something else" 
                                                       (stx-loc (find-first-non-symbol (stx-e (second parts)))))))))]
+      ;;removed, we support zero-arity functions 
       #;[(= (length (stx-e (second parts))) 1)
          (raise (make-moby-error (stx-loc a-definition)
                                  (make-Message 
@@ -548,13 +549,13 @@
       [(= (length parts) 2) (raise (make-moby-error (stx-loc a-definition)  
                                                     (make-Message 
                                                      (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                     ": expected at least one field name (in parentheses) after the  " 
+                                                     ": expected at least one field name (in parentheses) after the " 
                                                      (make-ColoredPart "structure name"   (stx-loc (second parts)))
                                                      ", but nothing's there")))]
       [(not (list? (stx-e (third parts)))) (raise (make-moby-error (stx-loc a-definition)  
                                                                    (make-Message 
                                                                     (make-ColoredPart "define-struct" (stx-loc (first parts)))
-                                                                    ": expected at least one field name (in parentheses) after the  " 
+                                                                    ": expected at least one field name (in parentheses) after the " 
                                                                     (make-ColoredPart "structure name"   (stx-loc (second parts)))
                                                                     ", but found "
                                                                     (make-ColoredPart "something else" (stx-loc (third parts))))))]
@@ -584,13 +585,34 @@
   (and (stx? x)
        (symbol? (stx-e x))))
 
+;;symbol -> boolean
+(define (keyword? name) 
+  (or 
+   (symbol=? name 'cond)
+   (symbol=? name 'let)
+   (symbol=? name 'case)
+   (symbol=? name 'let*)
+   (symbol=? name 'letrec)
+   (symbol=? name 'quasiquote)
+   (symbol=? name 'unquote)
+   (symbol=? name 'unquote-splicing)
+   (symbol=? name 'local)
+   (symbol=? name 'begin)
+   (symbol=? name 'if)
+   (symbol=? name 'or)
+   (symbol=? name 'when)
+   (symbol=? name 'unless)
+   (symbol=? name 'lambda)
+   (symbol=? name 'λ)
+   (symbol=? name 'define)
+   (symbol=? name 'define-struct)
+   (symbol=? name 'define-values)))
 
 
-
-;; check-duplicate-identifiers!: (listof stx) -> void
+;; check-duplicate-identifiers!: (listof stx) stx -> void
 ;; Return a list of the identifiers that are duplicated.
 ;; Also check to see that each of the ids is really a symbolic identifier.
-(define (check-duplicate-identifiers! ids)
+(define (check-duplicate-identifiers! ids caller)
   (local [(define seen-ids (make-hash))
           
           (define (loop ids)
@@ -598,11 +620,25 @@
               [(empty? ids)
                (void)]
               [else
-               (cond [(stx? (hash-ref seen-ids (stx-e (first ids)) #f))
+               (cond 
+                 [(keyword? (stx-e (first ids)))
+                  (raise (make-moby-error (stx-loc (first ids))
+                             (make-Message 
+                              (make-ColoredPart (symbol->string (stx-e (first ids)))
+                                                (stx-loc (first ids))) 
+                              ": this is a reserved keyword and cannot be used as a variable or function name")))]
+                  
+                 [(stx? (hash-ref seen-ids (stx-e (first ids)) #f))
                       (raise (make-moby-error (stx-loc (first ids))
-                                              (make-moby-error-type:duplicate-identifier
-                                               (stx-e (first ids))
-                                               (stx-loc (hash-ref seen-ids (stx-e (first ids)) #f)))))]
+                                             (make-Message 
+                                              (make-ColoredPart (symbol->string (stx-e caller))
+                                                                (stx-loc caller))
+                                              ": found "
+                                              (make-ColoredPart "a variable" 
+                                                                (stx-loc (first ids)))
+                                              " that is already used "
+                                              (make-ColoredPart "here"
+                                                                (stx-loc (hash-ref seen-ids (stx-e (first ids)) #f))))))]
                      [(not (symbol? (stx-e (first ids))))
                       (raise (make-moby-error (stx-loc (first ids))
                                               (make-moby-error-type:expected-identifier (first ids))))]
@@ -620,15 +656,19 @@
     [(empty? stxs)
      (raise
       (make-moby-error (stx-loc original-stx)
-                       (make-moby-error-type:generic-syntactic-error
-                        "I expected a single body in this expression, but I didn't find any."
-                        (list))))]
+                       (make-Message
+                        (make-ColoredPart (symbol->string (stx-e (first (stx-e original-stx)))) 
+                                         (stx-loc (first (stx-e original-stx))))
+                        ": expected a single body, but found none")))]
     [(not (empty? (rest stxs)))
      (raise
       (make-moby-error (stx-loc original-stx)
-                       (make-moby-error-type:generic-syntactic-error
-                        "I expected a single body in this expression, but I found more than one."
-                        (map stx-loc (rest stxs)))))]
+                       (make-Message
+                        (make-ColoredPart (symbol->string (stx-e (first (stx-e original-stx)))) 
+                                          (stx-loc (first (stx-e original-stx))))
+                        ": expected a single body, but found "
+                        (make-MultiPart "more than one" 
+                                        (map stx-loc (rest (stx-e original-stx)))))))]
     [else
      (void)]))
 
@@ -665,9 +705,13 @@
                   [range (number? . -> . (listof number?))]
                   
                   
-                  [check-duplicate-identifiers! ((listof stx?)  . -> . any)]
+                  [check-duplicate-identifiers! ((listof stx?) stx? . -> . any)]
                   
                   [check-single-body-stx! ((listof stx?) stx? . -> . any)]
+                  
+                  [stx-list-of-symbols? (stx? . -> . boolean?)]
+                  [find-first-non-symbol ((listof stx?) . -> . any)]
+                  
                   [case-analyze-definition (stx? 
                                             (symbol-stx? (listof symbol-stx?) stx? . -> . any)
                                             (symbol-stx? any/c . -> . any)

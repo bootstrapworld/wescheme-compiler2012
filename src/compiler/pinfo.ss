@@ -265,13 +265,39 @@
               (pinfo-module-path-resolver a-pinfo)
               (pinfo-current-module-path a-pinfo)
               (pinfo-declared-permissions a-pinfo)))
+;;symbol -> boolean
+(define (keyword? name) 
+  (or 
+   (symbol=? name 'cond)
+   (symbol=? name 'let)
+   (symbol=? name 'case)
+   (symbol=? name 'let*)
+   (symbol=? name 'letrec)
+   (symbol=? name 'quasiquote)
+   (symbol=? name 'unquote)
+   (symbol=? name 'unquote-splicing)
+   (symbol=? name 'local)
+   (symbol=? name 'begin)
+   (symbol=? name 'if)
+   (symbol=? name 'or)
+   (symbol=? name 'when)
+   (symbol=? name 'unless)
+   (symbol=? name 'lambda)
+   (symbol=? name 'λ)
+   (symbol=? name 'define)
+   (symbol=? name 'define-struct)
+   (symbol=? name 'define-values)))
 
-
-                                            
 ;; pinfo-accumulate-defined-binding: binding pinfo loc -> pinfo
 ;; Adds a new defined binding to a pinfo's set.
 (define (pinfo-accumulate-defined-binding a-binding a-pinfo a-loc)
   (cond
+    [(keyword? (binding-id a-binding))
+     (raise (make-moby-error a-loc
+                             (make-Message 
+                              (make-ColoredPart (symbol->string (binding-id a-binding)) a-loc) 
+                              ": this is a reserved keyword and cannot be used as a variable or function name")))]
+    
     [(and (not (pinfo-allow-redefinition? a-pinfo))
           (is-redefinition? (binding-id a-binding) a-pinfo))
      
@@ -629,6 +655,8 @@
                   [pinfo-permissions (pinfo? . -> . (listof permission?))]
  
                   [pinfo-get-exposed-bindings (pinfo? . -> . (listof binding?))]
+                  
+                  [keyword? (symbol? . -> . boolean?)]
                   
                   [struct provide-binding:id ([stx stx?])]
                   [struct provide-binding:struct-id ([stx stx?])]
