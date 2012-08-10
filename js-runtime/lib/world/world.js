@@ -584,8 +584,8 @@ if (typeof(world) === 'undefined') {
             y1 = Math.max(img1.getBaseline(), img2.getBaseline()) - img1.getBaseline();
             y2 = Math.max(img1.getBaseline(), img2.getBaseline()) - img1.getBaseline();
         } else if (placeY == "middle" || placeY == "center") {
-            x1 = Math.max(img1.getHeight(), img2.getHeight())/2 - img1.getHeight()/2;
-            x2 = Math.max(img1.getHeight(), img2.getHeight())/2 - img2.getHeight()/2;
+            y1 = Math.max(img1.getHeight(), img2.getHeight())/2 - img1.getHeight()/2;
+            y2 = Math.max(img1.getHeight(), img2.getHeight())/2 - img2.getHeight()/2;
         } else {
             y1 = placeY;
             y2 = 0;
@@ -608,9 +608,6 @@ if (typeof(world) === 'undefined') {
         this.img2.render(ctx, x + this.x2, y + this.y2);
         this.img1.render(ctx, x + this.x1, y + this.y1);
         ctx.restore();
-        // For debugging purposes:
-        ctx.strokeStyle = 'black';
-        ctx.strokeRect(x, y, this.width, this.height);
     };
 
     OverlayImage.prototype.isEqual = function(other, aUnionFind) {
