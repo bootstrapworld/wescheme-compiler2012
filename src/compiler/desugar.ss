@@ -311,7 +311,7 @@
     (check-syntax-application! expr (lambda (expr)
                                       '(local [(define (f x) (* x x))]
                                          (+ (f 3) (f 4)))))
-    (when (= (length (stx-e a-stx)) 1)
+    (when (= (length (stx-e expr)) 1)
       (raise (make-moby-error (stx-loc expr)
                               (make-Message 
                                (make-ColoredPart "local" (stx-loc (first (stx-e expr))))
@@ -344,7 +344,7 @@
                                     (make-Message 
                                      (make-ColoredPart "local" (stx-loc (first (stx-e original-stx))))
                                      ": expects a collection of definitions, but given "
-                                     (make-ColoredPart "something else" (stx-loc an-stx))))))
+                                     (make-ColoredPart "something else" a-loc)))))
           
           (define (raise-error an-stx a-loc)
             (raise (make-moby-error a-loc
