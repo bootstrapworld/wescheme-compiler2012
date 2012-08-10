@@ -224,6 +224,11 @@
                 (rectangle 30 30 "solid" "silver")
                 (rectangle 20 20 "solid" "seagreen"))
 
+"This is issue 40 https://github.com/dyoo/WeScheme/issues/40"
+(underlay/align "left" "middle"
+                (rectangle 30 60 "solid" "orange")
+                (ellipse 60 30 "solid" "purple"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BESIDE & BESIDE/ALIGN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -249,6 +254,15 @@
 (beside/align "baseline"
               (text "ijy" 18 "black")
               (text "ijy" 24 "black"))               
+
+
+"issue 25 https://github.com/dyoo/WeScheme/issues/25"
+(beside/align "top"
+              (rectangle 20 100 "solid" "black")
+              (rectangle 20 120 "solid" "black")
+              (rectangle 20 80 "solid" "black"))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ABOVE & ABOVE/ALIGN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
