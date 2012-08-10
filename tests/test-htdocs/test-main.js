@@ -7445,7 +7445,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("let given bad form",
 		       "(let ((x 2)) ())",
-		       "( ): this is not currently supported");
+		       "( ): expected a function, but nothing's there");
 
 	queueErrorTest("let given too many parts",
 		       "(let () 4 4 5 5)",
