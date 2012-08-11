@@ -7,6 +7,37 @@
              (above/align "left" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
 
 
+"These three circles (red, green, blue) should be right aligned"
+(above/align "right"
+             (circle 30 "solid" "red")
+             (above/align "right" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+"These three circles (red, green, blue) should be middle aligned, vertically"
+(above/align "middle"
+             (circle 30 "solid" "red")
+             (above/align "middle" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+
+"These three circles (red, green, blue) should be top-aligned"
+(beside/align "top"
+             (circle 30 "solid" "red")
+             (beside/align "top" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+"These three circles (red, green, blue) should be bottom-aligned"
+(beside/align "bottom"
+             (circle 30 "solid" "red")
+             (beside/align "bottom" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+"These three circles (red, green, blue) should be middle-aligned, horizontally"
+(beside/align "middle"
+             (circle 30 "solid" "red")
+             (beside/align "middle" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+
+
 
 "should be a bar graph"
 (define (make-stars number)
