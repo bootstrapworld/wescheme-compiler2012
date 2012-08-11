@@ -4977,10 +4977,10 @@ PRIMITIVES['line'] =
 
 
 PRIMITIVES['add-line'] =
-new PrimProc('add-line',
-			 6,
-			 false, false,
-			 function(aState, img, x1, y1, x2, y2, c) {
+        new PrimProc('add-line',
+		     6,
+		     false, false,
+		     function(aState, img, x1, y1, x2, y2, c) {
 			 check(aState, img, isImage,	"add-line", "image",			  1, arguments);
 			 check(aState, x1,	isReal,		"add-line", "finite real number", 2, arguments);
 			 check(aState, y1,	isReal,		"add-line", "finite real number", 3, arguments);
@@ -4988,12 +4988,12 @@ new PrimProc('add-line',
 			 check(aState, y2,	isReal,		"add-line", "finite real number", 5, arguments);
 			 check(aState, c,	isColor,	"add-line", "color",			  6, arguments);
 			 if (colorDb.get(c)) {
-				c = colorDb.get(c);
+			     c = colorDb.get(c);
 			 }
 			 line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
-										   jsnums.toFixnum(y2-y1),
-										   c,
-										   true);
+						       jsnums.toFixnum(y2-y1),
+						       c,
+						       true);
 			 return world.Kernel.overlayImage(line, img, x1, y1);
 			 });
 
@@ -5022,15 +5022,14 @@ PRIMITIVES['overlay/xy'] =
 		 4,
 		 false, false,
 		 function(aState, img1, deltaX, deltaY, img2) {
-			check(aState, img1, isImage, "overlay/xy", "image", 1, arguments);
-			check(aState, deltaX, isReal, "overlay/xy", "finite real number", 2, arguments);
-			check(aState, deltaY, isReal, "overlay/xy", "finite real number", 3, arguments);
-			check(aState, img2, isImage, "overlay/xy", "image", 4, arguments);
-
+		     check(aState, img1, isImage, "overlay/xy", "image", 1, arguments);
+		     check(aState, deltaX, isReal, "overlay/xy", "finite real number", 2, arguments);
+		     check(aState, deltaY, isReal, "overlay/xy", "finite real number", 3, arguments);
+		     check(aState, img2, isImage, "overlay/xy", "image", 4, arguments);
 		     return world.Kernel.overlayImage(img1.updatePinhole(0, 0),
-											  img2.updatePinhole(0, 0),
-											  jsnums.toFixnum(deltaX),
-											  jsnums.toFixnum(deltaY));
+						      img2.updatePinhole(0, 0),
+						      jsnums.toFixnum(deltaX),
+						      jsnums.toFixnum(deltaY));
 		 });
 
 
@@ -5046,15 +5045,15 @@ new PrimProc('overlay/align',
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "overlay/align", "image", i+4); }, arguments);
 			 
 			 var img = world.Kernel.overlayImage(img1,
-												 img2,
-												 placeX.toString(),
-												 placeY.toString());
+							            img2,
+							            placeX.toString(),
+							            placeY.toString());
 			 
 			 for (var i = 0; i < restImages.length; i++)
 				img = world.Kernel.overlayImage(img,
-												restImages[i], 
-												placeX.toString(), 
-												placeY.toString());
+								       restImages[i], 
+								       placeX.toString(), 
+								       placeY.toString());
 
 		     return img;
 			 });
@@ -5068,9 +5067,9 @@ PRIMITIVES['underlay'] =
 			checkVarArity(aState, img2, isImage, "underlay", "image", 2, arguments);
 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay", "image", i+3); }, arguments);
 
-			var img = world.Kernel.overlayImage(img2, img1, 0, 0);
+			var img = world.Kernel.overlayImage(img2, img1, "middle", "middle");
 			for (var i = 0; i < restImages.length; i++) {
-				img = world.Kernel.overlayImage(restImages[i], img, 0, 0);
+				img = world.Kernel.overlayImage(restImages[i], img, "middle", "middle");
 			}
 			return img;
 		 });
@@ -5081,11 +5080,10 @@ PRIMITIVES['underlay/xy'] =
 		 4,
 		 false, false,
 		 function(aState, img1, deltaX, deltaY, img2) {
-			check(aState, img1, isImage, "underlay/xy", "image", 1, arguments);
-			check(aState, deltaX, isReal, "underlay/xy", "finite real number", 2, arguments);
-			check(aState, deltaY, isReal, "underlay/xy", "finite real number", 3, arguments);
-			check(aState, img2, isImage, "underlay/xy", "image", 4, arguments);
-
+		     check(aState, img1, isImage, "underlay/xy", "image", 1, arguments);
+		     check(aState, deltaX, isReal, "underlay/xy", "finite real number", 2, arguments);
+		     check(aState, deltaY, isReal, "underlay/xy", "finite real number", 3, arguments);
+		     check(aState, img2, isImage, "underlay/xy", "image", 4, arguments);                     
 		     return world.Kernel.overlayImage(img2.updatePinhole(0, 0), 
 						      img1.updatePinhole(0, 0),
 						      -jsnums.toFixnum(deltaX),
@@ -5094,30 +5092,30 @@ PRIMITIVES['underlay/xy'] =
 
 
 PRIMITIVES['underlay/align'] =
-new PrimProc('underlay/align',
-			 4,
-			 true, false,
-	     function(aState, placeX, placeY, img1, img2, restImages) {
+        new PrimProc('underlay/align',
+		     4,
+		     true, false,
+	             function(aState, placeX, placeY, img1, img2, restImages) {
 			 checkVarArity(aState, placeX, isPlaceX, "underlay/align", "x-place", 1, arguments);
 			 checkVarArity(aState, placeY, isPlaceY, "underlay/align", "y-place", 2, arguments);
 			 checkVarArity(aState, img1, isImage, "underlay/align", "image", 3, arguments);
 			 checkVarArity(aState, img2, isImage, "underlay/align", "image", 4, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay/align", "image", i+4); }, arguments);
 			 
-			 var img = world.Kernel.overlayImage(img2,
-												  img1,
-												  placeX.toString(),
-												  placeY.toString());
-			 
-			 for (var i = 0; i < restImages.length; i++)
-			 img = world.Kernel.overlayImage(restImages[i], 
-											  img,
-											  placeX.toString(), 
-											  placeY.toString());
-			 
-		     return img;
-			 });
-
+		         var img = world.Kernel.overlayImage(img2,
+						             img1,
+						             placeX.toString(),
+						             placeY.toString());
+		         
+		         for (var i = 0; i < restImages.length; i++)
+		             img = world.Kernel.overlayImage(restImages[i], 
+						             img,
+						             placeX.toString(), 
+						             placeY.toString());
+		         
+		         return img;
+	             });
+    
 
 PRIMITIVES['beside'] =
 new PrimProc('beside',
@@ -5187,28 +5185,28 @@ new PrimProc('above',
 			 });
 
 PRIMITIVES['above/align'] =
-new PrimProc('above/align',
-			 3,
-			 true, false,
-			 function(aState, placeX, img1, img2, restImages) {
+        new PrimProc('above/align',
+		     3,
+		     true, false,
+		     function(aState, placeX, img1, img2, restImages) {
 			 checkVarArity(aState, placeX, isPlaceX, "above/align", "x-place", 1, arguments);
 			 checkVarArity(aState, img1, isImage, "above/align", "image", 1, arguments);
 			 checkVarArity(aState, img2, isImage, "above/align", "image", 2, arguments);
 			 arrayEach(restImages, function(x, i) { check(aState, x, isImage, "above/align", "image", i+4); }, arguments);
-			 
+			 var i;
 			 var img = world.Kernel.overlayImage(img1,
-												 img2,
-												 placeX.toString(),
-												 "above");
+							     img2,
+							     placeX.toString(),
+							     "above");
 			 
-			 for (var i = 0; i < restImages.length; i++)
-			 img = world.Kernel.overlayImage(img,
-											 restImages[i], 
-											 placeX.toString(),
-											 "above");
+			 for (i = 0; i < restImages.length; i++)
+			     img = world.Kernel.overlayImage(img,
+							     restImages[i], 
+							     placeX.toString(),
+							     "above");
 			 
-		     return img;
-			 });
+		         return img;
+		     });
 
 PRIMITIVES['rotate'] =
 new PrimProc('rotate',
@@ -5580,375 +5578,6 @@ PRIMITIVES['step-count?']	= new PrimProc('step-count?', 1, false, false,
                                                function(aState, v) { return isStepCount(v); });
 
 
-
-
-
-
-// PRIMITIVES['image?'] = new PrimProc('image?', 1, false, false, isImage);
-
-// PRIMITIVES['image=?'] =
-//     new PrimProc('image=?',
-// 		 2,
-// 		 false, false,
-// 		 function(img1, img2) {
-// 		 	check(aState, img1, isImage, 'image=?', 'image', 1);
-// 			check(aState, img2, isImage, 'image=?', 'image', 2);
-// 			return isEqual(img1, img2);
-// 		 });
-
-
-// PRIMITIVES['make-color'] =
-//     new PrimProc('make-color',
-// 		 3,
-// 		 false, false,
-// 		 function(r, g, b) {
-// 		 	check(aState, r, isByte, 'make-color', 'number between 0 and 255', 1, arguments);
-// 		 	check(aState, g, isByte, 'make-color', 'number between 0 and 255', 2, arguments);
-// 		 	check(aState, b, isByte, 'make-color', 'number between 0 and 255', 3, arguments);
-
-// 			return types.color(jsnums.toFixnum(r),
-// 					   jsnums.toFixnum(g),
-// 					   jsnums.toFixnum(b));
-// 		 });
-
-// PRIMITIVES['color-red'] =
-//     new PrimProc('color-red',
-// 		 1,
-// 		 false, false,
-// 		 function(col) {
-// 		 	check(aState, col, types.isColor, 'color-red', 'color', 1);
-// 			return types.colorRed(col);
-// 		 });
-
-// PRIMITIVES['color-green'] =
-//     new PrimProc('color-green',
-// 		 1,
-// 		 false, false,
-// 		 function(col) {
-// 		 	check(aState, col, types.isColor, 'color-green', 'color', 1);
-// 			return types.colorGreen(col);
-// 		 });
-
-// PRIMITIVES['color-blue'] =
-//     new PrimProc('color-blue',
-// 		 1,
-// 		 false, false,
-// 		 function(col) {
-// 		 	check(aState, col, types.isColor, 'color-blue', 'color', 1);
-// 			return types.colorBlue(col);
-// 		 });
-
-
-// PRIMITIVES['empty-scene'] =
-//     new PrimProc('empty-scene',
-// 		 2,
-// 		 false, false,
-// 		 function(width, height) {
-// 		 	check(aState, width, isNonNegativeReal, 'empty-scene', 'non-negative number', 1, arguments);
-// 			check(aState, height, isNonNegativeReal, 'empty-scene', 'non-negative number', 2, arguments);
-// 		     return world.Kernel.sceneImage(jsnums.toFixnum(width), jsnums.toFixnum(height), [], true);
-// 		 });
-
-
-// PRIMITIVES['place-image'] =
-//     new PrimProc('place-image',
-// 		 4,
-// 		 false, false,
-// 		 function(picture, x, y, background) {
-// 			check(aState, picture, isImage, "place-image", "image", 1, arguments);
-// 			check(aState, x, isReal, "place-image", "real", 2, arguments);
-// 			check(aState, y, isReal, "place-image", "real", 3, arguments);
-// 			check(aState, background, function(x) { return isScene(x) || isImage(x) },
-// 			      "place-image", "image", 4, arguments);
-// 			if (isScene(background)) {
-// 			    return background.add(picture, jsnums.toFixnum(x), jsnums.toFixnum(y));
-// 			} else {
-// 			    var newScene = world.Kernel.sceneImage(background.getWidth(),
-// 								   background.getHeight(),
-// 								   [], 
-// 								   false);
-// 			    newScene = newScene.add(background.updatePinhole(0, 0), 0, 0);
-// 			    newScene = newScene.add(picture, jsnums.toFixnum(x), jsnums.toFixnum(y));
-// 			    return newScene;
-// 			}
-// 		 });
-
-
-// PRIMITIVES['put-pinhole'] =
-//     new PrimProc('put-pinhole',
-// 		 3,
-// 		 false, false,
-// 		 function(img, x, y) {
-// 			check(aState, img, isImage, "put-pinhole", "image", 1, arguments);
-// 			check(aState, x, isReal, "put-pinhole", "real", 2, arguments);
-// 			check(aState, y, isReal, "put-pinhole", "real", 3, arguments);
-// 			return img.updatePinhole(jsnums.toFixnum(x), jsnums.toFixnum(y));
-//     		 });
-
-
-// PRIMITIVES['circle'] =
-//     new PrimProc('circle',
-// 		 3,
-// 		 false, false,
-// 		 function(aRadius, aStyle, aColor) {
-// 			check(aState, aRadius, isNonNegativeReal, "circle", "non-negative number", 1, arguments);
-// 			check(aState, aStyle, isStyle, "circle", 'style ("solid" or "outline")', 2, arguments);
-// 			check(aState, aColor, isColor, "circle", "color", 3, arguments);
-
-
-// 			if (colorDb.get(aColor)) {
-// 				aColor = colorDb.get(aColor);
-// 			}
-// 		     return world.Kernel.circleImage(jsnums.toFixnum(aRadius), aStyle.toString(), aColor);
-// 		 });
-
-
-// PRIMITIVES['star'] =
-//     new PrimProc('star',
-// 		 5,
-// 		 false, false,
-// 		 function(aPoints, anOuter, anInner, aStyle, aColor) {
-// 			check(aState, aPoints, function(x) { return isNatural(x) && jsnums.greaterThanOrEqual(x, 3); },
-// 			      "star", "positive integer greater than or equal to 3", 1, arguments);
-// 			check(aState, anOuter, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
-// 			      "star", "positive number", 2, arguments);
-// 			check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
-// 			      "star", "positive number", 2, arguments);
-// 			check(aState, aStyle, isStyle, "star", 'style ("solid" or "outline")', 4, arguments);
-// 			check(aState, aColor, isColor, "star", "color", 5, arguments);
-
-// 			if (colorDb.get(aColor)) {
-// 				aColor = colorDb.get(aColor);
-// 			}
-// 			return world.Kernel.starImage(jsnums.toFixnum(aPoints),
-// 						      jsnums.toFixnum(anOuter),
-// 						      jsnums.toFixnum(anInner),
-// 						      aStyle,
-// 						      aColor);
-// 		 });
-
-
-// PRIMITIVES['nw:rectangle'] =
-//     new PrimProc('nw:rectangle',
-// 		 4,
-// 		 false, false,
-// 		 function(w, h, s, c) {
-// 			check(aState, w, isNonNegativeReal, "nw:rectangle", "non-negative number", 1, arguments);
-// 			check(aState, h, isNonNegativeReal, "nw:rectangle", "non-negative number", 2, arguments);
-// 			check(aState, s, isStyle, "nw:rectangle", 'style ("solid" or "outline")', 3, arguments);
-// 			check(aState, c, isColor, "nw:rectangle", "color", 4, arguments);
-
-// 			if (colorDb.get(c)) {
-// 				c = colorDb.get(c);
-// 			}
-// 			var aRect = world.Kernel.rectangleImage(jsnums.toFixnum(w),
-// 								jsnums.toFixnum(h),
-// 								s, c);
-// 			return aRect.updatePinhole(0, 0);
-// 		 });
-
-
-// PRIMITIVES['rectangle'] =
-//     new PrimProc('rectangle',
-// 		 4,
-// 		 false, false,
-// 		 function(w, h, s, c) {
-// 			check(aState, w, isNonNegativeReal, "rectangle", "non-negative number", 1, arguments);
-// 			check(aState, h, isNonNegativeReal, "rectangle", "non-negative number", 2, arguments);
-// 			check(aState, s, isStyle, "rectangle", 'style ("solid" or "outline")', 3, arguments);
-// 			check(aState, c, isColor, "rectangle", "color", 4, arguments);
-
-// 			if (colorDb.get(c)) {
-// 				c = colorDb.get(c);
-// 			}
-// 			return world.Kernel.rectangleImage(jsnums.toFixnum(w),
-// 							   jsnums.toFixnum(h),
-// 							   s, c);
-// 		 });
-
-
-// PRIMITIVES['triangle'] =
-//     new PrimProc('triangle',
-// 		 3,
-// 		 false, false,
-// 		 function(r, s, c) {
-// 			check(aState, r, isNonNegativeReal, "triangle", "non-negative number", 1, arguments);
-// 			check(aState, s, isStyle, "triangle", 'style ("solid" or "outline")', 2, arguments);
-// 			check(aState, c, isColor, "triangle", "color", 3, arguments);
-// 			if (colorDb.get(c)) {
-// 				c = colorDb.get(c);
-// 			}
-// 			return world.Kernel.triangleImage(jsnums.toFixnum(r), s, c);
-// 		 });
-
-
-// PRIMITIVES['ellipse'] =
-//     new PrimProc('ellipse',
-// 		 4,
-// 		 false, false,
-// 		 function(w, h, s, c) {
-// 			check(aState, w, isNonNegativeReal, "ellipse", "non-negative number", 1, arguments);
-// 			check(aState, h, isNonNegativeReal, "ellipse", "non-negative number", 2, arguments);
-// 			check(aState, s, isStyle, "ellipse", "string", 3, arguments);
-// 			check(aState, c, isColor, "ellipse", "color", 4, arguments);
-			
-// 			if (colorDb.get(c)) {
-// 				c = colorDb.get(c);
-// 			}
-// 			return world.Kernel.ellipseImage(jsnums.toFixnum(w),
-// 							 jsnums.toFixnum(h),
-// 							 s, c);
-// 		 });
-
-
-// PRIMITIVES['line'] =
-//     new PrimProc('line',
-// 		 3,
-// 		 false, false,
-// 		 function(x, y, c) {
-// 			check(aState, x, isReal, "line", "finite real number", 1, arguments);
-// 			check(aState, y, isReal, "line", "finite real number", 2, arguments);
-// 			check(aState, c, isColor, "line", "color", 3, arguments);
-// 			if (colorDb.get(c)) {
-// 				c = colorDb.get(c);
-// 			}
-// 			var line = world.Kernel.lineImage(jsnums.toFixnum(x),
-// 							  jsnums.toFixnum(y),
-// 							  c);
-// 		        return line;
-// 		 });
-
-
-// PRIMITIVES['overlay'] =
-//     new PrimProc('overlay',
-// 		 2,
-// 		 true, false,
-// 		 function(img1, img2, restImages) {
-// 			check(aState, img1, isImage, "overlay", "image", 1, arguments);
-// 			check(aState, img2, isImage, "overlay", "image", 2, arguments);
-// 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "overlay", "image", i+3); }, arguments);
-
-// 			var img = world.Kernel.overlayImage(img1, img2, 0, 0);
-// 			for (var i = 0; i < restImages.length; i++) {
-// 				img = world.Kernel.overlayImage(img, restImages[i], 0, 0);
-// 			}
-// 			return img;
-// 		 });
-
-
-// PRIMITIVES['overlay/xy'] =
-//     new PrimProc('overlay/xy',
-// 		 4,
-// 		 false, false,
-// 		 function(img1, deltaX, deltaY, img2) {
-// 			check(aState, img1, isImage, "overlay/xy", "image", 1, arguments);
-// 			check(aState, deltaX, isReal, "overlay/xy", "finite real number", 2, arguments);
-// 			check(aState, deltaY, isReal, "overlay/xy", "finite real number", 3, arguments);
-// 			check(aState, img2, isImage, "overlay/xy", "image", 4, arguments);
-
-// 		     return world.Kernel.overlayImage(img1.updatePinhole(0, 0),
-// 						      img2.updatePinhole(0, 0),
-// 						      jsnums.toFixnum(deltaX),
-// 						      jsnums.toFixnum(deltaY));
-// 		 });
-
-
-// PRIMITIVES['underlay'] =
-//     new PrimProc('underlay',
-// 		 2,
-// 		 true, false,
-// 		 function(img1, img2, restImages) {
-// 			check(aState, img1, isImage, "underlay", "image", 1, arguments);
-// 			check(aState, img2, isImage, "underlay", "image", 2, arguments);
-// 			arrayEach(restImages, function(x, i) { check(aState, x, isImage, "underlay", "image", i+3); }, arguments);
-
-// 			var img = world.Kernel.overlayImage(img2, img1, 0, 0);
-// 			for (var i = 0; i < restImages.length; i++) {
-// 				img = world.Kernel.overlayImage(restImages[i], img, 0, 0);
-// 			}
-// 			return img;
-// 		 });
-
-
-// PRIMITIVES['underlay/xy'] =
-//     new PrimProc('underlay/xy',
-// 		 4,
-// 		 false, false,
-// 		 function(img1, deltaX, deltaY, img2) {
-// 			check(aState, img1, isImage, "underlay/xy", "image", 1, arguments);
-// 			check(aState, deltaX, isReal, "underlay/xy", "finite real number", 2, arguments);
-// 			check(aState, deltaY, isReal, "underlay/xy", "finite real number", 3, arguments);
-// 			check(aState, img2, isImage, "underlay/xy", "image", 4, arguments);
-
-// 		     return world.Kernel.overlayImage(img2.updatePinhole(0, 0), 
-// 						      img1.updatePinhole(0, 0),
-// 						      -jsnums.toFixnum(deltaX),
-// 						      -jsnums.toFixnum(deltaY));
-// 		 });
-
-
-
-
-
-// PRIMITIVES['text'] =
-//     new PrimProc('text',
-// 		 3,
-// 		 false, false,
-// 		 function(aString, aSize, aColor) {
-// 			check(aState, aString, isString, "text", "string", 1, arguments);
-// 			check(aState, aSize, function(x) { return jsnums.greaterThan(x, 0) && isByte(x); },
-// 			      "text", "exact integer between 1 and 255", 2, arguments);
-// 			check(aState, aColor, isColor, "text", "color", 3, arguments);
-
-// 			if (colorDb.get(aColor)) {
-// 				aColor = colorDb.get(aColor);
-// 			}
-// 		     return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor);
-// 		 });
-
-
-// PRIMITIVES['open-image-url'] =
-//     new PrimProc('open-image-url',
-// 		 1,
-// 		 false, true,
-// 		 function(state, path) {
-// 		     check(aState, path, isString, "open-image-url", "string", 1);
-// 		     return PAUSE(function(restarter, caller) {
-// 			 var rawImage = new Image();
-// 			 rawImage.onload = function() {
-// 			     restarter(world.Kernel.fileImage(
-// 				 path.toString(),
-// 				 rawImage));
-// 			 };
-// 			 rawImage.onerror = function(e) {
-// 			     restarter(types.schemeError(types.incompleteExn(
-// 				types.exnFail,
-// 				" (unable to load: " + path + ")",
-// 				[])));
-// 			 };
-// 			 rawImage.src = path.toString();
-// 		     });
-// 		 });
-
-
-// PRIMITIVES['image-width'] =
-//     new PrimProc('image-width',
-// 		 1,
-// 		 false, false,
-// 		 function(img) {
-// 		 	check(aState, img, isImage, 'image-width', 'image', 1);
-// 			return img.getWidth();
-// 		 });
-
-
-// PRIMITIVES['image-height'] =
-//     new PrimProc('image-height',
-// 		 1,
-// 		 false, false,
-// 		 function(img) {
-// 		 	check(aState, img, isImage, 'image-height', 'image', 1);
-// 			return img.getHeight();
-// 		 });
 
 
 

@@ -1,6 +1,55 @@
 (printf "images.rkt\n")
 
 
+"These three circles (red, green, blue) should be left aligned"
+(above/align "left"
+             (circle 30 "solid" "red")
+             (above/align "left" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+"These three circles (red, green, blue) should be right aligned"
+(above/align "right"
+             (circle 30 "solid" "red")
+             (above/align "right" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+"These three circles (red, green, blue) should be middle aligned, vertically"
+(above/align "middle"
+             (circle 30 "solid" "red")
+             (above/align "middle" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+
+"These three circles (red, green, blue) should be top-aligned"
+(beside/align "top"
+             (circle 30 "solid" "red")
+             (beside/align "top" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+"These three circles (red, green, blue) should be bottom-aligned"
+(beside/align "bottom"
+             (circle 30 "solid" "red")
+             (beside/align "bottom" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+"These three circles (red, green, blue) should be middle-aligned, horizontally"
+(beside/align "middle"
+             (circle 30 "solid" "red")
+             (beside/align "middle" (circle 50 'solid 'green) (circle 20 'solid 'blue)))
+
+
+
+
+
+"should be a bar graph"
+(define (make-stars number)
+  (cond [(eq? number 1) (star 12 "solid" "purple")]
+        [true (beside (star 12 "solid" "purple") (make-stars (- number 1)))] ))
+(define (bar-graph l1)
+  (cond [(empty? l1) (circle 0 "outline" "blue")]
+        [true (above/align "left" (make-stars (car l1)) (bar-graph (cdr l1)))]))
+(bar-graph '(1 3 5 3 9 5 3 4 4 3 5 2))
+
+
+
 (check-expect (image? 'blue) #f)
 (check-expect (image? (circle 20 "solid" "green")) #t)
 
@@ -206,6 +255,11 @@
                 (rectangle 30 30 "solid" "silver")
                 (rectangle 20 20 "solid" "seagreen"))
 
+"This is issue 40 https://github.com/dyoo/WeScheme/issues/40"
+(underlay/align "left" "middle"
+                (rectangle 30 60 "solid" "orange")
+                (ellipse 60 30 "solid" "purple"))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BESIDE & BESIDE/ALIGN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -231,6 +285,15 @@
 (beside/align "baseline"
               (text "ijy" 18 "black")
               (text "ijy" 24 "black"))               
+
+
+"issue 25 https://github.com/dyoo/WeScheme/issues/25"
+(beside/align "top"
+              (rectangle 20 100 "solid" "black")
+              (rectangle 20 120 "solid" "black")
+              (rectangle 20 80 "solid" "black"))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ABOVE & ABOVE/ALIGN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
