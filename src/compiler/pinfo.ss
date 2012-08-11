@@ -273,6 +273,7 @@
    (symbol=? name 'case)
    (symbol=? name 'let*)
    (symbol=? name 'letrec)
+   (symbol=? name 'quote)
    (symbol=? name 'quasiquote)
    (symbol=? name 'unquote)
    (symbol=? name 'unquote-splicing)

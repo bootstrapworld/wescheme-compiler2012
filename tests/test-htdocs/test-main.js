@@ -7401,7 +7401,110 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("lambda given lambda as variable, also no body for 2nd lambda",
 		       "(lambda (x lambda) (lambda (u)))",
-		       "lambda: expected an expression for the function body, but nothing's there");
+		       "lambda: this is a reserved keyword and cannot be used as a variable or function name");
+
+	queueErrorTest("let given nothing",
+		       "(let)",
+		       "let: expected at least one binding (in parentheses) after let, but nothing's there");
+	
+	queueErrorTest("let given empty paren",
+		       "(let ())",
+		       "let: expected a single body, but found none");
+	
+	queueErrorTest("let given bad form",
+		       "(let x 6)",
+		       "let: expected sequence of key value pairs, but given something else");
+
+	queueErrorTest("let given bad form",
+		       "(let (x) 3)",
+		       "let: expected a key/value pair, but given something else");
+	
+	queueErrorTest("let given bad form",
+		       "(let (x 2) 3)",
+		       "let: expected a key/value pair, but given something else");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 3) (x 6)) 5)",
+		       "let: found a variable that is already used here");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x x)) x)",
+		       "x: this variable is not defined");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 3)))",
+		       "let: expected a single body, but found none");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 5) (1)) 6)",
+		       "let: expected a key/value pair, but given something else");
+	
+	queueErrorTest("let given bad form",
+		       "(let 5 6)",
+		       "let: expected sequence of key value pairs, but given something else");
+	
+	queueErrorTest("let given bad form",
+		       "(let ((x 2)) ())",
+		       "( ): expected a function, but nothing's there");
+
+	queueErrorTest("let given too many parts",
+		       "(let () 4 4 5 5)",
+		       "let: expected a single body, but found 3 extra parts");
+
+	queueErrorTest("local given too many parts",
+		       "(local () 4 4 5 5)",
+		       "local: expected a single body, but found 3 extra parts");
+
+	queueErrorTest("local given no args",
+		       "(local)",
+		       "local: expected at least one definition (in square brackets) after local, but nothing's there");
+	
+	queueErrorTest("local given bad form",
+		       "(local x 3)",
+		       "local: expects a collection of definitions, but given something else");
+	
+	queueErrorTest("local given bad form",
+		       "(local (x))",
+		       "local: expected a definition, but given something else");
+	
+	queueErrorTest("local given bad form",
+		       "(local (x) 7)",
+		       "local: expected a definition, but given something else");
+	
+	queueErrorTest("local given bad form",
+		       "(local (x 1) 7)",
+		       "local: expected a definition, but given something else");
+	
+	queueErrorTest("local given bad form",
+		       "(local ((x 6)))",
+		        "local: expected a definition, but given something else");
+	
+	queueErrorTest("local given bad form",
+		       "(local ((x 6) (2)) 4)",
+		       "local: expected a definition, but given something else");
+	
+	queueErrorTest("local given bad form",
+		       "(local 1 5)",
+		       "local: expects a collection of definitions, but given something else");
+	
+	queueErrorTest("local given bad form",
+		       "(local ())",
+		       "local: expected a single body, but found none");
+	
+	queueErrorTest("local given bad form",
+		       "(local ((x 1)) ())",
+		       "local: expected a definition, but given something else");
+
+	queueErrorTest("lambda used as name",
+		       "(define (f lambda) 2)",
+		       "lambda: this is a reserved keyword and cannot be used as a variable or function name");
+
+	queueErrorTest("let used as name",
+		       "(define (f let) 2)",
+		       "let: this is a reserved keyword and cannot be used as a variable or function name");
+
+	
+	
 
         //////////////////////////////////////////////////////////////////////
 

@@ -254,7 +254,10 @@
     ;; () isn't supported.
     [(empty? (stx-e expr))
      (raise (make-moby-error (stx-loc expr)
-                             (make-moby-error-type:unsupported-expression-form expr)))]
+                             (make-Message
+                              (make-ColoredPart "( )" (stx-loc expr))
+                              ": expected a function, but nothing's there")))]
+                             ;;(make-moby-error-type:unsupported-expression-form expr)))]
     
     ;; Function call/primitive operation call
     [(pair? (stx-e expr))
@@ -308,13 +311,17 @@
     (check-syntax-application! expr (lambda (expr)
                                       '(local [(define (f x) (* x x))]
                                          (+ (f 3) (f 4)))))
-    (check-syntax-application-arity-at-least! expr 2
-                                              (lambda (expr)
-                                                '(local [(define (f x) (* x x))]
-                                                   (+ (f 3) (f 4)))))
-    (check-single-body-stx! (rest (rest (stx-e expr))) expr)
+    (when (= (length (stx-e expr)) 1)
+      (raise (make-moby-error (stx-loc expr)
+                              (make-Message 
+                               (make-ColoredPart "local" (stx-loc (first (stx-e expr))))
+                               ": expected at least one definition (in square brackets) after local, but nothing's there"))))
     (local:check-all-definitions! (stx-e (second (stx-e expr)))
-                                  (stx-loc (second (stx-e expr))))
+                                  (stx-loc (second (stx-e expr)))
+                                  expr)
+    
+    (check-single-body-stx! (rest (rest (stx-e expr))) expr)
+    
     (local [(define local-symbol-stx (first (stx-e expr)))
             (define defns (stx-e (second (stx-e expr))))
             (define body (third (stx-e expr)))
@@ -332,28 +339,27 @@
                               (pinfo-env pinfo))))))
 
 
-(define (local:check-all-definitions! defns a-loc)
+(define (local:check-all-definitions! defns a-loc original-stx)
   (local [(define (raise-error-not-a-list an-stx a-loc)
             (raise (make-moby-error a-loc
-                                    (make-moby-error-type:generic-syntactic-error
-                                     (format "local expects only definitions, but hasn't received a collection of them and instead received ~s."
-                                             an-stx)
-                                     
-                                     (list)))))
+                                    (make-Message 
+                                     (make-ColoredPart "local" (stx-loc (first (stx-e original-stx))))
+                                     ": expects a collection of definitions, but given "
+                                     (make-ColoredPart "something else" a-loc)))))
           
           (define (raise-error an-stx a-loc)
             (raise (make-moby-error a-loc
-                                    (make-moby-error-type:generic-syntactic-error
-                                     (format "local expects only definitions, but ~s is not a definition"
-                                             (stx->datum an-stx))
-                                     (list)))))]
+                                    (make-Message 
+                                     (make-ColoredPart "local" (stx-loc (first (stx-e original-stx))))
+                                     ": expected a definition, but given "
+                                     (make-ColoredPart "something else" (stx-loc an-stx))))))]
     (cond
       [(not (list? defns))
        (raise-error-not-a-list defns a-loc)]
       [(empty? defns)
        (void)]
       [(defn? (first defns))
-       (local:check-all-definitions! (rest defns) a-loc)]
+       (local:check-all-definitions! (rest defns) a-loc original-stx)]
       [else
        (raise-error (first defns)
                     (stx-loc (first defns)))])))
@@ -996,13 +1002,15 @@
                                               [y 4])
                                           (+ x y))))
     
-    ;;this is not right- do specific checks
-    (check-syntax-application-arity-at-least! a-stx 2
-                                              (lambda (a-stx)
-                                                '(let ([x 3]
-                                                       [y 4])
-                                                   (+ x y))))
-    (check-list-of-key-value-pairs! (second (stx-e a-stx)))
+    (when (= (length (stx-e a-stx)) 1)
+      (raise (make-moby-error (stx-loc a-stx)
+                              (make-Message 
+                               (make-ColoredPart "let" (stx-loc (first (stx-e a-stx))))
+                               ": expected at least one binding (in parentheses) after let, but nothing's there"))))
+    
+    (check-list-of-key-value-pairs! (second (stx-e a-stx)) a-stx)
+    (check-single-body-stx! (rest (rest (stx-e a-stx))) a-stx)
+    
     (local [(define clauses-stx (second (stx-e a-stx)))
             (define body-stx (third (stx-e a-stx)))
             (define ids (map (lambda (clause)
@@ -1018,7 +1026,7 @@
                                    body-stx)
                           (stx-loc a-stx)))]    
       (begin
-        (check-single-body-stx! (rest (rest (stx-e a-stx))) a-stx)
+        
         (check-duplicate-identifiers! (map (lambda (a-clause)
                                              (first (stx-e a-clause)))
                                            (stx-e clauses-stx))
@@ -1030,22 +1038,29 @@
 
 
 ;; check-list-of-key-value-pairs!: stx -> void
-(define (check-list-of-key-value-pairs! stx)
+(define (check-list-of-key-value-pairs! stx original-stx)
   (cond
     [(not (list? (stx-e stx)))
      (raise (make-moby-error (stx-loc stx)
-                             (make-moby-error-type:generic-syntactic-error 
-                              (format "Expected sequence of key value pairs, but received ~s" (stx->datum stx))
-                              empty)))]
+                             (make-Message 
+                              (make-ColoredPart (symbol->string (stx-e (first (stx-e original-stx))))
+                                                (stx-loc (first (stx-e original-stx))))
+                              ": expected sequence of key value pairs, but given "
+                              (make-ColoredPart "something else"
+                                                (stx-loc stx)))))]
+                             
     [else
      (for-each (lambda (maybe-kv-stx)
                  (cond [(or (not (list? (stx-e maybe-kv-stx)))
                             (not (= (length (stx-e maybe-kv-stx)) 2))
                             (not (symbol? (stx-e (first (stx-e maybe-kv-stx))))))
                         (raise (make-moby-error (stx-loc maybe-kv-stx)
-                                                (make-moby-error-type:generic-syntactic-error 
-                                                 (format "Expected a key/value pair, but received ~s" (stx->datum maybe-kv-stx))
-                                                 empty)))]
+                                                (make-Message
+                                                 (make-ColoredPart (symbol->string (stx-e (first (stx-e original-stx))))
+                                                                   (stx-loc (first (stx-e original-stx))))
+                                                 ": expected a key/value pair, but given "
+                                                 (make-ColoredPart "something else"
+                                                                   (stx-loc maybe-kv-stx)))))]
                        [else
                         (void)]))
                (stx-e stx))]))
@@ -1065,7 +1080,7 @@
                                                 '(let* ([x 3]
                                                         [y 4])
                                                    (+ x y))))
-    (check-list-of-key-value-pairs! (second (stx-e a-stx)))
+    (check-list-of-key-value-pairs! (second (stx-e a-stx)) a-stx)
     (local [(define clauses-stx (second (stx-e a-stx)))
             (define body-stx (third (stx-e a-stx)))
             
@@ -1105,7 +1120,7 @@
                                                                    1
                                                                    (* x (f (- x 1)))))])
                                                    (f 3))))
-    (check-list-of-key-value-pairs! (second (stx-e a-stx)))
+    (check-list-of-key-value-pairs! (second (stx-e a-stx)) a-stx)
     (local [(define clauses-stx (second (stx-e a-stx)))
             (define body-stx (third (stx-e a-stx)))
             (define define-clauses
@@ -1266,11 +1281,11 @@
                                       `(quote i-am-a-symbol)))
     (cond
       [(< (length (stx-e expr)) 2)
-       (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:quote-too-few-elements
+       (raise (make-moby-error (stx-loc expr)
                                (make-Message (make-ColoredPart "quote" (stx-loc (first (stx-e expr))))
                                              ": expected a single argument, but did not find one.")))]
       [(> (length (stx-e expr)) 2)
-       (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:quote-too-many-elements
+       (raise (make-moby-error (stx-loc expr)
                                (make-Message (make-ColoredPart "quote" (stx-loc (first (stx-e expr))))
                                              ": expected a single argument, but found "
                                              (make-MultiPart "more than one." (map stx-loc (rest (stx-e expr)))))))]
