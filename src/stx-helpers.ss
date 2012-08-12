@@ -6,10 +6,10 @@
 ;; syntax->stx: syntax -> stx
 ;; Go from Scheme's syntax objects to our own.
 (define (syntax->stx a-syntax)
-  (let ([a-loc (make-Loc (syntax-position a-syntax)
-                         (syntax-line a-syntax)
-                         (syntax-column a-syntax)
-                         (syntax-span a-syntax)
+  (let ([a-loc (make-Loc (or (syntax-position a-syntax) 0)
+                         (or (syntax-line a-syntax) 0)
+                         (or (syntax-column a-syntax) 0)
+                         (or (syntax-span a-syntax) 0)
                          (format "~a" (syntax-source a-syntax)))])
     (cond
      [(pair? (syntax-e a-syntax))
