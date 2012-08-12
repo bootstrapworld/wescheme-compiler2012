@@ -23,7 +23,8 @@
 ;; read-syntaxes: input-port #:name symbol -> (listof stx)
 (define (read-syntaxes in #:name name)
   (port-count-lines! in)
-  (parameterize ([read-accept-reader #t]
+  (parameterize ([read-accept-reader #f]
+		 [read-accept-lang #f]
                  [read-decimal-as-inexact #f])
     (map syntax->stx
          (let loop ()
