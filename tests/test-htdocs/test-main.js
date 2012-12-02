@@ -7503,6 +7503,10 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(define (f let) 2)",
 		       "let: this is a reserved keyword and cannot be used as a variable or function name");
 
+        queueErrorTest("cond error properly uses the cond keyword",
+                       "(cond (empty? 3) (add1 4))",
+                       "cond: expected a boolean value, but found: #<function:empty?>");
+
 	
 	
 
