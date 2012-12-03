@@ -660,11 +660,6 @@ PRIMITIVES['verify-boolean-branch-value'] =
             			types.symbol('moby-application-position-key'));  
        
        			var locationList = positionStack[positionStack.length - 1];
-
-			     // FIXME: should throw structure
-			     // make-moby-error-type:branch-value-not-boolean
-			     // instead.
-			     //throw new Error("the value " + sys.inspect(x) + " is not boolean type at " + aLoc);
 			     raise(types.incompleteExn(
                                  types.exnFailContract,
 				 new types.Message([new types.ColoredPart(name, nameLoc), 

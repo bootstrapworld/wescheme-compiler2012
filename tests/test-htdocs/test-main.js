@@ -3708,6 +3708,18 @@ var runTests = function(after) {
                        "(or #f 4)",
                        'or: expected a boolean value, but found: 4');
 
+        queueErrorTest("test and empty",
+                       "(and)",
+                       "and: expected at least 2 arguments, but given 0");
+
+        queueErrorTest("test and empty",
+                       "(and 1)",
+                       "and: expected at least 2 arguments, but given 1");
+
+        queueErrorTest("test and empty",
+                       "(and 'foo)",
+                       "and: expected at least 2 arguments, but given 1");
+
         queueErrorTest("test non-boolean in 'and'",
                        "(and 'blah 4)",
                        "and: expected a boolean value, but found: blah");
@@ -7457,7 +7469,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("local given bad form",
 		       "(local x 3)",
-		       "local: expects a collection of definitions, but given something else");
+		       "local: expected a collection of definitions, but given something else");
 	
 	queueErrorTest("local given bad form",
 		       "(local (x))",
@@ -7481,7 +7493,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("local given bad form",
 		       "(local 1 5)",
-		       "local: expects a collection of definitions, but given something else");
+		       "local: expected a collection of definitions, but given something else");
 	
 	queueErrorTest("local given bad form",
 		       "(local ())",
@@ -7531,6 +7543,15 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(cond ((even? 43) 'huh?))",
                        "cond: all question results were false");
 	
+
+        queueErrorTest("cond/and test",
+                       "(cond [(and 3 4 5) 6] [else 7])",
+                       "and: expected a boolean value, but found: 3");
+
+
+        queueErrorTest("cond/and/empty test",
+                       "(cond [(and empty?) 3] [else 4])",
+                       "and: expected at least 2 arguments, but given 1");
 	
 
         //////////////////////////////////////////////////////////////////////

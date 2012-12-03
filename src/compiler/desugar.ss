@@ -344,7 +344,7 @@
             (raise (make-moby-error a-loc
                                     (make-Message 
                                      (make-ColoredPart "local" (stx-loc (first (stx-e original-stx))))
-                                     ": expects a collection of definitions, but given "
+                                     ": expected a collection of definitions, but given "
                                      (make-ColoredPart "something else" a-loc)))))
           
           (define (raise-error an-stx a-loc)
@@ -406,7 +406,7 @@
   (tag-application-operator/module 
    (datum->stx #f 
                `(verify-boolean-branch-value
-                 (quote , (symbol->string (stx->datum  name)))
+                 (quote ,(symbol->string (stx->datum name)))
                  (quote ,(loc->vec (stx-loc name)))
                  ,bool-expr
                  (quote ,(loc->vec (stx-loc bool-expr))))
@@ -475,13 +475,12 @@
       [(< (length (stx-e expr)) 3)
        (raise (make-moby-error (stx-loc expr)
                                (make-Message
-                                (make-ColoredPart (symbol->string (stx-e (first (stx-e expr)))) (stx-loc (first (stx-e expr))))
-                                ": expects at least 2 arguments, but given  " 
+                                (make-ColoredPart (symbol->string (stx-e (first (stx-e expr)))) 
+                                                  (stx-loc (first (stx-e expr))))
+                                ": expected at least 2 arguments, but given " 
                                 (if (= (length (stx-e expr)) 2)
-                                    "1: "
-                                    "")
-                                (if (= (length (stx-e expr)) 2)
-                                    (make-ColoredPart  (stx-e (second (stx-e expr))) (stx-loc (second (stx-e expr))))
+                                    (make-ColoredPart "1"
+                                                      (stx-loc (second (stx-e expr))))
                                     "0"))))]     
       [else
        (local [(define boolean-chain-stx (first (stx-e expr)))
