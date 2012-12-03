@@ -3661,19 +3661,24 @@ var runTests = function() {
 
         queueTest("simple structures 1",
                   "(define-struct foo (x y)) (foo-x (make-foo 3 4))",
-                  "3")
+                  "3");
 
         queueTest("simple structures 2",
                   "(define-struct foo (x y)) (foo-y (make-foo 3 4))",
-                  "4")
+                  "4");
 
         queueTest("simple structures predicate 1",
                   "(define-struct foo (x y)) (foo? (make-foo 3 4))",
-                  "true")
+                  "true");
 
         queueTest("simple structures predicate 2",
                   "(define-struct foo (x y)) (foo? 'foo)",
-                  "false")
+                  "false");
+
+        queueTest("division",
+                  "(/ 18 2)",
+                  "9");
+                  
 
 
 
@@ -4221,13 +4226,13 @@ var runTests = function() {
 		       "(+ add1)",
 		       "+: expects a number as 1st argument, but given: #<function:add1>");
 
-	queueErrorTest("/ given no args",
+	queueErrorTest("/ given no arguments",
 		       "(/)",
-		       "/: expects at least 1 argument, but given 0");
+		       "/: expects at least 2 arguments, but given 0");
 
-    queueErrorTest("/ given no args",
-               "(/ 5 0)",
-               "/: cannot divide by zero");
+        queueErrorTest("/ given only one argument",
+                       "(/ 5)",
+                       "/: expects at least 2 arguments, but given: 5");
 
 	queueErrorTest("- given no args",
 		       "(-)",
@@ -7344,7 +7349,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "fox: this name has a previous definition and cannot be re-defined");
 	
 	queueErrorTest("dividing by zero",
-		       "(/ 0)",
+		       "(/ 5 0)",
 		       "/: cannot divide by zero");
 	
 	queueErrorTest("defining a variable with the same variable",
