@@ -1,4 +1,4 @@
-var runTests = function() {
+var runTests = function(after) {
     "use strict";
     //////////////////////////////////////////////////////////////////////
 
@@ -7543,6 +7543,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	                   var waitTillBreak = function() {
 		               if (isTerminated) {
 		                   sys.print("\nEND TESTS\n")
+                                   if (after) { after(); }
 		                   return;
 		               } else {
 		                   state.breakRequested = true;
@@ -7563,8 +7564,8 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
 
 $(document).ready(function() {
-    console.log("in ready");
     $("#failure-index").css("display", "none");
+    $("#is-running").text("Running...");
     $(document.body).append("<p>This is the test suite.</p>");
-    runTests();
+    runTests(function() { $("#is-running").text("Tests finished."); });
 });
