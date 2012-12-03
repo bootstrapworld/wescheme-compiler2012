@@ -7499,10 +7499,37 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(define (f let) 2)",
 		       "let: this is a reserved keyword and cannot be used as a variable or function name");
 
+        queueErrorTest("cond: empty case",
+                       "(cond)",
+                       "cond: expected at least one clause after cond, but nothing's there");
+
+        queueErrorTest("cond: non-clause",
+                       "(cond 1)",
+                       "cond: expected a clause with a question and an answer, but found something else");
+
+        queueErrorTest("cond: non-clause, with more pieces",
+                       "(cond 1 2 3)",
+                       "cond: expected a clause with a question and an answer, but found something else");
+        
         queueErrorTest("cond error properly uses the cond keyword",
                        "(cond (empty? 3) (add1 4))",
                        "cond: expected a boolean value, but found: #<function:empty?>");
 
+        queueErrorTest("cond boolean test again",
+                       "(cond (3 4))",
+                       "cond: expected a boolean value, but found: 3")
+
+        queueErrorTest("cond error properly uses the cond keyword: make sure it checks inside too",
+                       "(cond [(cond (number? 3) (add1 4)) 5])",
+                       "cond: expected a boolean value, but found: #<function:number?>");
+
+        queueErrorTest("cond error properly uses the cond keyword: check multiple parts",
+                       "(cond (empty? 3 'ok))",
+                       "cond: expected a clause with a question and an answer, but found a clause with 3 parts");
+
+        queueErrorTest("cond fallthrough",
+                       "(cond ((even? 43) 'huh?))",
+                       "cond: all question results were false");
 	
 	
 
