@@ -807,7 +807,8 @@
                                          '(cond [(even? 42) 'ok]
                                                 [(odd? 42) 'huh?])))
     (local
-      [(define cond-clauses (rest (stx-e an-expr)))
+      [(define cond-symbol (first (stx-e an-expr)))
+       (define cond-clauses (rest (stx-e an-expr)))
        (define expr-locs (list (stx-loc (first (stx-e an-expr)))
                                (make-Loc (Loc-offset (stx-loc an-expr))
                                          (Loc-line (stx-loc an-expr))
@@ -866,24 +867,38 @@
                    cond-clauses))
        
        
-       ;; loop: (listof stx) (listof stx) stx stx -> stx
-       (define (loop questions answers question-last answer-last)
+       ;; loop: (listof stx) (listof stx) stx stx pinfo -> (list stx pinfo)
+       (define (loop questions answers question-last answer-last pinfo)
          (cond
            [(empty? questions)
-            (datum->stx #f `(if ,question-last 
-                                ,answer-last
-                                ,(make-cond-exhausted-expression (stx-loc an-expr)))
-                        (stx-loc an-expr))]
+            (let* ([desugared-last-question+pinfo 
+                    (desugar-expression question-last pinfo)]
+                   [desugared-last-answer+pinfo 
+                    (desugar-expression answer-last (second desugared-last-question+pinfo))])
+
+              (list (datum->stx #f `(if ,(force-boolean-context cond-symbol (first desugared-last-question+pinfo))
+                                        ,(first desugared-last-answer+pinfo)
+                                        ,(make-cond-exhausted-expression (stx-loc an-expr)))
+                                (stx-loc an-expr))
+                   (second desugared-last-answer+pinfo)))]
            
            [else
-            (datum->stx #f `(if ,(first questions)
-                                ,(first answers)
-                                ,(loop (rest questions)
-                                       (rest answers)
-                                       question-last
-                                       answer-last))
-                        (stx-loc an-expr))]))]
-      (cond
+            (let* ([desugared-first-question+pinfo 
+                    (desugar-expression (first questions) pinfo)]
+                   [desugared-first-answer+pinfo
+                    (desugar-expression (first answers)
+                                        (second desugared-first-question+pinfo))]
+                   [desugared-rest+pinfo (loop (rest questions)
+                                               (rest answers)
+                                               question-last
+                                               answer-last
+                                               (second desugared-first-answer+pinfo))])
+              (list (datum->stx #f `(if ,(force-boolean-context cond-symbol (first desugared-first-question+pinfo))
+                                        ,(first desugared-first-answer+pinfo)
+                                        ,(first desugared-rest+pinfo))
+                                (stx-loc an-expr))
+                    (second desugared-rest+pinfo)))]))]
+       (cond
         [(empty? cond-clauses)
          (raise (make-moby-error (stx-loc an-expr)  ;;conditional-missing-question-answer
                                  (make-Message 
@@ -892,14 +907,12 @@
         [else
          (begin
            (check-clause-structures!)
-           (desugar-expression/expr+pinfo
-            (deconstruct-clauses-with-else an-expr
+           (deconstruct-clauses-with-else an-expr
                                            cond-clauses
                                            (lambda (else-stx)
                                              (datum->stx #f 'true (stx-loc else-stx)))
                                            (lambda (questions answers question-last answer-last)
-                                             (list (loop questions answers question-last answer-last)
-                                                   pinfo)))))]))))
+                                             (loop questions answers question-last answer-last pinfo))))]))))
 
 
 ;; check-syntax-application!: stx (stx -> void) -> void
