@@ -2,14 +2,27 @@
 
 <html>
 <head><title>WeScheme compiler test suite</title></head>
-    <script src="easyXDM.js"></script>
-    <script src="support.js"></script>
-    <script src="evaluator.js"></script>
-    <script src="exports.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <!-- Fixme: can we add a gensym in the URL so that we avoid
-      caching behavior? -->
-    <script src="test-main.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      // We load all these scripts in this slightly funky way to force
+      // no caching on this.
+      var scripts = ["easyXDM.js", "support.js", "evaluator.js",
+                     "exports.js", "test-main.js"];
+      var doLoad = function(i, after) {
+          if (i < scripts.length) {
+               jQuery.ajax({ url: scripts[i],
+                             dataType: "script",
+                             cache: false,
+                             success : function() { doLoad(i+1); },
+                             fail: function() { alert("Could not load " + scripts[i]);}
+                           });
+          } else {
+              if (after) { after(); }
+          }
+      };
+      doLoad(0);
+    </script>
+
 <body>
 <h1>WeScheme compiler test suite</h1>
 <span id="failure-index">Failures: </span>

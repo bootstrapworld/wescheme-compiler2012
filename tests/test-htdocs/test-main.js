@@ -1,12 +1,3 @@
-$(document).ready(function() {
-    $("#failure-index").css("display", "none");
-    $(document.body).append("<p>This is the test suite.</p>");
-    runTests();
-});
-
-
-
-
 var runTests = function() {
     "use strict";
     //////////////////////////////////////////////////////////////////////
@@ -7568,3 +7559,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
     };
 
 }
+
+
+
+$(document).ready(function() {
+    console.log("in ready");
+    $("#failure-index").css("display", "none");
+    $(document.body).append("<p>This is the test suite.</p>");
+    runTests();
+});
