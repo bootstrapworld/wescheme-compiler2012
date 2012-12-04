@@ -4217,9 +4217,21 @@ var runTests = function(after) {
 		       "(* add1)",
 		       "*: expects a number as 1st argument, but given: #<function:add1>");
 	
-	queueErrorTest("/ given bad arg",
-		       "(/ add1)",
-		       "/: expects a number as 1st argument, but given: #<function:add1>");
+	queueErrorTest("/ given insufficient number of arguments",
+		       "(/ 1)",
+		       "/: expects at least 2 arguments, but given 1: 1");
+
+	queueErrorTest("/ given bad arg 1st position",
+		       "(/ add1 1)",
+		       "/: expects a number as 1st argument, but given: #<function:add1>; other arguments were: 1");
+
+	queueErrorTest("/ given bad arg 2nd position",
+		       "(/ 1 add1)",
+		       "/: expects a number as 2nd argument, but given: #<function:add1>; other arguments were: 1");
+
+	queueErrorTest("/ given bad arg 3rd position",
+		       "(/ 1 2 add1)",
+		       "/: expects a number as 3rd argument, but given: #<function:add1>; other arguments were: 1 2");
 
 	queueErrorTest("- given bad arg",
 		       "(- add1)",
@@ -4235,7 +4247,7 @@ var runTests = function(after) {
 
         queueErrorTest("/ given only one argument",
                        "(/ 5)",
-                       "/: expects at least 2 arguments, but given: 5");
+                       "/: expects at least 2 arguments, but given 1: 5");
 
 	queueErrorTest("- given no args",
 		       "(-)",
@@ -7353,6 +7365,22 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	
 	queueErrorTest("dividing by zero",
 		       "(/ 5 0)",
+		       "/: cannot divide by zero");
+
+	queueErrorTest("dividing by zero",
+		       "(/ 5 4 0)",
+		       "/: cannot divide by zero");
+
+	queueErrorTest("dividing by zero",
+		       "(/ 5 4 3 0)",
+		       "/: cannot divide by zero");
+
+	queueErrorTest("dividing by zero",
+		       "(/ 5 0 4 3)",
+		       "/: cannot divide by zero");
+
+	queueErrorTest("dividing by zero",
+		       "(/ 5 4 0 3)",
 		       "/: cannot divide by zero");
 	
 	queueErrorTest("defining a variable with the same variable",

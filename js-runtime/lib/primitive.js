@@ -1411,59 +1411,54 @@ PRIMITIVES['=~'] =
 
 
 PRIMITIVES['/'] =
-    new PrimProc('/',
-		 1,
-		 true, false,
-		 function(aState, x, args) {
-		 	var allArgs = [x].concat(args);
-		 	check(aState, x, isNumber, '/', 'number', 1, allArgs);
-		 	arrayEach(args, function(y, i) {check(aState, y, isNumber, '/', 'number', i+2, allArgs);});
-			
-		 	
+        new PrimProc('/',
+		     2,
+		     true, false,
+		     function(aState, x, y, args) {
+		 	 var allArgs = [aState, x, y].concat(args);
+		 	 check(aState, x, isNumber, '/', 'number', 1, allArgs);
+		 	 check(aState, y, isNumber, '/', 'number', 2, allArgs);
+		 	 arrayEach(args, 
+                                   function(y, i) {
+                                       check(aState, y, isNumber, '/', 'number', i+3, allArgs);
+                                   });
+       		         var handleError = function(offset) {
+       			     var i, positionStack, locationList, func, exnMessage;
+                             try {
+       			         positionStack = 
+        			     state.captureCurrentContinuationMarks(aState).ref(
+            			         types.symbol('moby-application-position-key'));
+       			         locationList = positionStack[positionStack.length - 1];
+       			         func = locationList.first();
+                                 locationList = locationList.rest();
+       			         for(i = 0; i < offset; i++) {
+       				     locationList = locationList.rest();
+       			         }
+       			         exnMessage = new types.Message(
+                                         [new types.ColoredPart('/', func),
+					  ": cannot divide by ",
+					  new types.ColoredPart("zero", locationList.first())]);
+                             } catch(e) {
+       			         exnMessage = new types.Message(["/: cannot divide by zero"]);
+                             }
+                             raise(types.incompleteExn(
+                                 types.exnFailContractDivisionByZero, 
+				 exnMessage,
+				 []))
+       		         };
+                         if (jsnums.equals(y, 0)) {
+                             handleError(1);
+                         }
+		 	 var res = jsnums.divide(x, y);		 	 
 
-
-       		var handleError = function(step) {
-       			var positionStack = 
-        			state.captureCurrentContinuationMarks(aState).ref(
-            			types.symbol('moby-application-position-key'));
-        
-       
-       			var locationList = positionStack[positionStack.length - 1];
-       			var func = locationList.first();
-
-       			if (step !== -1){
-       				locationList = locationList.rest().rest();
-       			}
-       			else locationList = locationList.rest();
-       			var i;
-       			for(i = 0; i< step; i++) {
-       				locationList = locationList.rest();
-       			}
-       			raise( types.incompleteExn(types.exnFailContractDivisionByZero, 
-												new types.Message([new types.ColoredPart('/', func),
-													": cannot divide by ",
-													new types.ColoredPart("zero", locationList.first())]),
-												[]) );
-
-       		}
-
-			if (args.length == 0) {
-				if ( jsnums.equals(x, 0) ) {
-					handleError(-1);
-				}	
-				return jsnums.divide(1, x);
-			}
-
-		 	var res = x;
-		 	
-		 	for (var i = 0; i < args.length; i++) {
-				if ( jsnums.equals(args[i], 0) ) {
-					handleError(i);
-				}	
-				res = jsnums.divide(res, args[i]);
-		 	}
-		 	return res;
-		 });
+		 	 for (var i = 0; i < args.length; i++) {
+			     if (jsnums.equals(args[i], 0)) {
+				 handleError(2+i);
+			     }	
+			     res = jsnums.divide(res, args[i]);
+		 	 }
+		 	 return res;
+		     });
 
  
 
