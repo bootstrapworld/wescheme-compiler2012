@@ -271,7 +271,7 @@ var helpers = {};
 
 			//if the positionStack at the correct position is defined, we can throw a colored error
 			if (positionStack[positionStack.length - 1] !== undefined) {
-				throwColoredCheckError(aState,details, pos, args);
+				throwColoredCheckError(aState, details, pos, args);
 			}
 		}
 		//otherwise, throw an uncolored error

@@ -1917,7 +1917,6 @@ var runTests = function(after) {
 
         runRawTest("/",
 	           function() {
-		       testPrim('/', runtime.rational, [2], runtime.rational(1, 2));
 		       testPrim('/', runtime.rational, [1, 3], runtime.rational(1, 3));
 		       testPrim('/', runtime.rational, [18, 2, 3, 4], runtime.rational(3, 4));
 	           });
@@ -7538,6 +7537,19 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	queueErrorTest("let used as name",
 		       "(define (f let) 2)",
 		       "let: this is a reserved keyword and cannot be used as a variable or function name");
+
+
+	queueErrorTest("cond used as name",
+		       "(define (f cond) 2)",
+		       "cond: this is a reserved keyword and cannot be used as a variable or function name");
+
+	queueErrorTest("if used as name",
+		       "(define (f if) 2)",
+		       "if: this is a reserved keyword and cannot be used as a variable or function name");
+
+	queueErrorTest("define used as name",
+		       "(define (f define) 2)",
+		       "define: this is a reserved keyword and cannot be used as a variable or function name");
 
         queueErrorTest("cond: empty case",
                        "(cond)",

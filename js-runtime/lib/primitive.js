@@ -1415,12 +1415,10 @@ PRIMITIVES['/'] =
 		     2,
 		     true, false,
 		     function(aState, x, y, args) {
-		 	 var allArgs = [aState, x, y].concat(args);
-		 	 check(aState, x, isNumber, '/', 'number', 1, allArgs);
-		 	 check(aState, y, isNumber, '/', 'number', 2, allArgs);
-		 	 arrayEach(args, 
+		 	 var allArgs = [x, y].concat(args);
+		 	 arrayEach(allArgs, 
                                    function(y, i) {
-                                       check(aState, y, isNumber, '/', 'number', i+3, allArgs);
+                                       check(aState, y, isNumber, '/', 'number', i+1, allArgs);
                                    });
        		         var handleError = function(offset) {
        			     var i, positionStack, locationList, func, exnMessage;
