@@ -7372,6 +7372,8 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "unquote-splicing",
 		       "unquote-splicing: expected an open parenthesis before unquote-splicing, but found none");
 
+        // FIXME: more quasiquote/unquote/unquote-splicing tests needed.
+
 	queueErrorTest("local as a bare expression",
 		       "local",
 		       "local: expected an open parenthesis before local, but found none");
@@ -7615,6 +7617,10 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	queueErrorTest("let given bad form",
 		       "(let ((x 5) (1)) 6)",
 		       "let: expected a key/value pair, but given something else");
+
+	queueErrorTest("let given bad form (too many values)",
+		       "(let ((x 2 3)) 6)",
+		       "let: expected a key/value pair, but given something else");
 	
 	queueErrorTest("let given bad form",
 		       "(let 5 6)",
@@ -7748,6 +7754,16 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(cond [(and empty?) 3] [else 4])",
                        "and: expected at least 2 arguments, but given 1");
 	
+
+        queueErrorTest("cond else clause must be last",
+                       "(cond [else 'ok] [true 'huh?])",
+                       "cond: else clause should be the last, but there's another clause after it");
+
+        // FIXME: we should try to give a better error message here
+        // about the else needing to be unique, right?
+        queueErrorTest("cond else clause must be last and unique.",
+                       "(cond [else 'ok] [else 'huh?])",
+                       "cond: else clause should be the last, but there's another clause after it");
 
         queueErrorTest("double definitions",
                        "(define-struct x (y)) (define x-y 43)",
