@@ -3641,6 +3641,16 @@ var runTests = function(after) {
 
 
 
+        queueTest("local",
+                  "(local [(define x 42)] x)",
+                  "42");
+        queueTest("local",
+                  "(local [(define x 42) (define y 3)] (+ x y))",
+                  "45");
+        queueTest("local",
+                  "(local [] 1)",
+                  "1");
+
         queueTest("test simple function application program",
                   "(define (double x) (+ x x)) (double 25)",
                   "50");
@@ -3698,6 +3708,23 @@ var runTests = function(after) {
         queueErrorTest("test non-boolean in if test position",
                        "(if 3 'four 'five)",
                        'if: expected a boolean value, but found: 3');
+
+        queueErrorTest("test if not enough args",
+                       "(if)",
+                       "if: expected a test, a consequence, and an alternative, but all three were not found");
+
+        queueErrorTest("test if not enough args",
+                       "(if true)",
+                       "if: expected a test, a consequence, and an alternative, but all three were not found");
+
+        queueErrorTest("test if not enough args",
+                       "(if true false)",
+                       "if: expected a test, a consequence, and an alternative, but all three were not found");
+
+        queueErrorTest("test if too many args",
+                       "(if true false true false)",
+                       "if: expected only a test, a consequence, and an alternative, but found more than three of these");
+
 
         queueErrorTest("test non-boolean in 'or'",
                        "(or 42 4)",

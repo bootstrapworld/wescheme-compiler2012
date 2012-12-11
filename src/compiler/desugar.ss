@@ -442,13 +442,13 @@
       [(< (length (stx-e expr)) 4)
        (raise (make-moby-error (stx-loc expr)   ;;make-moby-error-type:if-too-few-elements
                                (make-Message (make-ColoredPart "if" (stx-loc (first (stx-e expr))))
-                                             ":expected a test, a consequence, and an alternative, but all three were not found.")))]
+                                             ": expected a test, a consequence, and an alternative, but all three were not found")))]
       [(> (length (stx-e expr)) 4)
        (raise (make-moby-error (stx-loc expr) ;;make-moby-error-type:if-too-many-element
                                (make-Message  (make-ColoredPart "if" (stx-loc (first (stx-e expr)))) 
                                               ": expected only a test, a consequence, and an alternative, "
                                               "but found "
-                                              (make-MultiPart "more than three of these." (map stx-loc (rest (stx-e expr)))))))])))
+                                              (make-MultiPart "more than three of these" (map stx-loc (rest (stx-e expr)))))))])))
 
 
 
