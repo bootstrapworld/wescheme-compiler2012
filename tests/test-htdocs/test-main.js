@@ -7355,6 +7355,14 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	queueErrorTest("define-struct given too many args",
 		       "(define-struct test (p1 p2) 2 3 4 5 6)",
 		       "define-struct: expected nothing after the field names, but found 5 extra parts");
+
+	queueErrorTest("define-struct given wrong kind of field",
+		       "(define-struct test (4))",
+		       "define-struct: expected a field name, but found something else");
+
+	queueErrorTest("define-struct given too many args",
+		       "(define-struct test (p1 p2) 2)",
+		       "define-struct: expected nothing after the field names, but found 1 extra part");
 	
 	queueErrorTest("define-struct given bad structure name",
 		       "(define-struct (name) (pr1 pr2))",
@@ -7629,6 +7637,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
         queueErrorTest('define one extra part',
                        '(define (f x) 1 2)',
                        'define: expected only one expression for the function body, but found 1 extra part');
+
+        queueErrorTest('define duplicate identifier',
+                       '(define (f x x) x)',
+                       'define: found a variable that is already used here');
+
 
 
         
