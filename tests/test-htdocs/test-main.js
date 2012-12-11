@@ -7314,6 +7314,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(define ())",
 		       "define: expected a name for the function within the parentheses");
 
+	queueErrorTest("define given empty parenthesis",
+		       "(define 29)",
+		       "define: expected a variable but found something else");
+
+
+
 	queueErrorTest("define given too many args",
 		       "(define (x) 3 4 5)",
 		       "define: expected only one expression for the function body, but found 2 extra parts");
@@ -7593,6 +7599,36 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(cond [(and empty?) 3] [else 4])",
                        "and: expected at least 2 arguments, but given 1");
 	
+
+        queueErrorTest("double definitions",
+                       "(define-struct x (y)) (define x-y 43)",
+                       "x-y: this name has a previous definition and cannot be re-defined");
+
+        queueErrorTest("define-values too few",
+                       "(define-values (x y z) (values 1))",
+                       "define-values: expected 3 values, but only received one: 1");
+
+        queueErrorTest("define-values too few",
+                       "(define-values (x y z) (values 1 2 3 4))",
+                       "define-values: expected 3 values, but received 4");
+
+
+        // FIXME: define-values looks wrong.  Here's what the code does:
+        queueErrorTest("define-values too many parts",
+                       "(define-values (x) a b c)",
+                       "define-values: expects a list of variables and a body, but found a part");
+
+        queueErrorTest("define-values too many parts",
+                       "(define-values (x) (a) b c)",
+                       "define-values: expected 1 part, but found 1 part");
+
+        queueErrorTest('define one extra part',
+                       '(define (f x) 1 2)',
+                       'define: expected only one expression for the function body, but found 1 extra part');
+
+
+        
+
 
         //////////////////////////////////////////////////////////////////////
 
