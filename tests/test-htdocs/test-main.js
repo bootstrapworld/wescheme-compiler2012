@@ -7305,6 +7305,10 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	queueErrorTest("define variable not given enough args",
 		       "(define a)",
 		       "define: expected an expression after the variable a but nothing's there");
+
+	queueErrorTest("define function not given enough args",
+		       "(define (f x))",
+		       "define: expected an expression for the function body, but nothing's there");
 	
 	queueErrorTest("define given undefined variable",
 		       "(define x y)",
