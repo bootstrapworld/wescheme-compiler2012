@@ -119,7 +119,8 @@
      (raise (make-moby-error (stx-loc an-element)
                              (make-Message (make-ColoredPart  (symbol->string (stx-e an-element)) (stx-loc an-element))
                                            ": expected an open parenthesis before "
-                                           (symbol->string (stx-e an-element)))))]
+                                           (symbol->string (stx-e an-element))
+                                           ", but found none")))]
     [(defn? an-element)
      (desugar-defn an-element a-pinfo)]
     [(library-require? an-element)
@@ -923,9 +924,10 @@
      (void)]
     [(symbol? (stx-e expr))
      (raise (make-moby-error (stx-loc expr)
-                             (make-moby-error-type:syntax-not-applied 
-                              expr
-                              (on-failure expr))))]
+                             (make-Message (make-ColoredPart (symbol->string (stx-e expr)) (stx-loc expr))
+                                           ": expected an open parenthesis before "
+                                           (symbol->string (stx-e expr))
+                                           ", but found none")))]
     [else
      (raise (make-moby-error (stx-loc expr)
                              (make-moby-error-type:unsupported-expression-form expr)))]))

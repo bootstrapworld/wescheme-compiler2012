@@ -7296,7 +7296,82 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
 	queueErrorTest("define as a bare expression",
 		       "define",
-		       "define: expected an open parenthesis before define");
+		       "define: expected an open parenthesis before define, but found none");
+
+	queueErrorTest("if as a bare expression, but found none",
+		       "if",
+		       "if: expected an open parenthesis before if, but found none");
+
+	queueErrorTest("cond as a bare expression",
+		       "cond",
+		       "cond: expected an open parenthesis before cond, but found none");
+
+	queueErrorTest("case as a bare expression",
+		       "case",
+		       "case: expected an open parenthesis before case, but found none");
+
+	queueErrorTest("let as a bare expression",
+		       "let",
+		       "let: expected an open parenthesis before let, but found none");
+
+	queueErrorTest("let* as a bare expression",
+		       "let*",
+		       "let*: expected an open parenthesis before let*, but found none");
+
+	queueErrorTest("letrec as a bare expression",
+		       "letrec",
+		       "letrec: expected an open parenthesis before letrec, but found none");
+
+	queueErrorTest("quasiquote as a bare expression",
+		       "quasiquote",
+		       "quasiquote: expected an open parenthesis before quasiquote, but found none");
+	queueErrorTest("unquote as a bare expression",
+		       "unquote",
+		       "unquote: expected an open parenthesis before unquote, but found none");
+
+	queueErrorTest("unquote-splicing as a bare expression",
+		       "unquote-splicing",
+		       "unquote-splicing: expected an open parenthesis before unquote-splicing, but found none");
+
+	queueErrorTest("local as a bare expression",
+		       "local",
+		       "local: expected an open parenthesis before local, but found none");
+
+	queueErrorTest("begin as a bare expression",
+		       "begin",
+		       "begin: expected an open parenthesis before begin, but found none");
+	queueErrorTest("and as a bare expression",
+		       "and",
+		       "and: expected an open parenthesis before and, but found none");
+	queueErrorTest("or as a bare expression",
+		       "or",
+		       "or: expected an open parenthesis before or, but found none");
+	queueErrorTest("when as a bare expression",
+		       "when",
+		       "when: expected an open parenthesis before when, but found none");
+
+	queueErrorTest("unless as a bare expression",
+		       "unless",
+		       "unless: expected an open parenthesis before unless, but found none");
+
+	queueErrorTest("lambda as a bare expression",
+		       "lambda",
+		       "lambda: expected an open parenthesis before lambda, but found none");
+
+	queueErrorTest("lambda as a bare expression",
+		       "λ",
+		       "λ: expected an open parenthesis before λ, but found none");
+
+	queueErrorTest("quote as a bare expression",
+		       "quote",
+		       "quote: expected an open parenthesis before quote, but found none");
+
+
+
+
+
+
+
 
 	queueErrorTest("define with no args",
 		       "(define)",
