@@ -851,7 +851,7 @@
                                                        (make-MultiPart "cond" expr-locs)  
                                                        ": expected a clause with a question and an answer, but found a "
                                                        (make-MultiPart "clause" cond-branch-locs)
-                                                       " with only   "
+                                                       " with only "
                                                        (make-MultiPart "one part" (map stx-loc (stx-e a-clause))))))]                 
                              [(> (length (stx-e a-clause)) 2)
                               

@@ -3746,6 +3746,18 @@ var runTests = function(after) {
                        "(and 'foo)",
                        "and: expected at least 2 arguments, but given 1");
 
+        queueErrorTest("test or empty",
+                       "(or)",
+                       "or: expected at least 2 arguments, but given 0");
+
+        queueErrorTest("test or only one arg",
+                       "(or 1)",
+                       "or: expected at least 2 arguments, but given 1");
+
+        queueErrorTest("test and empty",
+                       "(or 'noo)",
+                       "or: expected at least 2 arguments, but given 1");
+
         queueErrorTest("test non-boolean in 'and'",
                        "(and 'blah 4)",
                        "and: expected a boolean value, but found: blah");
@@ -7526,6 +7538,12 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(lambda 1)",
 		       "lambda: expected at least one variable (in parentheses) after lambda, but found something else");
 	
+        // Note: we do not currently allow vararity functions in this language, so even though
+        // this is ok in Scheme, it's not in WeScheme:
+        queueErrorTest("Disallow vararity lambdas",
+                       "(lambda args args)",
+                       "lambda: expected at least one variable (in parentheses) after lambda, but found something else");
+
 	queueErrorTest("lambda given 2 extra args no paren",
 		       "(lambda 1 2)",
 		       "lambda: expected at least one variable (in parentheses) after lambda, but found something else");
@@ -7549,6 +7567,10 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 	queueErrorTest("lambda given an extra part",
 		       "(lambda (x y) (+ y x) 1)",
 		       "lambda: expected only one expression for the function body, but found 1 extra part");
+	
+	queueErrorTest("lambda given two extra part",
+		       "(lambda (x y) (+ y x) 1 2)",
+		       "lambda: expected only one expression for the function body, but found 2 extra parts");
 
 	queueErrorTest("lambda given multiple variables not in paren",
 		       "(lambda x y (+ 2 y))",
@@ -7682,6 +7704,19 @@ PRIMITIVES['bytes>?'] = ALL DNE */
         queueErrorTest("cond: non-clause, with more pieces",
                        "(cond 1 2 3)",
                        "cond: expected a clause with a question and an answer, but found something else");
+
+        queueErrorTest("cond: clause with not enough pieces",
+                       "(cond [])",
+                       "cond: expected a clause with a question and an answer, but found an empty part");
+
+        queueErrorTest("cond: clause with not enough pieces",
+                       "(cond [true])",
+                       "cond: expected a clause with a question and an answer, but found a clause with only one part");
+
+        queueErrorTest("cond: clause with too many pieces",
+                       "(cond [true false true])",
+                       "cond: expected a clause with a question and an answer, but found a clause with 3 parts");
+
         
         queueErrorTest("cond error properly uses the cond keyword",
                        "(cond (empty? 3) (add1 4))",
