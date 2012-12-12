@@ -443,6 +443,7 @@ Box.prototype.toDisplayedString = function(cache) {
 
 Box.prototype.toDomNode = function(cache) {
     var parent = document.createElement("span");
+    parent.className = "wescheme-box";
     parent.appendChild(document.createTextNode('#&'));
     parent.appendChild(toDomNode(this.val, cache));
     return parent;
@@ -770,6 +771,7 @@ Cons.prototype.toDisplayedString = function(cache) {
 Cons.prototype.toDomNode = function(cache) {
     //    cache.put(this, true);
     var node = document.createElement("span");
+    node.className = "wescheme-cons";
     node.appendChild(document.createTextNode("("));
     node.appendChild(document.createTextNode("list"));
     node.appendChild(document.createTextNode(" "));
@@ -791,7 +793,8 @@ Cons.prototype.toDomNode = function(cache) {
 var explicitConsDomNode = function(p, cache) {
     var topNode = document.createElement("span");
     var node = topNode;
-    while ( p instanceof Cons ) {
+    node.className = "wescheme-cons";
+  while ( p instanceof Cons ) {
 	node.appendChild(document.createTextNode("("));
 	node.appendChild(document.createTextNode("cons"));
 	node.appendChild(document.createTextNode(" "));
@@ -883,6 +886,7 @@ Vector.prototype.toDisplayedString = function(cache) {
 Vector.prototype.toDomNode = function(cache) {
     //    cache.put(this, true);
     var node = document.createElement("span");
+    node.className = "wescheme-vector";
     node.appendChild(document.createTextNode("#("));
     for (var i = 0; i < this.length(); i++) {
 	appendChild(node,
@@ -1438,6 +1442,7 @@ var textToDomNode = function(text) {
     var i;
     var wrapper = document.createElement("span");
     var newlineDiv;
+    wrapper.className = "wescheme-string";
     wrapper.style.fontFamily = 'monospace';
     wrapper.style.whiteSpace = "pre";
     if (chunks.length > 0) {
@@ -1461,21 +1466,25 @@ var numberToDomNode = function(n) {
     if (jsnums.isExact(n)) {
 	if (jsnums.isInteger(n)) {
 	    node = document.createElement("span");
+      node.className = "wescheme-number Integer";
 	    node.appendChild(document.createTextNode(n.toString()));
 	    return node;
 	} else if (jsnums.isRational(n)) {
 	    return rationalToDomNode(n);
 	} else if (isComplex(n)) {
-	    node = document.createElement("span");
+      node = document.createElement("span");
+      node.className = "wescheme-number Complex";
 	    node.appendChild(document.createTextNode(n.toString()));
 	    return node;
 	} else {
-	    node = document.createElement("span");
+      node = document.createElement("span");
+      node.className = "wescheme-number";
 	    node.appendChild(document.createTextNode(n.toString()));
 	    return node;
 	}
     } else {
 	node = document.createElement("span");
+  node.className = "wescheme-number";
 	node.appendChild(document.createTextNode(n.toString()));
 	return node;
     }
@@ -1525,6 +1534,7 @@ var rationalToDomNode = function(n) {
 	    (!showingRepeating ? 'inline' : 'none')
     };
     numberNode.style['cursor'] = 'pointer';
+    numberNode.className = "wescheme-number Rational";
     return numberNode;
 
 };
@@ -1896,9 +1906,10 @@ PrimProc.prototype.toDisplayedString = function(cache) {
 
 
 PrimProc.prototype.toDomNode = function(cache) {
-    var div = document.createElement("span");
-    div.appendChild(document.createTextNode("#<function:"+ this.name +">"));
-    return div;
+    var node = document.createElement("span");
+    node.className = "wescheme-primproc"
+    node.appendChild(document.createTextNode("#<function:"+ this.name +">"));
+    return node;
 };
 
 
@@ -1909,9 +1920,10 @@ var CasePrimitive = function(name, cases) {
 
 
 CasePrimitive.prototype.toDomNode = function(cache) {
-    var div = document.createElement("span");
-    div.appendChild(document.createTextNode("#<function:"+ this.name +">"));
-    return div;    
+    var node = document.createElement("span");
+    node.className = "wescheme-caseprimitive";
+    node.appendChild(document.createTextNode("#<function:"+ this.name +">"));
+    return node;
 };
 
 CasePrimitive.prototype.toWrittenString = function(cache) {
