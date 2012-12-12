@@ -117,19 +117,11 @@
 (define (desugar-program-element an-element a-pinfo)
   (cond
     [(bare-keyword? an-element)
-     (cond
-      [(eq? (stx-e an-element) 'else)
-       (raise (make-moby-error (stx-loc an-element)
-                               (make-Message (make-ColoredPart (symbol->string (stx-e an-element)) (stx-loc an-element))
-                                             ": not allowed "
-                                             (make-ColoredPart "here" (stx-loc an-element))
-                                             " because this is not a question in a clause")))]
-      [else
-       (raise (make-moby-error (stx-loc an-element)
+     (raise (make-moby-error (stx-loc an-element)
                                (make-Message (make-ColoredPart  (symbol->string (stx-e an-element)) (stx-loc an-element))
                                              ": expected an open parenthesis before "
                                              (symbol->string (stx-e an-element))
-                                             ", but found none")))])]
+                                             ", but found none")))]
     [(defn? an-element)
      (desugar-defn an-element a-pinfo)]
     [(library-require? an-element)

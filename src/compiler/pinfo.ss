@@ -265,29 +265,8 @@
               (pinfo-module-path-resolver a-pinfo)
               (pinfo-current-module-path a-pinfo)
               (pinfo-declared-permissions a-pinfo)))
-;;symbol -> boolean
-(define (keyword? name) 
-  (or 
-   (symbol=? name 'cond)
-   (symbol=? name 'let)
-   (symbol=? name 'case)
-   (symbol=? name 'let*)
-   (symbol=? name 'letrec)
-   (symbol=? name 'quote)
-   (symbol=? name 'quasiquote)
-   (symbol=? name 'unquote)
-   (symbol=? name 'unquote-splicing)
-   (symbol=? name 'local)
-   (symbol=? name 'begin)
-   (symbol=? name 'if)
-   (symbol=? name 'or)
-   (symbol=? name 'when)
-   (symbol=? name 'unless)
-   (symbol=? name 'lambda)
-   (symbol=? name 'λ)
-   (symbol=? name 'define)
-   (symbol=? name 'define-struct)
-   (symbol=? name 'define-values)))
+
+
 
 ;; pinfo-accumulate-defined-binding: binding pinfo loc -> pinfo
 ;; Adds a new defined binding to a pinfo's set.
@@ -656,8 +635,6 @@
                   [pinfo-permissions (pinfo? . -> . (listof permission?))]
  
                   [pinfo-get-exposed-bindings (pinfo? . -> . (listof binding?))]
-                  
-                  [keyword? (symbol? . -> . boolean?)]
                   
                   [struct provide-binding:id ([stx stx?])]
                   [struct provide-binding:struct-id ([stx stx?])]

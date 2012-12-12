@@ -585,10 +585,15 @@
   (and (stx? x)
        (symbol? (stx-e x))))
 
-;;symbol -> boolean
+
+;; symbol -> boolean
+;; Returns true if name is a keyword in the language.
+;; FIXME: we should really extend pinfo to include the syntactic environment, so that we
+;; can actually determine this without hardcoding the list.
 (define (keyword? name) 
   (or 
    (symbol=? name 'cond)
+   (symbol=? name 'else)
    (symbol=? name 'let)
    (symbol=? name 'case)
    (symbol=? name 'let*)
@@ -608,6 +613,7 @@
    (symbol=? name 'define)
    (symbol=? name 'define-struct)
    (symbol=? name 'define-values)))
+
 
 
 ;; check-duplicate-identifiers!: (listof stx) stx -> void
@@ -691,6 +697,9 @@
 
 
 (provide/contract [symbol< (symbol? symbol? . -> . boolean?)]
+
+                  [keyword? (symbol? . -> . boolean?)]
+
                   [mapi ((any/c number? . -> . any/c) (listof any/c) . -> . (listof any/c))]
                   [program? (any/c . -> . boolean?)]
                   [expression? (any/c . -> . boolean?)]

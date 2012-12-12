@@ -7691,6 +7691,10 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 		       "(define (f cond) 2)",
 		       "cond: this is a reserved keyword and cannot be used as a variable or function name");
 
+	queueErrorTest("else used as name",
+		       "(define (f else) 2)",
+		       "else: this is a reserved keyword and cannot be used as a variable or function name");
+
 	queueErrorTest("if used as name",
 		       "(define (f if) 2)",
 		       "if: this is a reserved keyword and cannot be used as a variable or function name");
