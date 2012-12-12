@@ -7757,21 +7757,23 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("cond else clause must be last",
                        "(cond [else 'ok] [true 'huh?])",
-                       "cond: else clause should be the last, but there's another clause after it");
-
+                       "cond: found an else clause that isn't the last clause in its cond expression; there is another clause after it");
 
         queueErrorTest("cond else clause must be last and unique.",
                        "(cond [else 'ok] [true 'huh?])",
-                       "cond: else clause should be the last, but there's another clause after it");
+                       "cond: found an else clause that isn't the last clause in its cond expression; there is another clause after it");
 
         queueErrorTest("cond else clause must be last and unique, even if it shows up twice",
                        "(cond [else 'ok] [else 'huh?])",
-                       "cond: found an else clause that isn't the last clause in its cond expression");
+                       "cond: found an else clause that isn't the last clause in its cond expression; there is another clause after it");
 
         queueErrorTest("cond else clause must be last and unique; make sure the test isn't fragile",
                        "(cond [else 'ok] 42 [else 'huh?])",
-                       "cond: found an else clause that isn't the last clause in its cond expression");
+                       "cond: expected a clause with a question and an answer, but found something else");
 
+        queueErrorTest("else is a keyword only usable in context",
+                       "else",
+                       "else: not allowed here, because this is not a question in a clause");                       
 
         queueErrorTest("double definitions",
                        "(define-struct x (y)) (define x-y 43)",

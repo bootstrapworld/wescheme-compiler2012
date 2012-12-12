@@ -59,6 +59,7 @@
                                                 (second entry))))
          empty-syntax-env
          (list (list 'cond desugar-cond)
+               (list 'else desugar-else)
                (list 'case desugar-case)
                (list 'let desugar-let)
                (list 'let* desugar-let*)
@@ -116,11 +117,19 @@
 (define (desugar-program-element an-element a-pinfo)
   (cond
     [(bare-keyword? an-element)
-     (raise (make-moby-error (stx-loc an-element)
-                             (make-Message (make-ColoredPart  (symbol->string (stx-e an-element)) (stx-loc an-element))
-                                           ": expected an open parenthesis before "
-                                           (symbol->string (stx-e an-element))
-                                           ", but found none")))]
+     (cond
+      [(eq? (stx-e an-element) 'else)
+       (raise (make-moby-error (stx-loc an-element)
+                               (make-Message (make-ColoredPart (symbol->string (stx-e an-element)) (stx-loc an-element))
+                                             ": not allowed "
+                                             (make-ColoredPart "here" (stx-loc an-element))
+                                             " because this is not a question in a clause")))]
+      [else
+       (raise (make-moby-error (stx-loc an-element)
+                               (make-Message (make-ColoredPart  (symbol->string (stx-e an-element)) (stx-loc an-element))
+                                             ": expected an open parenthesis before "
+                                             (symbol->string (stx-e an-element))
+                                             ", but found none")))])]
     [(defn? an-element)
      (desugar-defn an-element a-pinfo)]
     [(library-require? an-element)
@@ -696,6 +705,13 @@
               (second desugared-value+pinfo)))))
 
 
+(define (desugar-else an-expr pinfo)
+  (raise (make-moby-error (stx-loc an-expr)
+                          (make-Message (make-ColoredPart (symbol->string (stx-e an-expr)) (stx-loc an-expr))
+                                        ": not allowed "
+                                        (make-ColoredPart "here" (stx-loc an-expr))
+                                        ", because this is not a question in a clause"))))
+
 
 ;; desugar-case: stx:list -> (list stx:list pinfo)
 ;; translates case to if.
@@ -923,11 +939,19 @@
     [(pair? (stx-e expr))
      (void)]
     [(symbol? (stx-e expr))
-     (raise (make-moby-error (stx-loc expr)
-                             (make-Message (make-ColoredPart (symbol->string (stx-e expr)) (stx-loc expr))
-                                           ": expected an open parenthesis before "
-                                           (symbol->string (stx-e expr))
-                                           ", but found none")))]
+     (cond
+      [(eq? (stx-e expr) 'else)
+       (raise (make-moby-error (stx-loc expr)
+                               (make-Message (make-ColoredPart (symbol->string (stx-e expr)) (stx-loc expr))
+                                             ": not allowed "
+                                             (make-ColoredPart "here" (stx-loc expr))
+                                             " because this is not a question in a clause")))]
+      [else
+       (raise (make-moby-error (stx-loc expr)
+                               (make-Message (make-ColoredPart (symbol->string (stx-e expr)) (stx-loc expr))
+                                             ": expected an open parenthesis before "
+                                             (symbol->string (stx-e expr))
+                                             ", but found none")))])]
     [else
      (raise (make-moby-error (stx-loc expr)
                              (make-moby-error-type:unsupported-expression-form expr)))]))
@@ -967,30 +991,32 @@
      (define (process-clauses clauses questions/rev answers/rev)
        (cond
          [(stx-begins-with? (first clauses) 'else)
-          (if (not (empty? (rest clauses)))
-              (let ((expr-locs (list (stx-loc (first (stx-e an-expr)))
-                                     (make-Loc (Loc-offset (stx-loc an-expr))
-                                               (Loc-line (stx-loc an-expr))
-                                               (Loc-column (stx-loc an-expr))
-                                               1
-                                               (Loc-id (stx-loc an-expr)))
-                                     (make-Loc (+ (Loc-offset (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
-                                               (Loc-line (stx-loc an-expr))
-                                               (+ (Loc-column (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
-                                               1
-                                               (Loc-id (stx-loc an-expr))))))
-                (raise (make-moby-error (stx-loc (first clauses))
-                                        (make-Message 
-                                         (make-MultiPart "cond" expr-locs) ": " 
-                                         (make-ColoredPart "else clause " (stx-loc (first clauses))) 
-                                         "should be the last, but there's " 
-                                         (make-ColoredPart "another clause" (stx-loc (second clauses))) 
-                                         " after it"                                      
-                                         ))))
-              (f (reverse questions/rev) 
-                 (reverse answers/rev) 
-                 (else-replacement-f (first (stx-e (first clauses))))
-                 (second (stx-e (first clauses)))))]
+          (begin
+            (if (not (empty? (rest clauses)))
+                (let ((expr-locs (list (stx-loc (first (stx-e an-expr)))
+                                       (make-Loc (Loc-offset (stx-loc an-expr))
+                                                 (Loc-line (stx-loc an-expr))
+                                                 (Loc-column (stx-loc an-expr))
+                                                 1
+                                                 (Loc-id (stx-loc an-expr)))
+                                       (make-Loc (+ (Loc-offset (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                                 (Loc-line (stx-loc an-expr))
+                                                 (+ (Loc-column (stx-loc an-expr)) (Loc-span (stx-loc an-expr)) -1)
+                                                 1
+                                                 (Loc-id (stx-loc an-expr))))))
+                  (raise (make-moby-error (stx-loc (first clauses))
+                                          (make-Message 
+                                           (make-MultiPart "cond" expr-locs) ": " 
+                                           "found an "
+                                           (make-ColoredPart "else clause" (stx-loc (first clauses))) 
+                                           " that isn't the last clause in its cond expression; there is "
+                                           (make-ColoredPart "another clause" (stx-loc (second clauses))) 
+                                           " after it"                                      
+                                           ))))
+                (f (reverse questions/rev) 
+                   (reverse answers/rev) 
+                   (else-replacement-f (first (stx-e (first clauses))))
+                   (second (stx-e (first clauses))))))]
          
          [(empty? (rest clauses))
           (f (reverse questions/rev)
