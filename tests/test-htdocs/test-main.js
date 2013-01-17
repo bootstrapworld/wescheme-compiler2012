@@ -3680,6 +3680,20 @@ var runTests = function(after) {
                   "9");
                   
 
+        queueTest("symbol string",
+                  "(symbol->string 'hello)",
+                  "\"hello\"");
+
+        queueTest("string->symbol",
+                  "(string->symbol \"hello\")",
+                  "'hello");
+
+        queueTest("formatting lists",
+                  "(format \"~a\" '(1 2))",
+                  "(list 1 2)");
+
+
+
 
 
 
