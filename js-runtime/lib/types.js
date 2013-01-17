@@ -588,6 +588,17 @@ Symbol.prototype.toDisplayedString = function(cache) {
     return this.val;
 };
 
+Symbol.prototype.toDomNode = function(cache) {
+    var wrapper = document.createElement("span");
+    wrapper.className = "wescheme-symbol";
+    wrapper.style.fontFamily = 'monospace';
+    wrapper.style.whiteSpace = "pre";
+    wrapper.appendChild(document.createTextNode("'" + this.val));
+    return wrapper;
+};
+
+
+
 //////////////////////////////////////////////////////////////////////
 
 // Keywords

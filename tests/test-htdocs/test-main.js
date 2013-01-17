@@ -3690,7 +3690,7 @@ var runTests = function(after) {
 
         queueTest("formatting lists",
                   "(format \"~a\" '(1 2))",
-                  "(list 1 2)");
+                  "\"(list 1 2)\"");
 
 
 
