@@ -1907,7 +1907,7 @@ PrimProc.prototype.toDisplayedString = function(cache) {
 
 PrimProc.prototype.toDomNode = function(cache) {
     var node = document.createElement("span");
-    node.className = "wescheme-primproc"
+    node.className = "wescheme-primproc";
     node.appendChild(document.createTextNode("#<function:"+ this.name +">"));
     return node;
 };
