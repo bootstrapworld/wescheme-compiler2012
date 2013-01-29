@@ -1038,7 +1038,11 @@ var jsworld = {};
 	    var drawer = {
 		_top: null,
 		_listener: function(w, oldW, k2) { 
-		    do_redraw(w, oldW, drawer._top, wrappedRedraw, redraw_css, k2); 
+		    do_redraw(w, oldW,
+                              drawer._top,
+                              wrappedRedraw,
+                              redraw_css, 
+                              k2); 
 		},
 		onRegister: function (top) { 
 		    drawer._top = top;
@@ -1628,6 +1632,13 @@ var jsworld = {};
 	return page.add(elt, positionLeft, positionTop);
     };
 
+
+
+    // getCurrentWorld: -> world
+    // Returns the currently running world.
+    Jsworld.getCurrentWorld = function() {
+        return world;
+    };
 
 
 })();
