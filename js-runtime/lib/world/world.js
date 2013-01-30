@@ -293,7 +293,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // SceneImage: primitive-number primitive-number (listof image) -> Scene
     var SceneImage = function(width, height, children, withBorder) {
-        BaseImage.call(this, 0, 0);
+        BaseImage.call(this, Math.floor(width/2), Math.floor(height/2));
         this.width = width;
         this.height = height;
         this.children = children; // arrayof [image, number, number]
