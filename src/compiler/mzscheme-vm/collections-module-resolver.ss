@@ -46,7 +46,8 @@
                                 (map (lambda (binding) (localize-binding binding name))
                                      (pinfo-get-exposed-bindings a-pinfo))))))]))
          
-         
+
+;; localize-binding: module-binding source -> module-binding
 (define (localize-binding a-binding a-source)
   (match a-binding
     [(struct binding:constant (name

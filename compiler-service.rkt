@@ -11,7 +11,6 @@
          racket/port
          "find-paren-loc.rkt"
          "this-runtime-version.rkt"
-         ;profile
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
          "src/compiler/mzscheme-vm/private/json.ss"
@@ -93,7 +92,7 @@
                                           exn-or-moby-error)))
                      (cond
                       [(jsonp-request? request)
-                       (handle-json-exception-response request the-exn)]
+                       (handle-jsonp-exception-response request the-exn)]
                       [else 
                        (handle-exception-response request the-exn)]))])
 
@@ -105,7 +104,7 @@
                   [(program-input-port) (open-input-string program-text)])
       ;; To support JSONP:
       (cond [(jsonp-request? request)
-             (handle-json-response request program-name program-input-port)]
+             (handle-jsonp-response request program-name program-input-port)]
             [else
              (handle-response request program-name program-input-port)]))))
 
@@ -121,8 +120,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; jsonp stuff
 
-;; handle-json-response: -> response
-(define (handle-json-response request program-name program-input-port)
+;; handle-jsonp-response: -> response
+(define (handle-jsonp-response request program-name program-input-port)
   (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
                                                            #:with-gzip? (request-accepts-gzip-encoding? request))]
                [(compiled-program-port) (open-output-bytes)])
@@ -149,7 +148,8 @@
     [(wants-json-output? request)
      (let ([op (open-output-bytes)])
        (write-json (make-hash `((bytecode . ,(bytes->string/utf-8 output-bytecode))
-                                (permissions . ,(get-android-permissions pinfo))))
+                                (permissions . ,(get-android-permissions pinfo))
+                                (provides . ,(get-provides pinfo))))
                    op)
        (get-output-bytes op))]
 
@@ -157,6 +157,14 @@
      (format "(~a)"
 	     ;; Raw version just spits the output bytecode.
 	     output-bytecode)]))
+
+
+;; get-provides: pinfo -> (listof string)
+;; Returns a list of the provides of the program.
+(define (get-provides pinfo)
+  (map (lambda (a-binding)
+         (format "~s" (symbol->string (binding-id a-binding))))
+       (pinfo-get-exposed-bindings pinfo)))
 
 
 (define (get-android-permissions pinfo)
@@ -167,8 +175,8 @@
              
 
 
-;; handle-json-exception-response: exn -> response
-(define (handle-json-exception-response request exn)
+;; handle-jsonp-exception-response: exn -> response
+(define (handle-jsonp-exception-response request exn)
   (case (compiler-version request)
     [(0)
      (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
@@ -298,8 +306,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; non jsonp stuff: use with xmlhttprequest
 (define (handle-response request program-name program-input-port)
-  (let-values  ([(response output-port) (make-port-response #:mime-type #"text/plain"
-                                                            #:with-gzip? (request-accepts-gzip-encoding? request))]
+  (let-values  ([(response output-port) 
+                 (make-port-response #:mime-type #"text/plain"
+                                     #:with-gzip? (request-accepts-gzip-encoding? request))]
                 [(program-output-port) (open-output-bytes)])
     (let ([pinfo (compile/port program-input-port program-output-port
                                #:name program-name
@@ -379,14 +388,11 @@
   #:exists 'replace)
 
 
-;; Also, write out the collections
+;; Also, write out the collections.
 (unless (directory-exists? (build-path htdocs "collects"))
   (make-directory (build-path htdocs "collects")))
 (write-collections/dir (build-path htdocs "collects"))
-;;(call-with-output-file (build-path htdocs "collections.js")
-;;  (lambda (op)
-;;    (write-collections op))
-;;  #:exists 'replace)
+
 
 
 (define port 8000)
