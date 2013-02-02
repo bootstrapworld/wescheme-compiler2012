@@ -188,7 +188,8 @@ var Evaluator = (function() {
 	var that = this;
         this.compileProgram(programName, code,
                             function(responseText) {
-		                that._onCompilationSuccess(eval('(' + responseText + ')'), 
+                                var result = JSON.parse(responseText);
+		                that._onCompilationSuccess(eval('(' + result.bytecode + ')'), 
 					                   onDone, onDoneError);
                             },
                             function(responseErrorText) {
@@ -213,6 +214,7 @@ var Evaluator = (function() {
 	var that = this;
 	var params = encodeUrlParameters({'name': programName,
 					  'program': code,
+                                          'format': 'json',
 					  'compiler-version' : '1'});
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {

@@ -9,6 +9,10 @@
          racket/cmdline
          file/gzip
          racket/port
+
+         ;; must avoid conflict with the bindings in web-server, by prefixing.
+         (prefix-in moby: "src/collects/moby/runtime/binding.ss")
+
          "find-paren-loc.rkt"
          "this-runtime-version.rkt"
          "src/compiler/mzscheme-vm/write-support.ss"
@@ -159,11 +163,22 @@
 	     output-bytecode)]))
 
 
+;; wants-json-output?: request -> boolean
+;; Produces true if the client wants json output.
+;; json output is allowed to generate the bytecode, permissions, and
+;; provides.
+(define (wants-json-output? req)
+  (let ([bindings (request-bindings req)])
+    (and (exists-binding? 'format bindings)
+         (string=? (extract-binding/single 'format bindings)
+                   "json"))))
+
+
 ;; get-provides: pinfo -> (listof string)
 ;; Returns a list of the provides of the program.
 (define (get-provides pinfo)
   (map (lambda (a-binding)
-         (format "~s" (symbol->string (binding-id a-binding))))
+         (symbol->string (moby:binding-id a-binding)))
        (pinfo-get-exposed-bindings pinfo)))
 
 
@@ -319,16 +334,6 @@
 
 
 
-;; wants-json-output?: request -> boolean
-;; Produces true if the client wants json output.
-;; json output is allowed to generate both the bytecode
-;; and permissions strings
-(define (wants-json-output? req)
-  (let ([bindings (request-bindings req)])
-    (and (exists-binding? 'format bindings)
-         (string=? (extract-binding/single 'format bindings)
-                   "json"))))
-        
         
 ;; handle-exception-response: exn -> response
 (define (handle-exception-response request exn)
