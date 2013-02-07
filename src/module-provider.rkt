@@ -90,7 +90,6 @@
   module-provider)
 
 
-(define test-provider (make-wescheme-module-provider))
-(define looked-up (test-provider 'wescheme/0X8C8Np156))
-
-looked-up
+;; (define test-provider (make-wescheme-module-provider))
+;; (define looked-up (test-provider 'wescheme/0X8C8Np156))
+;; looked-up
