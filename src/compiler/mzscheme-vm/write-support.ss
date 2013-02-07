@@ -89,16 +89,17 @@
 ;; provides: arrayof string
 (define (write-single-collection module-name source-path out-port)
   (fprintf out-port "window.COLLECTIONS = window.COLLECTIONS || {};\n")
-  (fprintf out-port "window.COLLECTIONS[~s] = { 'name': ~s, "
+  (fprintf out-port "window.COLLECTIONS[~s] = { \"name\": ~s, \"runtime-version\" : ~s,"
            (symbol->string module-name)
-           (symbol->string module-name))
+           (symbol->string module-name)
+           THIS-RUNTIME-VERSION)
   (call-with-input-file source-path 
     (lambda (in)
-      (fprintf out-port "'bytecode': ")
+      (fprintf out-port "\"bytecode\": ")
       (let ([pinfo (compile/port in out-port
                                  #:name module-name
-                                 #:runtime-version THIS-RUNTIME-VERSION)])
-        (fprintf out-port ", 'provides': [~a]};\n"
+                                 )])
+        (fprintf out-port ", \"provides\": [~a]};\n"
                  (string-join (map (lambda (a-binding)
                                      (format "~s" (symbol->string (binding-id a-binding))))
                                    (pinfo-get-exposed-bindings pinfo))
