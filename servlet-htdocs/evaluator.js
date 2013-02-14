@@ -115,7 +115,7 @@ var Evaluator = (function() {
         };
 
         this.dynamicModuleLoader = function(aName, onSuccess, onFail) {
-            loadScript(that.rootLibraryPath + "/" + aName + ".js",
+            loadScript(that.rootLibraryPath + "/" + aName + ".js?__gensym="+encodeURIComponent('' + Math.random()),
                        onSuccess,
                        onFail);
         };

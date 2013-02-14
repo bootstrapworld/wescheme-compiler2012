@@ -88,11 +88,12 @@
     (define a-record (a-provider module-name))
     (cond
       [a-record
-       (make-module-binding module-name
-                            module-name
-                            (for/list ([provided-name (module-provider-record-provides a-record)])
-                              (make-binding:constant (string->symbol provided-name)
-                                                     module-name '() #f)))]
+       (define binding (make-module-binding module-name
+                                            module-name
+                                            (for/list ([provided-name (module-provider-record-provides a-record)])
+                                              (make-binding:constant (string->symbol provided-name)
+                                                                     module-name '() #f))))
+       binding]
       [else
        (original-resolver module-name)]))
   wrapped-resolver)
