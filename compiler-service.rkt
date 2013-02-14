@@ -381,6 +381,18 @@
           (Loc-id a-loc)))
 
 
+;; relate-to-current-directory: path -> absolute-path
+;; Given a path, try to localize it to the current directory if it's relative.
+(define (relate-to-current-directory p)
+  (cond
+    [(absolute-path? p)
+     p]
+    [(relative-path? p)
+     (simplify-path (build-path (current-directory) p))]
+    [else
+     (error 'relate-to-current-directory "Neither relative nor absolute path" p)]))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -399,11 +411,37 @@
 (write-collections/dir (build-path htdocs "collects"))
 
 
+(define extra-module-providers (make-parameter '()))
+
+
+;; We hold onto an anchor to this module's namespace, since extra-module-providers
+;; needs it.
+(define-namespace-anchor anchor)
+
+
+(define (extra-module-providers-list->module-provider)
+  (define dynamic-module-providers
+    (parameterize ([current-namespace (namespace-anchor->namespace anchor)])
+      (for/list ([mp (extra-module-providers)])
+        (dynamic-require mp 'module-provider))))
+  (define (the-module-provider name)
+    (for/or ([provider dynamic-module-providers])
+      (provider name)))
+  the-module-provider)
+
+
 
 (define port 8000)
 (void (command-line #:program "servlet"
                     #:once-each
-                    [("-p" "--port") p "Port (default 8000)" (set! port (string->number p))]))
+                    [("-p" "--port") p "Port (default 8000)" (set! port (string->number p))]
+                    #:multi
+                    [("--extra-module-provider") 
+                     mp
+                     "The path of a module, relative to current-directory, that provides an additional 'module-provider"
+                     (extra-module-providers 
+                      (cons (relate-to-current-directory mp)
+                            (extra-module-providers)))]))
 
 
 (serve/servlet start 

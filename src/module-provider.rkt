@@ -7,6 +7,12 @@
          net/uri-codec
          (for-syntax racket/base))
 
+(provide (struct-out module-provider-record)
+         local-module-provider
+         make-wescheme-module-provider)
+
+
+
 (define-runtime-path local-collects-path (build-path 'up "servlet-htdocs" "collects"))
 
 ;; A module provider consumes the name of a module,
