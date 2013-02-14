@@ -74,18 +74,23 @@
 (define (make-wescheme-module-provider 
          #:servlet-path [servlet-path "http://www.wescheme.org/loadProject"])
   (define (module-provider name)
+    (printf "Wescheme module provider being invoked on ~s\n" name)
     (define maybe-match 
       (regexp-match #px"wescheme/(\\w+)$" (symbol->string name)))
     (cond
      [maybe-match
       (define publicId (second maybe-match))
+      (printf "Looking for ~s\n" publicId)
       (define url
         (string->url 
          (string-append servlet-path "?"
                         (alist->form-urlencoded `((publicId . ,publicId))))))
+      (printf "Using url ~s\n" (url->string url))
       (with-handlers ([exn:fail? (lambda (exn) #f)])
         (define port (get-pure-port url))
+        (printf "port opened\n")
         (define ht (read-json port))
+        (printf "json read\n")
         (module-provider-record name
                                 (hash-ref (hash-ref ht 'object #hash()) 
                                           'obj 

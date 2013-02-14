@@ -15,6 +15,7 @@
 
          "find-paren-loc.rkt"
          "this-runtime-version.rkt"
+         "src/compiler/mzscheme-vm/collections-module-resolver.ss"
          "src/compiler/mzscheme-vm/write-support.ss"
          "src/compiler/mzscheme-vm/compile.ss"
          "src/compiler/mzscheme-vm/private/json.ss"
@@ -130,6 +131,7 @@
                                                            #:with-gzip? (request-accepts-gzip-encoding? request))]
                [(compiled-program-port) (open-output-bytes)])
     (let ([pinfo (compile/port program-input-port compiled-program-port
+                               #:pinfo compiler-service-base-pinfo
                                #:name program-name
                                #:runtime-version THIS-RUNTIME-VERSION)])
       (fprintf output-port "~a(~a);" 
@@ -326,6 +328,7 @@
                                      #:with-gzip? (request-accepts-gzip-encoding? request))]
                 [(program-output-port) (open-output-bytes)])
     (let ([pinfo (compile/port program-input-port program-output-port
+                               #:pinfo compiler-service-base-pinfo
                                #:name program-name
                                #:runtime-version THIS-RUNTIME-VERSION)])    
       (display (format-output (get-output-bytes program-output-port) pinfo request) output-port)
@@ -443,6 +446,17 @@
                       (cons (relate-to-current-directory mp)
                             (extra-module-providers)))]))
 
+(define the-external-module-provider 
+  (extra-module-providers-list->module-provider))
+
+
+;; The initial state of the compiler is this one:
+(define compiler-service-base-pinfo 
+  (pinfo-update-module-resolver default-base-pinfo
+                                (extend-module-resolver-with-module-provider
+                                 (pinfo-module-resolver default-base-pinfo)
+                                 the-external-module-provider)))
+
 
 (serve/servlet start 
                #:port port
@@ -450,4 +464,3 @@
                #:extra-files-paths (list htdocs compat easyxdm)
                #:launch-browser? #f
                #:listen-ip #f)
-

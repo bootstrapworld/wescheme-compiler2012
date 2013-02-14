@@ -58,5 +58,7 @@
 
 
 
-(provide/contract [compile/port ((input-port? output-port? #:name symbol?) (#:runtime-version string?) . ->* . any)]
-                  [compile/program ((program? output-port? #:name symbol?) (#:runtime-version string?) . ->* . any)])
+(provide/contract 
+ [default-base-pinfo pinfo?]
+ [compile/port ((input-port? output-port? #:name symbol?) (#:runtime-version string? #:pinfo pinfo?) . ->* . any)]
+ [compile/program ((program? output-port? #:name symbol?) (#:runtime-version string? #:pinfo pinfo?) . ->* . any)])
