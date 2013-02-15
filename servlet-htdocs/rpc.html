@@ -29,6 +29,7 @@ Compiler.prototype.compileProgram = function(programName, code, onDone, onDoneEr
     var that = this;
     var params = encodeUrlParameters({'name': programName,
 				      'program': code,
+                                      'format': 'json',
 				      'compiler-version' : '1'});
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
