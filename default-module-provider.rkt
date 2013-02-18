@@ -8,7 +8,8 @@
 
 ;; FIXME: Set this to wescheme.org as soon as we update the source code.
 (define wescheme-module-provider 
-  (make-wescheme-module-provider #:servlet-path "http://localhost:8080/getModuleProviderRecord"))
+  (make-memoizing-module-provider
+   (make-wescheme-module-provider #:servlet-path "http://localhost:8080/getModuleProviderRecord")))
 
 
 ;; module-provider: symbol -> (U module-provider-record #f)
