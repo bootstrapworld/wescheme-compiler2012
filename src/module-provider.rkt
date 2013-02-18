@@ -9,7 +9,8 @@
 
 (provide (struct-out module-provider-record)
          local-module-provider
-         make-wescheme-module-provider)
+         make-wescheme-module-provider
+         make-memoizing-module-provider)
 
 
 
@@ -23,7 +24,6 @@
 
 
 (struct module-provider-record (name     ;; symbol
-                                bytecode ;; string
                                 provides ;; (listof string)
                                 )
         #:transparent)
@@ -57,7 +57,6 @@
                             ip))
             (cond [a-match
                    (module-provider-record name
-                                           (second a-match)
                                            (with-handlers ([exn:fail? (lambda (exn) '())])
                                              (bytes->jsexpr (third a-match))))]
                   [else #f])))]
@@ -89,16 +88,33 @@
           (with-handlers ([exn:fail? (lambda (exn) #f)])
             (define port (get-pure-port url))
             (define ht (read-json port))
-            (module-provider-record name
-                                    (hash-ref (hash-ref ht 'object #hash()) 
-                                              'obj 
-                                              #f)
-                                    (hash-ref ht 'provides '())))))
+            (cond [(hash? ht)
+                   
+                   (module-provider-record 
+                    name
+                    (hash-ref ht 'provides '()))
+                   ]
+                  [else #f]))))
       (custodian-shutdown-all cust)
       a-module-provider-record]
      [else
       #f]))
   module-provider)
+
+
+
+;; make-memoizing-module-provider: module-provider -> module-provider
+;; Given an existing module provider, make a memoizing version of it.
+;; The cache uses a weak hash table.
+(define (make-memoizing-module-provider a-module-provider)
+  (define cache (make-weak-hasheq))
+  (define (memoized-module-provider name)
+    (hash-ref cache name (lambda ()
+                           (define entry (a-module-provider name))
+                           (hash-set! cache name entry)
+                           entry)))
+  memoized-module-provider)
+
 
 
 ;; (define test-provider (make-wescheme-module-provider))
