@@ -67,11 +67,11 @@
 
 ;; wescheme-module-provider: symbol -> (U module-provider-record #f)
 ;;
-;; A module provider using WeScheme.  Uses the loadProject servlet,
+;; A module provider using WeScheme.  Uses the getModuleProviderRecord servlet,
 ;; which generates JSON output that we parse into a module provider
 ;; record.
 (define (make-wescheme-module-provider 
-         #:servlet-path [servlet-path "http://www.wescheme.org/loadProject"])
+         #:servlet-path [servlet-path "http://www.wescheme.org/getModuleProviderRecord"])
   (define (module-provider name)
     (define maybe-match 
       (regexp-match #px"wescheme/(\\w+)$" (symbol->string name)))
@@ -89,7 +89,6 @@
             (define port (get-pure-port url))
             (define ht (read-json port))
             (cond [(hash? ht)
-                   
                    (module-provider-record 
                     name
                     (hash-ref ht 'provides '()))
