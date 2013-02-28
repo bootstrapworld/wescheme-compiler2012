@@ -62,6 +62,11 @@
 "should be an outline turquoise rectangle: " (rectangle 20 30 "outline" "turquoise")
 
 
+"should be a solid, mostly-translucent red rectangle: " (rectangle 200 300 10 "red")
+"should be an outline red rectangle: " (rectangle 200 300 "outline" "red")
+"should be an *invisible* red rectangle: " (rectangle 200 300 0 "red")
+
+
 ;(check-expect (color? (make-color 3 4 5)))
 
 (check-expect (color-red (make-color 3 4 5)) 3)
