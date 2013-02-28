@@ -545,8 +545,11 @@ var isFontWeight = function(x){
 var colorDb = world.Kernel.colorDb;
 var isMode = function(x) {
 	return ((isString(x) || isSymbol(x)) &&
-		(x.toString().toLowerCase() == "solid" ||
-		 x.toString().toLowerCase() == "outline"));
+          (x.toString().toLowerCase() == "solid" ||
+           x.toString().toLowerCase() == "outline")) ||
+         ((isReal(x)) &&
+          (jsnums.greaterThanOrEqual(x, 0) &&
+           jsnums.LessThanOrEqual(x, 255)));
 };
 
 var isPlaceX = function(x) {
@@ -4680,7 +4683,7 @@ PRIMITIVES['circle'] =
 		 false, false,
 		 function(aState, aRadius, aStyle, aColor) {
 			check(aState, aRadius, isNonNegativeReal, "circle", "non-negative number", 1, arguments);
-			check(aState, aStyle, isMode, "circle", 'style ("solid" or "outline")', 2, arguments);
+			check(aState, aStyle, isMode, "circle", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			check(aState, aColor, isColor, "circle", "color", 3, arguments);
 
 
@@ -4708,7 +4711,7 @@ PRIMITIVES['star'] =
 			  check(aState, inner, 
 				isNonNegativeReal, "star",
 				"non-negative number", 3, arguments);
-			  check(aState, m, isMode, "star", 'style ("solid" or "outline")', 4, arguments);
+			  check(aState, m, isMode, "star", 'style ("solid" or "outline" or [0-255])', 4, arguments);
 			  check(aState, c, isColor, "star", "color", 5, arguments);
 			  if (colorDb.get(c)) {
 			      c = colorDb.get(c);
@@ -4726,7 +4729,7 @@ PRIMITIVES['star'] =
 		      function(aState, sideLength, mode, color) {
 			  check(aState, sideLength, isNonNegativeReal,
 				"star", "non-negative number", 1, arguments);
-			  check(aState, mode, isMode, "star", 'style ("solid" or "outline")', 2, arguments);
+			  check(aState, mode, isMode, "star", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			  check(aState, color, isColor, "star", "color", 3, arguments);
 			  if (colorDb.get(color)) {
 			      color = colorDb.get(color);
@@ -4751,7 +4754,7 @@ new PrimProc('radial-star',
 									"radial-star", "positive number", 2, arguments);
 			 check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
 									"radial-star", "positive number", 3, arguments);
-			 check(aState, aStyle, isMode, "radial-star", 'style ("solid" or "outline")', 4, arguments);
+			 check(aState, aStyle, isMode, "radial-star", 'style ("solid" or "outline" or [0-255])', 4, arguments);
 			 check(aState, aColor, isColor, "radial-star", "color", 5, arguments);
 			 
 			 if (colorDb.get(aColor)) {
@@ -4772,7 +4775,7 @@ PRIMITIVES['nw:rectangle'] =
 		 function(aState, w, h, s, c) {
 			check(aState, w, isNonNegativeReal, "nw:rectangle", "non-negative number", 1, arguments);
 			check(aState, h, isNonNegativeReal, "nw:rectangle", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "nw:rectangle", 'style ("solid" or "outline")', 3, arguments);
+			check(aState, s, isMode, "nw:rectangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			check(aState, c, isColor, "nw:rectangle", "color", 4, arguments);
 
 			if (colorDb.get(c)) {
@@ -4792,7 +4795,7 @@ PRIMITIVES['rectangle'] =
 		 function(aState, w, h, s, c) {
 			check(aState, w, isNonNegativeReal, "rectangle", "non-negative number", 1, arguments);
 			check(aState, h, isNonNegativeReal, "rectangle", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "rectangle", 'style ("solid" or "outline")', 3, arguments);
+			check(aState, s, isMode, "rectangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			check(aState, c, isColor, "rectangle", "color", 4, arguments);
 
 			if (colorDb.get(c)) {
@@ -4810,7 +4813,7 @@ new PrimProc('regular-polygon',
 			 function(aState, length, count, s, c) {
 			 check(aState, length,	isNonNegativeReal,	"regular-polygon", "non-negative number", 1, arguments);
 			 check(aState, count,	isSideCount,		"regular-polygon", "positive integer greater than or equal to 3", 2, arguments);
-			 check(aState, s,		isMode, "regular-polygon", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s,		isMode, "regular-polygon", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c,		isColor, "regular-polygon", "color", 4, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4831,7 +4834,7 @@ new PrimProc('star-polygon',
 			 check(aState, length,	isNonNegativeReal,	"star-polygon", "non-negative number", 1, arguments);
 			 check(aState, count,	isSideCount,		"star-polygon", "positive integer greater than or equal to 3", 2, arguments);
 			 check(aState, step,	isStepCount,		"star-polygon", "positive integer greater than or equal to 1", 3, arguments);
-			 check(aState, s,		isMode,				"star-polygon", 'style ("solid" or "outline")', 4, arguments);
+			 check(aState, s,		isMode,				"star-polygon", 'style ("solid" or "outline" or [0-255])', 4, arguments);
 			 check(aState, c,		isColor,			"star-polygon", "color", 5, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4851,7 +4854,7 @@ new PrimProc('rhombus',
 			 function(aState, l, a, s, c) {
 			 check(aState, l, isNonNegativeReal, "rhombus", "non-negative number", 1, arguments);
 			 check(aState, a, isNonNegativeReal, "rhombus", "non-negative number", 2, arguments);
-			 check(aState, s, isMode, "rhombus", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s, isMode, "rhombus", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c, isColor, "rhombus", "color", 4, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4866,7 +4869,7 @@ new PrimProc('square',
 			 false, false,
 			 function(aState, l, s, c) {
 			 check(aState, l, isNonNegativeReal, "square", "non-negative number", 1, arguments);
-			 check(aState, s, isMode, "square", 'style ("solid" or "outline")', 2, arguments);
+			 check(aState, s, isMode, "square", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			 check(aState, c, isColor, "square", "color", 3, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4881,7 +4884,7 @@ PRIMITIVES['triangle'] =
 		 false, false,
 		 function(aState, s, m, c) {
 			check(aState, s, isNonNegativeReal, "triangle", "non-negative number", 1, arguments);
-			check(aState, m, isMode, "triangle", 'style ("solid" or "outline")', 2, arguments);
+			check(aState, m, isMode, "triangle", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			check(aState, c, isColor, "triangle", "color", 3, arguments);
 			if (colorDb.get(c)) {
 				c = colorDb.get(c);
@@ -4900,7 +4903,7 @@ new PrimProc('right-triangle',
 			 function(aState, side1, side2, s, c) {
 			 check(aState, side1, isNonNegativeReal, "right-triangle", "non-negative number", 1, arguments);
 			 check(aState, side2, isNonNegativeReal, "right-triangle", "non-negative number", 2, arguments);
-			 check(aState, s, isMode, "right-triangle", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s, isMode, "right-triangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c, isColor, "right-triangle", "color", 4, arguments);
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
@@ -4916,7 +4919,7 @@ new PrimProc('isosceles-triangle',
 			 function(aState, side, angle, s, c) {
 			 check(aState, side, isNonNegativeReal, "isosceles-triangle", "non-negative number", 1, arguments);
 			 check(aState, angle, isAngle, "isosceles-triangle", "finite real number between 0 and 360", 2, arguments);
-			 check(aState, s, isMode, "isosceles-triangle", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s, isMode, "isosceles-triangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c, isColor, "isosceles-triangle", "color", 4, arguments);
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
@@ -4932,7 +4935,7 @@ PRIMITIVES['ellipse'] =
 		 function(aState, w, h, s, c) {
 			check(aState, w, isNonNegativeReal, "ellipse", "non-negative number", 1, arguments);
 			check(aState, h, isNonNegativeReal, "ellipse", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "ellipse", "string", 3, arguments);
+			check(aState, s, isMode, "ellipse", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			check(aState, c, isColor, "ellipse", "color", 4, arguments);
 			
 			if (colorDb.get(c)) {
