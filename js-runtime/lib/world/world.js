@@ -167,7 +167,7 @@ if (typeof(world) === 'undefined') {
             },
             config.lookup('tickDelay'));
     }
-
+ 
     // Base class for all images.
     var BaseImage = function(pinholeX, pinholeY) {
         this.pinholeX = pinholeX;
@@ -871,12 +871,14 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
 
 
-
-    var colorString = function(aColor) {
-        return ("rgb(" + 
-                types.colorRed(aColor) + "," +
-                types.colorGreen(aColor) + ", " + 
-                types.colorBlue(aColor) + ")");
+    // colorString : hexColor Style -> rgba
+    // Style can be "solid" (1.0), "outline" (1.0), a number (0-1.0) or null (1.0)
+    var colorString = function(aColor, aStyle) {
+      var alpha = isNaN(aStyle)? 1.0 : aStyle/255;
+      return "rgba(" + types.colorRed(aColor) + "," +
+                      types.colorGreen(aColor) + ", " +
+                      types.colorBlue(aColor) + ", " +
+                      alpha + ")");
     };
 
 
@@ -904,8 +906,7 @@ if (typeof(world) === 'undefined') {
         } else {
             ctx.save();
             ctx.beginPath();
-
-            ctx.fillStyle = colorString(this.color);
+            ctx.fillStyle = colorString(this.color, this.style);
             ctx.fillRect(x, y, this.width, this.height);
 
             ctx.closePath();
@@ -964,7 +965,7 @@ if (typeof(world) === 'undefined') {
             ctx.stroke();
         }
         else {
-            ctx.fillStyle = colorString(this.color);
+            ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
         ctx.restore();
@@ -1101,7 +1102,7 @@ if (typeof(world) === 'undefined') {
             ctx.stroke();
         }
         else {
-            ctx.fillStyle = colorString(this.color);
+            ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
         ctx.restore();
@@ -1270,7 +1271,7 @@ if (typeof(world) === 'undefined') {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
         } else {
-            ctx.fillStyle = colorString(this.color);
+            ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
         ctx.restore();
@@ -1328,7 +1329,7 @@ if (typeof(world) === 'undefined') {
             ctx.stroke();
         }
         else {
-            ctx.fillStyle = colorString(this.color);
+            ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
         ctx.restore();
@@ -1374,7 +1375,7 @@ if (typeof(world) === 'undefined') {
             ctx.stroke();
         }
         else {
-            ctx.fillStyle = colorString(this.color);
+            ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
         ctx.restore();
@@ -1426,7 +1427,7 @@ if (typeof(world) === 'undefined') {
             ctx.stroke();
         }
         else {
-            ctx.fillStyle = colorString(this.color);
+            ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
 
