@@ -87,6 +87,11 @@
                                                                   50
                                                                   (empty-scene 100 100))
 
+"should be a blue circle in the UR of a scene with a border: " (put-image (circle 50 'solid 'blue)
+                                                                  100
+                                                                  100
+                                                                  (empty-scene 100 100))
+
 (check-expect (image?
                (put-pinhole (rectangle 20 20 'solid 'green) 0 0))
               true)

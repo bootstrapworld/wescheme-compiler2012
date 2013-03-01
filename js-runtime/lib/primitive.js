@@ -549,7 +549,7 @@ var isMode = function(x) {
            x.toString().toLowerCase() == "outline")) ||
          ((isReal(x)) &&
           (jsnums.greaterThanOrEqual(x, 0) &&
-           jsnums.LessThanOrEqual(x, 255)));
+           jsnums.lessThanOrEqual(x, 255)));
 };
 
 var isPlaceX = function(x) {
@@ -4578,6 +4578,30 @@ PRIMITIVES['empty-scene'] =
 		        return world.Kernel.sceneImage(jsnums.toFixnum(width), jsnums.toFixnum(height), [], true);
 		 });
 
+// just like place-image, but we flip the y-coordinate
+PRIMITIVES['put-image'] =
+    new PrimProc('put-image',
+     4,
+     false, false,
+     function(aState, picture, x, y, background) {
+      check(aState, picture, isImage, "put-image", "image", 1, arguments);
+      check(aState, x, isReal, "put-image", "real", 2, arguments);
+      check(aState, y, isReal, "put-image", "real", 3, arguments);
+      check(aState, background, function(x) { return isScene(x) || isImage(x) },
+            "put-image", "image", 4, arguments);
+      if (isScene(background)) {
+          return background.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
+      } else {
+          var newScene = world.Kernel.sceneImage(background.getWidth(),
+                  background.getHeight(),
+                  [],
+                  false);
+          newScene = newScene.add(background.updatePinhole(0, 0), 0, 0);
+          newScene = newScene.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
+          return newScene;
+      }
+    });
+
 
 PRIMITIVES['place-image'] =
     new PrimProc('place-image',
@@ -5400,7 +5424,7 @@ PRIMITIVES['image-url'] =
 
 PRIMITIVES['open-image-url'] = PRIMITIVES['image-url'];
 
-
+PRIMITIVES['video/url'] =
 PRIMITIVES['video-url'] =
 new PrimProc('video-url',
 			 1,
