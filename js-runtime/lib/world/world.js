@@ -1,3 +1,4 @@
+/*global world, types */
 if (typeof(world) === 'undefined') {
     world = {};
 }
@@ -13,17 +14,17 @@ if (typeof(world) === 'undefined') {
 
     // Inheritance from pg 168: Javascript, the Definitive Guide.
     var heir = function(p) {
-        var f = function() {}
+        var f = function() {};
         f.prototype = p;
         return new f();
-    }
+    };
 
 
     // clone: object -> object
     // Copies an object.  The new object should respond like the old
     // object, including to things like instanceof
     var clone = function(obj) {
-        var C = function() {}
+        var C = function() {};
         var property;
         C.prototype = obj;
         var c = new C();
@@ -44,7 +45,7 @@ if (typeof(world) === 'undefined') {
     };
     world.Kernel.removeAnnounceListener = function(listener) {
         var idx = announceListeners.indexOf(listener);
-        if (idx != -1) {
+        if (idx !== -1) {
             announceListeners.splice(idx, 1);
         }
     };
@@ -69,7 +70,7 @@ if (typeof(world) === 'undefined') {
     var changeWorld = function(newWorld) {
         world = newWorld;
         notifyWorldListeners();
-    }
+    };
 
 
     // updateWorld: (world -> world) -> void
@@ -78,7 +79,7 @@ if (typeof(world) === 'undefined') {
     world.Kernel.updateWorld = function(updater) {
         var newWorld = updater(world);
         changeWorld(newWorld);
-    }
+    };
 
 
     world.Kernel.shutdownWorld = function() {
@@ -93,14 +94,14 @@ if (typeof(world) === 'undefined') {
         for (i = 0; i < worldListeners.length; i++) {
             worldListeners[i](world);
         }
-    }
+    };
 
     // addWorldListener: (world -> void) -> void
     // Adds a new world listener: whenever the world is changed, the aListener
     // will be called with that new world.
     var addWorldListener = function(aListener) {
         worldListeners.push(aListener);
-    }
+    };
 
 
     // getKeyCodeName: keyEvent -> String
@@ -108,19 +109,19 @@ if (typeof(world) === 'undefined') {
     var getKeyCodeName = function(e) {
         var code = e.charCode || e.keyCode;
         var keyname;
-        if (code == 37) {
+        if (code === 37) {
             keyname = "left";
-        } else if (code == 38) {
+        } else if (code === 38) {
             keyname = "up";
-        } else if (code == 39) {
+        } else if (code === 39) {
             keyname = "right";
-        } else if (code == 40) {
+        } else if (code === 40) {
             keyname = "down";
         } else {
             keyname = String.fromCharCode(code); 
         }
         return keyname;
-    }
+    };
 
 
     // resetWorld: -> void
@@ -132,11 +133,11 @@ if (typeof(world) === 'undefined') {
         }
         stopped = false;
         worldListeners = [];
-    }
+    };
 
 
     var getBigBangWindow = function(width, height) {
-        if (window.document.getElementById("canvas") != undefined) {
+        if (window.document.getElementById("canvas") !== undefined) {
             return window;
         }
 
@@ -144,11 +145,11 @@ if (typeof(world) === 'undefined') {
             "big-bang.html",
             "big-bang");
         //"toolbar=false,location=false,directories=false,status=false,menubar=false,width="+width+",height="+height);
-        if (newWindow == null) { 
+        if (newWindow === null) {
             throw new Error("Error: Not allowed to create a new window."); }
 
         return newWindow;
-    }
+    };
 
 
 
@@ -166,13 +167,14 @@ if (typeof(world) === 'undefined') {
                 }
             },
             config.lookup('tickDelay'));
-    }
+    };
  
     // Base class for all images.
-    var BaseImage = function(pinholeX, pinholeY) {
+    var BaseImage = function(pinholeX, pinholeY,vertices) {
         this.pinholeX = pinholeX;
         this.pinholeY = pinholeY;
-    }
+        this.vertices = vertices || [];
+    };
     world.Kernel.BaseImage = BaseImage;
 
 
@@ -180,7 +182,7 @@ if (typeof(world) === 'undefined') {
         return (thing !== null &&
                 thing !== undefined &&
                 thing instanceof BaseImage);
-    }
+    };
 
 
 
@@ -193,13 +195,13 @@ if (typeof(world) === 'undefined') {
 
     BaseImage.prototype.getHeight = function(){
         return this.height;
-    }
+    };
     BaseImage.prototype.getWidth = function(){
         return this.width;
-    }
+    };
     BaseImage.prototype.getBaseline = function(){
         return this.height;
-    }
+    };
 
     // render: context fixnum fixnum: -> void
     // Render the image, where the upper-left corner of the image is drawn at
@@ -226,7 +228,7 @@ if (typeof(world) === 'undefined') {
         
         // KLUDGE: IE compatibility uses /js/excanvas.js, and dynamic
         // elements must be marked this way.
-        if (window && typeof window.G_vmlCanvasManager != 'undefined') {
+        if (window && typeof window.G_vmlCanvasManager !== 'undefined') {
             canvas = window.G_vmlCanvasManager.initElement(canvas);
         }
         return canvas;
@@ -273,12 +275,12 @@ if (typeof(world) === 'undefined') {
 
 
 
-    BaseImage.prototype.toWrittenString = function(cache) { return "<image>"; }
-    BaseImage.prototype.toDisplayedString = function(cache) { return "<image>"; }
+    BaseImage.prototype.toWrittenString = function(cache) { return "<image>"; };
+    BaseImage.prototype.toDisplayedString = function(cache) { return "<image>"; };
 
     BaseImage.prototype.isEqual = function(other, aUnionFind) {
-        return (this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY);
+        return (this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY);
     };
 
 
@@ -287,18 +289,19 @@ if (typeof(world) === 'undefined') {
     // isScene: any -> boolean
     // Produces true when x is a scene.
     var isScene = function(x) {
-        return ((x != undefined) && (x != null) && (x instanceof SceneImage));
+        return ((x !== undefined) && (x !== null) && (x instanceof SceneImage));
     };
 
     //////////////////////////////////////////////////////////////////////
     // SceneImage: primitive-number primitive-number (listof image) -> Scene
     var SceneImage = function(width, height, children, withBorder) {
-        BaseImage.call(this, Math.floor(width/2), Math.floor(height/2));
+        var vertices = [{x:0,y:0},{x:width,y:0},{x:width,y:height}, {x:0,y:height}];
+        BaseImage.call(this, Math.floor(width/2), Math.floor(height/2), vertices);
         this.width = width;
         this.height = height;
         this.children = children; // arrayof [image, number, number]
         this.withBorder = withBorder;
-    }
+    };
     SceneImage.prototype = heir(BaseImage.prototype);
 
 
@@ -341,11 +344,11 @@ if (typeof(world) === 'undefined') {
             return false;
         } 
 
-        if (this.pinholeX != other.pinholeX ||
-            this.pinholeY != other.pinholeY ||
-            this.width != other.width ||
-            this.height != other.height ||
-            this.children.length != other.children.length) {
+        if (this.pinholeX !== other.pinholeX ||
+            this.pinholeY !== other.pinholeY ||
+            this.width !== other.width ||
+            this.height !== other.height ||
+            this.children.length !== other.children.length) {
             return false;
         }
 
@@ -390,15 +393,20 @@ if (typeof(world) === 'undefined') {
                 self.isLoaded = true;
                 self.pinholeX = self.img.width / 2;
                 self.pinholeY = self.img.height / 2;
+                self.vertices = [{x:0,y:0},
+                                 {x:self.img.width,y:0},
+                                 {x:self.img.width,y:self.img.height},
+                                 {x:0,y:self.img.height}];
+
             };
             this.img.onerror = function(e) {
                 self.img.onerror = "";
                 self.img.src = "http://www.wescheme.org/images/broken.png";
-            }
+            };
             this.img.src = src;
         }
         this.installHackToSupportAnimatedGifs(afterInit);
-    }
+    };
     FileImage.prototype = heir(BaseImage.prototype);
 
 
@@ -467,15 +475,15 @@ if (typeof(world) === 'undefined') {
 
     FileImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof FileImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.src == other.src);
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.src === other.src);
         //                  types.isEqual(this.img, other.img, aUnionFind));
     };
 
     //////////////////////////////////////////////////////////////////////
-    // VideoImage: String Node -> Video
-    var VideoImage = function(src, rawVideo) {
+    // fileVideo: String Node -> Video
+    var FileVideo = function(src, rawVideo) {
         BaseImage.call(this, 0, 0);
         var self = this;
         this.src = src;
@@ -501,8 +509,12 @@ if (typeof(world) === 'undefined') {
             this.video.addEventListener('canplay', function() {
                 this.width                      = self.video.videoWidth;
                 this.height                     = self.video.videoHeight;
-                this.pinholeX           = self.width / 2;
-                this.pinholeY           = self.height / 2;
+                this.pinholeX                   = self.width / 2;
+                this.pinholeY                   = self.height / 2;
+                this.vertices                   = [{x:0,y:0},
+                                                  {x:self.video.width,y:0},
+                                                  {x:self.video.width,y:self.video.height},
+                                                  {x:0,y:self.video.height}];
                 this.video.poster       = "http://www.wescheme.org/images/broken.png";
                 this.video.autoplay     = true;
                 this.video.autobuffer=true;
@@ -514,27 +526,27 @@ if (typeof(world) === 'undefined') {
                 self.video.poster = "http://www.wescheme.org/images/broken.png";
             });
         }
-    }
-    VideoImage.prototype = heir(BaseImage.prototype);
+    };
+    FileVideo.prototype = heir(BaseImage.prototype);
 
 
     var videos = {};
-    VideoImage.makeInstance = function(path, rawVideo) {
-        if (! (path in VideoImage)) {
-            videos[path] = new VideoImage(path, rawVideo);
+    FileVideo.makeInstance = function(path, rawVideo) {
+        if (! (path in FileVideo)) {
+            videos[path] = new FileVideo(path, rawVideo);
         } 
         return videos[path];
     };
 
-    VideoImage.prototype.render = function(ctx, x, y) {
+    FileVideo.prototype.render = function(ctx, x, y) {
         ctx.drawImage(this.video, x, y);
     };
 
-    VideoImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof VideoImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.src == other.src);
+    FileVideo.prototype.isEqual = function(other, aUnionFind) {
+        return (other instanceof FileVideo &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.src === other.src);
     };
 
 
@@ -554,16 +566,16 @@ if (typeof(world) === 'undefined') {
         
         var x1, y1, x2, y2;
 
-        if (placeX == "left") {
+        if (placeX === "left") {
             x1 = 0;
             x2 = 0;
-        } else if (placeX == "right") {
+        } else if (placeX === "right") {
             x1 = Math.max(img1.getWidth(), img2.getWidth()) - img1.getWidth();
             x2 = Math.max(img1.getWidth(), img2.getWidth()) - img2.getWidth();
-        } else if (placeX == "beside") {
+        } else if (placeX === "beside") {
             x1 = 0;
             x2 = img1.getWidth();
-        } else if (placeX == "middle" || placeX == "center") {
+        } else if (placeX === "middle" || placeX === "center") {
             x1 = Math.max(img1.getWidth(), img2.getWidth())/2 - img1.getWidth()/2;
             x2 = Math.max(img1.getWidth(), img2.getWidth())/2 - img2.getWidth()/2;
         } else {
@@ -571,28 +583,33 @@ if (typeof(world) === 'undefined') {
             x2 = Math.max(placeX, 0);
         }
         
-        if (placeY == "top") {
+        if (placeY === "top") {
             y1 = 0;
             y2 = 0;
-        } else if (placeY == "bottom") {
+        } else if (placeY === "bottom") {
             y1 = Math.max(img1.getHeight(), img2.getHeight()) - img1.getHeight();
             y2 = Math.max(img1.getHeight(), img2.getHeight()) - img2.getHeight();
-        } else if (placeY == "above") {
+        } else if (placeY === "above") {
             y1 = 0;
             y2 = img1.getHeight();
-        } else if (placeY == "baseline") {
+        } else if (placeY === "baseline") {
             y1 = Math.max(img1.getBaseline(), img2.getBaseline()) - img1.getBaseline();
             y2 = Math.max(img1.getBaseline(), img2.getBaseline()) - img2.getBaseline();
-        } else if (placeY == "middle" || placeY == "center") {
+        } else if (placeY === "middle" || placeY === "center") {
             y1 = Math.max(img1.getHeight(), img2.getHeight())/2 - img1.getHeight()/2;
             y2 = Math.max(img1.getHeight(), img2.getHeight())/2 - img2.getHeight()/2;
         } else {
             y1 = Math.max(placeY, 0) - placeY;
             y2 = Math.max(placeY, 0);
         }
-        
+        // update the height and width of the image
         this.width = Math.floor(Math.max(x1 + img1.getWidth(), x2 + img2.getWidth()) - Math.min(x1, x2));
         this.height = Math.floor(Math.max(y1 + img1.getHeight(), y2 + img2.getHeight()) - Math.min(y1, y2));
+        // translate the vertices of both images, and concatenate them
+        var translateImg1Vertices = function(p){return {x:p.x+x2, y: p.y+y2};};
+        var translateImg2Vertices = function(p){return {x:p.x+x2, y: p.y+y2};};
+        this.vertices = img1.vertices.map(translateImg1Vertices).concat(img2.vertices.map(translateImg2Vertices));
+        // store the offsets for rendering
         this.x1 = Math.floor(x1);
         this.y1 = Math.floor(y1);
         this.x2 = Math.floor(x2);
@@ -634,6 +651,7 @@ if (typeof(world) === 'undefined') {
     // rotate: angle image -> image
     // Rotates image by angle degrees in a counter-clockwise direction.
     // based on http://stackoverflow.com/questions/3276467/adjusting-div-width-and-height-after-rotated
+    // TODO: rotate vertices array
     var RotateImage = function(angle, img) {
         var sin = Math.sin(angle * Math.PI / 180);
         var cos = Math.cos(angle * Math.PI / 180);
@@ -662,8 +680,8 @@ if (typeof(world) === 'undefined') {
         
         // resize the image
         BaseImage.call(this, 
-		       Math.floor(rotatedWidth / 2),
-		       Math.floor(rotatedHeight / 2));
+                       Math.floor(rotatedWidth / 2),
+                       Math.floor(rotatedHeight / 2));
         this.img	= img;
         this.width	= Math.floor(rotatedWidth);
         this.height = Math.floor(rotatedHeight);
@@ -677,15 +695,8 @@ if (typeof(world) === 'undefined') {
 
     // translate the canvas using the calculated values, then draw at the rotated (x,y) offset.
     RotateImage.prototype.render = function(ctx, x, y) {
-        // calculate the new x and y offsets, by rotating the radius formed by the hypoteneuse
-        var sin = Math.sin(this.angle * Math.PI / 180),
-        cos     = Math.cos(this.angle * Math.PI / 180),
-        r       = Math.sqrt(x*x + y*y);
         ctx.save();
         ctx.translate(x + this.translateX, y + this.translateY);
-        // x = Math.ceil(cos * r);
-        // y = -Math.floor(sin * r);
-        // ctx.translate(this.translateX, this.translateY);
         ctx.rotate(this.angle * Math.PI / 180);
         this.img.render(ctx, 0, 0);
         ctx.restore();
@@ -693,19 +704,20 @@ if (typeof(world) === 'undefined') {
 
     RotateImage.prototype.isEqual = function(other, aUnionFind) {
         return ( other instanceof RotateImage &&
-                 this.pinholeX == other.pinholeX &&
-                 this.pinholeY == other.pinholeY &&
-                 this.width == other.width &&
-                 this.height == other.height &&
-                 this.angle == other.angle &&
-                 this.translateX == other.translateX &&
-                 this.translateY == other.translateY &&
+                 this.pinholeX === other.pinholeX &&
+                 this.pinholeY === other.pinholeY &&
+                 this.width === other.width &&
+                 this.height === other.height &&
+                 this.angle === other.angle &&
+                 this.translateX === other.translateX &&
+                 this.translateY === other.translateY &&
                  types.isEqual(this.img, other.img, aUnionFind) );
     };
 
     //////////////////////////////////////////////////////////////////////
     // ScaleImage: factor factor image -> image
     // Scale an image
+    // TODO: scale vertices array
     var ScaleImage = function(xFactor, yFactor, img) {
         
         // resize the image
@@ -734,18 +746,19 @@ if (typeof(world) === 'undefined') {
 
     ScaleImage.prototype.isEqual = function(other, aUnionFind) {
         return ( other instanceof ScaleImage &&
-                 this.pinholeX == other.pinholeX &&
-                 this.pinholeY == other.pinholeY &&
-                 this.width == other.width &&
-                 this.height == other.height &&
-                 this.xFactor == other.xFactor &&
-                 this.yFactor == other.yFactor &&
+                 this.pinholeX === other.pinholeX &&
+                 this.pinholeY === other.pinholeY &&
+                 this.width === other.width &&
+                 this.height === other.height &&
+                 this.xFactor === other.xFactor &&
+                 this.yFactor === other.yFactor &&
                  types.isEqual(this.img, other.img, aUnionFind) );
     };
 
     //////////////////////////////////////////////////////////////////////
     // CropImage: startX startY width height image -> image
     // Crop an image
+    // TODO: crop vertices array
     var CropImage = function(x, y, width, height, img) {
         
         BaseImage.call(this, 
@@ -755,7 +768,7 @@ if (typeof(world) === 'undefined') {
         this.x          = x;
         this.y          = y;
         this.width      = width;
-        this.height = height;
+        this.height     = height;
         this.img        = img;
     };
 
@@ -771,12 +784,12 @@ if (typeof(world) === 'undefined') {
 
     CropImage.prototype.isEqual = function(other, aUnionFind) {
         return ( other instanceof CropImage &&
-                 this.pinholeX == other.pinholeX &&
-                 this.pinholeY == other.pinholeY &&
-                 this.width == other.width &&
-                 this.height == other.height &&
-                 this.x == other.x &&
-                 this.y == other.y &&
+                 this.pinholeX === other.pinholeX &&
+                 this.pinholeY === other.pinholeY &&
+                 this.width === other.width &&
+                 this.height === other.height &&
+                 this.x === other.x &&
+                 this.y === other.y &&
                  types.isEqual(this.img, other.img, aUnionFind) );
     };
 
@@ -791,7 +804,7 @@ if (typeof(world) === 'undefined') {
         
         this.img        = img;
         this.width      = img.getWidth();
-        this.height = img.getHeight();
+        this.height     = img.getHeight();
     };
 
     FrameImage.prototype = heir(BaseImage.prototype);
@@ -810,14 +823,15 @@ if (typeof(world) === 'undefined') {
 
     FrameImage.prototype.isEqual = function(other, aUnionFind) {
         return ( other instanceof FrameImage &&
-                 this.pinholeX == other.pinholeX &&
-                 this.pinholeY == other.pinholeY &&
+                 this.pinholeX === other.pinholeX &&
+                 this.pinholeY === other.pinholeY &&
                  types.isEqual(this.img, other.img, aUnionFind) );
     };
 
     //////////////////////////////////////////////////////////////////////
     // FlipImage: image string -> image
     // Flip an image either horizontally or vertically
+    // TODO: flip vertices array
     var FlipImage = function(img, direction) {
         this.img        = img;
         this.width      = img.getWidth();
@@ -835,12 +849,12 @@ if (typeof(world) === 'undefined') {
         // when flipping an image of dimension M and offset by N across an axis, 
         // we need to translate the canvas by M+2N in the opposite direction
         ctx.save();
-        if(this.direction == "horizontal"){
+        if(this.direction === "horizontal"){
             ctx.scale(-1, 1);
             ctx.translate(-(this.width+2*x), 0);
             this.img.render(ctx, x, y);
         }
-        if (this.direction == "vertical"){
+        if (this.direction === "vertical"){
             ctx.scale(1, -1);
             ctx.translate(0, -(this.height+2*y));
             this.img.render(ctx, x, y);
@@ -859,11 +873,11 @@ if (typeof(world) === 'undefined') {
 
     FlipImage.prototype.isEqual = function(other, aUnionFind) {
         return ( other instanceof FlipImage &&
-                 this.pinholeX == other.pinholeX &&
-                 this.pinholeY == other.pinholeY &&
-                 this.width == other.width &&
-                 this.height == other.height &&
-                 this.direction == other.direction &&
+                 this.pinholeX === other.pinholeX &&
+                 this.pinholeY === other.pinholeY &&
+                 this.width === other.width &&
+                 this.height === other.height &&
+                 this.direction === other.direction &&
                  types.isEqual(this.img, other.img, aUnionFind) );
     };
 
@@ -878,7 +892,7 @@ if (typeof(world) === 'undefined') {
       return "rgba(" + types.colorRed(aColor) + "," +
                       types.colorGreen(aColor) + ", " +
                       types.colorBlue(aColor) + ", " +
-                      alpha + ")");
+                      alpha + ")";
     };
 
 
@@ -886,7 +900,8 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // RectangleImage: Number Number Mode Color -> Image
     var RectangleImage = function(width, height, style, color) {
-        BaseImage.call(this, width/2, height/2);
+        var vertices = [{x:0,y:0},{x:width,y:0},{x:width,y:height},{x:0,y:height}];
+        BaseImage.call(this, width/2, height/2, vertices);
         this.width = width;
         this.height = height;
         this.style = style;
@@ -896,7 +911,7 @@ if (typeof(world) === 'undefined') {
 
 
     RectangleImage.prototype.render = function(ctx, x, y) {
-        if (this.style.toString().toLowerCase() == "outline") {
+        if (this.style.toString().toLowerCase() === "outline") {
             ctx.save();
             ctx.beginPath();
             ctx.strokeStyle = colorString(this.color);
@@ -925,17 +940,18 @@ if (typeof(world) === 'undefined') {
 
     RectangleImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof RectangleImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.width == other.width &&
-                this.height == other.height &&
-                this.style == other.style &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.width === other.width &&
+                this.height === other.height &&
+                this.style === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
 
     //////////////////////////////////////////////////////////////////////
     // RhombusImage: Number Number Mode Color -> Image
+    // TODO: calculate vertices array in the constructor
     var RhombusImage = function(side, angle, style, color) {
         // sin(angle/2-in-radians) * side = half of base
         this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
@@ -960,7 +976,7 @@ if (typeof(world) === 'undefined') {
         ctx.lineTo(x, y+this.getHeight()/2);
         ctx.closePath();
         
-        if (this.style.toString().toLowerCase() == "outline") {
+        if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
         }
@@ -982,20 +998,23 @@ if (typeof(world) === 'undefined') {
 
     RhombusImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof RhombusImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.side == other.side &&
-                this.angle == other.angle &&
-                this.style == other.style &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.side === other.side &&
+                this.angle === other.angle &&
+                this.style === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
 
     //////////////////////////////////////////////////////////////////////
 
-
     var ImageDataImage = function(imageData) {
-        BaseImage.call(this, 0, 0);
+      var vertices = [{x:0,y:0},
+                      {x:imageData.width,y:0},
+                      {x:imageData.width,y:imageData.height},
+                      {x:0,y:imageData.height}];
+        BaseImage.call(this, 0, 0, vertices);
         this.imageData = imageData;
         this.width = imageData.width;
         this.height = imageData.height;
@@ -1018,8 +1037,8 @@ if (typeof(world) === 'undefined') {
 
     ImageDataImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof ImageDataImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY);
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY);
         // FIXME
     };
 
@@ -1034,7 +1053,7 @@ if (typeof(world) === 'undefined') {
     // another circle is inscribed in the polygon, whose radius is length/2tan(pi/count)
     // rotate a 3/4 quarter turn plus half the angle length to keep bottom base level
     var PolygonImage = function(length, count, step, style, color) {
-        this.aVertices = [];
+        var vertices = [];
         var xMax = 0;
         var yMax = 0;
         var xMin = 0;
@@ -1053,19 +1072,19 @@ if (typeof(world) === 'undefined') {
             
             var v = {   x: this.outerRadius*Math.cos(radians-adjust),
                         y: this.outerRadius*Math.sin(radians-adjust) };
-            if(v.x < xMin) xMin = v.x;
-            if(v.x > xMax) xMax = v.y;
-            if(v.y < yMin) yMin = v.x;
-            if(v.y > yMax) yMax = v.y;
-            this.aVertices.push(v);             
+            if(v.x < xMin){ xMin = v.x; }
+            if(v.x > xMax){ xMax = v.y; }
+            if(v.y < yMin){ yMin = v.x; }
+            if(v.y > yMax){ yMax = v.y; }
+            vertices.push(v);
         }
         // HACK: try to work around handling of non-integer coordinates in CANVAS
         // by ensuring that the boundaries of the canvas are outside of the vertices
-        for(var i=0; i<this.aVertices.length; i++){
-            if(this.aVertices[i].x < xMin) xMin = this.aVertices[i].x-1;
-            if(this.aVertices[i].x > xMax) xMax = this.aVertices[i].x+1;
-            if(this.aVertices[i].y < yMin) yMin = this.aVertices[i].y-1;
-            if(this.aVertices[i].y > yMax) yMax = this.aVertices[i].y+1;
+        for(i=0; i<vertices.length; i++){
+            if(vertices[i].x < xMin){ xMin = vertices[i].x-1; }
+            if(vertices[i].x > xMax){ xMax = vertices[i].x+1; }
+            if(vertices[i].y < yMin){ yMin = vertices[i].y-1; }
+            if(vertices[i].y > yMax){ yMax = vertices[i].y+1; }
         }
         
         this.width      = Math.floor(xMax-xMin);
@@ -1075,7 +1094,8 @@ if (typeof(world) === 'undefined') {
         this.step       = step;
         this.style      = style;
         this.color      = color;
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2));
+        this.vertices   = vertices;
+        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), vertices);
     };
     PolygonImage.prototype = heir(BaseImage.prototype);
 
@@ -1090,14 +1110,14 @@ if (typeof(world) === 'undefined') {
         ctx.save();
 
         ctx.beginPath();
-        ctx.moveTo(xOffset+this.aVertices[0].x, yOffset+this.aVertices[0].y);
-        for(var i=1; i<this.aVertices.length; i++){
-            ctx.lineTo(xOffset+this.aVertices[i].x, yOffset+this.aVertices[i].y);
+        ctx.moveTo(xOffset+this.vertices[0].x, yOffset+this.vertices[0].y);
+        for(var i=1; i<this.vertices.length; i++){
+            ctx.lineTo(xOffset+this.vertices[i].x, yOffset+this.vertices[i].y);
         }
-        ctx.lineTo(xOffset+this.aVertices[0].x, yOffset+this.aVertices[0].y);
+        ctx.lineTo(xOffset+this.vertices[0].x, yOffset+this.vertices[0].y);
         ctx.closePath();
         
-        if (this.style.toString().toLowerCase() == "outline") {
+        if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
         }
@@ -1110,12 +1130,12 @@ if (typeof(world) === 'undefined') {
 
     PolygonImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof PolygonImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.length == other.length &&
-                this.step == other.step &&
-                this.count == other.count &&
-                this.style == other.style &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.length === other.length &&
+                this.step === other.step &&
+                this.count === other.count &&
+                this.style === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1125,7 +1145,7 @@ if (typeof(world) === 'undefined') {
             return "\"" + s + "\"";
         }
         return s;
-    }
+    };
 
     //////////////////////////////////////////////////////////////////////
     // TextImage: String Number Color String String String String any/c -> Image
@@ -1137,9 +1157,9 @@ if (typeof(world) === 'undefined') {
         this.size       = size;
         this.color      = color;
         this.face       = face;
-        this.family = family;
-        this.style      = (style == "slant")? "oblique" : style;  // Racket's "slant" -> CSS's "oblique"
-        this.weight     = (weight== "light")? "lighter" : weight; // Racket's "light" -> CSS's "lighter"
+        this.family     = family;
+        this.style      = (style === "slant")? "oblique" : style;  // Racket's "slant" -> CSS's "oblique"
+        this.weight     = (weight=== "light")? "lighter" : weight; // Racket's "light" -> CSS's "lighter"
         this.underline  = underline;
         // example: "bold italic 20px 'Times', sans-serif". 
         // Default weight is "normal", face is "Optimer"
@@ -1166,9 +1186,11 @@ if (typeof(world) === 'undefined') {
         } catch(e) {
             this.fallbackOnFont();
         }
-        BaseImage.call(this, Math.round(this.width/2), 0);// weird pinhole settings needed for "baseline" alignment
-    }
-    
+        var vertices = [{x:0,y:0},{x:this.width,y:0},{x:this.width,y:this.height},{x:0,y:this.height}];
+        // weird pinhole settings needed for "baseline" alignment
+        BaseImage.call(this, Math.round(this.width/2), 0, vertices);
+    };
+ 
 
     TextImage.prototype = heir(BaseImage.prototype);
 
@@ -1177,7 +1199,7 @@ if (typeof(world) === 'undefined') {
         // reduce to a smaller feature set and try again.
         this.font       = this.size + "px " + maybeQuote(this.family);    
         var canvas      = world.Kernel.makeCanvas(0, 0);
-        var ctx = canvas.getContext("2d");
+        var ctx         = canvas.getContext("2d");
         ctx.font        = this.font;
         var metrics     = ctx.measureText(this.msg);
         this.width      = metrics.width;
@@ -1219,26 +1241,24 @@ if (typeof(world) === 'undefined') {
 
     TextImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof TextImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.msg        == other.msg &&
-                this.size       == other.size &&
-                this.face       == other.face &&
-                this.family == other.family &&
-                this.style      == other.style &&
-                this.weight == other.weight &&
-                this.underline == other.underline &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.msg      === other.msg &&
+                this.size     === other.size &&
+                this.face     === other.face &&
+                this.family   === other.family &&
+                this.style    === other.style &&
+                this.weight   === other.weight &&
+                this.underline === other.underline &&
                 types.isEqual(this.color, other.color, aUnionFind) &&
-                this.font == other.font);
+                this.font === other.font);
     };
 
 
     //////////////////////////////////////////////////////////////////////
     // StarImage: fixnum fixnum fixnum color -> image
+    // TODO: calcutate the vertices array in the constructor
     var StarImage = function(points, outer, inner, style, color) {
-        BaseImage.call(this,
-                       Math.max(outer, inner),
-                       Math.max(outer, inner));
         this.points     = points;
         this.outer      = outer;
         this.inner      = inner;
@@ -1247,6 +1267,9 @@ if (typeof(world) === 'undefined') {
         this.radius     = Math.max(this.inner, this.outer);
         this.width      = this.radius*2;
         this.height     = this.radius*2;
+        BaseImage.call(this,
+                     Math.max(outer, inner),
+                     Math.max(outer, inner));
     };
 
     StarImage.prototype = heir(BaseImage.prototype);
@@ -1262,12 +1285,12 @@ if (typeof(world) === 'undefined') {
         ctx.beginPath();
         for( var pt = 0; pt < (this.points * 2) + 1; pt++ ) {
             var rads = ( ( 360 / (2 * this.points) ) * pt ) * oneDegreeAsRadian - 0.5;
-            var radius = ( pt % 2 == 1 ) ? this.outer : this.inner;
+            var radius = ( pt % 2 === 1 ) ? this.outer : this.inner;
             ctx.lineTo(x + this.radius + ( Math.sin( rads ) * radius ), 
                        y + this.radius + ( Math.cos( rads ) * radius ) );
         }
         ctx.closePath();
-        if (this.style.toString().toLowerCase() == "outline") {
+        if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
         } else {
@@ -1279,12 +1302,12 @@ if (typeof(world) === 'undefined') {
 
     StarImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof StarImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.points == other.points &&
-                this.outer == other.outer &&
-                this.inner == other.inner &&
-                this.style == other.style &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.points === other.points &&
+                this.outer === other.outer &&
+                this.inner === other.inner &&
+                this.style === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1292,6 +1315,7 @@ if (typeof(world) === 'undefined') {
 
     /////////////////////////////////////////////////////////////////////
     //TriangleImage: Number Number Mode Color -> Image
+    // TODO: calcutate the vertices array in the constructor
     var TriangleImage = function(side, angle, style, color) {
         // sin(angle/2-in-radians) * side = half of base
         this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
@@ -1303,7 +1327,7 @@ if (typeof(world) === 'undefined') {
         this.angle = angle;
         this.style = style;
         this.color = color;
-    }
+    };
     TriangleImage.prototype = heir(BaseImage.prototype);
 
 
@@ -1324,7 +1348,7 @@ if (typeof(world) === 'undefined') {
         }
         ctx.closePath();
         
-        if (this.style.toString().toLowerCase() == "outline") {
+        if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
         }
@@ -1337,16 +1361,17 @@ if (typeof(world) === 'undefined') {
 
     TriangleImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof TriangleImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.side == other.side &&
-                this.angle == other.angle &&
-                this.style == other.style &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.side     === other.side &&
+                this.angle    === other.angle &&
+                this.style    === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
     /////////////////////////////////////////////////////////////////////
     //RightTriangleImage: Number Number Mode Color -> Image
+    // TODO: calcutate the vertices array in the constructor
     var RightTriangleImage = function(side1, side2, style, color) {
         this.width = side1;
         this.height = side2;
@@ -1356,7 +1381,7 @@ if (typeof(world) === 'undefined') {
         this.side2 = side2;
         this.style = style;
         this.color = color;
-    }
+    };
     RightTriangleImage.prototype = heir(BaseImage.prototype);
 
 
@@ -1370,7 +1395,7 @@ if (typeof(world) === 'undefined') {
         ctx.lineTo(x, y);
         ctx.closePath();
         
-        if (this.style.toString().toLowerCase() == "outline") {
+        if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
         }
@@ -1383,11 +1408,11 @@ if (typeof(world) === 'undefined') {
 
     RightTriangleImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof RightTriangleImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.side1 == other.side1 &&
-                this.side2 == other.side2 &&
-                this.style == other.style &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.side1 === other.side1 &&
+                this.side2 === other.side2 &&
+                this.style === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1410,8 +1435,8 @@ if (typeof(world) === 'undefined') {
 
         // Most of this code is taken from:
         // http://webreflection.blogspot.com/2009/01/ellipse-and-circle-for-canvas-2d.html
-        var hB = (this.width / 2) * .5522848,
-        vB = (this.height / 2) * .5522848,
+        var hB = (this.width / 2) * 0.5522848,
+        vB = (this.height / 2) * 0.5522848,
         eX = aX + this.width,
         eY = aY + this.height,
         mX = aX + this.width / 2,
@@ -1422,7 +1447,7 @@ if (typeof(world) === 'undefined') {
         ctx.bezierCurveTo(eX, mY + vB, mX + hB, eY, mX, eY);
         ctx.bezierCurveTo(mX - hB, eY, aX, mY + vB, aX, mY);
         ctx.closePath();
-        if (this.style.toString().toLowerCase() == "outline") {
+        if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
         }
@@ -1437,17 +1462,18 @@ if (typeof(world) === 'undefined') {
 
     EllipseImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof EllipseImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.width == other.width &&
-                this.height == other.height &&
-                this.style == other.style &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.width === other.width &&
+                this.height === other.height &&
+                this.style === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
 
     //////////////////////////////////////////////////////////////////////
     //Line: Number Number Color Boolean -> Image
+    // TODO: calcutate the vertices array in the constructor
     var LineImage = function(x, y, color, normalPinhole) {
         if (x >= 0) {
             if (y >= 0) {
@@ -1474,7 +1500,7 @@ if (typeof(world) === 'undefined') {
             this.pinholeX = this.width/2;
             this.pinholeY = this.height/2;
         }
-    }
+    };
 
     LineImage.prototype = heir(BaseImage.prototype);
 
@@ -1510,10 +1536,10 @@ if (typeof(world) === 'undefined') {
 
     LineImage.prototype.isEqual = function(other, aUnionFind) {
         return (other instanceof LineImage &&
-                this.pinholeX == other.pinholeX &&
-                this.pinholeY == other.pinholeY &&
-                this.x == other.x &&
-                this.y == other.y &&
+                this.pinholeX === other.pinholeX &&
+                this.pinholeY === other.pinholeY &&
+                this.x === other.x &&
+                this.y === other.y &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1544,7 +1570,7 @@ if (typeof(world) === 'undefined') {
             }
         }
         return [];
-    }
+    };
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -1554,7 +1580,7 @@ if (typeof(world) === 'undefined') {
     // Color database
     var ColorDb = function() {
         this.colors = {};
-    }
+    };
     ColorDb.prototype.put = function(name, color) {
         this.colors[name] = color;
     };
@@ -1772,7 +1798,7 @@ if (typeof(world) === 'undefined') {
     world.Kernel.isColor = function(thing) {
         return (types.isColor(thing) ||
                 ((types.isString(thing) || types.isSymbol(thing)) &&
-                 typeof(colorDb.get(thing)) != 'undefined'));
+                 typeof(colorDb.get(thing)) !== 'undefined'));
     };
     world.Kernel.nameToColor = nameToColor;
     world.Kernel.colorDb = colorDb;
@@ -1837,8 +1863,8 @@ if (typeof(world) === 'undefined') {
     world.Kernel.fileImage = function(path, rawImage, afterInit) {
         return FileImage.makeInstance(path, rawImage, afterInit);
     };
-    world.Kernel.videoImage = function(path, rawVideo) {
-        return VideoImage.makeInstance(path, rawVideo);
+    world.Kernel.fileVideo = function(path, rawVideo) {
+        return FileVideo.makeInstance(path, rawVideo);
     };
 
 
@@ -1847,7 +1873,6 @@ if (typeof(world) === 'undefined') {
     world.Kernel.isRectangleImage=function(x) { return x instanceof RectangleImage; };
     world.Kernel.isPolygonImage = function(x) { return x instanceof PolygonImage; };
     world.Kernel.isRhombusImage = function(x) { return x instanceof RhombusImage; };
-    world.Kernel.isSquareImage  = function(x) { return x instanceof SquareImage; };
     world.Kernel.isTriangleImage= function(x) { return x instanceof TriangleImage; };
     world.Kernel.isRightTriangleImage = function(x) { return x instanceof RightTriangleImage; };
     world.Kernel.isEllipseImage = function(x) { return x instanceof EllipseImage; };
