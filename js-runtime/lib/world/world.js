@@ -272,19 +272,25 @@ if (typeof(world) === 'undefined') {
         return canvas;
     };
 
-
-
-
     BaseImage.prototype.toWrittenString = function(cache) { return "<image>"; };
     BaseImage.prototype.toDisplayedString = function(cache) { return "<image>"; };
 
+    // will two Images produce the same pixels?
     BaseImage.prototype.isEqual = function(other, aUnionFind) {
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY);
+      var c1 = this.toDomNode(), c2 = this.toDomNode();
+      // if their dimensions don't match, we can bail right now
+      if(c1.width !== c2.width || c1.height !== c2.height){ return false;}
+      var ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d'),
+          data1 = ctx1.getImageData(0, 0, c1.width, c1.height),
+          data2 = ctx1.getImageData(0, 0, c2.width, c2.height),
+          pixels1 = data1.data,
+          pixels2 = data2.data;
+      // compare their pixels one by one
+      for(var i = 0; i < pixels1.length; i++){
+          if(pixels1[i] !== pixels2[i]){ return false; }
+      }
+      return true;
     };
-
-
-
 
     // isScene: any -> boolean
     // Produces true when x is a scene.
