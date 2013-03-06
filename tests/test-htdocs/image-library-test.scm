@@ -364,7 +364,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TRIANGLE, RIGHT TRIANGLE & ISOSCELES-TRIANGLE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-"Three right triangles of various sizes and fills"
+"Three triangles of various sizes and fills"
 (triangle 36 "solid" "darkslategray")
 (triangle  4 "solid" "purple")
 (triangle 30 "solid" "cornflowerblue")
@@ -479,6 +479,9 @@
  (rotate 30 (square 50 "solid" "red"))
  (flip-horizontal
   (rotate 30 (square 50 "solid" "blue"))))
+
+"A solid blue triangle, rotated 30 degrees after moving its pinhole: should be flush left"
+(rotate 30 (put-pinhole (triangle 100 "solid" "blue") 0 (image-height (triangle 100 "solid" "blue") )))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SCALE & SCALE/XY
