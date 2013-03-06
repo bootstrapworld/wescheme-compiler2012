@@ -59,12 +59,6 @@ if (typeof(world) === 'undefined') {
     };
 
 
-
-
-
-
-
-
     // changeWorld: world -> void
     // Changes the current world to newWorld.
     var changeWorld = function(newWorld) {
@@ -957,13 +951,16 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
     // RhombusImage: Number Number Mode Color -> Image
-    // TODO: calculate vertices array in the constructor
     var RhombusImage = function(side, angle, style, color) {
         // sin(angle/2-in-radians) * side = half of base
         this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
         // cos(angle/2-in-radians) * side = half of height
         this.height = Math.abs(Math.cos(angle/2 * Math.PI / 180)) * side * 2;
-        BaseImage.call(this, this.width/2, this.height/2);
+        this.vertices = [{x:this.width/2, y:0},
+                         {x:this.width,   y:this.height/2},
+                         {x:this.width/2, y:this.height},
+                         {x:0,            y:this.height/2}];
+        BaseImage.call(this, this.width/2, this.height/2, this.vertices);
         this.side = side;
         this.angle = angle;
         this.style = style;
@@ -971,17 +968,15 @@ if (typeof(world) === 'undefined') {
     };
     RhombusImage.prototype = heir(BaseImage.prototype);
 
-
     RhombusImage.prototype.render = function(ctx, x, y) {
         ctx.save();
         ctx.beginPath();
-        // if angle < 180 start at the top of the canvas, otherwise start at the bottom
-        ctx.moveTo(x+this.getWidth()/2, y);
-        ctx.lineTo(x+this.getWidth(), y+this.getHeight()/2);
-        ctx.lineTo(x+this.getWidth()/2, y+this.getHeight());
-        ctx.lineTo(x, y+this.getHeight()/2);
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
+        }
         ctx.closePath();
-        
+ 
         if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
@@ -1014,7 +1009,7 @@ if (typeof(world) === 'undefined') {
 
 
     //////////////////////////////////////////////////////////////////////
-
+    // TODO: DO WE NEED THIS?
     var ImageDataImage = function(imageData) {
       var vertices = [{x:0,y:0},
                       {x:imageData.width,y:0},
@@ -1263,7 +1258,6 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
     // StarImage: fixnum fixnum fixnum color -> image
-    // TODO: calcutate the vertices array in the constructor
     var StarImage = function(points, outer, inner, style, color) {
         this.points     = points;
         this.outer      = outer;
@@ -1273,9 +1267,17 @@ if (typeof(world) === 'undefined') {
         this.radius     = Math.max(this.inner, this.outer);
         this.width      = this.radius*2;
         this.height     = this.radius*2;
+        this.vertices   = [];
+        for(var pt = 0; pt < (this.points * 2) + 1; pt++ ) {
+          var rads = ( ( 360 / (2 * this.points) ) * pt ) * oneDegreeAsRadian - 0.5;
+          var radius = ( pt % 2 === 1 ) ? this.outer : this.inner;
+          this.vertices.push({x:this.radius + ( Math.sin( rads ) * radius ),
+                              y:this.radius + ( Math.cos( rads ) * radius )} );
+        }
         BaseImage.call(this,
-                     Math.max(outer, inner),
-                     Math.max(outer, inner));
+                       Math.max(outer, inner),
+                       Math.max(outer, inner),
+                       this.vertices);
     };
 
     StarImage.prototype = heir(BaseImage.prototype);
@@ -1289,11 +1291,9 @@ if (typeof(world) === 'undefined') {
     StarImage.prototype.render = function(ctx, x, y) {
         ctx.save();
         ctx.beginPath();
-        for( var pt = 0; pt < (this.points * 2) + 1; pt++ ) {
-            var rads = ( ( 360 / (2 * this.points) ) * pt ) * oneDegreeAsRadian - 0.5;
-            var radius = ( pt % 2 === 1 ) ? this.outer : this.inner;
-            ctx.lineTo(x + this.radius + ( Math.sin( rads ) * radius ), 
-                       y + this.radius + ( Math.cos( rads ) * radius ) );
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
         }
         ctx.closePath();
         if (this.style.toString().toLowerCase() === "outline") {
@@ -1321,14 +1321,23 @@ if (typeof(world) === 'undefined') {
 
     /////////////////////////////////////////////////////////////////////
     //TriangleImage: Number Number Mode Color -> Image
-    // TODO: calcutate the vertices array in the constructor
     var TriangleImage = function(side, angle, style, color) {
         // sin(angle/2-in-radians) * side = half of base
         this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
         // cos(angle/2-in-radians) * side = height of altitude
         this.height = Math.floor(Math.abs(Math.cos(angle/2 * Math.PI / 180)) * side);
-        
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2));
+        this.vertices = [];
+        // if angle < 180 start at the top of the canvas, otherwise start at the bottom
+        if(angle < 180){
+          this.vertices.push({x:this.width/2, y:0});
+          this.vertices.push({x:0,            y:this.height});
+          this.vertices.push({x:this.width,   y:this.height});
+        } else {
+          this.vertices.push({x:this.width/2, y:this.height});
+          this.vertices.push({x:0,            y:0});
+          this.vertices.push({x:this.width,   y:0});
+        }
+        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), this.vertices);
         this.side = side;
         this.angle = angle;
         this.style = style;
@@ -1342,15 +1351,9 @@ if (typeof(world) === 'undefined') {
         var height = this.getHeight();
         ctx.save();
         ctx.beginPath();
-        // if angle < 180 start at the top of the canvas, otherwise start at the bottom
-        if(this.angle < 180){
-            ctx.moveTo(x+width/2, y);
-            ctx.lineTo(x, y+height);
-            ctx.lineTo(x+width, y+height);              
-        } else {
-            ctx.moveTo(x+width/2, y+height);
-            ctx.lineTo(x, y);
-            ctx.lineTo(x+width, y);                             
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
         }
         ctx.closePath();
         
@@ -1377,12 +1380,14 @@ if (typeof(world) === 'undefined') {
 
     /////////////////////////////////////////////////////////////////////
     //RightTriangleImage: Number Number Mode Color -> Image
-    // TODO: calcutate the vertices array in the constructor
     var RightTriangleImage = function(side1, side2, style, color) {
         this.width = side1;
         this.height = side2;
-        
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2));
+        this.vertices = [{x:0,     y:side2},
+                         {x:side1, y:side2},
+                         {x:0,     y:0}];
+ 
+        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), this.vertices);
         this.side1 = side1;
         this.side2 = side2;
         this.style = style;
@@ -1390,17 +1395,17 @@ if (typeof(world) === 'undefined') {
     };
     RightTriangleImage.prototype = heir(BaseImage.prototype);
 
-
     RightTriangleImage.prototype.render = function(ctx, x, y) {
         var width = this.getWidth();
         var height = this.getHeight();
         ctx.save();
         ctx.beginPath();
-        ctx.moveTo(x, y+this.side2);
-        ctx.lineTo(x+this.side1, y+this.side2);
-        ctx.lineTo(x, y);
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
+        }
         ctx.closePath();
-        
+ 
         if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
@@ -1479,28 +1484,24 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
     //Line: Number Number Color Boolean -> Image
-    // TODO: calcutate the vertices array in the constructor
     var LineImage = function(x, y, color, normalPinhole) {
         if (x >= 0) {
-            if (y >= 0) {
-                BaseImage.call(this, 0, 0);
-            } else {
-                BaseImage.call(this, 0, -y);
-            }
+          if (y >= 0) {
+            BaseImage.call(this, 0, 0, [{x: 0, y:0}, {x:x, y:y}]);
+          } else {
+            BaseImage.call(this, 0, -y, [{x: 0, y:-y}, {x:x, y:0}]);
+          }
         } else {
-            if (y >= 0) {
-                BaseImage.call(this, -x, 0);
-            } else {
-                BaseImage.call(this, -x, -y);
-            }
+          if (y >= 0) {
+            BaseImage.call(this, -x, 0, [{x: -x, y:0}, {x:0, y:y}]);
+          } else {
+            BaseImage.call(this, -x, -y, [{x: -x, y:-y}, {x:0, y:0}]);
+          }
         }
-        
-        this.x = x;
-        this.y = y;
         this.color = color;
         this.width = Math.abs(x) + 1;
         this.height = Math.abs(y) + 1;
-        
+ 
         // put the pinhle in the center of the image
         if(normalPinhole){
             this.pinholeX = this.width/2;
@@ -1514,27 +1515,12 @@ if (typeof(world) === 'undefined') {
     LineImage.prototype.render = function(ctx, xstart, ystart) {
         ctx.save();
         ctx.beginPath();
-        ctx.strokeStyle = colorString(this.color);
-        if (this.x >= 0) {
-            if (this.y >= 0) {
-                ctx.moveTo(xstart, ystart);
-                ctx.lineTo((xstart + this.x),
-                           (ystart + this.y));
-            } else {
-                ctx.moveTo(xstart, ystart + (-this.y));
-                ctx.lineTo(xstart + this.x, ystart);
-            }
-        } else {
-            if (this.y >= 0) {
-                ctx.moveTo(xstart + (-this.x), ystart);
-                ctx.lineTo(xstart,
-                           (ystart + this.y));          
-            } else {
-                ctx.moveTo(xstart + (-this.x), ystart + (-this.y));
-                ctx.lineTo(xstart, ystart);
-            }
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
         }
         ctx.closePath();
+        ctx.strokeStyle = colorString(this.color);
         ctx.stroke();
         ctx.restore();
     };
