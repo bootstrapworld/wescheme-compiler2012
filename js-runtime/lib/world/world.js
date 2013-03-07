@@ -172,7 +172,15 @@ if (typeof(world) === 'undefined') {
                 thing !== undefined &&
                 thing instanceof BaseImage);
     };
-
+ 
+    // given two arrays of {x,y} structs, determine their equivalence
+    var verticesEqual = function(v1, v2){
+        if(v1.length !== v2.length){ return false; }
+        for(var i=0; i< v1.length; i++){
+            if(v1[i].x !== v2[i].x || v1[i].y !== v2[i].y){ return false; }
+        }
+        return true;
+    };
 
 
     BaseImage.prototype.updatePinhole = function(x, y) {
@@ -199,7 +207,7 @@ if (typeof(world) === 'undefined') {
     // If the image isn't vertex-based, throw an error
     // Otherwise, stroke and fill the vertices.
     BaseImage.prototype.render = function(ctx, x, y) {
-        if(this.vertices.length == 0){
+        if(this.vertices.length === 0){
             throw new Error('BaseImage.render unimplemented!');
         }
         ctx.save();
@@ -280,19 +288,30 @@ if (typeof(world) === 'undefined') {
     BaseImage.prototype.toWrittenString = function(cache) { return "<image>"; };
     BaseImage.prototype.toDisplayedString = function(cache) { return "<image>"; };
 
-    // will two Images produce pixel-equivalent canvases?
+    // Best-Guess equivalence for images. If they're vertex-based we're in luck,
+    // otherwise we go pixel-by-pixel. It's up to exotic image types to provide
+    // more efficient ways of comparing one another
     BaseImage.prototype.isEqual = function(other, aUnionFind) {
+      // if it's a vertex-based image, all we need to compare are
+      // types, pinholes, styles, vertices and color
+      if(this.vertices > 0){
+          return (this.__proto__ === other.__proto__ &&
+                  this.pinholeX === other.pinholeX &&
+                  this.pinholeY === other.pinholeY &&
+                  this.style    === other.style &&
+                  verticesEqual(this.vertices, other.vertices) &&
+                  types.isEqual(this.color, other.color, aUnionFind));
+      }
+      // if it's something more sophisticated, fall back to pixel comparisons
+      // Check canvas dimensions, then # of pixels, then finally every pixel
       var c1 = this.toDomNode(), c2 = other.toDomNode();
-      // compare canvas dimensions
       if(c1.width !== c2.width || c1.height !== c2.height){ return false;}
       var ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d'),
           data1 = ctx1.getImageData(0, 0, c1.width, c1.height),
           data2 = ctx1.getImageData(0, 0, c2.width, c2.height),
           pixels1 = data1.data,
           pixels2 = data2.data;
-      // compare # of pixels
       if(pixels1.length !== pixels2.length){ return false;}
-      // compare their pixels one by one
       for(var i = 0; i < pixels1.length; i++){
           if(pixels1[i] !== pixels2[i]){ return false; }
       }
@@ -930,22 +949,20 @@ if (typeof(world) === 'undefined') {
         return this.width;
     };
 
-
     RectangleImage.prototype.getHeight = function() {
         return this.height;
     };
-
-    RectangleImage.prototype.isEqual = function(other, aUnionFind) {
+ 
+     RectangleImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof RectangleImage)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
         }
         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.width    === other.width &&
-                this.height   === other.height &&
                 this.style    === other.style &&
+                verticesEqual(this.vertices, other.vertices) &&
                 types.isEqual(this.color, other.color, aUnionFind));
-    };
+        };
 
 
     //////////////////////////////////////////////////////////////////////
@@ -982,9 +999,8 @@ if (typeof(world) === 'undefined') {
         }
         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.side     === other.side &&
-                this.angle    === other.angle &&
                 this.style    === other.style &&
+                verticesEqual(this.vertices, other.vertices) &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1092,10 +1108,8 @@ if (typeof(world) === 'undefined') {
         }
         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.length   === other.length &&
-                this.step     === other.step &&
-                this.count    === other.count &&
                 this.style    === other.style &&
+                verticesEqual(this.vertices, other.vertices) &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1294,9 +1308,8 @@ if (typeof(world) === 'undefined') {
         }
         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.side     === other.side &&
-                this.angle    === other.angle &&
                 this.style    === other.style &&
+                verticesEqual(this.vertices, other.vertices) &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1323,9 +1336,8 @@ if (typeof(world) === 'undefined') {
         }
         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.side1    === other.side1 &&
-                this.side2    === other.side2 &&
                 this.style    === other.style &&
+                verticesEqual(this.vertices, other.vertices) &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1404,6 +1416,7 @@ if (typeof(world) === 'undefined') {
         this.color = color;
         this.width = Math.abs(x) + 1;
         this.height = Math.abs(y) + 1;
+        // preserve the invariant that all vertex-based images have a style
         this.style = "outline";
  
         // put the pinhle in the center of the image
@@ -1421,13 +1434,10 @@ if (typeof(world) === 'undefined') {
         }
         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.x        === other.x &&
-                this.y        === other.y &&
+                this.style    === other.style &&
+                verticesEqual(this.vertices, other.vertices) &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
-
-
-
 
 
     //////////////////////////////////////////////////////////////////////
