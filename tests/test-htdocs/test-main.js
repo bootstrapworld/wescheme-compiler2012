@@ -3701,6 +3701,10 @@ var runTests = function(after) {
                   "'hasOwnProperty",
                   "'hasOwnProperty");
 
+        queueTest("symbols that should not leak js implementation 3",
+                  "'__proto__",
+                  "'__proto__");
+
 
 
 
