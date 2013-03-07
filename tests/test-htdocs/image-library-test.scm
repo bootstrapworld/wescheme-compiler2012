@@ -55,12 +55,7 @@
 
 "should be a solid green circle: " (circle 20 "solid" "green")
 
-
-(check-expect (image=? (circle 50 "solid" "blue")
-                       (rectangle 20 30 "outline" "turquoise"))
-              #f)
 "should be an outline turquoise rectangle: " (rectangle 20 30 "outline" "turquoise")
-
 
 "should be a solid, mostly-translucent red rectangle: " (rectangle 200 300 10 "red")
 "should be an outline red rectangle: " (rectangle 200 300 "outline" "red")
@@ -74,7 +69,6 @@
 (check-expect (color-blue (make-color 3 4 5)) 5)
 
 (check-expect (image? (empty-scene 20 50)) true)
-(check-expect (image=? (empty-scene 20 50) (empty-scene 20 50)) true)
 
 (check-expect (image? (place-image (circle 50 'solid 'blue)
                                    50
@@ -616,6 +610,48 @@
 (above (flip-vertical (square 20 "solid" (make-color  50  50 255)))
        (square 34 "solid" (make-color 150 150 255)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; IMAGE EQUALITY
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+"checking a circle against a rectangle"
+(check-expect (image=? (circle 50 "solid" "blue")
+                       (rectangle 20 30 "outline" "turquoise"))
+              #f)
+(check-expect (image=? (empty-scene 20 50) (empty-scene 20 50)) true)
+
+"checking a circle against a different one"
+(check-expect (image=? (circle 50 "solid" "blue")
+                       (circle 50 "solid" "turquoise"))
+              #f)
+
+"checking a triangle against a different one"
+(check-expect (image=? (triangle 50 "solid" "blue")
+                       (triangle 50 "outline" "blue"))
+              #f)
+
+"checking a circle against a different one"
+(check-expect (image=? (circle 50 "solid" "blue")
+                       (circle 50 "solid" "turquoise"))
+              #f)
+
+"checking a bitmap against itself"
+(check-expect (image=? (bitmap/url "http://www.bootstrapworld.org/images/icon.gif")
+                       (bitmap/url "http://www.bootstrapworld.org/images/icon.gif"))
+              #t)
+
+"checking a rectangle against itself"
+(check-expect (image=? (rectangle 100 50 "solid" "blue")
+                       (rectangle 100 50 "solid" "blue"))
+              #t)
+
+"checking a rhombus against itself"
+(check-expect (image=? (rhombus 100 50 "solid" "blue")
+                       (rhombus 100 50 "solid" "blue"))
+              #t)
+"checking a rectangle against its equivalent polygon"
+(check-expect (image=? (regular-polygon 40 4 "solid" "black")
+                       (rectangle 40 40 "solid" "black"))
+              #t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IMAGE PROPERTIES
