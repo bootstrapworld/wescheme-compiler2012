@@ -17,6 +17,9 @@ var appendChild = function(parent, child) {
 };
 
 
+
+var hasOwnProperty = {}.hasOwnProperty;
+
 //////////////////////////////////////////////////////////////////////
 
 
@@ -563,9 +566,8 @@ var symbolCache = {};
 // makeInstance: string -> Symbol.
 Symbol.makeInstance = function(val) {
     // To ensure that we can eq? symbols with equal values.
-    if (!(val in symbolCache)) {
+    if (!(hasOwnProperty.call(symbolCache, val))) {
 	symbolCache[val] = new Symbol(val);
-    } else {
     }
     return symbolCache[val];
 };
@@ -601,6 +603,11 @@ Symbol.prototype.toDomNode = function(cache) {
 
 //////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
 // Keywords
 
 var Keyword = function(val) {
@@ -609,12 +616,12 @@ var Keyword = function(val) {
 
 var keywordCache = {};
     
+
 // makeInstance: string -> Keyword.
 Keyword.makeInstance = function(val) {
     // To ensure that we can eq? symbols with equal values.
-    if (!(val in keywordCache)) {
+    if (!(hasOwnProperty.call(keywordCache, val))) {
 	keywordCache[val] = new Keyword(val);
-    } else {
     }
     return keywordCache[val];
 };
