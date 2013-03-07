@@ -49,6 +49,8 @@ var debugF = function(f_s) {
 }
 
 
+var hasOwnProperty = {}.hasOwnProperty;
+
 var deepEqual = function (obj1, obj2) {
     if (obj1 === obj2) {
 	return true;
@@ -71,14 +73,14 @@ var deepEqual = function (obj1, obj2) {
     }
 
     for (var i in obj1) {
-	if ( obj1.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
-	    if ( !(obj2.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
+	if ( hasOwnProperty.call(obj1, i) && i !== '_eqHashCode' && i !== '_isList') {
+	    if ( !(hasOwnProperty.call(obj2, i) && deepEqual(obj1[i], obj2[i])) )
 		return false;
 	}
     }
     for (var i in obj2) {
-	if ( obj2.hasOwnProperty(i) && i !== '_eqHashCode' && i !== '_isList') {
-	    if ( !(obj1.hasOwnProperty(i) && deepEqual(obj1[i], obj2[i])) )
+	if ( hasOwnProperty.call(obj2, i) && i !== '_eqHashCode' && i !== '_isList') {
+	    if ( !(hasOwnProperty.call(obj1, i) && deepEqual(obj1[i], obj2[i])) )
 		return false;
 	}
     }

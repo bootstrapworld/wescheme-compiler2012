@@ -15,12 +15,12 @@ var world = {};
     var augment = function(o, a) {
 	var oo = {};
 	for (var e in o) {
-	    if (o.hasOwnProperty(e)) {
+	    if (Object.hasOwnProperty.call(o, e)) {
 		oo[e] = o[e];
 	    }
 	}
 	for (var e in a) {
-	    if (a.hasOwnProperty(e)) {
+	    if (Object.hasOwnProperty.call(a, e)) {
 		oo[e] = a[e];
 	    }
 	}

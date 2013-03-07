@@ -106,10 +106,12 @@ State.prototype.save = function() {
 };
 
 
+var hasOwnProperty = {}.hasOwnProperty;
+
 var copyHash = function(hash) {
     var result = {};
     for (var key in hash) {
-	if (hash.hasOwnProperty(key)) {
+	if (hasOwnProperty.call(hash, key)) {
 	    result[key] = hash[key];
 	}
     }
@@ -365,8 +367,8 @@ var getStackTraceFromContinuationMarks = function(contMarkSet) {
 
 var isEqualHash = function(hash1, hash2) {
     for (var key in hash1) {
-	if (hash1.hasOwnProperty(key)) {
-	    if (hash2.hasOwnProperty(key)) {
+	if (hasOwnProperty.call(hash1, key)) {
+	    if (hasOwnProperty.call(hash2, key)) {
 		if (hash1[key] !== hash2[key]) {
 		    return false;
 		}
@@ -376,8 +378,8 @@ var isEqualHash = function(hash1, hash2) {
 	}
     }
     for (var key in hash2) {
-	if (hash2.hasOwnProperty(key)) {
-	    if (hash1.hasOwnProperty(key)) {
+	if (hasOwnProperty.call(hash2, key)) {
+	    if (hasOwnProperty.call(hash1, key)) {
 		if (hash1[key] !== hash2[key]) {
 		    return false;
 		}

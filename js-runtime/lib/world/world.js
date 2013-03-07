@@ -28,7 +28,7 @@ if (typeof(world) === 'undefined') {
         C.prototype = obj;
         var c = new C();
         for (property in obj) {
-            if (obj.hasOwnProperty(property)) {
+            if (Object.hasOwnProperty.call(obj, property)) {
                 c[property] = obj[property];
             }
         }

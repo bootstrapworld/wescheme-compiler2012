@@ -1263,7 +1263,7 @@ var jsworld = {};
     function copy_attribs(node, attribs) {
 	if (attribs)
 	    for (a in attribs) {
-		if (attribs.hasOwnProperty(a)) {
+		if (Object.hasOwnProperty.call(attribs, a)) {
 		    if (typeof attribs[a] == 'function')
 			add_ev(node, a, attribs[a]);
 		    else{

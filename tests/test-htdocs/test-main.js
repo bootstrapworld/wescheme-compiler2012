@@ -3693,6 +3693,16 @@ var runTests = function(after) {
                   "\"(list 1 2)\"");
 
 
+        queueTest("symbols that should not leak js implementation",
+                  "'constructor",
+                  "'constructor");
+
+        queueTest("symbols that should not leak js implementation 2",
+                  "'hasOwnProperty",
+                  "'hasOwnProperty");
+
+
+
 
 
 

@@ -15,7 +15,7 @@ var Compiler = function(options) {
 var encodeUrlParameters = function(hash) {
     var chunks = [];
     for (var key in hash) {
-	if (hash.hasOwnProperty(key)) {
+	if (Object.hasOwnProperty.call(hash, key)) {
 	    chunks.push(encodeURIComponent(key) +"="+ encodeURIComponent(hash[key]));
 	}
     }
