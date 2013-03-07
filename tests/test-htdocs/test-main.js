@@ -410,7 +410,7 @@ var runTests = function(after) {
         var listOfPrograms = JSON.parse(data);
         forEachK(
             function(programName, k) {
-                jQuery.ajax({url : "/" + programName}).done(function(programText) {
+                jQuery.ajax({url : "/getTestProgram?name=" + encodeURIComponent(programName) }).done(function(programText) {
                     $(document.body).append("Running: " + programName);
                     $(document.body).append("<br/>");
                     evaluator.executeProgram(programName,

@@ -9,6 +9,8 @@
 (require web-server/servlet
          web-server/servlet-env
          scheme/runtime-path
+         racket/path
+         racket/port
          scheme/match
          scheme/list
          racket/cmdline
@@ -99,6 +101,8 @@
     (cond
      [(url-matches? (request-uri request) "listTestPrograms")
       (list-test-programs request)]
+     [(url-matches? (request-uri request) "getTestProgram")
+      (get-test-program request)]
      [else
       (let*-values ([(program-name)
                      (string->symbol
@@ -123,6 +127,26 @@
     (write-json test-programs output-port)
     (close-output-port output-port)
     response))
+
+
+
+;; get-test-program: request -> response
+;; Write out the content of the test file as the response.
+(define (get-test-program request)
+  (let-values  ([(response output-port) 
+                 (make-port-response #:mime-type #"text/plain")])
+    (define base-name 
+      (file-name-from-path
+       (extract-binding/single 'name (request-bindings request))))
+    (define filename (build-path test-htdocs base-name))
+    (when (file-exists? filename)
+      (call-with-input-file filename 
+        (lambda (ip)
+          (copy-port ip output-port))))
+    (close-output-port output-port)
+    response))
+
+
 
 
 
@@ -417,7 +441,7 @@
 (serve/servlet start 
                #:port port
                #:servlet-path "/"
-               #:servlet-regexp #px"^/(servlets/standalone.ss|listTestPrograms)"
+               #:servlet-regexp #px"^/(servlets/standalone.ss|listTestPrograms|getTestProgram)"
                #:extra-files-paths (list test-htdocs misc-runtime htdocs compat easyxdm)
                #:launch-browser? #t
                #:listen-ip #f)
