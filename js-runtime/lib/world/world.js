@@ -175,9 +175,13 @@ if (typeof(world) === 'undefined') {
  
     // given two arrays of {x,y} structs, determine their equivalence
     var verticesEqual = function(v1, v2){
-        if(v1.length !== v2.length){ return false; }
+        if(v1.length !== v2.length){
+          return false;
+        }
         for(var i=0; i< v1.length; i++){
-            if(v1[i].x !== v2[i].x || v1[i].y !== v2[i].y){ return false; }
+          if(v1[i].x !== v2[i].x || v1[i].y !== v2[i].y){
+            return false;
+          }
         }
         return true;
     };
@@ -294,9 +298,8 @@ if (typeof(world) === 'undefined') {
     BaseImage.prototype.isEqual = function(other, aUnionFind) {
       // if it's a vertex-based image, all we need to compare are
       // types, pinholes, styles, vertices and color
-      if(this.vertices > 0){
-          return (this.__proto__ === other.__proto__ &&
-                  this.pinholeX === other.pinholeX &&
+      if(this.vertices.length > 0 && other.vertices.length > 0){
+          return (this.pinholeX === other.pinholeX &&
                   this.pinholeY === other.pinholeY &&
                   this.style    === other.style &&
                   verticesEqual(this.vertices, other.vertices) &&
@@ -896,7 +899,6 @@ if (typeof(world) === 'undefined') {
         ctx.restore();
     };
 
-
     FlipImage.prototype.getWidth = function() {
         return this.width;
     };
@@ -936,7 +938,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // RectangleImage: Number Number Mode Color -> Image
     var RectangleImage = function(width, height, style, color) {
-        var vertices = [{x:0,y:0},{x:width,y:0},{x:width,y:height},{x:0,y:height}];
+        var vertices = [{x:0,y:height},{x:0,y:0},{x:width,y:0},{x:width,y:height}];
         BaseImage.call(this, width/2, height/2, vertices);
         this.width = width;
         this.height = height;
@@ -953,18 +955,6 @@ if (typeof(world) === 'undefined') {
         return this.height;
     };
  
-     RectangleImage.prototype.isEqual = function(other, aUnionFind) {
-        if (!(other instanceof RectangleImage)) {
-          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
-        }
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY &&
-                this.style    === other.style &&
-                verticesEqual(this.vertices, other.vertices) &&
-                types.isEqual(this.color, other.color, aUnionFind));
-        };
-
-
     //////////////////////////////////////////////////////////////////////
     // RhombusImage: Number Number Mode Color -> Image
     var RhombusImage = function(side, angle, style, color) {
@@ -988,22 +978,9 @@ if (typeof(world) === 'undefined') {
         return this.width;
     };
 
-
     RhombusImage.prototype.getHeight = function() {
         return this.height;
     };
-
-    RhombusImage.prototype.isEqual = function(other, aUnionFind) {
-        if (!(other instanceof RhombusImage)) {
-          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
-        }
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY &&
-                this.style    === other.style &&
-                verticesEqual(this.vertices, other.vertices) &&
-                types.isEqual(this.color, other.color, aUnionFind));
-    };
-
 
     //////////////////////////////////////////////////////////////////////
     // TODO: DO WE NEED THIS?
@@ -1040,9 +1017,6 @@ if (typeof(world) === 'undefined') {
         // FIXME
     };
 
-
-
-
     //////////////////////////////////////////////////////////////////////
     // PolygonImage: Number Count Step Mode Color -> Image
     //
@@ -1068,8 +1042,8 @@ if (typeof(world) === 'undefined') {
             // rotate to the next vertex (skipping by this.step)
             radians = radians + (step*2*Math.PI/count);
             
-            var v = {   x: this.outerRadius*Math.cos(radians-adjust),
-                        y: this.outerRadius*Math.sin(radians-adjust) };
+            var v = {   x: Math.round(this.outerRadius*Math.cos(radians-adjust)),
+                        y: Math.round(this.outerRadius*Math.sin(radians-adjust)) };
             if(v.x < xMin){ xMin = v.x; }
             if(v.x > xMax){ xMax = v.y; }
             if(v.y < yMin){ yMin = v.x; }
@@ -1101,18 +1075,6 @@ if (typeof(world) === 'undefined') {
         BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), vertices);
     };
     PolygonImage.prototype = heir(BaseImage.prototype);
-
-    PolygonImage.prototype.isEqual = function(other, aUnionFind) {
-        if (!(other instanceof PolygonImage)) {
-          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
-        }
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY &&
-                this.style    === other.style &&
-                verticesEqual(this.vertices, other.vertices) &&
-                types.isEqual(this.color, other.color, aUnionFind));
-    };
-
 
     var maybeQuote = function(s) {
         if (/ /.test(s)) {
@@ -1184,7 +1146,6 @@ if (typeof(world) === 'undefined') {
 
     TextImage.prototype.render = function(ctx, x, y) {
         ctx.save();
-
         ctx.textAlign   = 'left';
         ctx.textBaseline= 'top';
         ctx.fillStyle   = colorString(this.color);
@@ -1207,7 +1168,6 @@ if (typeof(world) === 'undefined') {
         }
         ctx.restore();
     };
-
 
     TextImage.prototype.getBaseline = function() {
         return this.size;
@@ -1245,6 +1205,8 @@ if (typeof(world) === 'undefined') {
         this.width      = this.radius*2;
         this.height     = this.radius*2;
         this.vertices   = [];
+ 
+        var oneDegreeAsRadian = Math.PI / 180;
         for(var pt = 0; pt < (this.points * 2) + 1; pt++ ) {
           var rads = ( ( 360 / (2 * this.points) ) * pt ) * oneDegreeAsRadian - 0.5;
           var radius = ( pt % 2 === 1 ) ? this.outer : this.inner;
@@ -1258,23 +1220,6 @@ if (typeof(world) === 'undefined') {
     };
 
     StarImage.prototype = heir(BaseImage.prototype);
-
-    var oneDegreeAsRadian = Math.PI / 180;
-
-    StarImage.prototype.isEqual = function(other, aUnionFind) {
-        if (!(other instanceof StarImage)) {
-          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
-        }
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY &&
-                this.points   === other.points &&
-                this.outer    === other.outer &&
-                this.inner    === other.inner &&
-                this.style    === other.style &&
-                types.isEqual(this.color, other.color, aUnionFind));
-    };
-
-
 
     /////////////////////////////////////////////////////////////////////
     //TriangleImage: Number Number Mode Color -> Image
@@ -1302,17 +1247,6 @@ if (typeof(world) === 'undefined') {
     };
     TriangleImage.prototype = heir(BaseImage.prototype);
 
-    TriangleImage.prototype.isEqual = function(other, aUnionFind) {
-        if (!(other instanceof TriangleImage)) {
-          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
-        }
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY &&
-                this.style    === other.style &&
-                verticesEqual(this.vertices, other.vertices) &&
-                types.isEqual(this.color, other.color, aUnionFind));
-    };
-
     /////////////////////////////////////////////////////////////////////
     //RightTriangleImage: Number Number Mode Color -> Image
     var RightTriangleImage = function(side1, side2, style, color) {
@@ -1330,17 +1264,6 @@ if (typeof(world) === 'undefined') {
     };
     RightTriangleImage.prototype = heir(BaseImage.prototype);
 
-    RightTriangleImage.prototype.isEqual = function(other, aUnionFind) {
-        if (!(other instanceof RightTriangleImage)) {
-            return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
-        }
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY &&
-                this.style    === other.style &&
-                verticesEqual(this.vertices, other.vertices) &&
-                types.isEqual(this.color, other.color, aUnionFind));
-    };
-
     //////////////////////////////////////////////////////////////////////
     //Ellipse : Number Number Mode Color -> Image
     var EllipseImage = function(width, height, style, color) {
@@ -1352,7 +1275,6 @@ if (typeof(world) === 'undefined') {
     };
 
     EllipseImage.prototype = heir(BaseImage.prototype);
-
 
     EllipseImage.prototype.render = function(ctx, aX, aY) {
         ctx.save();
@@ -1427,18 +1349,6 @@ if (typeof(world) === 'undefined') {
     };
 
     LineImage.prototype = heir(BaseImage.prototype);
-
-    LineImage.prototype.isEqual = function(other, aUnionFind) {
-        if (!(other instanceof LineImage)) {
-          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
-        }
-        return (this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY &&
-                this.style    === other.style &&
-                verticesEqual(this.vertices, other.vertices) &&
-                types.isEqual(this.color, other.color, aUnionFind));
-    };
-
 
     //////////////////////////////////////////////////////////////////////
     // Effects
@@ -1759,7 +1669,6 @@ if (typeof(world) === 'undefined') {
     world.Kernel.fileVideo = function(path, rawVideo) {
         return FileVideo.makeInstance(path, rawVideo);
     };
-
 
     world.Kernel.isSceneImage   = function(x) { return x instanceof SceneImage; };
     world.Kernel.isStarImage    = function(x) { return x instanceof StarImage; };
