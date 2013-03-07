@@ -11,14 +11,12 @@ if (typeof(world) === 'undefined') {
     var stopped;
     var timerInterval = false;
 
-
     // Inheritance from pg 168: Javascript, the Definitive Guide.
     var heir = function(p) {
         var f = function() {};
         f.prototype = p;
         return new f();
     };
-
 
     // clone: object -> object
     // Copies an object.  The new object should respond like the old
@@ -35,9 +33,6 @@ if (typeof(world) === 'undefined') {
         }
         return c;
     };
-
-
-
 
     var announceListeners = [];
     world.Kernel.addAnnounceListener = function(listener) {
@@ -201,12 +196,28 @@ if (typeof(world) === 'undefined') {
     // Render the image, where the upper-left corner of the image is drawn at
     // (x, y).
     // NOTE: the rendering should be oblivous to the pinhole.
+    // If the image isn't vertex-based, throw an error
+    // Otherwise, stroke and fill the vertices.
     BaseImage.prototype.render = function(ctx, x, y) {
-        throw new Error('BaseImage.render unimplemented!');
-        //      plt.Kernel.throwMobyError(
-        //          false, 
-        //          "make-moby-error-type:generic-runtime-error", 
-        //          "Unimplemented method render");
+        if(this.vertices.length == 0){
+            throw new Error('BaseImage.render unimplemented!');
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+            ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
+        }
+        ctx.closePath();
+       
+        if (this.style.toString().toLowerCase() === "outline") {
+            ctx.strokeStyle = colorString(this.color);
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = colorString(this.color, this.style);
+            ctx.fill();
+        }
+        ctx.restore();
     };
 
 
@@ -269,16 +280,18 @@ if (typeof(world) === 'undefined') {
     BaseImage.prototype.toWrittenString = function(cache) { return "<image>"; };
     BaseImage.prototype.toDisplayedString = function(cache) { return "<image>"; };
 
-    // will two Images produce the same pixels?
+    // will two Images produce pixel-equivalent canvases?
     BaseImage.prototype.isEqual = function(other, aUnionFind) {
-      var c1 = this.toDomNode(), c2 = this.toDomNode();
-      // if their dimensions don't match, we can bail right now
+      var c1 = this.toDomNode(), c2 = other.toDomNode();
+      // compare canvas dimensions
       if(c1.width !== c2.width || c1.height !== c2.height){ return false;}
       var ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d'),
           data1 = ctx1.getImageData(0, 0, c1.width, c1.height),
           data2 = ctx1.getImageData(0, 0, c2.width, c2.height),
           pixels1 = data1.data,
           pixels2 = data2.data;
+      // compare # of pixels
+      if(pixels1.length !== pixels2.length){ return false;}
       // compare their pixels one by one
       for(var i = 0; i < pixels1.length; i++){
           if(pixels1[i] !== pixels2[i]){ return false; }
@@ -329,8 +342,6 @@ if (typeof(world) === 'undefined') {
             ctx.save();
             childImage.render(ctx, childX + x, childY + y);
             ctx.restore();
-
-
         }
         // Finally, draw the black border if withBorder is true
         if (this.withBorder) {
@@ -339,15 +350,16 @@ if (typeof(world) === 'undefined') {
         }
     };
 
+    // use pixel equality if we have to, otherwise use structural equality
     SceneImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof SceneImage)) {
-            return false;
-        } 
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
 
         if (this.pinholeX !== other.pinholeX ||
             this.pinholeY !== other.pinholeY ||
-            this.width !== other.width ||
-            this.height !== other.height ||
+            this.width    !== other.width ||
+            this.height   !== other.height ||
             this.children.length !== other.children.length) {
             return false;
         }
@@ -431,8 +443,6 @@ if (typeof(world) === 'undefined') {
     };
 
 
-
-
     FileImage.prototype.render = function(ctx, x, y) {    
         ctx.drawImage(this.animationHackImg, x, y);
     };
@@ -472,13 +482,16 @@ if (typeof(world) === 'undefined') {
     FileImage.prototype.toDomNode = function(cache) {
         return this.img.cloneNode(true);
     };
-
+ 
+    // use pixel equality if we have to, otherwise use structural equality
     FileImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof FileImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof FileImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.src === other.src);
-        //                  types.isEqual(this.img, other.img, aUnionFind));
+                this.src      === other.src);
     };
 
     //////////////////////////////////////////////////////////////////////
@@ -543,10 +556,12 @@ if (typeof(world) === 'undefined') {
     };
 
     FileVideo.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof FileVideo &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof FileVideo)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.src === other.src);
+                this.src      === other.src);
     };
 
 
@@ -605,10 +620,6 @@ if (typeof(world) === 'undefined') {
         // update the height and width of the image
         this.width = Math.floor(Math.max(x1 + img1.getWidth(), x2 + img2.getWidth()) - Math.min(x1, x2));
         this.height = Math.floor(Math.max(y1 + img1.getHeight(), y2 + img2.getHeight()) - Math.min(y1, y2));
-        // translate the vertices of both images, and concatenate them
-        var translateImg1Vertices = function(p){return {x:p.x+x2, y: p.y+y2};};
-        var translateImg2Vertices = function(p){return {x:p.x+x2, y: p.y+y2};};
-        this.vertices = img1.vertices.map(translateImg1Vertices).concat(img2.vertices.map(translateImg2Vertices));
         // store the offsets for rendering
         this.x1 = Math.floor(x1);
         this.y1 = Math.floor(y1);
@@ -628,22 +639,19 @@ if (typeof(world) === 'undefined') {
     };
 
     OverlayImage.prototype.isEqual = function(other, aUnionFind) {
-        // return ( other instanceof OverlayImage &&
-        //          this.pinholeX == other.pinholeX &&
-        //          this.pinholeY == other.pinholeY &&
-        //          this.width == other.width &&
-        //          this.height == other.height &&
-        //          this.img1Dx == other.img1Dx &&
-        //          this.img1Dy == other.img1Dy &&
-        //          this.img2Dx == other.img2Dx &&
-        //          this.img2Dy == other.img2Dy &&
-        //          types.isEqual(this.img1, other.img1, aUnionFind) &&
-        //          types.isEqual(this.img2, other.img2, aUnionFind) );
-
-
-        // FIXME
-        return this === other;
-
+        if (!(other instanceof OverlayImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
+               this.pinholeY  === other.pinholeY &&
+               this.width     === other.width &&
+               this.height    === other.height &&
+               this.img1Dx    === other.img1Dx &&
+               this.img1Dy    === other.img1Dy &&
+               this.img2Dx    === other.img2Dx &&
+               this.img2Dy    === other.img2Dy &&
+               types.isEqual(this.img1, other.img1, aUnionFind) &&
+               types.isEqual(this.img2, other.img2, aUnionFind) );
     };
 
 
@@ -703,15 +711,17 @@ if (typeof(world) === 'undefined') {
     };
 
     RotateImage.prototype.isEqual = function(other, aUnionFind) {
-        return ( other instanceof RotateImage &&
-                 this.pinholeX === other.pinholeX &&
-                 this.pinholeY === other.pinholeY &&
-                 this.width === other.width &&
-                 this.height === other.height &&
-                 this.angle === other.angle &&
-                 this.translateX === other.translateX &&
-                 this.translateY === other.translateY &&
-                 types.isEqual(this.img, other.img, aUnionFind) );
+        if (!(other instanceof RotateImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
+               this.pinholeY  === other.pinholeY &&
+               this.width     === other.width &&
+               this.height    === other.height &&
+               this.angle     === other.angle &&
+               this.translateX=== other.translateX &&
+               this.translateY=== other.translateY &&
+               types.isEqual(this.img, other.img, aUnionFind) );
     };
 
     //////////////////////////////////////////////////////////////////////
@@ -745,14 +755,16 @@ if (typeof(world) === 'undefined') {
 
 
     ScaleImage.prototype.isEqual = function(other, aUnionFind) {
-        return ( other instanceof ScaleImage &&
-                 this.pinholeX === other.pinholeX &&
-                 this.pinholeY === other.pinholeY &&
-                 this.width === other.width &&
-                 this.height === other.height &&
-                 this.xFactor === other.xFactor &&
-                 this.yFactor === other.yFactor &&
-                 types.isEqual(this.img, other.img, aUnionFind) );
+        if (!(other instanceof ScaleImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
+               this.pinholeY  === other.pinholeY &&
+               this.width     === other.width &&
+               this.height    === other.height &&
+               this.xFactor   === other.xFactor &&
+               this.yFactor   === other.yFactor &&
+               types.isEqual(this.img, other.img, aUnionFind) );
     };
 
     //////////////////////////////////////////////////////////////////////
@@ -783,14 +795,16 @@ if (typeof(world) === 'undefined') {
     };
 
     CropImage.prototype.isEqual = function(other, aUnionFind) {
-        return ( other instanceof CropImage &&
-                 this.pinholeX === other.pinholeX &&
-                 this.pinholeY === other.pinholeY &&
-                 this.width === other.width &&
-                 this.height === other.height &&
-                 this.x === other.x &&
-                 this.y === other.y &&
-                 types.isEqual(this.img, other.img, aUnionFind) );
+        if (!(other instanceof CropImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
+               this.pinholeY  === other.pinholeY &&
+               this.width     === other.width &&
+               this.height    === other.height &&
+               this.x         === other.x &&
+               this.y         === other.y &&
+               types.isEqual(this.img, other.img, aUnionFind) );
     };
 
     //////////////////////////////////////////////////////////////////////
@@ -822,16 +836,17 @@ if (typeof(world) === 'undefined') {
     };
 
     FrameImage.prototype.isEqual = function(other, aUnionFind) {
-        return ( other instanceof FrameImage &&
-                 this.pinholeX === other.pinholeX &&
-                 this.pinholeY === other.pinholeY &&
-                 types.isEqual(this.img, other.img, aUnionFind) );
+        if (!(other instanceof FrameImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
+               this.pinholeY === other.pinholeY &&
+               types.isEqual(this.img, other.img, aUnionFind) );
     };
 
     //////////////////////////////////////////////////////////////////////
     // FlipImage: image string -> image
     // Flip an image either horizontally or vertically
-    // TODO: flip vertices array
     var FlipImage = function(img, direction) {
         this.img        = img;
         this.width      = img.getWidth();
@@ -872,13 +887,15 @@ if (typeof(world) === 'undefined') {
     };
 
     FlipImage.prototype.isEqual = function(other, aUnionFind) {
-        return ( other instanceof FlipImage &&
-                 this.pinholeX === other.pinholeX &&
-                 this.pinholeY === other.pinholeY &&
-                 this.width === other.width &&
-                 this.height === other.height &&
-                 this.direction === other.direction &&
-                 types.isEqual(this.img, other.img, aUnionFind) );
+        if (!(other instanceof FlipImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
+               this.pinholeY  === other.pinholeY &&
+               this.width     === other.width &&
+               this.height    === other.height &&
+               this.direction === other.direction &&
+               types.isEqual(this.img, other.img, aUnionFind) );
     };
 
 
@@ -911,22 +928,22 @@ if (typeof(world) === 'undefined') {
 
 
     RectangleImage.prototype.render = function(ctx, x, y) {
-        if (this.style.toString().toLowerCase() === "outline") {
-            ctx.save();
-            ctx.beginPath();
-            ctx.strokeStyle = colorString(this.color);
-            ctx.strokeRect(x, y, this.width, this.height);
-            ctx.closePath();
-            ctx.restore();
-        } else {
-            ctx.save();
-            ctx.beginPath();
-            ctx.fillStyle = colorString(this.color, this.style);
-            ctx.fillRect(x, y, this.width, this.height);
-
-            ctx.closePath();
-            ctx.restore();
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
         }
+        ctx.closePath();
+       
+        if (this.style.toString().toLowerCase() === "outline") {
+          ctx.strokeStyle = colorString(this.color);
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = colorString(this.color, this.style);
+          ctx.fill();
+        }
+        ctx.restore();
     };
 
     RectangleImage.prototype.getWidth = function() {
@@ -939,12 +956,14 @@ if (typeof(world) === 'undefined') {
     };
 
     RectangleImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof RectangleImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof RectangleImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.width === other.width &&
-                this.height === other.height &&
-                this.style === other.style &&
+                this.width    === other.width &&
+                this.height   === other.height &&
+                this.style    === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -980,8 +999,7 @@ if (typeof(world) === 'undefined') {
         if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
-        }
-        else {
+        } else {
             ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
@@ -998,12 +1016,14 @@ if (typeof(world) === 'undefined') {
     };
 
     RhombusImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof RhombusImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof RhombusImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.side === other.side &&
-                this.angle === other.angle &&
-                this.style === other.style &&
+                this.side     === other.side &&
+                this.angle    === other.angle &&
+                this.style    === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1087,7 +1107,6 @@ if (typeof(world) === 'undefined') {
             if(vertices[i].y < yMin){ yMin = vertices[i].y-1; }
             if(vertices[i].y > yMax){ yMax = vertices[i].y+1; }
         }
-        
         this.width      = Math.floor(xMax-xMin);
         this.height     = Math.floor(yMax-yMin);
         this.length     = length;
@@ -1095,6 +1114,12 @@ if (typeof(world) === 'undefined') {
         this.step       = step;
         this.style      = style;
         this.color      = color;
+        // shift the vertices by the calculated offsets, now that we know the width
+        var xOffset = Math.round(this.width/2);
+        var yOffset = ((this.count % 2)? this.outerRadius : this.innerRadius);
+        for(i=0; i<vertices.length; i++){
+          vertices[i].x += xOffset; vertices[i].y += yOffset;
+        }
         this.vertices   = vertices;
         BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), vertices);
     };
@@ -1105,38 +1130,34 @@ if (typeof(world) === 'undefined') {
     // center of the canvas. Even-sided polygons highest points are in line with
     // the innerRadius. Odd-sides polygons highest vertex is on the outerRadius
     PolygonImage.prototype.render = function(ctx, x, y) {
-        var xOffset = x+Math.round(this.width/2);
-        var yOffset = y+((this.count % 2)? this.outerRadius : this.innerRadius);
-        
         ctx.save();
-
         ctx.beginPath();
-        ctx.moveTo(xOffset+this.vertices[0].x, yOffset+this.vertices[0].y);
-        for(var i=1; i<this.vertices.length; i++){
-            ctx.lineTo(xOffset+this.vertices[i].x, yOffset+this.vertices[i].y);
+        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
+        for(var i=1; i < this.vertices.length; i++){
+          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
         }
-        ctx.lineTo(xOffset+this.vertices[0].x, yOffset+this.vertices[0].y);
         ctx.closePath();
-        
+       
         if (this.style.toString().toLowerCase() === "outline") {
-            ctx.strokeStyle = colorString(this.color);
-            ctx.stroke();
-        }
-        else {
-            ctx.fillStyle = colorString(this.color, this.style);
-            ctx.fill();
+          ctx.strokeStyle = colorString(this.color);
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = colorString(this.color, this.style);
+          ctx.fill();
         }
         ctx.restore();
     };
 
     PolygonImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof PolygonImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof PolygonImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.length === other.length &&
-                this.step === other.step &&
-                this.count === other.count &&
-                this.style === other.style &&
+                this.length   === other.length &&
+                this.step     === other.step &&
+                this.count    === other.count &&
+                this.style    === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1241,8 +1262,10 @@ if (typeof(world) === 'undefined') {
     };
 
     TextImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof TextImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof TextImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
                 this.msg      === other.msg &&
                 this.size     === other.size &&
@@ -1307,13 +1330,15 @@ if (typeof(world) === 'undefined') {
     };
 
     StarImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof StarImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof StarImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.points === other.points &&
-                this.outer === other.outer &&
-                this.inner === other.inner &&
-                this.style === other.style &&
+                this.points   === other.points &&
+                this.outer    === other.outer &&
+                this.inner    === other.inner &&
+                this.style    === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1369,8 +1394,10 @@ if (typeof(world) === 'undefined') {
     };
 
     TriangleImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof TriangleImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof TriangleImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
                 this.side     === other.side &&
                 this.angle    === other.angle &&
@@ -1396,34 +1423,33 @@ if (typeof(world) === 'undefined') {
     RightTriangleImage.prototype = heir(BaseImage.prototype);
 
     RightTriangleImage.prototype.render = function(ctx, x, y) {
-        var width = this.getWidth();
-        var height = this.getHeight();
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
         for(var i=1; i < this.vertices.length; i++){
-          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
+            ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
         }
         ctx.closePath();
- 
+       
         if (this.style.toString().toLowerCase() === "outline") {
             ctx.strokeStyle = colorString(this.color);
             ctx.stroke();
-        }
-        else {
+        } else {
             ctx.fillStyle = colorString(this.color, this.style);
             ctx.fill();
         }
-        ctx.restore();
+       ctx.restore();
     };
 
     RightTriangleImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof RightTriangleImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof RightTriangleImage)) {
+            return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.side1 === other.side1 &&
-                this.side2 === other.side2 &&
-                this.style === other.style &&
+                this.side1    === other.side1 &&
+                this.side2    === other.side2 &&
+                this.style    === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1467,17 +1493,18 @@ if (typeof(world) === 'undefined') {
             ctx.fill();
         }
 
-
         ctx.restore();
     };
 
     EllipseImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof EllipseImage &&
-                this.pinholeX === other.pinholeX &&
+         if (!(other instanceof EllipseImage)) {
+            return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+         }
+         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.width === other.width &&
-                this.height === other.height &&
-                this.style === other.style &&
+                this.width    === other.width &&
+                this.height   === other.height &&
+                this.style    === other.style &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
@@ -1487,20 +1514,21 @@ if (typeof(world) === 'undefined') {
     var LineImage = function(x, y, color, normalPinhole) {
         if (x >= 0) {
           if (y >= 0) {
-            BaseImage.call(this, 0, 0, [{x: 0, y:0}, {x:x, y:y}]);
+            BaseImage.call(this, 0, 0,    [{x:  0, y:  0}, {x: x, y: y}]);
           } else {
-            BaseImage.call(this, 0, -y, [{x: 0, y:-y}, {x:x, y:0}]);
+            BaseImage.call(this, 0, -y,   [{x:  0, y: -y}, {x: x, y: 0}]);
           }
         } else {
           if (y >= 0) {
-            BaseImage.call(this, -x, 0, [{x: -x, y:0}, {x:0, y:y}]);
+            BaseImage.call(this, -x, 0,   [{x: -x, y:  0}, {x: 0, y: y}]);
           } else {
-            BaseImage.call(this, -x, -y, [{x: -x, y:-y}, {x:0, y:0}]);
+            BaseImage.call(this, -x, -y,  [{x: -x, y: -y}, {x: 0, y: 0}]);
           }
         }
         this.color = color;
         this.width = Math.abs(x) + 1;
         this.height = Math.abs(y) + 1;
+        this.style = "outline";
  
         // put the pinhle in the center of the image
         if(normalPinhole){
@@ -1512,26 +1540,33 @@ if (typeof(world) === 'undefined') {
     LineImage.prototype = heir(BaseImage.prototype);
 
 
-    LineImage.prototype.render = function(ctx, xstart, ystart) {
+    LineImage.prototype.render = function(ctx, x, y) {
         ctx.save();
         ctx.beginPath();
         ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
         for(var i=1; i < this.vertices.length; i++){
-          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
+            ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
         }
         ctx.closePath();
-        ctx.strokeStyle = colorString(this.color);
-        ctx.stroke();
+       
+        if (this.style.toString().toLowerCase() === "outline") {
+            ctx.strokeStyle = colorString(this.color);
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = colorString(this.color, this.style);
+            ctx.fill();
+        }
         ctx.restore();
     };
 
-
     LineImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof LineImage &&
-                this.pinholeX === other.pinholeX &&
+        if (!(other instanceof LineImage)) {
+          return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
+        }
+        return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
-                this.x === other.x &&
-                this.y === other.y &&
+                this.x        === other.x &&
+                this.y        === other.y &&
                 types.isEqual(this.color, other.color, aUnionFind));
     };
 
