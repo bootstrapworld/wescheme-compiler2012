@@ -112,7 +112,6 @@ if (typeof(world) === 'undefined') {
         return keyname;
     };
 
-
     // resetWorld: -> void
     // Resets all of the world global values.
     var resetWorld = function() {
@@ -139,8 +138,6 @@ if (typeof(world) === 'undefined') {
 
         return newWindow;
     };
-
-
 
     // scheduleTimerTick: -> void
     // Repeatedly schedules an evaluation of the onTick until the program has stopped.
@@ -251,8 +248,6 @@ if (typeof(world) === 'undefined') {
         return canvas;
     };
 
-
-
     var withIeHack = function(canvas, f) {
         //      canvas.style.display = 'none';
         //      document.body.appendChild(canvas);
@@ -285,7 +280,6 @@ if (typeof(world) === 'undefined') {
             var ctx = canvas.getContext("2d");
             that.render(ctx, 0, 0);
         };
-
         return canvas;
     };
 
@@ -296,29 +290,36 @@ if (typeof(world) === 'undefined') {
     // otherwise we go pixel-by-pixel. It's up to exotic image types to provide
     // more efficient ways of comparing one another
     BaseImage.prototype.isEqual = function(other, aUnionFind) {
+      if(this.pinholeX !== other.pinholeX ||
+         this.pinholeY !== other.pinholeY ||
+         this.width    !== other.width    ||
+         this.height   !== other.height){ return false; }
       // if it's a vertex-based image, all we need to compare are
-      // types, pinholes, styles, vertices and color
+      // pinholes, styles, vertices and color
       if(this.vertices.length > 0 && other.vertices.length > 0){
-          return (this.pinholeX === other.pinholeX &&
-                  this.pinholeY === other.pinholeY &&
-                  this.style    === other.style &&
+          return (this.style    === other.style &&
                   verticesEqual(this.vertices, other.vertices) &&
                   types.isEqual(this.color, other.color, aUnionFind));
       }
-      // if it's something more sophisticated, fall back to pixel comparisons
-      // Check canvas dimensions, then # of pixels, then finally every pixel
+      // if it's something more sophisticated, render both images to canvases
+      // First check canvas dimensions, then go pixel-by-pixel
       var c1 = this.toDomNode(), c2 = other.toDomNode();
+      c1.afterAttach();  c2.afterAttach();
       if(c1.width !== c2.width || c1.height !== c2.height){ return false;}
-      var ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d'),
-          data1 = ctx1.getImageData(0, 0, c1.width, c1.height),
-          data2 = ctx1.getImageData(0, 0, c2.width, c2.height),
-          pixels1 = data1.data,
-          pixels2 = data2.data;
-      if(pixels1.length !== pixels2.length){ return false;}
-      for(var i = 0; i < pixels1.length; i++){
-          if(pixels1[i] !== pixels2[i]){ return false; }
+      try{
+        var ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d'),
+            data1 = ctx1.getImageData(0, 0, c1.width, c1.height),
+            data2 = ctx2.getImageData(0, 0, c2.width, c2.height);
+        var pixels1 = data1.data,
+            pixels2 = data2.data;
+        for(var i = 0; i < pixels1.length; i++){
+            if(pixels1[i] !== pixels2[i]){ return false; }
+        }
+      } catch(e){
+        // if we violate CORS, just bail
+        return false;
       }
-      return true;
+        return true;
     };
 
     // isScene: any -> boolean
@@ -377,7 +378,6 @@ if (typeof(world) === 'undefined') {
         if (!(other instanceof SceneImage)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
         }
-
         if (this.pinholeX !== other.pinholeX ||
             this.pinholeY !== other.pinholeY ||
             this.width    !== other.width ||
@@ -417,6 +417,8 @@ if (typeof(world) === 'undefined') {
             this.isLoaded = true;
             this.pinholeX = self.img.width / 2;
             this.pinholeY = self.img.height / 2;
+            self.width = self.img.width;
+            self.height = self.img.height;
         } else {
             // fixme: we may want to do something blocking here for
             // onload, since we don't know at this time what the file size
@@ -425,13 +427,10 @@ if (typeof(world) === 'undefined') {
             this.img = new Image();
             this.img.onload = function() {
                 self.isLoaded = true;
+                self.width = self.img.width;
+                self.height = self.img.height;
                 self.pinholeX = self.img.width / 2;
                 self.pinholeY = self.img.height / 2;
-                self.vertices = [{x:0,y:0},
-                                 {x:self.img.width,y:0},
-                                 {x:self.img.width,y:self.img.height},
-                                 {x:0,y:self.img.height}];
-
             };
             this.img.onerror = function(e) {
                 self.img.onerror = "";
@@ -442,7 +441,6 @@ if (typeof(world) === 'undefined') {
         this.installHackToSupportAnimatedGifs(afterInit);
     };
     FileImage.prototype = heir(BaseImage.prototype);
-
 
     var imageCache = {};
     FileImage.makeInstance = function(path, rawImage, afterInit) {
@@ -464,11 +462,9 @@ if (typeof(world) === 'undefined') {
                                          "normal", "Optimer","","",false);
     };
 
-
-    FileImage.prototype.render = function(ctx, x, y) {    
+    FileImage.prototype.render = function(ctx, x, y) {
         ctx.drawImage(this.animationHackImg, x, y);
     };
-
 
     // The following is a hack that we use to allow animated gifs to show
     // as animating on the canvas.
@@ -487,30 +483,18 @@ if (typeof(world) === 'undefined') {
         }
     };
 
-
-
     FileImage.prototype.getWidth = function() {
         return this.img.width;
     };
-
 
     FileImage.prototype.getHeight = function() {
         return this.img.height;
     };
 
-    // Override toDomNode: we don't need a full-fledged canvas here, and
-    // we want to clone the image so that we can have multiple instances
-    // of the image attached to a document.
-    FileImage.prototype.toDomNode = function(cache) {
-        return this.img.cloneNode(true);
-    };
- 
-    // use pixel equality if we have to, otherwise use structural equality
     FileImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof FileImage)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
         }
-
         return (this.pinholeX === other.pinholeX &&
                 this.pinholeY === other.pinholeY &&
                 this.src      === other.src);
@@ -564,7 +548,6 @@ if (typeof(world) === 'undefined') {
     };
     FileVideo.prototype = heir(BaseImage.prototype);
 
-
     var videos = {};
     FileVideo.makeInstance = function(path, rawVideo) {
         if (! (path in FileVideo)) {
@@ -576,7 +559,6 @@ if (typeof(world) === 'undefined') {
     FileVideo.prototype.render = function(ctx, x, y) {
         ctx.drawImage(this.video, x, y);
     };
-
     FileVideo.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof FileVideo)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
@@ -668,10 +650,10 @@ if (typeof(world) === 'undefined') {
                this.pinholeY  === other.pinholeY &&
                this.width     === other.width &&
                this.height    === other.height &&
-               this.img1Dx    === other.img1Dx &&
-               this.img1Dy    === other.img1Dy &&
-               this.img2Dx    === other.img2Dx &&
-               this.img2Dy    === other.img2Dy &&
+               this.x1        === other.x1 &&
+               this.y1        === other.y1 &&
+               this.x2        === other.x2 &&
+               this.y2        === other.y2 &&
                types.isEqual(this.img1, other.img1, aUnionFind) &&
                types.isEqual(this.img2, other.img2, aUnionFind) );
     };
@@ -680,9 +662,13 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // rotate: angle image -> image
     // Rotates image by angle degrees in a counter-clockwise direction.
-    // based on http://stackoverflow.com/questions/3276467/adjusting-div-width-and-height-after-rotated
-    // TODO: rotate vertices array
+    // TODO: special case for ellipse, vertices, and treat everything else like an opaque box
     var RotateImage = function(angle, img) {
+        // special-case for circles
+        if(img instanceof EllipseImage && img.width === img.height){
+           angle = 0;
+        }
+ 
         var sin = Math.sin(angle * Math.PI / 180);
         var cos = Math.cos(angle * Math.PI / 180);
         var width = img.getWidth();
@@ -749,7 +735,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // ScaleImage: factor factor image -> image
     // Scale an image
-    // TODO: scale vertices array
+    // TODO: scale vertices array?
     var ScaleImage = function(xFactor, yFactor, img) {
         
         // resize the image
@@ -792,9 +778,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // CropImage: startX startY width height image -> image
     // Crop an image
-    // TODO: crop vertices array
     var CropImage = function(x, y, width, height, img) {
-        
         BaseImage.call(this, 
                        Math.floor(width / 2),
                        Math.floor(height / 2));
@@ -807,7 +791,6 @@ if (typeof(world) === 'undefined') {
     };
 
     CropImage.prototype = heir(BaseImage.prototype);
-
 
     CropImage.prototype.render = function(ctx, x, y) {
         ctx.save();
@@ -845,7 +828,6 @@ if (typeof(world) === 'undefined') {
 
     FrameImage.prototype = heir(BaseImage.prototype);
 
-
     // scale the context, and pass it to the image's render function
     FrameImage.prototype.render = function(ctx, x, y) {
         ctx.save();
@@ -872,8 +854,8 @@ if (typeof(world) === 'undefined') {
     var FlipImage = function(img, direction) {
         this.img        = img;
         this.width      = img.getWidth();
-        this.height = img.getHeight();
-        this.direction = direction;
+        this.height     = img.getHeight();
+        this.direction  = direction;
         BaseImage.call(this, 
                        img.pinholeX,
                        img.pinholeY);
@@ -922,7 +904,6 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
 
-
     // colorString : hexColor Style -> rgba
     // Style can be "solid" (1.0), "outline" (1.0), a number (0-1.0) or null (1.0)
     var colorString = function(aColor, aStyle) {
@@ -932,8 +913,6 @@ if (typeof(world) === 'undefined') {
                       types.colorBlue(aColor) + ", " +
                       alpha + ")";
     };
-
-
 
     //////////////////////////////////////////////////////////////////////
     // RectangleImage: Number Number Mode Color -> Image
@@ -1377,9 +1356,6 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////////
 
-
-
-
     // Color database
     var ColorDb = function() {
         this.colors = {};
@@ -1583,13 +1559,6 @@ if (typeof(world) === 'undefined') {
     var nameToColor = function(s) {
         return colorDb.get('' + s);
     };
-
-
-
-
-
-
-
 
 
 

@@ -634,10 +634,35 @@
                        (circle 50 "solid" "turquoise"))
               #f)
 
+"checking a textImage against a different one"
+(check-expect (image=? (text "purple" 50 "blue")
+                       (text "purple" 50 "red"))
+              #f)
+
+"checking a textImage against itself"
+(check-expect (image=? (text "purple" 50 "blue")
+                       (text "purple" 50 "blue"))
+              #t)
+
 "checking a bitmap against itself"
 (check-expect (image=? (bitmap/url "http://www.bootstrapworld.org/images/icon.gif")
                        (bitmap/url "http://www.bootstrapworld.org/images/icon.gif"))
               #t)
+
+"checking a bitmap against a shape of the same size"
+(check-expect (image=? (bitmap/url "http://www.bootstrapworld.org/images/icon.gif")
+                       (rectangle 150 150 "solid" "pink"))
+              #f)
+
+"checking a bitmap against a shape of a different size"
+(check-expect (image=? (bitmap/url "http://www.bootstrapworld.org/images/icon.gif")
+                       (rectangle 100 100 "solid" "pink"))
+              #f)
+
+"checking a bitmap against a different one"
+(check-expect (image=? (bitmap/url "http://www.bootstrapworld.org/images/icon.gif")
+                       (bitmap/url "http://www.bootstrapworld.org/images/logo.png"))
+              #f)
 
 "checking a rectangle against itself"
 (check-expect (image=? (rectangle 100 50 "solid" "blue")
@@ -651,6 +676,11 @@
 "checking a rectangle against its equivalent polygon"
 (check-expect (image=? (regular-polygon 40 4 "solid" "black")
                        (rectangle 40 40 "solid" "black"))
+              #t)
+
+"checking a circle against its equivalent ellipse"
+(check-expect (image=? (circle 50 90 "orange")
+                       (ellipse 100 100 90 "orange"))
               #t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
