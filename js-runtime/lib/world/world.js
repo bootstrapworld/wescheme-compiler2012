@@ -926,26 +926,6 @@ if (typeof(world) === 'undefined') {
     };
     RectangleImage.prototype = heir(BaseImage.prototype);
 
-
-    RectangleImage.prototype.render = function(ctx, x, y) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
-        for(var i=1; i < this.vertices.length; i++){
-          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
-        }
-        ctx.closePath();
-       
-        if (this.style.toString().toLowerCase() === "outline") {
-          ctx.strokeStyle = colorString(this.color);
-          ctx.stroke();
-        } else {
-          ctx.fillStyle = colorString(this.color, this.style);
-          ctx.fill();
-        }
-        ctx.restore();
-    };
-
     RectangleImage.prototype.getWidth = function() {
         return this.width;
     };
@@ -986,25 +966,6 @@ if (typeof(world) === 'undefined') {
         this.color = color;
     };
     RhombusImage.prototype = heir(BaseImage.prototype);
-
-    RhombusImage.prototype.render = function(ctx, x, y) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
-        for(var i=1; i < this.vertices.length; i++){
-          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
-        }
-        ctx.closePath();
- 
-        if (this.style.toString().toLowerCase() === "outline") {
-            ctx.strokeStyle = colorString(this.color);
-            ctx.stroke();
-        } else {
-            ctx.fillStyle = colorString(this.color, this.style);
-            ctx.fill();
-        }
-        ctx.restore();
-    };
 
     RhombusImage.prototype.getWidth = function() {
         return this.width;
@@ -1124,29 +1085,6 @@ if (typeof(world) === 'undefined') {
         BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), vertices);
     };
     PolygonImage.prototype = heir(BaseImage.prototype);
-
-
-    // shift all vertices by an offset to put the center of the polygon at the 
-    // center of the canvas. Even-sided polygons highest points are in line with
-    // the innerRadius. Odd-sides polygons highest vertex is on the outerRadius
-    PolygonImage.prototype.render = function(ctx, x, y) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
-        for(var i=1; i < this.vertices.length; i++){
-          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
-        }
-        ctx.closePath();
-       
-        if (this.style.toString().toLowerCase() === "outline") {
-          ctx.strokeStyle = colorString(this.color);
-          ctx.stroke();
-        } else {
-          ctx.fillStyle = colorString(this.color, this.style);
-          ctx.fill();
-        }
-        ctx.restore();
-    };
 
     PolygonImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof PolygonImage)) {
@@ -1281,6 +1219,8 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
     // StarImage: fixnum fixnum fixnum color -> image
+    // Most of this code here adapted from the Canvas tutorial at:
+    // http://developer.apple.com/safari/articles/makinggraphicswithcanvas.html
     var StarImage = function(points, outer, inner, style, color) {
         this.points     = points;
         this.outer      = outer;
@@ -1306,28 +1246,6 @@ if (typeof(world) === 'undefined') {
     StarImage.prototype = heir(BaseImage.prototype);
 
     var oneDegreeAsRadian = Math.PI / 180;
-
-    // render: context fixnum fixnum -> void
-    // Draws a star on the given context.
-    // Most of this code here adapted from the Canvas tutorial at:
-    // http://developer.apple.com/safari/articles/makinggraphicswithcanvas.html
-    StarImage.prototype.render = function(ctx, x, y) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
-        for(var i=1; i < this.vertices.length; i++){
-          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
-        }
-        ctx.closePath();
-        if (this.style.toString().toLowerCase() === "outline") {
-            ctx.strokeStyle = colorString(this.color);
-            ctx.stroke();
-        } else {
-            ctx.fillStyle = colorString(this.color, this.style);
-            ctx.fill();
-        }
-        ctx.restore();
-    };
 
     StarImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof StarImage)) {
@@ -1370,29 +1288,6 @@ if (typeof(world) === 'undefined') {
     };
     TriangleImage.prototype = heir(BaseImage.prototype);
 
-
-    TriangleImage.prototype.render = function(ctx, x, y) {
-        var width = this.getWidth();
-        var height = this.getHeight();
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
-        for(var i=1; i < this.vertices.length; i++){
-          ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
-        }
-        ctx.closePath();
-        
-        if (this.style.toString().toLowerCase() === "outline") {
-            ctx.strokeStyle = colorString(this.color);
-            ctx.stroke();
-        }
-        else {
-            ctx.fillStyle = colorString(this.color, this.style);
-            ctx.fill();
-        }
-        ctx.restore();
-    };
-
     TriangleImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof TriangleImage)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
@@ -1421,25 +1316,6 @@ if (typeof(world) === 'undefined') {
         this.color = color;
     };
     RightTriangleImage.prototype = heir(BaseImage.prototype);
-
-    RightTriangleImage.prototype.render = function(ctx, x, y) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
-        for(var i=1; i < this.vertices.length; i++){
-            ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
-        }
-        ctx.closePath();
-       
-        if (this.style.toString().toLowerCase() === "outline") {
-            ctx.strokeStyle = colorString(this.color);
-            ctx.stroke();
-        } else {
-            ctx.fillStyle = colorString(this.color, this.style);
-            ctx.fill();
-        }
-       ctx.restore();
-    };
 
     RightTriangleImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof RightTriangleImage)) {
@@ -1538,26 +1414,6 @@ if (typeof(world) === 'undefined') {
     };
 
     LineImage.prototype = heir(BaseImage.prototype);
-
-
-    LineImage.prototype.render = function(ctx, x, y) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x+this.vertices[0].x, y+this.vertices[0].y);
-        for(var i=1; i < this.vertices.length; i++){
-            ctx.lineTo(x+this.vertices[i].x, y+this.vertices[i].y);
-        }
-        ctx.closePath();
-       
-        if (this.style.toString().toLowerCase() === "outline") {
-            ctx.strokeStyle = colorString(this.color);
-            ctx.stroke();
-        } else {
-            ctx.fillStyle = colorString(this.color, this.style);
-            ctx.fill();
-        }
-        ctx.restore();
-    };
 
     LineImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof LineImage)) {
