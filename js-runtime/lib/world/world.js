@@ -666,56 +666,31 @@ if (typeof(world) === 'undefined') {
         var cos = Math.cos(angle * Math.PI / 180);
         var width = img.getWidth();
         var height = img.getHeight();
- /* old way of calculating things */
- var sin = Math.sin(angle * Math.PI / 180);
- var cos = Math.cos(angle * Math.PI / 180);
- var width = img.getWidth();
- var height = img.getHeight();
- 
- // (w,0) rotation
- var x1 = Math.round(cos * width);
- var y1 = Math.round(sin * width);
- 
- // (0,h) rotation
- var x2 = Math.round(-sin * height);
- var y2 = Math.round(cos * height);
- 
- // (w,h) rotation
- var x3 = Math.round(cos * width - sin * height);
- var y3 = Math.round(sin * width + cos * height);
- 
+ img.pinholeX = 0;
+ img.pinholeY = 0;
+
         // if it's a vertex-based image, we can work directly on the vertices
         // otherwise, we treat the thing as an opaque rectangle
         var corners = [{x:0, y:0}, {x:width, y: 0},{x:0, y:height},{x:width, y: height}];
         var vertices = (img.vertices && img.vertices.length > 0)? img.vertices : corners;
-        // we'll track our x's and y's, as we rotate each vertex we care about
+        // translate each point to the pinhole, then rotate, then translate it back
         var xs = [], ys = [];
         for(var i=0; i<vertices.length; i++){
           var dx = vertices[i].x - img.pinholeX,
               dy = vertices[i].y - img.pinholeY;
-          xs[i] = Math.round(dx*cos + dy*sin);
-          ys[i] = Math.round(dy*cos - dx*sin);
- console.log('rotating the point ('+vertices[i].x+','+vertices[i].y+') around ('+img.pinholeX+','+img.pinholeY+'), wound up with ('+xs[i]+','+ys[i]+')');
+          xs[i] = Math.round(dx*cos - dy*sin)+img.pinholeX;
+          ys[i] = Math.round(dx*sin+dy*cos)+img.pinholeY;
         }
- console.log([0,x1,x2,x3]);
- console.log([0,y1,y2,y3]);
+ console.log(xs);
+ console.log(ys);
  
-       var minX = Math.min(0, x1, x2, x3);
-       var maxX = Math.max(0, x1, x2, x3);
-       var minY = Math.min(0, y1, y2, y3);
-       var maxY = Math.max(0, y1, y2, y3);
- 
-       var _minX = Math.min.apply( Math, xs );
-       var _maxX = Math.max.apply( Math, xs );
-       var _minY = Math.min.apply( Math, ys );
-       var _maxY = Math.max.apply( Math, ys );
- 
-       var rotatedWidth  = _maxX - _minX;
-       var rotatedHeight = _maxY - _minY;
- console.log('rotated size: '+rotatedWidth+'x'+rotatedHeight);
- console.log('old min/max: ('+minX+','+minY+')->('+maxX+','+maxY+')');
- console.log('new min/max: ('+_minX+','+_minY+')->('+_maxX+','+_maxY+')');
- 
+       var minX = Math.min.apply( Math, xs );
+       var maxX = Math.max.apply( Math, xs );
+       var minY = Math.min.apply( Math, ys );
+       var maxY = Math.max.apply( Math, ys );
+
+       var rotatedWidth  = maxX - minX;
+       var rotatedHeight = maxY - minY; 
  this.originX    = this.pinholeX;
  this.originY    = this.pinholeY;
 
@@ -730,6 +705,7 @@ if (typeof(world) === 'undefined') {
         this.angle      = angle;
         this.translateX = Math.floor(-minX);
         this.translateY = Math.floor(-minY);
+
     };
 
     RotateImage.prototype = heir(BaseImage.prototype);
