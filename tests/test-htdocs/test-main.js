@@ -7028,17 +7028,17 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(put-pinhole)",
                        'put-pinhole: expects 3 arguments, but given 0');
 
-        queueErrorTest("put-pinhole with 1st argument not image",
-                       "(put-pinhole 1 2 3)",
-                       'put-pinhole: expects an image as 1st argument, but given: 1; other arguments were: 2 3');
+        queueErrorTest("put-pinhole with 1st argument not real",
+                       "(put-pinhole true 2 3)",
+                       'put-pinhole: expects a real as 1st argument, but given: true; other arguments were: 2 3');
 
-        queueErrorTest("put-pinhole with 2nd argument not image",
-                       "(put-pinhole (circle 50 \"solid\" \"red\") add1 3)",
-                       'put-pinhole: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: <image> 3');
+        queueErrorTest("put-pinhole with 2nd argument not real",
+                       "(put-pinhole 1 add1 (circle 50 \"solid\" \"red\"))",
+                       'put-pinhole: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: 1 <image>');
 
         queueErrorTest("put-pinhole with 3rd argument not image",
-                       "(put-pinhole (circle 50 \"solid\" \"red\") 1 add1)",
-                       'put-pinhole: expects a real as 3rd argument, but given: #<function:add1>; other arguments were: <image> 1');
+                       "(put-pinhole 1 2 add1)",
+                       'put-pinhole: expects an image as 3rd argument, but given: #<function:add1>; other arguments were: 1 2');
 
 //PRIMITIVES['circle']
 

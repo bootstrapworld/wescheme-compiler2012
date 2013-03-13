@@ -87,9 +87,8 @@
                                                                   (empty-scene 100 100))
 
 (check-expect (image?
-               (put-pinhole (rectangle 20 20 'solid 'green) 0 0))
+               (put-pinhole 0 0 (rectangle 20 20 'solid 'green)))
               true)
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TEXT & TEXT/FONT
@@ -463,6 +462,12 @@
 "From the Racket documentation:"
 (rotate 45 (ellipse 60 20 "solid" "olivedrab"))
 (rotate 5 (rectangle 50 50 "outline" "black"))
+"unrotated T"
+(beside/align
+         "center"
+         (rectangle 40 20 "solid" "darkseagreen")
+         (rectangle 20 100 "solid" "darkseagreen"))
+"rotate 45 degrees"
 (rotate 45
         (beside/align
          "center"
@@ -475,7 +480,7 @@
   (rotate 30 (square 50 "solid" "blue"))))
 
 "A solid blue triangle, rotated 30 degrees after moving its pinhole: should be flush left"
-(rotate 30 (put-pinhole (triangle 100 "solid" "blue") 0 (image-height (triangle 100 "solid" "blue") )))
+(rotate 30 (put-pinhole 0 (image-height (triangle 100 "solid" "blue")) (triangle 100 "solid" "blue")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SCALE & SCALE/XY
@@ -539,7 +544,7 @@
  25 25 100 100
  "goldenrod")
 
-"Three tests for lines+scene: should be identical to above, but cropped around base image"
+"Three tests for scene+line: should be identical to above, but cropped around base image"
 (scene+line (ellipse 40 40 "outline" "maroon")
             0 40 40 0 "maroon")
 
