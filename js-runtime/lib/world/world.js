@@ -155,11 +155,28 @@ if (typeof(world) === 'undefined') {
             config.lookup('tickDelay'));
     };
  
+    // given two arrays of {x,y} structs, determine their equivalence
+    var verticesEqual = function(v1, v2){
+        if(v1.length !== v2.length){ return false; }
+        for(var i=0; i< v1.length; i++){
+            if(v1[i].x !== v2[i].x || v1[i].y !== v2[i].y){ return false; }
+        }
+        return true;
+    };
+    // given two arrays of xs and ys, zip them into a vertex array
+    var zipVertices = function(xs, ys){
+        if(xs.length !== ys.length){throw new Error('failure in zipVertices');}
+        var vertices = [];
+        for(var i=0; i<xs.length;i++){
+            vertices.push({x: xs[i], y: ys[i]});
+        }
+        return vertices;
+    };
+ 
     // Base class for all images.
-    var BaseImage = function(pinholeX, pinholeY,vertices) {
+    var BaseImage = function(pinholeX, pinholeY) {
         this.pinholeX = pinholeX;
         this.pinholeY = pinholeY;
-        this.vertices = vertices || [];
     };
     world.Kernel.BaseImage = BaseImage;
 
@@ -170,20 +187,6 @@ if (typeof(world) === 'undefined') {
                 thing instanceof BaseImage);
     };
  
-    // given two arrays of {x,y} structs, determine their equivalence
-    var verticesEqual = function(v1, v2){
-        if(v1.length !== v2.length){
-          return false;
-        }
-        for(var i=0; i< v1.length; i++){
-          if(v1[i].x !== v2[i].x || v1[i].y !== v2[i].y){
-            return false;
-          }
-        }
-        return true;
-    };
-
-
     BaseImage.prototype.updatePinhole = function(x, y) {
         var aCopy = clone(this);
         aCopy.pinholeX = x;
@@ -200,6 +203,14 @@ if (typeof(world) === 'undefined') {
     BaseImage.prototype.getBaseline = function(){
         return this.height;
     };
+    // return the vertex array if it exists, otherwise make one using height and width
+    BaseImage.prototype.getVertices = function(){
+        if(this.vertices){ return this.vertices; }
+        else{ return [{x:0 , y: 0}
+                    ,{x: this.width, y: 0}
+                    ,{x: 0, y: this.height}
+                    ,{x: this.width, y: this.height}]; }
+    }
 
     // render: context fixnum fixnum: -> void
     // Render the image, where the upper-left corner of the image is drawn at
@@ -208,8 +219,8 @@ if (typeof(world) === 'undefined') {
     // If the image isn't vertex-based, throw an error
     // Otherwise, stroke and fill the vertices.
     BaseImage.prototype.render = function(ctx, x, y) {
-        if(this.vertices.length === 0){
-            throw new Error('BaseImage.render unimplemented!');
+        if(!this.vertices){
+            throw new Error('BaseImage.render is not implemented for this type!');
         }
         ctx.save();
         ctx.beginPath();
@@ -294,9 +305,9 @@ if (typeof(world) === 'undefined') {
          this.pinholeY !== other.pinholeY ||
          this.width    !== other.width    ||
          this.height   !== other.height){ return false; }
-      // if it's a vertex-based image, all we need to compare are
+      // if they're both vertex-based images, all we need to compare are
       // pinholes, styles, vertices and color
-      if(this.vertices.length > 0 && other.vertices.length > 0){
+      if(this.vertices && other.vertices){
           return (this.style    === other.style &&
                   verticesEqual(this.vertices, other.vertices) &&
                   types.isEqual(this.color, other.color, aUnionFind));
@@ -319,7 +330,8 @@ if (typeof(world) === 'undefined') {
         // if we violate CORS, just bail
         return false;
       }
-        return true;
+      // if, after all this, we're still good...then they're equal!
+      return true;
     };
 
     // isScene: any -> boolean
@@ -331,10 +343,9 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // SceneImage: primitive-number primitive-number (listof image) -> Scene
     var SceneImage = function(width, height, children, withBorder) {
-        var vertices = [{x:0,y:0},{x:width,y:0},{x:width,y:height}, {x:0,y:height}];
-        BaseImage.call(this, Math.floor(width/2), Math.floor(height/2), vertices);
-        this.width = width;
-        this.height = height;
+        BaseImage.call(this, Math.floor(width/2), Math.floor(height/2));
+        this.width    = width;
+        this.height   = height;
         this.children = children; // arrayof [image, number, number]
         this.withBorder = withBorder;
     };
@@ -389,9 +400,7 @@ if (typeof(world) === 'undefined') {
             var rec2 = other.children[i];
             if (rec1[1] !== rec2[1] ||
                 rec1[2] !== rec2[2] ||
-                !types.isEqual(rec1[0], 
-                               rec2[0],
-                               aUnionFind)) {
+                !types.isEqual(rec1[0], rec2[0], aUnionFind)) {
                 return false;
             }
         }
@@ -528,10 +537,6 @@ if (typeof(world) === 'undefined') {
                 this.height                     = self.video.videoHeight;
                 this.pinholeX                   = self.width / 2;
                 this.pinholeY                   = self.height / 2;
-                this.vertices                   = [{x:0,y:0},
-                                                  {x:self.video.width,y:0},
-                                                  {x:self.video.width,y:self.video.height},
-                                                  {x:0,y:self.video.height}];
                 this.video.poster       = "http://www.wescheme.org/images/broken.png";
                 this.video.autoplay     = true;
                 this.video.autobuffer=true;
@@ -619,9 +624,23 @@ if (typeof(world) === 'undefined') {
             y1 = Math.max(placeY, 0) - placeY;
             y2 = Math.max(placeY, 0);
         }
-        // update the height and width of the image
-        this.width = Math.floor(Math.max(x1 + img1.getWidth(), x2 + img2.getWidth()) - Math.min(x1, x2));
-        this.height = Math.floor(Math.max(y1 + img1.getHeight(), y2 + img2.getHeight()) - Math.min(y1, y2));
+ 
+        // calculate the vertices of this image by translating the verticies of the sub-images
+        var v1 = img1.getVertices(), v2 = img2.getVertices(), xs = [], ys = [];
+        for(var i=0; i<v1.length; i++){
+            xs.push(Math.round(v1[i].x + x1));
+            ys.push(Math.round(v1[i].y + y1))
+        }
+        for(var i=0; i<v2.length; i++){
+            xs.push(Math.round(v2[i].x + x2));
+            ys.push(Math.round(v2[i].y + y2))
+        }
+        this.vertices = zipVertices(xs, ys);
+ 
+        // update the height and width of the image using the translated vertices
+        this.width  = Math.max.apply(Math, xs) - Math.min.apply(Math, xs);
+        this.height = Math.max.apply(Math, ys) - Math.min.apply(Math, ys);
+ 
         // store the offsets for rendering
         this.x1 = Math.floor(x1);
         this.y1 = Math.floor(y1);
@@ -668,7 +687,7 @@ if (typeof(world) === 'undefined') {
         var height = img.getHeight();
  img.pinholeX = 0;
  img.pinholeY = 0;
-
+// console.log('rotating a '+img+', using '+((img.vertices && img.vertices.length > 0)? 'vertices' : 'corners'));
         // if it's a vertex-based image, we can work directly on the vertices
         // otherwise, we treat the thing as an opaque rectangle
         var corners = [{x:0, y:0}, {x:width, y: 0},{x:0, y:height},{x:width, y: height}];
@@ -679,10 +698,10 @@ if (typeof(world) === 'undefined') {
           var dx = vertices[i].x - img.pinholeX,
               dy = vertices[i].y - img.pinholeY;
           xs[i] = Math.round(dx*cos - dy*sin)+img.pinholeX;
-          ys[i] = Math.round(dx*sin+dy*cos)+img.pinholeY;
+          ys[i] = Math.round(dx*sin + dy*cos)+img.pinholeY;
         }
- console.log(xs);
- console.log(ys);
+// console.log(xs);
+// console.log(ys);
  
        var minX = Math.min.apply( Math, xs );
        var maxX = Math.max.apply( Math, xs );
@@ -697,8 +716,8 @@ if (typeof(world) === 'undefined') {
  
         // resize the image
         BaseImage.call(this,
-                       Math.floor(rotatedWidth / 2),
-                       Math.floor(rotatedHeight / 2));
+                       Math.floor(img.pinholeX),
+                       Math.floor(img.pinholeY));
         this.img        = img;
         this.width      = Math.floor(rotatedWidth);
         this.height     = Math.floor(rotatedHeight);
@@ -745,11 +764,11 @@ if (typeof(world) === 'undefined') {
                        Math.floor((img.getWidth() * xFactor) / 2),
                        Math.floor((img.getHeight() * yFactor) / 2));
         
-        this.img        = img;
-        this.width      = Math.floor(img.getWidth() * xFactor);
-        this.height = Math.floor(img.getHeight() * yFactor);
-        this.xFactor = xFactor;
-        this.yFactor = yFactor;
+        this.img      = img;
+        this.width    = Math.floor(img.getWidth() * xFactor);
+        this.height   = Math.floor(img.getHeight() * yFactor);
+        this.xFactor  = xFactor;
+        this.yFactor  = yFactor;
     };
 
     ScaleImage.prototype = heir(BaseImage.prototype);
@@ -919,12 +938,12 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // RectangleImage: Number Number Mode Color -> Image
     var RectangleImage = function(width, height, style, color) {
-        var vertices = [{x:0,y:height},{x:0,y:0},{x:width,y:0},{x:width,y:height}];
-        BaseImage.call(this, width/2, height/2, vertices);
-        this.width = width;
+        BaseImage.call(this, width/2, height/2);
+        this.width  = width;
         this.height = height;
-        this.style = style;
-        this.color = color;
+        this.style  = style;
+        this.color  = color;
+        this.vertices = [{x:0,y:height},{x:0,y:0},{x:width,y:0},{x:width,y:height}];
     };
     RectangleImage.prototype = heir(BaseImage.prototype);
 
@@ -940,18 +959,19 @@ if (typeof(world) === 'undefined') {
     // RhombusImage: Number Number Mode Color -> Image
     var RhombusImage = function(side, angle, style, color) {
         // sin(angle/2-in-radians) * side = half of base
-        this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
         // cos(angle/2-in-radians) * side = half of height
+        this.width  = Math.sin(angle/2 * Math.PI / 180) * side * 2;
         this.height = Math.abs(Math.cos(angle/2 * Math.PI / 180)) * side * 2;
+        BaseImage.call(this, this.width/2, this.height/2);
+        this.side   = side;
+        this.angle  = angle;
+        this.style  = style;
+        this.color  = color;
         this.vertices = [{x:this.width/2, y:0},
                          {x:this.width,   y:this.height/2},
                          {x:this.width/2, y:this.height},
                          {x:0,            y:this.height/2}];
-        BaseImage.call(this, this.width/2, this.height/2, this.vertices);
-        this.side = side;
-        this.angle = angle;
-        this.style = style;
-        this.color = color;
+
     };
     RhombusImage.prototype = heir(BaseImage.prototype);
 
@@ -1052,8 +1072,8 @@ if (typeof(world) === 'undefined') {
         for(i=0; i<vertices.length; i++){
           vertices[i].x += xOffset; vertices[i].y += yOffset;
         }
+        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2));
         this.vertices   = vertices;
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), vertices);
     };
     PolygonImage.prototype = heir(BaseImage.prototype);
 
@@ -1103,9 +1123,8 @@ if (typeof(world) === 'undefined') {
         } catch(e) {
             this.fallbackOnFont();
         }
-        var vertices = [{x:0,y:0},{x:this.width,y:0},{x:this.width,y:this.height},{x:0,y:this.height}];
         // weird pinhole settings needed for "baseline" alignment
-        BaseImage.call(this, Math.round(this.width/2), 0, vertices);
+        BaseImage.call(this, Math.round(this.width/2), 0);
     };
  
 
@@ -1185,19 +1204,19 @@ if (typeof(world) === 'undefined') {
         this.radius     = Math.max(this.inner, this.outer);
         this.width      = this.radius*2;
         this.height     = this.radius*2;
-        this.vertices   = [];
+        var vertices   = [];
  
         var oneDegreeAsRadian = Math.PI / 180;
         for(var pt = 0; pt < (this.points * 2) + 1; pt++ ) {
           var rads = ( ( 360 / (2 * this.points) ) * pt ) * oneDegreeAsRadian - 0.5;
           var radius = ( pt % 2 === 1 ) ? this.outer : this.inner;
-          this.vertices.push({x:this.radius + ( Math.sin( rads ) * radius ),
-                              y:this.radius + ( Math.cos( rads ) * radius )} );
+          vertices.push({x:this.radius + ( Math.sin( rads ) * radius ),
+                         y:this.radius + ( Math.cos( rads ) * radius )} );
         }
         BaseImage.call(this,
                        Math.max(outer, inner),
-                       Math.max(outer, inner),
-                       this.vertices);
+                       Math.max(outer, inner));
+        this.vertices = vertices;
     };
 
     StarImage.prototype = heir(BaseImage.prototype);
@@ -1206,25 +1225,26 @@ if (typeof(world) === 'undefined') {
     //TriangleImage: Number Number Mode Color -> Image
     var TriangleImage = function(side, angle, style, color) {
         // sin(angle/2-in-radians) * side = half of base
-        this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
         // cos(angle/2-in-radians) * side = height of altitude
+        this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
         this.height = Math.floor(Math.abs(Math.cos(angle/2 * Math.PI / 180)) * side);
-        this.vertices = [];
+        var vertices = [];
         // if angle < 180 start at the top of the canvas, otherwise start at the bottom
         if(angle < 180){
-          this.vertices.push({x:this.width/2, y:0});
-          this.vertices.push({x:0,            y:this.height});
-          this.vertices.push({x:this.width,   y:this.height});
+          vertices.push({x:this.width/2, y:0});
+          vertices.push({x:0,            y:this.height});
+          vertices.push({x:this.width,   y:this.height});
         } else {
-          this.vertices.push({x:this.width/2, y:this.height});
-          this.vertices.push({x:0,            y:0});
-          this.vertices.push({x:this.width,   y:0});
+          vertices.push({x:this.width/2, y:this.height});
+          vertices.push({x:0,            y:0});
+          vertices.push({x:this.width,   y:0});
         }
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), this.vertices);
+        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2));
         this.side = side;
         this.angle = angle;
         this.style = style;
         this.color = color;
+        this.vertices = vertices;
     };
     TriangleImage.prototype = heir(BaseImage.prototype);
 
@@ -1233,15 +1253,14 @@ if (typeof(world) === 'undefined') {
     var RightTriangleImage = function(side1, side2, style, color) {
         this.width = side1;
         this.height = side2;
-        this.vertices = [{x:0,     y:side2},
-                         {x:side1, y:side2},
-                         {x:0,     y:0}];
- 
         BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), this.vertices);
         this.side1 = side1;
         this.side2 = side2;
         this.style = style;
         this.color = color;
+        this.vertices = [{x:    0, y:side2},
+                         {x:side1, y:side2},
+                         {x:    0, y:0}];
     };
     RightTriangleImage.prototype = heir(BaseImage.prototype);
 
@@ -1303,24 +1322,30 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     //Line: Number Number Color Boolean -> Image
     var LineImage = function(x, y, color, normalPinhole) {
+        var vertices;
         if (x >= 0) {
           if (y >= 0) {
-            BaseImage.call(this, 0, 0,    [{x:  0, y:  0}, {x: x, y: y}]);
+            BaseImage.call(this, 0, 0);
+            vertices = [{x:  0, y:  0}, {x: x, y: y}];
           } else {
-            BaseImage.call(this, 0, -y,   [{x:  0, y: -y}, {x: x, y: 0}]);
+            BaseImage.call(this, 0, -y);
+            vertices = [{x:  0, y: -y}, {x: x, y: 0}];
           }
         } else {
           if (y >= 0) {
-            BaseImage.call(this, -x, 0,   [{x: -x, y:  0}, {x: 0, y: y}]);
+            BaseImage.call(this, -x, 0);
+            vertices = [{x: -x, y:  0}, {x: 0, y: y}];
           } else {
-            BaseImage.call(this, -x, -y,  [{x: -x, y: -y}, {x: 0, y: 0}]);
+            BaseImage.call(this, -x, -y);
+            vertices = [{x: -x, y: -y}, {x: 0, y: 0}];
           }
         }
-        this.color = color;
-        this.width = Math.abs(x) + 1;
-        this.height = Math.abs(y) + 1;
         // preserve the invariant that all vertex-based images have a style
-        this.style = "outline";
+        this.style  = "outline";
+        this.color  = color;
+        this.width  = Math.abs(x);
+        this.height = Math.abs(y);
+        this.vertices = vertices;
  
         // put the pinhle in the center of the image
         if(normalPinhole){
