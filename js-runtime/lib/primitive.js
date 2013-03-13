@@ -4678,7 +4678,7 @@ PRIMITIVES['scene+line'] =
 		         newScene = world.Kernel.sceneImage(jsnums.toFixnum(img.getWidth()), 
 							    jsnums.toFixnum(img.getHeight()), 
 							    [],
-							    true);
+							    false);
 			 newScene = newScene.add(img.updatePinhole(0, 0), 0, 0);
 			 // make an image containing the line
 			 line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
@@ -4996,20 +4996,22 @@ PRIMITIVES['add-line'] =
 		     6,
 		     false, false,
 		     function(aState, img, x1, y1, x2, y2, c) {
-			 check(aState, img, isImage,	"add-line", "image",			  1, arguments);
+			 check(aState, img, isImage,	"add-line", "image",             1, arguments);
 			 check(aState, x1,	isReal,		"add-line", "finite real number", 2, arguments);
 			 check(aState, y1,	isReal,		"add-line", "finite real number", 3, arguments);
 			 check(aState, x2,	isReal,		"add-line", "finite real number", 4, arguments);
 			 check(aState, y2,	isReal,		"add-line", "finite real number", 5, arguments);
-			 check(aState, c,	isColor,	"add-line", "color",			  6, arguments);
+			 check(aState, c,	  isColor,	"add-line", "color",             6, arguments);
 			 if (colorDb.get(c)) {
 			     c = colorDb.get(c);
 			 }
-			 line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
-						       jsnums.toFixnum(y2-y1),
-						       c,
-						       true);
-			 return world.Kernel.overlayImage(line, img, x1, y1);
+			 var line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
+                                         jsnums.toFixnum(y2-y1),
+                                         c,
+                                         true),
+           leftMost = Math.min(x1,x2),
+           topMost = Math.min(y1,y2);
+			 return world.Kernel.overlayImage(line, img, -leftMost, -topMost);
 			 });
 
 
