@@ -206,11 +206,11 @@ if (typeof(world) === 'undefined') {
     // return the vertex array if it exists, otherwise make one using height and width
     BaseImage.prototype.getVertices = function(){
         if(this.vertices){ return this.vertices; }
-        else{ return [{x:0 , y: 0}
-                    ,{x: this.width, y: 0}
-                    ,{x: 0, y: this.height}
-                    ,{x: this.width, y: this.height}]; }
-    }
+        else{ return [{x:0 , y: 0},
+                      {x: this.width, y: 0},
+                      {x: 0, y: this.height},
+                      {x: this.width, y: this.height}]; }
+    };
 
     // render: context fixnum fixnum: -> void
     // Render the image, where the upper-left corner of the image is drawn at
@@ -626,14 +626,14 @@ if (typeof(world) === 'undefined') {
         }
  
         // calculate the vertices of this image by translating the verticies of the sub-images
-        var v1 = img1.getVertices(), v2 = img2.getVertices(), xs = [], ys = [];
-        for(var i=0; i<v1.length; i++){
+        var i, v1 = img1.getVertices(), v2 = img2.getVertices(), xs = [], ys = [];
+        for(i=0; i<v1.length; i++){
             xs.push(Math.round(v1[i].x + x1));
-            ys.push(Math.round(v1[i].y + y1))
+            ys.push(Math.round(v1[i].y + y1));
         }
-        for(var i=0; i<v2.length; i++){
+        for(i=0; i<v2.length; i++){
             xs.push(Math.round(v2[i].x + x2));
-            ys.push(Math.round(v2[i].y + y2))
+            ys.push(Math.round(v2[i].y + y2));
         }
         // store the vertices as something private, so this.getVertices() will still return undefined
         this._vertices = zipVertices(xs, ys);
@@ -653,7 +653,7 @@ if (typeof(world) === 'undefined') {
 
     OverlayImage.prototype = heir(BaseImage.prototype);
  
-    OverlayImage.prototype.getVertices = function() { return this._vertices; }
+    OverlayImage.prototype.getVertices = function() { return this._vertices; };
  
     OverlayImage.prototype.render = function(ctx, x, y) {
         ctx.save();
@@ -717,7 +717,7 @@ if (typeof(world) === 'undefined') {
 
     RotateImage.prototype = heir(BaseImage.prototype);
 
-    RotateImage.prototype.getVertices = function() { return this._vertices; }
+    RotateImage.prototype.getVertices = function() { return this._vertices; };
 
     // translate the canvas using the calculated values, then draw at the rotated (x,y) offset.
     RotateImage.prototype.render = function(ctx, x, y) {
@@ -770,7 +770,7 @@ if (typeof(world) === 'undefined') {
 
     ScaleImage.prototype = heir(BaseImage.prototype);
 
-    ScaleImage.prototype.getVertices = function() { return this._vertices; }
+    ScaleImage.prototype.getVertices = function() { return this._vertices; };
 
     // scale the context, and pass it to the image's render function
     ScaleImage.prototype.render = function(ctx, x, y) {
@@ -979,41 +979,6 @@ if (typeof(world) === 'undefined') {
 
     RhombusImage.prototype.getHeight = function() {
         return this.height;
-    };
-
-    //////////////////////////////////////////////////////////////////////
-    // TODO: DO WE NEED THIS?
-    var ImageDataImage = function(imageData) {
-      var vertices = [{x:0,y:0},
-                      {x:imageData.width,y:0},
-                      {x:imageData.width,y:imageData.height},
-                      {x:0,y:imageData.height}];
-        BaseImage.call(this, 0, 0, vertices);
-        this.imageData = imageData;
-        this.width = imageData.width;
-        this.height = imageData.height;
-    };
-
-    ImageDataImage.prototype = heir(BaseImage.prototype);
-
-    ImageDataImage.prototype.render = function(ctx, x, y) {
-        ctx.putImageData(this.imageData, x, y);
-    };
-
-    ImageDataImage.prototype.getWidth = function() {
-        return this.width;
-    };
-
-
-    ImageDataImage.prototype.getHeight = function() {
-        return this.height;
-    };
-
-    ImageDataImage.prototype.isEqual = function(other, aUnionFind) {
-        return (other instanceof ImageDataImage &&
-                this.pinholeX === other.pinholeX &&
-                this.pinholeY === other.pinholeY);
-        // FIXME
     };
 
     //////////////////////////////////////////////////////////////////////
@@ -1653,9 +1618,6 @@ if (typeof(world) === 'undefined') {
     };
     world.Kernel.textImage = function(msg, size, color, face, family, style, weight, underline) {
         return new TextImage(msg, size, color, face, family, style, weight, underline);
-    };
-    world.Kernel.imageDataImage = function(imageData) {
-        return new ImageDataImage(imageData);
     };
     world.Kernel.fileImage = function(path, rawImage, afterInit) {
         return FileImage.makeInstance(path, rawImage, afterInit);
