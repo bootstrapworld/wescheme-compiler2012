@@ -635,9 +635,11 @@ if (typeof(world) === 'undefined') {
             xs.push(Math.round(v2[i].x + x2));
             ys.push(Math.round(v2[i].y + y2))
         }
-        this.vertices = zipVertices(xs, ys);
  
-        // update the height and width of the image using the translated vertices
+        // store the vertices as something private, so this.getVertices() will still return undefined
+        this._vertices = zipVertices(xs, ys);
+ 
+        // update the height and width of the image
         this.width  = Math.max.apply(Math, xs) - Math.min.apply(Math, xs);
         this.height = Math.max.apply(Math, ys) - Math.min.apply(Math, ys);
  
@@ -651,7 +653,9 @@ if (typeof(world) === 'undefined') {
     };
 
     OverlayImage.prototype = heir(BaseImage.prototype);
-
+ 
+    OverlayImage.prototype.getVertices = function() { return this._vertices; }
+ 
     OverlayImage.prototype.render = function(ctx, x, y) {
         ctx.save();
         this.img2.render(ctx, x + this.x2, y + this.y2);
@@ -685,50 +689,37 @@ if (typeof(world) === 'undefined') {
         var cos = Math.cos(angle * Math.PI / 180);
         var width = img.getWidth();
         var height = img.getHeight();
- img.pinholeX = 0;
- img.pinholeY = 0;
-// console.log('rotating a '+img+', using '+((img.vertices && img.vertices.length > 0)? 'vertices' : 'corners'));
-        // if it's a vertex-based image, we can work directly on the vertices
-        // otherwise, we treat the thing as an opaque rectangle
-        var corners = [{x:0, y:0}, {x:width, y: 0},{x:0, y:height},{x:width, y: height}];
-        var vertices = (img.vertices && img.vertices.length > 0)? img.vertices : corners;
-        // translate each point to the pinhole, then rotate, then translate it back
+ 
+        var vertices = img.getVertices();
+ 
+        // CHEAT: rotate each point as if it were rotated about (0,0)
         var xs = [], ys = [];
         for(var i=0; i<vertices.length; i++){
-          var dx = vertices[i].x - img.pinholeX,
-              dy = vertices[i].y - img.pinholeY;
-          xs[i] = Math.round(dx*cos - dy*sin)+img.pinholeX;
-          ys[i] = Math.round(dx*sin + dy*cos)+img.pinholeY;
+            xs[i] = Math.round(vertices[i].x*cos - vertices[i].y*sin);
+            ys[i] = Math.round(vertices[i].x*sin + vertices[i].y*cos);
         }
-// console.log(xs);
-// console.log(ys);
  
-       var minX = Math.min.apply( Math, xs );
-       var maxX = Math.max.apply( Math, xs );
-       var minY = Math.min.apply( Math, ys );
-       var maxY = Math.max.apply( Math, ys );
-
-       var rotatedWidth  = maxX - minX;
-       var rotatedHeight = maxY - minY; 
- this.originX    = this.pinholeX;
- this.originY    = this.pinholeY;
-
+        // store the vertices as something private, so this.getVertices() will still return undefined
+        this._vertices = zipVertices(xs,ys);
  
-        // resize the image
+        var rotatedWidth  = Math.max.apply( Math, xs ) - Math.min.apply( Math, xs );
+        var rotatedHeight = Math.max.apply( Math, ys ) - Math.min.apply( Math, ys );
+
+        // UNCHEAT: rotate the pinhole too
         BaseImage.call(this,
-                       Math.floor(img.pinholeX),
-                       Math.floor(img.pinholeY));
+                       Math.floor(Math.round(img.pinholeX*cos - img.pinholeY*sin)),
+                       Math.floor(Math.round(img.pinholeY.x*sin + img.pinholeY*cos)));
         this.img        = img;
         this.width      = Math.floor(rotatedWidth);
         this.height     = Math.floor(rotatedHeight);
         this.angle      = angle;
-        this.translateX = Math.floor(-minX);
-        this.translateY = Math.floor(-minY);
-
+        this.translateX = Math.floor(-Math.min.apply( Math, xs ));
+        this.translateY = Math.floor(-Math.min.apply( Math, ys ));
     };
 
     RotateImage.prototype = heir(BaseImage.prototype);
 
+    RotateImage.prototype.getVertices = function() { return this._vertices; }
 
     // translate the canvas using the calculated values, then draw at the rotated (x,y) offset.
     RotateImage.prototype.render = function(ctx, x, y) {
@@ -758,9 +749,17 @@ if (typeof(world) === 'undefined') {
     // Scale an image
     // TODO: scale vertices array?
     var ScaleImage = function(xFactor, yFactor, img) {
-        
+        var vertices = img.getVertices();
+        var xs = [], ys = [];
+        for(var i=0; i<vertices.length; i++){
+            xs[i] = Math.round(vertices[i].x*xFactor);
+            ys[i] = Math.round(vertices[i].y*yFactor);
+        }
+        // store the vertices as something private, so this.getVertices() will still return undefined
+        this._vertices = zipVertices(xs,ys);
+ 
         // resize the image
-        BaseImage.call(this, 
+        BaseImage.call(this,
                        Math.floor((img.getWidth() * xFactor) / 2),
                        Math.floor((img.getHeight() * yFactor) / 2));
         
@@ -773,6 +772,7 @@ if (typeof(world) === 'undefined') {
 
     ScaleImage.prototype = heir(BaseImage.prototype);
 
+    ScaleImage.prototype.getVertices = function() { return this._vertices; }
 
     // scale the context, and pass it to the image's render function
     ScaleImage.prototype.render = function(ctx, x, y) {

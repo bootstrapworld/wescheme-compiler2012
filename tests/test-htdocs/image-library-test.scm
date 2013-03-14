@@ -678,6 +678,17 @@
 (check-expect (image=? (rhombus 100 50 "solid" "blue")
                        (rhombus 100 50 "solid" "blue"))
               #t)
+
+"checking a square against a 2x larger one that's been scaled by 1/2"
+(check-expect (image=? (scale 1/2 (square 100 "solid" "blue"))
+                       (square 50 "solid" "blue"))
+              #t)
+
+"checking a square against a 2x larger one that's been scaled by 1/3"
+(check-expect (image=? (scale 1/3 (square 100 "solid" "blue"))
+                       (square 50 "solid" "blue"))
+              #f)
+
 "checking a rectangle against its equivalent polygon"
 (check-expect (image=? (regular-polygon 40 4 "solid" "black")
                        (rectangle 40 40 "solid" "black"))
