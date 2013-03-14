@@ -635,7 +635,6 @@ if (typeof(world) === 'undefined') {
             xs.push(Math.round(v2[i].x + x2));
             ys.push(Math.round(v2[i].y + y2))
         }
- 
         // store the vertices as something private, so this.getVertices() will still return undefined
         this._vertices = zipVertices(xs, ys);
  
@@ -689,18 +688,44 @@ if (typeof(world) === 'undefined') {
         var cos = Math.cos(angle * Math.PI / 180);
         var width = img.getWidth();
         var height = img.getHeight();
+<<<<<<< HEAD
  
         var vertices = img.getVertices();
  
         // CHEAT: rotate each point as if it were rotated about (0,0)
+=======
+ img.pinholeX = 0;
+ img.pinholeY = 0;
+ console.log('rotating a '+img+', which has vertices defined at...');
+        var vertices = img.getVertices();
+ console.log(vertices);
+        // translate each point to the pinhole, then rotate, then translate it back
+>>>>>>> 1b276166818d189cd60c2877d7598a95edda5a25
         var xs = [], ys = [];
         for(var i=0; i<vertices.length; i++){
             xs[i] = Math.round(vertices[i].x*cos - vertices[i].y*sin);
             ys[i] = Math.round(vertices[i].x*sin + vertices[i].y*cos);
         }
  
+<<<<<<< HEAD
         // store the vertices as something private, so this.getVertices() will still return undefined
         this._vertices = zipVertices(xs,ys);
+=======
+        this._vertices = zipVertices(xs,ys);
+ console.log('after rotation, the vertices are ...')
+ console.log(this._vertices);
+ 
+        var minX = Math.min.apply( Math, xs );
+        var maxX = Math.max.apply( Math, xs );
+        var minY = Math.min.apply( Math, ys );
+        var maxY = Math.max.apply( Math, ys );
+ 
+        var rotatedWidth  = Math.max.apply( Math, xs ) - Math.min.apply( Math, xs );
+        var rotatedHeight = Math.max.apply( Math, ys ) - Math.min.apply( Math, ys );
+ this.originX    = this.pinholeX;
+ this.originY    = this.pinholeY;
+
+>>>>>>> 1b276166818d189cd60c2877d7598a95edda5a25
  
         var rotatedWidth  = Math.max.apply( Math, xs ) - Math.min.apply( Math, xs );
         var rotatedHeight = Math.max.apply( Math, ys ) - Math.min.apply( Math, ys );
