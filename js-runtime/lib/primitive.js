@@ -4596,7 +4596,7 @@ PRIMITIVES['put-image'] =
                   background.getHeight(),
                   [],
                   false);
-          newScene = newScene.add(background, 0, 0);
+          newScene = newScene.add(background, background.getWidth()/2, background.getHeight()/2);
           newScene = newScene.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
           return newScene;
       }
@@ -4620,8 +4620,8 @@ PRIMITIVES['place-image'] =
 								   background.getHeight(),
 								   [], 
 								   false);
-			    newScene = newScene.add(background, 0, 0);
-			    newScene = newScene.add(picture, jsnums.toFixnum(x), jsnums.toFixnum(y));
+          newScene = newScene.add(background, background.getWidth()/2, background.getHeight()/2);
+          newScene = newScene.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
 			    return newScene;
 			}
 		 });
@@ -4683,8 +4683,7 @@ PRIMITIVES['scene+line'] =
 			 // make an image containing the line
 			 line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
                                      jsnums.toFixnum(y2-y1),
-                                     c,
-                                     false);
+                                     c);
        leftMost = Math.min(x1,x2),
        topMost = Math.min(y1,y2);
 			 // add the line to scene, offset by the original amount
@@ -4701,7 +4700,6 @@ PRIMITIVES['put-pinhole'] =
       check(aState, img, isImage, "put-pinhole", "image", 3, arguments);
 			return img.updatePinhole(jsnums.toFixnum(x), jsnums.toFixnum(y));
     		 });
-
 
 PRIMITIVES['circle'] =
     new PrimProc('circle',
@@ -4965,9 +4963,8 @@ PRIMITIVES['line'] =
 				c = colorDb.get(c);
 			}
 			var line = world.Kernel.lineImage(jsnums.toFixnum(x),
-							  jsnums.toFixnum(y),
-							  c,
-							  true);
+                                        jsnums.toFixnum(y),
+                                        c);
 		        return line;
 		 });
 
@@ -4988,8 +4985,7 @@ PRIMITIVES['add-line'] =
 			 }
 			 var line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
                                          jsnums.toFixnum(y2-y1),
-                                         c,
-                                         true),
+                                         c),
            leftMost = Math.min(x1,x2),
            topMost = Math.min(y1,y2);
 			 return world.Kernel.overlayImage(line, img, -leftMost, -topMost);
