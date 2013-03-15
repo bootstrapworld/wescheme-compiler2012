@@ -4596,7 +4596,7 @@ PRIMITIVES['put-image'] =
                   background.getHeight(),
                   [],
                   false);
-          newScene = newScene.add(background.updatePinhole(0, 0), 0, 0);
+          newScene = newScene.add(background, 0, 0);
           newScene = newScene.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
           return newScene;
       }
@@ -4620,7 +4620,7 @@ PRIMITIVES['place-image'] =
 								   background.getHeight(),
 								   [], 
 								   false);
-			    newScene = newScene.add(background.updatePinhole(0, 0), 0, 0);
+			    newScene = newScene.add(background, 0, 0);
 			    newScene = newScene.add(picture, jsnums.toFixnum(x), jsnums.toFixnum(y));
 			    return newScene;
 			}
@@ -4639,12 +4639,12 @@ PRIMITIVES['place-image/align'] =
 			 check(aState, placeY,	isPlaceY,	"place-image/align", "y-place", 5, arguments);
 			 check(aState, background, function(x) { return isScene(x) || isImage(x) },
 			       "place-image/align", "image",	6, arguments);
-			 
-			 // calculate x and y based on placeX and placeY
-			 if		 (placeX == "left"  ) x = x + img.pinholeX;
-			 else if (placeX == "right" ) x = x - img.pinholeX;
-			 if		 (placeY == "top"   ) y = y + img.pinholeY;
-			 else if (placeY == "bottom") y = y - img.pinholeY;
+
+      // calculate x and y based on placeX and placeY
+			 if		 (placeX == "left"  )  x = x + img.getWidth()/2;
+			 else if (placeX == "right" ) x = x - img.getWidth()/2;
+			 if		 (placeY == "top"   )  y = y + img.getHeight()/2;
+			 else if (placeY == "bottom") y = y - img.getHeight()/2;
 
 			 if (isScene(background)) {
 			     return  background.add(img, jsnums.toFixnum(x), jsnums.toFixnum(y));
@@ -4670,7 +4670,7 @@ PRIMITIVES['scene+line'] =
 			 check(aState, y1,		isReal,		"scene+line", "finite real number", 3, arguments);
 			 check(aState, x2,		isReal,		"scene+line", "finite real number", 4, arguments);
 			 check(aState, y2,		isReal,		"scene+line", "finite real number", 5, arguments);
-			 check(aState, c,		isColor,	"scene+line", "color",				6, arguments);
+			 check(aState, c,     isColor,	"scene+line", "color",				6, arguments);
 			 if (colorDb.get(c)) {
 			     c = colorDb.get(c);
 			 }
@@ -5043,10 +5043,10 @@ PRIMITIVES['overlay/xy'] =
 		     check(aState, deltaX, isReal, "overlay/xy", "finite real number", 2, arguments);
 		     check(aState, deltaY, isReal, "overlay/xy", "finite real number", 3, arguments);
 		     check(aState, img2, isImage, "overlay/xy", "image", 4, arguments);
-		     return world.Kernel.overlayImage(img1.updatePinhole(0, 0),
-						      img2.updatePinhole(0, 0),
-						      jsnums.toFixnum(deltaX),
-						      jsnums.toFixnum(deltaY));
+		     return world.Kernel.overlayImage(img1,
+                                          img2,
+                                          jsnums.toFixnum(deltaX),
+                                          jsnums.toFixnum(deltaY));
 		 });
 
 
@@ -5101,10 +5101,10 @@ PRIMITIVES['underlay/xy'] =
 		     check(aState, deltaX, isReal, "underlay/xy", "finite real number", 2, arguments);
 		     check(aState, deltaY, isReal, "underlay/xy", "finite real number", 3, arguments);
 		     check(aState, img2, isImage, "underlay/xy", "image", 4, arguments);                     
-		     return world.Kernel.overlayImage(img2.updatePinhole(0, 0), 
-						      img1.updatePinhole(0, 0),
-						      -jsnums.toFixnum(deltaX),
-						      -jsnums.toFixnum(deltaY));
+		     return world.Kernel.overlayImage(img2,
+                                          img1,
+                                          -jsnums.toFixnum(deltaX),
+                                          -jsnums.toFixnum(deltaY));
 		 });
 
 
