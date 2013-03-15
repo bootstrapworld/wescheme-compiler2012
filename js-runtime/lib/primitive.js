@@ -4650,10 +4650,10 @@ PRIMITIVES['place-image/align'] =
 			     return  background.add(img, jsnums.toFixnum(x), jsnums.toFixnum(y));
 			 } else {
 			     var newScene = world.Kernel.sceneImage(background.getWidth(),
-								    background.getHeight(),
-								    [], 
-								    false);
-			     newScene = newScene.add(background.updatePinhole(0, 0), 0, 0);
+                                                  background.getHeight(),
+                                                  [],
+                                                  false);
+			     newScene = newScene.add(background, background.getWidth()/2, background.getHeight()/2);
 			     newScene = newScene.add(img, jsnums.toFixnum(x), jsnums.toFixnum(y));
 			     return  newScene;
 			 }
@@ -4675,19 +4675,33 @@ PRIMITIVES['scene+line'] =
 			     c = colorDb.get(c);
 			 }
 			 // make a scene containing the image
-		         newScene = world.Kernel.sceneImage(jsnums.toFixnum(img.getWidth()), 
-							    jsnums.toFixnum(img.getHeight()), 
-							    [],
-							    false);
-			 newScene = newScene.add(img.updatePinhole(0, 0), 0, 0);
+       newScene = world.Kernel.sceneImage(jsnums.toFixnum(img.getWidth()),
+                                          jsnums.toFixnum(img.getHeight()),
+                                          [],
+                                          false);
+			 newScene = newScene.add(img, img.getWidth()/2, img.getHeight()/2);
 			 // make an image containing the line
 			 line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
-						       jsnums.toFixnum(y2-y1),
-						       c,
-						       false);
+                                     jsnums.toFixnum(y2-y1),
+                                     c,
+                                     false);
+       leftMost = Math.min(x1,x2),
+       topMost = Math.min(y1,y2);
 			 // add the line to scene, offset by the original amount
-			 return newScene.add(line, jsnums.toFixnum(x1), jsnums.toFixnum(y1));
+			 return newScene.add(line, line.getWidth()/2+leftMost, line.getHeight()/2+topMost);
 		     });
+
+PRIMITIVES['put-pinhole'] =
+    new PrimProc('put-pinhole',
+		 3,
+		 false, false,
+		 function(aState, x, y, img) {
+			check(aState, x, isReal, "put-pinhole", "real", 1, arguments);
+			check(aState, y, isReal, "put-pinhole", "real", 2, arguments);
+      check(aState, img, isImage, "put-pinhole", "image", 3, arguments);
+			return img.updatePinhole(jsnums.toFixnum(x), jsnums.toFixnum(y));
+    		 });
+
 
 PRIMITIVES['circle'] =
     new PrimProc('circle',
