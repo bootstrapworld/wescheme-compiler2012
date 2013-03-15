@@ -7807,6 +7807,10 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "else",
                        "else: not allowed here, because this is not a question in a clause");                       
 
+        queueErrorTest("else is a keyword only usable in context",
+                       "(else)",
+                       "else: not allowed here, because this is not a question in a clause");                       
+
         queueErrorTest("double definitions",
                        "(define-struct x (y)) (define x-y 43)",
                        "x-y: this name has a previous definition and cannot be re-defined");
