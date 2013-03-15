@@ -87,7 +87,7 @@
                                                                   (empty-scene 100 100))
 
 (check-expect (image?
-               (put-pinhole 0 0 (rectangle 20 20 'solid 'green)))
+               (rectangle 20 20 'solid 'green))
               true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -479,8 +479,8 @@
  (flip-horizontal
   (rotate 30 (square 50 "solid" "blue"))))
 
-"A solid blue triangle, rotated 30 degrees after moving its pinhole: should be flush left"
-(rotate 30 (put-pinhole 0 (image-height (triangle 100 "solid" "blue")) (triangle 100 "solid" "blue")))
+"A solid blue triangle, rotated 30 degrees. Should be flush left"
+(rotate 30 (triangle 100 "solid" "blue"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SCALE & SCALE/XY

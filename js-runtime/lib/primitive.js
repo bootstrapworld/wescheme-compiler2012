@@ -4689,18 +4689,6 @@ PRIMITIVES['scene+line'] =
 			 return newScene.add(line, jsnums.toFixnum(x1), jsnums.toFixnum(y1));
 		     });
 
-PRIMITIVES['put-pinhole'] =
-    new PrimProc('put-pinhole',
-		 3,
-		 false, false,
-		 function(aState, x, y, img) {
-			check(aState, x, isReal, "put-pinhole", "real", 1, arguments);
-			check(aState, y, isReal, "put-pinhole", "real", 2, arguments);
-      check(aState, img, isImage, "put-pinhole", "image", 3, arguments);
-			return img.updatePinhole(jsnums.toFixnum(x), jsnums.toFixnum(y));
-    		 });
-
-
 PRIMITIVES['circle'] =
     new PrimProc('circle',
 		 3,
@@ -4790,27 +4778,6 @@ new PrimProc('radial-star',
 										   aStyle.toString(),
 										   aColor);
 			 });
-
-
-PRIMITIVES['nw:rectangle'] =
-    new PrimProc('nw:rectangle',
-		 4,
-		 false, false,
-		 function(aState, w, h, s, c) {
-			check(aState, w, isNonNegativeReal, "nw:rectangle", "non-negative number", 1, arguments);
-			check(aState, h, isNonNegativeReal, "nw:rectangle", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "nw:rectangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
-			check(aState, c, isColor, "nw:rectangle", "color", 4, arguments);
-
-			if (colorDb.get(c)) {
-				c = colorDb.get(c);
-			}
-			var aRect = world.Kernel.rectangleImage(jsnums.toFixnum(w),
-								jsnums.toFixnum(h),
-								s.toString(), c);
-			return aRect.updatePinhole(0, 0);
-		 });
-
 
 PRIMITIVES['rectangle'] =
     new PrimProc('rectangle',
