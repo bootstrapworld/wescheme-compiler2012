@@ -699,7 +699,7 @@
 
 (define (desugar-else an-expr pinfo)
   (raise (make-moby-error (stx-loc an-expr)
-                          (make-Message (make-ColoredPart (symbol->string (stx-e an-expr)) (stx-loc an-expr))
+                          (make-Message (make-ColoredPart "else" (stx-loc an-expr))
                                         ": not allowed "
                                         (make-ColoredPart "here" (stx-loc an-expr))
                                         ", because this is not a question in a clause"))))
