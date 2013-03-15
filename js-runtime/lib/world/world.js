@@ -241,10 +241,10 @@ if (typeof(world) === 'undefined') {
     // Constructs a canvas object of a particular width and height.
     world.Kernel.makeCanvas = function(width, height) {
         var canvas = document.createElement("canvas");
-        canvas.width = width;
+        canvas.width  = width;
         canvas.height = height;
 
-        canvas.style.width = canvas.width + "px";
+        canvas.style.width  = canvas.width  + "px";
         canvas.style.height = canvas.height + "px";
         
         // KLUDGE: IE compatibility uses /js/excanvas.js, and dynamic
@@ -256,20 +256,9 @@ if (typeof(world) === 'undefined') {
     };
 
     var withIeHack = function(canvas, f) {
-        //      canvas.style.display = 'none';
-        //      document.body.appendChild(canvas);
-        //      try {
         var result = f(canvas);
-        //      } catch(e) {
-        //          document.body.removeChild(canvas);
-        //          canvas.style.display = '';
-        //          throw e;
-        //      }
-        //      document.body.removeChild(canvas);
-        //      canvas.style.display = '';
         return result;
     };
-
 
     BaseImage.prototype.toDomNode = function(cache) {
         var that = this;
@@ -337,7 +326,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // SceneImage: primitive-number primitive-number (listof image) -> Scene
     var SceneImage = function(width, height, children, withBorder) {
-        BaseImage.call(this, Math.floor(width/2), Math.floor(height/2));
+        BaseImage.call(this);
         this.width    = width;
         this.height   = height;
         this.children = children; // arrayof [image, number, number]
@@ -359,7 +348,7 @@ if (typeof(world) === 'undefined') {
     SceneImage.prototype.render = function(ctx, x, y) {
         var i;
         var childImage, childX, childY;
-        // Then ask every object to render itself.
+        // Ask every object to render itself.
         for(i = 0; i < this.children.length; i++) {
             childImage = this.children[i][0];
             childX = this.children[i][1];
@@ -375,7 +364,6 @@ if (typeof(world) === 'undefined') {
         }
     };
 
-    // use pixel equality if we have to, otherwise use structural equality
     SceneImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof SceneImage)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
@@ -402,7 +390,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // FileImage: string node -> Image
     var FileImage = function(src, rawImage, afterInit) {
-        BaseImage.call(this, 0, 0);
+        BaseImage.call(this);
         var self = this;
         this.src = src;
         this.isLoaded = false;
@@ -495,7 +483,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // fileVideo: String Node -> Video
     var FileVideo = function(src, rawVideo) {
-        BaseImage.call(this, 0, 0);
+        BaseImage.call(this);
         var self = this;
         this.src = src;
         if (rawVideo) { 
@@ -553,12 +541,11 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // ImageDataImage: imageData -> image
     // Given an array of pixel data, create an image
-
     var ImageDataImage = function(imageData) {
-        BaseImage.call(this, 0, 0);
-        this.imageData = imageData;
-        this.width = imageData.width;
-        this.height = imageData.height;
+        BaseImage.call(this);
+        this.imageData= imageData;
+        this.width    = imageData.width;
+        this.height   = imageData.height;
     };
  
     ImageDataImage.prototype = heir(BaseImage.prototype);
@@ -572,7 +559,7 @@ if (typeof(world) === 'undefined') {
     // Creates an image that overlays img1 on top of the
     // other image img2.
     var OverlayImage = function(img1, img2, placeX, placeY) {
-        BaseImage.call(this, 0, 0);
+        BaseImage.call(this);
 
         // An overlay image consists of width, height, x1, y1, x2, and
         // y2.  We need to compute these based on the inputs img1,
@@ -677,15 +664,14 @@ if (typeof(world) === 'undefined') {
     // Rotates image by angle degrees in a counter-clockwise direction.
     // TODO: special case for ellipse?
     var RotateImage = function(angle, img) {
-        var sin = Math.sin(angle * Math.PI / 180);
-        var cos = Math.cos(angle * Math.PI / 180);
+        BaseImage.call(this);
+        var sin   = Math.sin(angle * Math.PI / 180);
+        var cos   = Math.cos(angle * Math.PI / 180);
         var width = img.getWidth();
-        var height = img.getHeight();
+        var height= img.getHeight();
  
-        var vertices = img.getVertices();
- 
-        // CHEAT: rotate each point as if it were rotated about (0,0)
-        var xs = [], ys = [];
+        // rotate each point as if it were rotated about (0,0)
+        var vertices = img.getVertices(), xs = [], ys = [];
         for(var i=0; i<vertices.length; i++){
             xs[i] = Math.round(vertices[i].x*cos - vertices[i].y*sin);
             ys[i] = Math.round(vertices[i].x*sin + vertices[i].y*cos);
@@ -696,7 +682,6 @@ if (typeof(world) === 'undefined') {
         var rotatedWidth  = Math.max.apply( Math, xs ) - Math.min.apply( Math, xs );
         var rotatedHeight = Math.max.apply( Math, ys ) - Math.min.apply( Math, ys );
 
-        BaseImage.call(this);
         this.img        = img;
         this.width      = Math.floor(rotatedWidth);
         this.height     = Math.floor(rotatedHeight);
@@ -733,8 +718,8 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // ScaleImage: factor factor image -> image
     // Scale an image
-    // TODO: scale vertices array?
     var ScaleImage = function(xFactor, yFactor, img) {
+        BaseImage.call(this);
         var vertices = img.getVertices();
         var xs = [], ys = [];
         for(var i=0; i<vertices.length; i++){
@@ -744,11 +729,6 @@ if (typeof(world) === 'undefined') {
         // store the vertices as something private, so this.getVertices() will still return undefined
         this._vertices = zipVertices(xs,ys);
  
-        // resize the image
-        BaseImage.call(this,
-                       Math.floor((img.getWidth() * xFactor) / 2),
-                       Math.floor((img.getHeight() * yFactor) / 2));
-        
         this.img      = img;
         this.width    = Math.floor(img.getWidth() * xFactor);
         this.height   = Math.floor(img.getHeight() * yFactor);
@@ -768,7 +748,6 @@ if (typeof(world) === 'undefined') {
         ctx.restore();
     };
 
-
     ScaleImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof ScaleImage)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
@@ -784,10 +763,7 @@ if (typeof(world) === 'undefined') {
     // CropImage: startX startY width height image -> image
     // Crop an image
     var CropImage = function(x, y, width, height, img) {
-        BaseImage.call(this, 
-                       Math.floor(width / 2),
-                       Math.floor(height / 2));
-        
+        BaseImage.call(this);
         this.x          = x;
         this.y          = y;
         this.width      = width;
@@ -819,11 +795,7 @@ if (typeof(world) === 'undefined') {
     // FrameImage: factor factor image -> image
     // Stick a frame around the image
     var FrameImage = function(img) {
-        
-        BaseImage.call(this, 
-                       Math.floor(img.getWidth()/ 2),
-                       Math.floor(img.getHeight()/ 2));
-        
+        BaseImage.call(this);
         this.img        = img;
         this.width      = img.getWidth();
         this.height     = img.getHeight();
@@ -853,15 +825,14 @@ if (typeof(world) === 'undefined') {
     // FlipImage: image string -> image
     // Flip an image either horizontally or vertically
     var FlipImage = function(img, direction) {
+        BaseImage.call(this);
         this.img        = img;
         this.width      = img.getWidth();
         this.height     = img.getHeight();
         this.direction  = direction;
-        BaseImage.call(this);
     };
 
     FlipImage.prototype = heir(BaseImage.prototype);
-
 
     FlipImage.prototype.render = function(ctx, x, y) {
         // when flipping an image of dimension M and offset by N across an axis, 
@@ -900,7 +871,6 @@ if (typeof(world) === 'undefined') {
 
 
     //////////////////////////////////////////////////////////////////////
-
     // colorString : hexColor Style -> rgba
     // Style can be "solid" (1.0), "outline" (1.0), a number (0-1.0) or null (1.0)
     var colorString = function(aColor, aStyle) {
@@ -914,7 +884,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // RectangleImage: Number Number Mode Color -> Image
     var RectangleImage = function(width, height, style, color) {
-        BaseImage.call(this, width/2, height/2);
+        BaseImage.call(this);
         this.width  = width;
         this.height = height;
         this.style  = style;
@@ -934,11 +904,11 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     // RhombusImage: Number Number Mode Color -> Image
     var RhombusImage = function(side, angle, style, color) {
+        BaseImage.call(this);
         // sin(angle/2-in-radians) * side = half of base
         // cos(angle/2-in-radians) * side = half of height
         this.width  = Math.sin(angle/2 * Math.PI / 180) * side * 2;
         this.height = Math.abs(Math.cos(angle/2 * Math.PI / 180)) * side * 2;
-        BaseImage.call(this, this.width/2, this.height/2);
         this.side   = side;
         this.angle  = angle;
         this.style  = style;
@@ -967,55 +937,37 @@ if (typeof(world) === 'undefined') {
     // another circle is inscribed in the polygon, whose radius is length/2tan(pi/count)
     // rotate a 3/4 quarter turn plus half the angle length to keep bottom base level
     var PolygonImage = function(length, count, step, style, color) {
-        var vertices = [];
-        var xMax = 0;
-        var yMax = 0;
-        var xMin = 0;
-        var yMin = 0;
-        
+        BaseImage.call(this);
         this.outerRadius = Math.floor(length/(2*Math.sin(Math.PI/count)));
         this.innerRadius = Math.floor(length/(2*Math.tan(Math.PI/count)));
         var adjust = (3*Math.PI/2)+Math.PI/count;
         
-        // rotate around outer circle, storing x,y pairs as vertices
-        // keep track of mins and maxs
-        var radians = 0;
+        // rotate around outer circle, storing x and y coordinates
+        var radians = 0, xs = [], ys = [];
         for(var i = 0; i < count; i++) {
-            // rotate to the next vertex (skipping by this.step)
             radians = radians + (step*2*Math.PI/count);
-            
-            var v = {   x: Math.round(this.outerRadius*Math.cos(radians-adjust)),
-                        y: Math.round(this.outerRadius*Math.sin(radians-adjust)) };
-            if(v.x < xMin){ xMin = v.x; }
-            if(v.x > xMax){ xMax = v.y; }
-            if(v.y < yMin){ yMin = v.x; }
-            if(v.y > yMax){ yMax = v.y; }
-            vertices.push(v);
+            xs.push(Math.round(this.outerRadius*Math.cos(radians-adjust)));
+            ys.push(Math.round(this.outerRadius*Math.sin(radians-adjust)));
         }
-        // HACK: try to work around handling of non-integer coordinates in CANVAS
-        // by ensuring that the boundaries of the canvas are outside of the vertices
-        for(i=0; i<vertices.length; i++){
-            if(vertices[i].x < xMin){ xMin = vertices[i].x-1; }
-            if(vertices[i].x > xMax){ xMax = vertices[i].x+1; }
-            if(vertices[i].y < yMin){ yMin = vertices[i].y-1; }
-            if(vertices[i].y > yMax){ yMax = vertices[i].y+1; }
-        }
-        this.width      = Math.floor(xMax-xMin);
-        this.height     = Math.floor(yMax-yMin);
+        var vertices = zipVertices(xs, ys);
+
+        this.width  = Math.max.apply(Math, xs) - Math.min.apply(Math, xs);
+        this.height = Math.max.apply(Math, ys) - Math.min.apply(Math, ys);
         this.length     = length;
         this.count      = count;
         this.step       = step;
         this.style      = style;
         this.color      = color;
+ 
         // shift the vertices by the calculated offsets, now that we know the width
         var xOffset = Math.round(this.width/2);
         var yOffset = ((this.count % 2)? this.outerRadius : this.innerRadius);
         for(i=0; i<vertices.length; i++){
-          vertices[i].x += xOffset; vertices[i].y += yOffset;
+            vertices[i].x += xOffset; vertices[i].y += yOffset;
         }
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2));
         this.vertices   = vertices;
     };
+ 
     PolygonImage.prototype = heir(BaseImage.prototype);
 
     var maybeQuote = function(s) {
@@ -1027,9 +979,8 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
     // TextImage: String Number Color String String String String any/c -> Image
-    //////////////////////////////////////////////////////////////////////
-    // TextImage: String Number Color String String String String any/c -> Image
     var TextImage = function(msg, size, color, face, family, style, weight, underline) {        
+        BaseImage.call(this);
         var metrics;
         this.msg        = msg;
         this.size       = size;
@@ -1064,7 +1015,6 @@ if (typeof(world) === 'undefined') {
         } catch(e) {
             this.fallbackOnFont();
         }
-        BaseImage.call(this);
     };
  
 
@@ -1134,6 +1084,7 @@ if (typeof(world) === 'undefined') {
     // Most of this code here adapted from the Canvas tutorial at:
     // http://developer.apple.com/safari/articles/makinggraphicswithcanvas.html
     var StarImage = function(points, outer, inner, style, color) {
+        BaseImage.call(this);
         this.points     = points;
         this.outer      = outer;
         this.inner      = inner;
@@ -1151,9 +1102,6 @@ if (typeof(world) === 'undefined') {
           vertices.push({x:this.radius + ( Math.sin( rads ) * radius ),
                          y:this.radius + ( Math.cos( rads ) * radius )} );
         }
-        BaseImage.call(this,
-                       Math.max(outer, inner),
-                       Math.max(outer, inner));
         this.vertices = vertices;
     };
 
@@ -1162,6 +1110,7 @@ if (typeof(world) === 'undefined') {
     /////////////////////////////////////////////////////////////////////
     //TriangleImage: Number Number Mode Color -> Image
     var TriangleImage = function(side, angle, style, color) {
+        BaseImage.call(this);
         // sin(angle/2-in-radians) * side = half of base
         // cos(angle/2-in-radians) * side = height of altitude
         this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
@@ -1177,7 +1126,6 @@ if (typeof(world) === 'undefined') {
           vertices.push({x:0,            y:0});
           vertices.push({x:this.width,   y:0});
         }
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2));
         this.side = side;
         this.angle = angle;
         this.style = style;
@@ -1189,9 +1137,9 @@ if (typeof(world) === 'undefined') {
     /////////////////////////////////////////////////////////////////////
     //RightTriangleImage: Number Number Mode Color -> Image
     var RightTriangleImage = function(side1, side2, style, color) {
+        BaseImage.call(this);
         this.width = side1;
         this.height = side2;
-        BaseImage.call(this, Math.floor(this.width/2), Math.floor(this.height/2), this.vertices);
         this.side1 = side1;
         this.side2 = side2;
         this.style = style;
@@ -1205,7 +1153,7 @@ if (typeof(world) === 'undefined') {
     //////////////////////////////////////////////////////////////////////
     //Ellipse : Number Number Mode Color -> Image
     var EllipseImage = function(width, height, style, color) {
-        BaseImage.call(this, Math.floor(width/2), Math.floor(height/2));
+        BaseImage.call(this);
         this.width = width;
         this.height = height;
         this.style = style;
@@ -1256,25 +1204,16 @@ if (typeof(world) === 'undefined') {
 
 
     //////////////////////////////////////////////////////////////////////
-    //Line: Number Number Color Boolean -> Image
+    // Line: Number Number Color Boolean -> Image
     var LineImage = function(x, y, color) {
+        BaseImage.call(this);
         var vertices;
         if (x >= 0) {
-          if (y >= 0) {
-            BaseImage.call(this, 0, 0);
-            vertices = [{x:  0, y:  0}, {x: x, y: y}];
-          } else {
-            BaseImage.call(this, 0, -y);
-            vertices = [{x:  0, y: -y}, {x: x, y: 0}];
-          }
+            if (y >= 0) { vertices = [{x:  0, y:  0}, {x: x, y: y}]; }
+            else        { vertices = [{x:  0, y: -y}, {x: x, y: 0}]; }
         } else {
-          if (y >= 0) {
-            BaseImage.call(this, -x, 0);
-            vertices = [{x: -x, y:  0}, {x: 0, y: y}];
-          } else {
-            BaseImage.call(this, -x, -y);
-            vertices = [{x: -x, y: -y}, {x: 0, y: 0}];
-          }
+            if (y >= 0) { vertices = [{x: -x, y:  0}, {x: 0, y: y}]; }
+            else        { vertices = [{x: -x, y: -y}, {x: 0, y: 0}]; }
         }
         // preserve the invariant that all vertex-based images have a style
         this.style  = "outline";
@@ -1327,7 +1266,6 @@ if (typeof(world) === 'undefined') {
 
 
     // FIXME: update toString to handle the primitive field values.
-
     var colorDb = new ColorDb();
     colorDb.put("ORANGE", types.color(255, 165, 0));
     colorDb.put("RED", types.color(255, 0, 0));
