@@ -570,7 +570,23 @@ if (typeof(world) === 'undefined') {
                 this.pinholeY === other.pinholeY &&
                 this.src      === other.src);
     };
+ 
+    //////////////////////////////////////////////////////////////////////
+    // ImageDataImage: imageData -> image
+    // Given an array of pixel data, create an image
 
+    var ImageDataImage = function(imageData) {
+        BaseImage.call(this, 0, 0);
+        this.imageData = imageData;
+        this.width = imageData.width;
+        this.height = imageData.height;
+    };
+ 
+    ImageDataImage.prototype = heir(BaseImage.prototype);
+ 
+    ImageDataImage.prototype.render = function(ctx, x, y) {
+        ctx.putImageData(this.imageData, x, y);
+    };
 
     //////////////////////////////////////////////////////////////////////
     // OverlayImage: image image placeX placeY -> image
