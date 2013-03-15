@@ -7021,25 +7021,6 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(scene+line)",
                        'scene+line: expects 6 arguments, but given 0');
 
-
-//PRIMITIVES['put-pinhole'] 
-
-        queueErrorTest("put-pinhole with wrong arity",
-                       "(put-pinhole)",
-                       'put-pinhole: expects 3 arguments, but given 0');
-
-        queueErrorTest("put-pinhole with 1st argument not real",
-                       "(put-pinhole true 2 3)",
-                       'put-pinhole: expects a real as 1st argument, but given: true; other arguments were: 2 3');
-
-        queueErrorTest("put-pinhole with 2nd argument not real",
-                       "(put-pinhole 1 add1 (circle 50 \"solid\" \"red\"))",
-                       'put-pinhole: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: 1 <image>');
-
-        queueErrorTest("put-pinhole with 3rd argument not image",
-                       "(put-pinhole 1 2 add1)",
-                       'put-pinhole: expects an image as 3rd argument, but given: #<function:add1>; other arguments were: 1 2');
-
 //PRIMITIVES['circle']
 
         queueErrorTest("circle with wrong arity",
@@ -7101,28 +7082,6 @@ PRIMITIVES['bytes>?'] = ALL DNE */
         queueErrorTest("star with 5th argument not colour",
                        "(radial-star 5 4 2 \"solid\" \"foo\")",
                        'radial-star: expects a color as 5th argument, but given: "foo"; other arguments were: 5 4 2 "solid"');
-
-//PRIMITIVES['nw:rectangle']
-
-        queueErrorTest("nw:rectangle wrong arity",
-                       "(nw:rectangle)",
-                       'nw:rectangle: expects 4 arguments, but given 0');
-
-        queueErrorTest("radial-star with 1st argument non-negative number",
-                       "(nw:rectangle \"foo\" 2 3 4)",
-                       'nw:rectangle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3 4');
-
-        queueErrorTest("star with 2nd argument not non-negative number",
-                       "(nw:rectangle 2 \"foo\" 3 4)",
-                       'nw:rectangle: expects a non-negative number as 2nd argument, but given: "foo"; other arguments were: 2 3 4');
-
-        queueErrorTest("star with 3rd argument not style",
-                       "(nw:rectangle 2 5 add1 4)",
-                       'nw:rectangle: expects a style ("solid" or "outline" or [0-255]) as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
-
-        queueErrorTest("star with 4th argument not colour",
-                       "(nw:rectangle 2 5 \"outline\" \"focus\")",
-                       'nw:rectangle: expects a color as 4th argument, but given: "focus"; other arguments were: 2 5 "outline"');
 
 // PRIMITIVES['rectangle'] 
 
