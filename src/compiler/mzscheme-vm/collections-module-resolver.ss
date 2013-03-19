@@ -7,6 +7,7 @@
          "../pinfo.ss"
          "../analyzer.ss"
          "../desugar.ss"
+         "../../module-provider.rkt"
          "../../stx-helpers.ss"
          "../../collects/moby/runtime/binding.ss"
          "collections/manifest.ss")
@@ -46,7 +47,8 @@
                                 (map (lambda (binding) (localize-binding binding name))
                                      (pinfo-get-exposed-bindings a-pinfo))))))]))
          
-         
+
+;; localize-binding: module-binding source -> module-binding
 (define (localize-binding a-binding a-source)
   (match a-binding
     [(struct binding:constant (name
@@ -76,6 +78,26 @@
                                 loc))
      (make-binding:structure name a-source fields constructor predicate accessors mutators permissions loc)]))
     
+
+;; extend-module-resolver-with-module-provider:
+;;     module-resolver (module-name -> module-provider-record) -> module-resolver
+;;
+;; Use a module provider to also do module lookup and resolution.
+(define (extend-module-resolver-with-module-provider original-resolver a-provider)
+  (define (wrapped-resolver module-name)
+    (define a-record (a-provider module-name))
+    (cond
+      [a-record
+       (define binding (make-module-binding module-name
+                                            module-name
+                                            (for/list ([provided-name (module-provider-record-provides a-record)])
+                                              (make-binding:constant (string->symbol provided-name)
+                                                                     module-name '() #f))))
+       binding]
+      [else
+       (original-resolver module-name)]))
+  wrapped-resolver)
+
          
  ;; read-syntaxes: input-port #:name symbol -> (listof stx)
 (define (read-syntaxes in #:name name)
@@ -94,5 +116,7 @@
 
 
 (provide/contract [extend-module-resolver-with-collections
-                   (module-resolver/c . -> . module-resolver/c)] )
-                   
+                   (module-resolver/c . -> . module-resolver/c)]
+                  [extend-module-resolver-with-module-provider
+                   (module-resolver/c (module-name? . -> . (or/c false/c module-provider-record?))
+                                      . -> . module-resolver/c)])

@@ -134,16 +134,18 @@
                                                (stx-e (second (stx-e a-clause))))
                                 (binding:structure?
                                  (hash-ref (pinfo-defined-names a-pinfo) 
-                                             (stx-e (second (stx-e a-clause)))
-                                             #f)))
+                                           (stx-e (second (stx-e a-clause)))
+                                           #f)))
                      (raise (make-moby-error (stx-loc a-clause)
                                              (make-moby-error-type:provided-structure-not-structure
                                               (stx-e (second (stx-e a-clause)))))))
+                   ;; This doesn't make sense.  It needs to provide the constructor, accessor,
+                   ;; etc, and not just the name of the struct.
                    (pinfo-update-provided-names a-pinfo
                                                 (hash-set (pinfo-provided-names a-pinfo)
-                                                               (stx-e (second (stx-e a-clause)))
-                                                               (make-provide-binding:struct-id 
-                                                                (second (stx-e a-clause))))))]
+                                                          (stx-e (second (stx-e a-clause)))
+                                                          (make-provide-binding:struct-id 
+                                                           (second (stx-e a-clause))))))]
                 [else
                  (raise (make-moby-error (stx-loc a-clause)
                                          (make-moby-error-type:generic-syntactic-error

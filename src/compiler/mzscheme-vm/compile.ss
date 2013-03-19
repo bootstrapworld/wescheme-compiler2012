@@ -22,7 +22,7 @@
 (define (compile/port in out
                       #:name name
                       #:pinfo (pinfo default-base-pinfo)
-                      #:runtime-version runtime-version)
+                      #:runtime-version [runtime-version #f])
   (let ([stxs (read-syntaxes in #:name name)])
     (compile/program stxs out
                      #:name name
@@ -35,14 +35,17 @@
 (define (compile/program a-program out 
                          #:name name 
                          #:pinfo (a-pinfo default-base-pinfo)
-                         #:runtime-version runtime-version)
+                         #:runtime-version [runtime-version #f])
   (let*-values ([(a-compilation-top a-pinfo)
                  (compile-compilation-top a-program 
                                           a-pinfo
                                           #:name name)]
                 [(a-jsexp)
-                 (make-cmt (format "runtime-version: ~a" runtime-version)
-                           (compile-top a-compilation-top))])
+                 (cond [runtime-version
+                        (make-cmt (format "runtime-version: ~a" runtime-version)
+                                  (compile-top a-compilation-top))]
+                       [else
+                        (compile-top a-compilation-top)])])
     (display (jsexp->js a-jsexp)
              out)
   a-pinfo))
@@ -55,5 +58,7 @@
 
 
 
-(provide/contract [compile/port (input-port? output-port? #:name symbol? #:runtime-version string? . -> . any)]
-                  [compile/program (program? output-port? #:name symbol? #:runtime-version string? . -> . any)])
+(provide/contract 
+ [default-base-pinfo pinfo?]
+ [compile/port ((input-port? output-port? #:name symbol?) (#:runtime-version string? #:pinfo pinfo?) . ->* . any)]
+ [compile/program ((program? output-port? #:name symbol?) (#:runtime-version string? #:pinfo pinfo?) . ->* . any)])
