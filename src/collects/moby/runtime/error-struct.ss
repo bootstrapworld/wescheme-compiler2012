@@ -11,7 +11,7 @@
 (define-struct Message (parts))
 (define-struct ColoredPart (text loc))
 (define-struct GradientPart (parts)) ;; (listof ColoredPart)
-(define-struct MultiPart (text locs))
+(define-struct MultiPart (text locs solid))
 
 
 
@@ -234,7 +234,8 @@
 
 (provide/contract
  [struct MultiPart ([text string?]
-                    [locs (non-empty-listof Loc?)])])
+                    [locs (non-empty-listof Loc?)]
+                    [solid boolean?])])
 
 
 (provide/contract

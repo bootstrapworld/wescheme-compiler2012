@@ -449,7 +449,7 @@
                                (make-Message  (make-ColoredPart "if" (stx-loc (first (stx-e expr)))) 
                                               ": expected only a test, a consequence, and an alternative, "
                                               "but found "
-                                              (make-MultiPart "more than three of these" (map stx-loc (rest (stx-e expr)))))))])))
+                                              (make-MultiPart "more than three of these" (map stx-loc (rest (stx-e expr))) #f))))])))
 
 
 
@@ -591,7 +591,8 @@
                                                   (number->string (- (length parts) 3))
                                                   " extra part"
                                                   (if (> (- (length parts) 3) 1) "s" ""))
-                                                 (map stx-loc (rest (rest (rest parts))))))))))
+                                                 (map stx-loc (rest (rest (rest parts))))
+                                                 #f))))))
     ;; Check number of elements in the lambda
     (check-single-body-stx! (rest (rest (stx-e expr))) expr)
     
@@ -843,33 +844,33 @@
                        (cond [(not (list? (stx-e a-clause)))
                               (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs) 
+                                                       (make-MultiPart "cond" expr-locs #f) 
                                                        ": expected a clause with a question and an answer, but found "
                                                        (make-ColoredPart "something else" (stx-loc a-clause)))))]
                              [(= (length (stx-e a-clause)) 0)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs)  
+                                                       (make-MultiPart "cond" expr-locs #f)  
                                                        ": expected a clause with a question and an answer, but found an "
-                                                       (make-MultiPart "empty part" cond-branch-locs)
+                                                       (make-MultiPart "empty part" cond-branch-locs #f)
                                                        )))]
                              [(< (length (stx-e a-clause)) 2)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs)  
+                                                       (make-MultiPart "cond" expr-locs #f)
                                                        ": expected a clause with a question and an answer, but found a "
-                                                       (make-MultiPart "clause" cond-branch-locs)
+                                                       (make-MultiPart "clause" cond-branch-locs #f)
                                                        " with only "
-                                                       (make-MultiPart "one part" (map stx-loc (stx-e a-clause))))))]                 
+                                                       (make-MultiPart "one part" (map stx-loc (stx-e a-clause)) #f))))]                 
                              [(> (length (stx-e a-clause)) 2)
                               
                               (raise (make-moby-error (stx-loc a-clause) ;;conditional-clause-too-many-elements
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs) 
+                                                       (make-MultiPart "cond" expr-locs #f) 
                                                        ": expected a clause with a question and an answer, but found " 
-                                                       (make-MultiPart "a clause" cond-branch-locs)
+                                                       (make-MultiPart "a clause" cond-branch-locs #f)
                                                        " with "
-                                                       (make-MultiPart (string-append (number->string (length (stx-e a-clause))) " parts") (map stx-loc (stx-e a-clause))))))]
+                                                       (make-MultiPart (string-append (number->string (length (stx-e a-clause))) " parts") (map stx-loc (stx-e a-clause)) #f))))]
                              [else
                               (void)])))
                    cond-clauses))
@@ -998,7 +999,7 @@
                                                  (Loc-id (stx-loc an-expr))))))
                   (raise (make-moby-error (stx-loc (first clauses))
                                           (make-Message 
-                                           (make-MultiPart "cond" expr-locs) ": " 
+                                           (make-MultiPart "cond" expr-locs #f) ": " 
                                            "found an "
                                            (make-ColoredPart "else clause" (stx-loc (first clauses))) 
                                            " that isn't the last clause in its cond expression; there is "
@@ -1320,7 +1321,7 @@
        (raise (make-moby-error (stx-loc expr)
                                (make-Message (make-ColoredPart "quote" (stx-loc (first (stx-e expr))))
                                              ": expected a single argument, but found "
-                                             (make-MultiPart "more than one." (map stx-loc (rest (stx-e expr)))))))]
+                                             (make-MultiPart "more than one." (map stx-loc (rest (stx-e expr))) #f))))]
       [else
        (list expr pinfo)])))
 

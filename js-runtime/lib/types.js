@@ -2026,9 +2026,10 @@ GradientPart.prototype.toString = function() {
 
 };
 
-var MultiPart = function(text, locations) {
+var MultiPart = function(text, locations, solid) {
     this.text = text;
     this.locations = locations;
+    this.solid = solid;
 };
 
 var isMultiPart = function(o) {

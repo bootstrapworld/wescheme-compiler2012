@@ -43,7 +43,8 @@
                             [(MultiPart? part)
                              (list (make-hash `((type . "MultiPart")
 						(text . ,(MultiPart-text part))
-						(locs . ,(map loc->jsexpr (MultiPart-locs part))))))]))
+						(locs . ,(map loc->jsexpr (MultiPart-locs part)))
+                                                (solid . ,(MultiPart-solid part)))))]))
                          parts)))]
    [else
     #f]))

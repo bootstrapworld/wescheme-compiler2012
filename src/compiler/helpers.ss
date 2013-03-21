@@ -430,11 +430,13 @@
                                                                                  ": expected "
                                                                                  (make-MultiPart (string-append (number->string numID) 
                                                                                                                 (if (= 1 numID) " part" " parts")) 
-                                                                                                 (map stx-loc (stx-e (second parts)))) 
+                                                                                                 (map stx-loc (stx-e (second parts)))
+                                                                                                 #f) 
                                                                                  ", but found "
                                                                                  (make-MultiPart (string-append (number->string numVals) 
                                                                                                                 (if (= 1 numVals) " part" " parts")) 
-                                                                                                 (map stx-loc (stx-e (third parts))))))))]
+                                                                                                 (map stx-loc (stx-e (third parts)))
+                                                                                                 #f)))))]
        [(>  (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
                                                       (make-Message
                                                        (make-ColoredPart "define-values" (stx-loc (first parts)))
@@ -443,7 +445,8 @@
                                                                         (if (> (length (rest (rest (rest parts)))) 1) "" "an ")
                                                                         "extra part" 
                                                                         (if (> (length (rest (rest (rest parts)))) 1) "s" ""))
-                                                                       (map stx-loc (rest (rest (rest parts))))))))])))
+                                                                       (map stx-loc (rest (rest (rest parts))))
+                                                                       #f))))])))
 
 
 ;;define-var?: definition -> boolean
@@ -503,7 +506,8 @@
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
                                                      ": expected only one expression for the function body, but found " 
                                                      (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  
-                                                                     (map stx-loc (rest (rest (rest parts))))))))]
+                                                                     (map stx-loc (rest (rest (rest parts))))
+                                                                     #f))))]
       [(< (length parts) 3) (raise (make-moby-error (stx-loc a-definition)
                                                     (make-Message
                                                      (make-ColoredPart "define" (stx-loc (first parts)))
@@ -531,7 +535,8 @@
                                                      (make-ColoredPart (symbol->string (stx->datum (second parts)))   (stx-loc (second parts)))
                                                      ", but found "
                                                      (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  
-                                                                     (map stx-loc (rest (rest (rest parts))))))))])))
+                                                                     (map stx-loc (rest (rest (rest parts))))
+                                                                     #f))))])))
 
 ;;handle-defn-struct-error: definition -> ?????
 (define (handle-defn-struct-error a-definition)
@@ -571,7 +576,8 @@
                                                      (make-ColoredPart (string-append "field name" (if (> (length (stx-e (third parts))) 1) "s" ""))  (stx-loc (third parts)))
                                                      ", but found "
                                                      (make-MultiPart (string-append (number->string (- (length parts) 3)) " extra part" (if (> (length parts) 4) "s" ""))  
-                                                                     (map stx-loc (rest (rest (rest parts))))))))])))
+                                                                     (map stx-loc (rest (rest (rest parts))))
+                                                                     #f))))])))
 
 
 
@@ -678,7 +684,8 @@
                                          (number->string (length (rest (rest (rest (stx-e original-stx))))))
                                          " extra part"
                                          (if (> (length (rest (rest (rest (stx-e original-stx))))) 1) "s" ""))
-                                        (map stx-loc (rest (rest (rest (stx-e original-stx)))))))))]
+                                        (map stx-loc (rest (rest (rest (stx-e original-stx)))))
+                                        #f))))]
     [else
      (void)]))
 
