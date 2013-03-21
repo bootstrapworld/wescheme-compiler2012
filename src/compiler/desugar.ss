@@ -852,14 +852,14 @@
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs #t)  
                                                        ": expected a clause with a question and an answer, but found an "
-                                                       (make-MultiPart "empty part" cond-branch-locs #f)
+                                                       (make-MultiPart "empty part" cond-branch-locs #t)
                                                        )))]
                              [(< (length (stx-e a-clause)) 2)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs #t)
                                                        ": expected a clause with a question and an answer, but found a "
-                                                       (make-MultiPart "clause" cond-branch-locs #f)
+                                                       (make-MultiPart "clause" cond-branch-locs #t)
                                                        " with only "
                                                        (make-MultiPart "one part" (map stx-loc (stx-e a-clause)) #f))))]                 
                              [(> (length (stx-e a-clause)) 2)
@@ -868,7 +868,7 @@
                                                       (make-Message 
                                                        (make-MultiPart "cond" expr-locs #t) 
                                                        ": expected a clause with a question and an answer, but found " 
-                                                       (make-MultiPart "a clause" cond-branch-locs #f)
+                                                       (make-MultiPart "a clause" cond-branch-locs #t)
                                                        " with "
                                                        (make-MultiPart (string-append (number->string (length (stx-e a-clause))) " parts") (map stx-loc (stx-e a-clause)) #f))))]
                              [else
