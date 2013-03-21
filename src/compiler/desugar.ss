@@ -844,20 +844,20 @@
                        (cond [(not (list? (stx-e a-clause)))
                               (raise (make-moby-error (stx-loc a-clause)  ;;conditional-malformed-clause
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs #f) 
+                                                       (make-MultiPart "cond" expr-locs #t) 
                                                        ": expected a clause with a question and an answer, but found "
                                                        (make-ColoredPart "something else" (stx-loc a-clause)))))]
                              [(= (length (stx-e a-clause)) 0)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs #f)  
+                                                       (make-MultiPart "cond" expr-locs #t)  
                                                        ": expected a clause with a question and an answer, but found an "
                                                        (make-MultiPart "empty part" cond-branch-locs #f)
                                                        )))]
                              [(< (length (stx-e a-clause)) 2)
                               (raise (make-moby-error (stx-loc a-clause)   ;;conditional-clause-too-few-elements
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs #f)
+                                                       (make-MultiPart "cond" expr-locs #t)
                                                        ": expected a clause with a question and an answer, but found a "
                                                        (make-MultiPart "clause" cond-branch-locs #f)
                                                        " with only "
@@ -866,7 +866,7 @@
                               
                               (raise (make-moby-error (stx-loc a-clause) ;;conditional-clause-too-many-elements
                                                       (make-Message 
-                                                       (make-MultiPart "cond" expr-locs #f) 
+                                                       (make-MultiPart "cond" expr-locs #t) 
                                                        ": expected a clause with a question and an answer, but found " 
                                                        (make-MultiPart "a clause" cond-branch-locs #f)
                                                        " with "
@@ -999,7 +999,7 @@
                                                  (Loc-id (stx-loc an-expr))))))
                   (raise (make-moby-error (stx-loc (first clauses))
                                           (make-Message 
-                                           (make-MultiPart "cond" expr-locs #f) ": " 
+                                           (make-MultiPart "cond" expr-locs #t) ": " 
                                            "found an "
                                            (make-ColoredPart "else clause" (stx-loc (first clauses))) 
                                            " that isn't the last clause in its cond expression; there is "
