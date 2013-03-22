@@ -348,8 +348,14 @@ if (typeof(world) === 'undefined') {
     SceneImage.prototype.render = function(ctx, x, y) {
         var i;
         var childImage, childX, childY;
+        // first, make sure we're clipping to the Scene boundaries
+        ctx.rect(x,y,this.width,this.height);
+        ctx.stroke();
+        ctx.clip();
+
         // Ask every object to render itself.
         for(i = 0; i < this.children.length; i++) {
+            // then, render the child images
             childImage = this.children[i][0];
             childX = this.children[i][1];
             childY = this.children[i][2];
