@@ -7035,25 +7035,6 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(scene+line)",
                        'scene+line: expects 6 arguments, but given 0');
 
-
-//PRIMITIVES['put-pinhole'] 
-
-        queueErrorTest("put-pinhole with wrong arity",
-                       "(put-pinhole)",
-                       'put-pinhole: expects 3 arguments, but given 0');
-
-        queueErrorTest("put-pinhole with 1st argument not image",
-                       "(put-pinhole 1 2 3)",
-                       'put-pinhole: expects an image as 1st argument, but given: 1; other arguments were: 2 3');
-
-        queueErrorTest("put-pinhole with 2nd argument not image",
-                       "(put-pinhole (circle 50 \"solid\" \"red\") add1 3)",
-                       'put-pinhole: expects a real as 2nd argument, but given: #<function:add1>; other arguments were: <image> 3');
-
-        queueErrorTest("put-pinhole with 3rd argument not image",
-                       "(put-pinhole (circle 50 \"solid\" \"red\") 1 add1)",
-                       'put-pinhole: expects a real as 3rd argument, but given: #<function:add1>; other arguments were: <image> 1');
-
 //PRIMITIVES['circle']
 
         queueErrorTest("circle with wrong arity",
@@ -7065,8 +7046,8 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        'circle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3');
 
         queueErrorTest("circle with 2nd argument not style",
-                       "(circle 1 2 3)",
-                       'circle: expects a style ("solid" or "outline") as 2nd argument, but given: 2; other arguments were: 1 3');
+                       "(circle 1 true 3)",
+                       'circle: expects a style ("solid" or "outline" or [0-255]) as 2nd argument, but given: true; other arguments were: 1 3');
 
         queueErrorTest("circle with 3rd argument not colour",
                        "(circle 1 \"solid\" add1)",
@@ -7082,9 +7063,9 @@ PRIMITIVES['bytes>?'] = ALL DNE */
                        "(star \"hello\" 2 3)",
                        'star: expects a non-negative number as 1st argument, but given: "hello"; other arguments were: 2 3');
 
-        queueErrorTest("star with 2nd argument not image",
-                       "(star 1 2 3)",
-                       'star: expects a style ("solid" or "outline") as 2nd argument, but given: 2; other arguments were: 1 3');
+        queueErrorTest("star with 2nd argument not style",
+                       "(star 1 \"moo\" 3)",
+                       'star: expects a style ("solid" or "outline" or [0-255]) as 2nd argument, but given: "moo"; other arguments were: 1 3');
 
         queueErrorTest("star with 3rd argument not colour",
                        "(star 1 \"solid\" add1)",
@@ -7110,33 +7091,11 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("star with 4th argument not style",
                        "(radial-star 5 4 2 \"foo\" 5)",
-                       'radial-star: expects a style ("solid" or "outline") as 4th argument, but given: "foo"; other arguments were: 5 4 2 5');
+                       'radial-star: expects a style ("solid" or "outline" or [0-255]) as 4th argument, but given: "foo"; other arguments were: 5 4 2 5');
 
         queueErrorTest("star with 5th argument not colour",
                        "(radial-star 5 4 2 \"solid\" \"foo\")",
                        'radial-star: expects a color as 5th argument, but given: "foo"; other arguments were: 5 4 2 "solid"');
-
-//PRIMITIVES['nw:rectangle']
-
-        queueErrorTest("nw:rectangle wrong arity",
-                       "(nw:rectangle)",
-                       'nw:rectangle: expects 4 arguments, but given 0');
-
-        queueErrorTest("radial-star with 1st argument non-negative number",
-                       "(nw:rectangle \"foo\" 2 3 4)",
-                       'nw:rectangle: expects a non-negative number as 1st argument, but given: "foo"; other arguments were: 2 3 4');
-
-        queueErrorTest("star with 2nd argument not non-negative number",
-                       "(nw:rectangle 2 \"foo\" 3 4)",
-                       'nw:rectangle: expects a non-negative number as 2nd argument, but given: "foo"; other arguments were: 2 3 4');
-
-        queueErrorTest("star with 3rd argument not style",
-                       "(nw:rectangle 2 5 add1 4)",
-                       'nw:rectangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
-
-        queueErrorTest("star with 4th argument not colour",
-                       "(nw:rectangle 2 5 \"outline\" \"focus\")",
-                       'nw:rectangle: expects a color as 4th argument, but given: "focus"; other arguments were: 2 5 "outline"');
 
 // PRIMITIVES['rectangle'] 
 
@@ -7154,7 +7113,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("rectangle with 3rd argument not style",
                        "(rectangle 2 5 add1 4)",
-                       'rectangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
+                       'rectangle: expects a style ("solid" or "outline" or [0-255]) as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("rectangle with 4th argument not colour",
                        "(rectangle 2 5 \"outline\" \"focus\")",
@@ -7176,7 +7135,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("regular-polygon with 3rd argument not style",
                        "(regular-polygon 2 5 add1 4)",
-                       'regular-polygon: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
+                       'regular-polygon: expects a style ("solid" or "outline" or [0-255]) as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("regular-polygonwith 4th argument not colour",
                        "(regular-polygon 2 5 \"outline\" \"focus\")",
@@ -7202,7 +7161,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("star-polygon with 4th argument not style",
                        "(star-polygon 2 5 5 add1 5)",
-                       'star-polygon: expects a style ("solid" or "outline") as 4th argument, but given: #<function:add1>; other arguments were: 2 5 5 5');
+                       'star-polygon: expects a style ("solid" or "outline" or [0-255]) as 4th argument, but given: #<function:add1>; other arguments were: 2 5 5 5');
 
         queueErrorTest("star-polygon with 5th argument not colour",
                        "(star-polygon 2 5 5 \"outline\" \"focus\")",
@@ -7224,7 +7183,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("rhombus with 3rd argument not style",
                        "(rhombus 2 5 add1 4)",
-                       'rhombus: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
+                       'rhombus: expects a style ("solid" or "outline" or [0-255]) as 3rd argument, but given: #<function:add1>; other arguments were: 2 5 4');
 
         queueErrorTest("rhombus with 4th argument not colour",
                        "(rhombus 2 5 \"outline\" \"focus\")",
@@ -7243,7 +7202,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("square with 2nd argument not style",
                        "(square 2 add1 4)",
-                       'square: expects a style ("solid" or "outline") as 2nd argument, but given: #<function:add1>; other arguments were: 2 4');
+                       'square: expects a style ("solid" or "outline" or [0-255]) as 2nd argument, but given: #<function:add1>; other arguments were: 2 4');
 
         queueErrorTest("square with 3rd argument not colour",
                        "(square 2 \"outline\" \"focus\")",
@@ -7261,7 +7220,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("triangle with 2nd argument not style",
                        "(triangle 2 add1 4)",
-                       'triangle: expects a style ("solid" or "outline") as 2nd argument, but given: #<function:add1>; other arguments were: 2 4');
+                       'triangle: expects a style ("solid" or "outline" or [0-255]) as 2nd argument, but given: #<function:add1>; other arguments were: 2 4');
 
         queueErrorTest("triangle with 3rd argument not colour",
                        "(triangle 2 \"outline\" \"focus\")",
@@ -7283,7 +7242,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("right-triangle with 3rd argument not style",
                        "(right-triangle 2 4 add1 4)",
-                       'right-triangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
+                       'right-triangle: expects a style ("solid" or "outline" or [0-255]) as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("right-triangle with 4th argument not colour",
                        "(right-triangle 5 2 \"outline\" \"focus\")",
@@ -7306,7 +7265,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("isosceles-triangle with 3rd argument not style",
                        "(isosceles-triangle 2 4 add1 4)",
-                       'isosceles-triangle: expects a style ("solid" or "outline") as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
+                       'isosceles-triangle: expects a style ("solid" or "outline" or [0-255]) as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("isosceles-triangle with 4th argument not colour",
                        "(isosceles-triangle 5 2 \"outline\" \"focus\")",
@@ -7328,7 +7287,7 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("ellipse with 3rd argument not string",
                        "(ellipse 2 4 add1 4)",
-                       'ellipse: expects a string as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
+                       'ellipse: expects a style ("solid" or "outline" or [0-255]) as 3rd argument, but given: #<function:add1>; other arguments were: 2 4 4');
 
         queueErrorTest("ellipse with 4th argument not colour",
                        "(ellipse 5 2 \"outline\" \"focus\")",

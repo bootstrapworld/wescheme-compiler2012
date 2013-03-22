@@ -20,7 +20,7 @@
 	    (safer-rectangle rectangle)
 	    (safer-star star)
 	    (safer-ellipse ellipse))
-	 type #;warn number->image string->image put-image overlay-at
+	 type #;warn number->image string->image overlay-at
 	 start score sq sine cosine tangent
 	 #;(except-out (all-from-out 2htdp/universe) on-key on-mouse)
 	 )
@@ -129,12 +129,6 @@
 ;; convert the given number to an image.
 (define (number->image n)
   (string->image (number->string n)))
-
-;; put-image : Image Number Number -> Image
-;; Place the given image at the given location on an
-;; otherwise empty 640x480 scene
-(define (put-image img x y)
-  (place-image img x (- 480 y) (empty-scene 640 480)))
 
 ;; overlay-at : Image Number Number Image -> Image
 (define (overlay-at background x y foreground)
