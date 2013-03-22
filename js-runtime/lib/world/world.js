@@ -490,10 +490,10 @@ if (typeof(world) === 'undefined') {
             this.video                  = rawVideo;
             this.width                  = self.video.videoWidth;
             this.height                 = self.video.videoHeight;
-            this.video.volume   = 1;
-            this.video.poster   = "http://www.wescheme.org/images/broken.png";
-            this.video.autoplay = true;
-            this.video.autobuffer=true;
+            this.video.volume           = 1;
+            this.video.poster           = "http://www.wescheme.org/images/broken.png";
+            this.video.autoplay         = true;
+            this.video.autobuffer       =true;
             this.video.loop             = true;
             this.video.play();
         } else {
@@ -504,11 +504,11 @@ if (typeof(world) === 'undefined') {
             this.video = document.createElement('video');
             this.video.src = src;
             this.video.addEventListener('canplay', function() {
-                this.width                      = self.video.videoWidth;
-                this.height                     = self.video.videoHeight;
+                this.width              = self.video.videoWidth;
+                this.height             = self.video.videoHeight;
                 this.video.poster       = "http://www.wescheme.org/images/broken.png";
                 this.video.autoplay     = true;
-                this.video.autobuffer=true;
+                this.video.autobuffer   = true;
                 this.video.loop         = true;
                 this.video.play();
             });
@@ -606,7 +606,6 @@ if (typeof(world) === 'undefined') {
             y1 = Math.max(placeY, 0) - placeY;
             y2 = Math.max(placeY, 0);
         }
- 
         // calculate the vertices of this image by translating the verticies of the sub-images
         var i, v1 = img1.getVertices(), v2 = img2.getVertices(), xs = [], ys = [];
         for(i=0; i<v1.length; i++){
@@ -619,8 +618,6 @@ if (typeof(world) === 'undefined') {
         }
         // store the vertices as something private, so this.getVertices() will still return undefined
         this._vertices = zipVertices(xs, ys);
- 
-        // update the height and width of the image
         this.width  = Math.max.apply(Math, xs) - Math.min.apply(Math, xs);
         this.height = Math.max.apply(Math, ys) - Math.min.apply(Math, ys);
  
@@ -676,6 +673,13 @@ if (typeof(world) === 'undefined') {
             xs[i] = Math.round(vertices[i].x*cos - vertices[i].y*sin);
             ys[i] = Math.round(vertices[i].x*sin + vertices[i].y*cos);
         }
+        // figure out what translation is necessary to shift the vertices back to 0,0
+        var translateX = Math.floor(-Math.min.apply( Math, xs ));
+        var translateY = Math.floor(-Math.min.apply( Math, ys ));
+        for(var i=0; i<vertices.length; i++){
+            xs[i] += translateX;
+            ys[i] += translateY;
+       }
  
         // store the vertices as something private, so this.getVertices() will still return undefined
         this._vertices = zipVertices(xs,ys);
@@ -686,8 +690,8 @@ if (typeof(world) === 'undefined') {
         this.width      = Math.floor(rotatedWidth);
         this.height     = Math.floor(rotatedHeight);
         this.angle      = angle;
-        this.translateX = Math.floor(-Math.min.apply( Math, xs ));
-        this.translateY = Math.floor(-Math.min.apply( Math, ys ));
+        this.translateX = translateX;
+        this.translateY  = translateY;
     };
 
     RotateImage.prototype = heir(BaseImage.prototype);
@@ -951,8 +955,8 @@ if (typeof(world) === 'undefined') {
         }
         var vertices = zipVertices(xs, ys);
 
-        this.width  = Math.max.apply(Math, xs) - Math.min.apply(Math, xs);
-        this.height = Math.max.apply(Math, ys) - Math.min.apply(Math, ys);
+        this.width      = Math.max.apply(Math, xs) - Math.min.apply(Math, xs);
+        this.height     = Math.max.apply(Math, ys) - Math.min.apply(Math, ys);
         this.length     = length;
         this.count      = count;
         this.step       = step;
@@ -1039,12 +1043,12 @@ if (typeof(world) === 'undefined') {
         ctx.textAlign   = 'left';
         ctx.textBaseline= 'top';
         ctx.fillStyle   = colorString(this.color);
-        ctx.font                = this.font;
+        ctx.font        = this.font;
         try { 
             ctx.fillText(this.msg, x, y); 
         } catch (e) {
             this.fallbackOnFont();
-            ctx.font            = this.font;    
+            ctx.font = this.font;    
             ctx.fillText(this.msg, x, y); 
         }
         if(this.underline){
@@ -1251,7 +1255,6 @@ if (typeof(world) === 'undefined') {
     };
 
     //////////////////////////////////////////////////////////////////////////
-
     // Color database
     var ColorDb = function() {
         this.colors = {};
