@@ -1,5 +1,62 @@
 (printf "images.rkt\n")
 
+(define flag
+  (place-image
+   (rotate 90
+              (underlay/align
+               "center" "center"
+               (rectangle 50 450 "solid" "white")
+               (rotate 90
+                       (rectangle 50 450 "solid" "white"))
+               (rotate 90 
+                       (rectangle 30 450 "solid" "red"))
+               (rotate 180
+                       (rectangle 30 450 "solid" "red"))))
+           
+   200 100
+   (place-image
+    (rotate 65
+           (underlay/align
+            "center" "center"
+            (rectangle 15 450 "solid" "red")       
+            (rotate 50
+                    (rectangle 15 450 "solid" "red"))))
+   200 100
+    (place-image
+     (rotate 65
+             (underlay/align
+             "center" "center"
+             (rectangle 40 450 "solid" "white")
+             (rotate 50
+                     (rectangle 40 450 "solid" "white"))))
+     200 100
+    (rectangle 400 200 "solid" "navy")))))
+   
+
+(define Australia
+  (place-image
+   flag
+   200 100
+   (place-image
+    (star-polygon 30 7 3 "solid" "white")
+   650 60
+   (place-image 
+    (star-polygon 50 7 3 "solid" "white")
+   200 300
+    (place-image 
+    (star-polygon 40 7 3 "solid" "white")
+   60 20
+     (place-image 
+    (star-polygon 40 7 3 "solid" "white")
+   68 124
+   (rectangle 900 400 "solid" "navy")))))))
+   flag
+Australia
+
+
+
+
+   
 
 "These three circles (red, green, blue) should be left aligned"
 (above/align "left"
@@ -143,6 +200,7 @@
 "the next two images should be identical"
 (overlay (circle 20 "solid" (make-color  50  50 255))
          (square 40 "solid" (make-color 100 100 255)))
+         
 
 (overlay (circle 20 "solid" (make-color  50  50 255))
          (regular-polygon 40 4 "solid" (make-color 100 100 255)))
@@ -353,6 +411,61 @@
         (place-image/align (circle 8 "solid" "tomato")
                            32 32 "center" "center"
                            (rectangle 32 32 "outline" "black")))   
+
+"some overlay and place-image stress tests"                           
+(define flag
+  (place-image
+   (rotate 90
+              (underlay/align
+               "center" "center"
+               (rectangle 50 450 "solid" "white")
+               (rotate 90
+                       (rectangle 50 450 "solid" "white"))
+               (rotate 90 
+                       (rectangle 30 450 "solid" "red"))
+               (rotate 180
+                       (rectangle 30 450 "solid" "red"))))
+           
+   200 100
+   (place-image
+    (rotate 65
+           (underlay/align
+            "center" "center"
+            (rectangle 15 450 "solid" "red")       
+            (rotate 50
+                    (rectangle 15 450 "solid" "red"))))
+   200 100
+    (place-image
+     (rotate 65
+             (underlay/align
+             "center" "center"
+             (rectangle 40 450 "solid" "white")
+             (rotate 50
+                     (rectangle 40 450 "solid" "white"))))
+     200 100
+    (rectangle 400 200 "solid" "navy")))))
+   
+
+(define Australia
+  (place-image
+   flag
+   200 100
+   (place-image
+    (star-polygon 30 7 3 "solid" "white")
+   650 60
+   (place-image 
+    (star-polygon 50 7 3 "solid" "white")
+   200 300
+    (place-image 
+    (star-polygon 40 7 3 "solid" "white")
+   60 20
+     (place-image 
+    (star-polygon 40 7 3 "solid" "white")
+   68 124
+   (rectangle 900 400 "solid" "navy")))))))
+   flag
+Australia
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TRIANGLE, RIGHT TRIANGLE & ISOSCELES-TRIANGLE
