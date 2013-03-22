@@ -4621,7 +4621,7 @@ PRIMITIVES['place-image'] =
 								   [], 
 								   false);
           newScene = newScene.add(background, background.getWidth()/2, background.getHeight()/2);
-          newScene = newScene.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
+          newScene = newScene.add(picture, jsnums.toFixnum(x), jsnums.toFixnum(y));
 			    return newScene;
 			}
 		 });
