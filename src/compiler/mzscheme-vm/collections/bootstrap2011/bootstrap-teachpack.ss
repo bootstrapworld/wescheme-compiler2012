@@ -389,7 +389,7 @@
 
 (provide   sq sine cosine tangent
            pick subset? in?
-           type #;warn number->image string->image put-image overlay-at)
+           type #;warn number->image string->image overlay-at)
   
   ;; warn : any* -> any, and a side effect.
   ;; display all arguments and return the last one.
@@ -427,13 +427,7 @@
   (define (overlay-at background x y foreground)
     (overlay/xy background x (- 0 y) foreground))
 
-  ;; put-image : Image Number Number Image -> Image
-  ;; Place the foreground on the background at x y
-  ;; (in positive-y point space) relative to the lower left
-  (define (put-image foreground x y background)
-    (place-image foreground x (- (image-height background) y) background))
-
-  ; sq : Number -> Number
+    ; sq : Number -> Number
   (define (sq x) (* x x))
   ;; sine : Degrees -> Number
   ;; For a right triangle with non-right angle x in degrees,

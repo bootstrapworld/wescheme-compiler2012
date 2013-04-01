@@ -238,7 +238,7 @@
           ;; Helper function.
           (define (bf name)
             (make-binding:constant name module-path 
-                                   (if (member name '(video-url
+                                   (if (member name '(video/url
                                                       bitmap/url
                                                       image-url
                                                       open-image-url))
@@ -260,6 +260,7 @@
                                            color-alpha
 					   empty-scene
 					   scene+line
+                                           put-image
 					   place-image
 					   place-image/align
 					   put-pinhole
