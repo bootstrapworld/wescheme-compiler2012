@@ -413,7 +413,7 @@ Australia
                            (rectangle 32 32 "outline" "black")))   
 
 "some overlay and place-image stress tests"                           
-(define flag
+(define flag2
   (place-image
    (rotate 90
               (underlay/align
@@ -446,9 +446,9 @@ Australia
     (rectangle 400 200 "solid" "navy")))))
    
 
-(define Australia
+(define Australia2
   (place-image
-   flag
+   flag2
    200 100
    (place-image
     (star-polygon 30 7 3 "solid" "white")
@@ -463,8 +463,8 @@ Australia
     (star-polygon 40 7 3 "solid" "white")
    68 124
    (rectangle 900 400 "solid" "navy")))))))
-   flag
-Australia
+   flag2
+Australia2
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
