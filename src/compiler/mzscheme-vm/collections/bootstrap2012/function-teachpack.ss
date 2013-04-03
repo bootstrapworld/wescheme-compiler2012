@@ -20,7 +20,7 @@
 (define IMAGE0 (empty-scene WIDTH HEIGHT))
 
 (define source (bitmap/url "http://www.wescheme.org/images/teachpacks2012/rocket.png"))
-(define ROCKET (put-pinhole source (/ (image-width source) 2) (image-height source)))
+(define ROCKET source #;(put-pinhole source (/ (image-width source) 2) (image-height source)))
 
 ;; -----------------------------------------------------------------------------
 ;; draw-world: Number -> Image 
