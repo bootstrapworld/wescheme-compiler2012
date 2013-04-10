@@ -484,5 +484,5 @@
         #:port port
         #:listen-ip #f
         #:max-waiting 500))
-
+(printf "WeScheme server compiler started on port ~s.\n" port)
 (do-not-return)
