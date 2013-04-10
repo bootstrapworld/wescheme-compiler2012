@@ -1,18 +1,27 @@
 #!/usr/bin/env racket
 #lang racket/base
 
-(require web-server/servlet
-         web-server/servlet-env
-         scheme/runtime-path
-         scheme/match
-         scheme/list
+(require racket/runtime-path
+         racket/match
+         racket/list
          racket/cmdline
          file/gzip
          racket/port
-
+         web-server/web-server
+         web-server/http/bindings
+         web-server/http/request-structs
+         web-server/http/response-structs
+         web-server/private/mime-types
+         web-server/configuration/responders
+         
+         (prefix-in sequencer: web-server/dispatchers/dispatch-sequencer)
+         (prefix-in filter: web-server/dispatchers/dispatch-filter)
+         (prefix-in lift: web-server/dispatchers/dispatch-lift)
+         (prefix-in files: web-server/dispatchers/dispatch-files)
+         (prefix-in fsmap: web-server/dispatchers/filesystem-map)        
+         
          ;; must avoid conflict with the bindings in web-server, by prefixing.
          (prefix-in moby: "src/collects/moby/runtime/binding.ss")
-
          "find-paren-loc.rkt"
          "this-runtime-version.rkt"
          "src/compiler/mzscheme-vm/collections-module-resolver.ss"
@@ -33,7 +42,8 @@
   "js-runtime/lib/compat")
 (define-runtime-path easyxdm "support/easyXDM")
 
-
+(define-runtime-path mime-types-path "mime.types")
+(define-runtime-path file-not-found-path "not-found.html")
 
 
 ;; make-port-response: (values response/incremental output-port)
@@ -457,10 +467,22 @@
                                  (pinfo-module-resolver default-base-pinfo)
                                  the-external-module-provider)))
 
+(void
+ (serve #:dispatch
+        (apply sequencer:make
+               (append
+                (list (filter:make #rx"^/servlets/standalone.ss" (lift:make start)))
+                (map (lambda (extra-files-path)
+                       (files:make
+                        #:url->path (fsmap:make-url->path extra-files-path)
+                        #:path->mime-type (make-path->mime-type mime-types-path)
+                        #:indices (list "index.html" "index.htm")))
+                     (list htdocs compat easyxdm))
+                (list (lift:make
+                       (lambda (req)
+                         (file-response 404 #"File not found" file-not-found-path))))))
+        #:port port
+        #:listen-ip #f
+        #:max-waiting 500))
 
-(serve/servlet start 
-               #:port port
-               #:servlet-path "/servlets/standalone.ss"
-               #:extra-files-paths (list htdocs compat easyxdm)
-               #:launch-browser? #f
-               #:listen-ip #f)
+(do-not-return)
