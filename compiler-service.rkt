@@ -90,6 +90,24 @@
   (and elts (member "gzip" (regexp-split #px"," (cdr elts))) #t))
   
 
+;; For testing.
+;; Raises 503 half of the time, to make sure the evaluator
+;; can still handle it.
+(define (start/maybe-503 request)
+  (cond
+   [(= (random 2) 0)
+    (response
+     503 #"Service Unavailable"
+     (current-seconds)
+     #"text/plain"
+     '()
+     (lambda (op)
+       (void)))]
+   [else
+    (start request)]))
+
+
+
 ;; Web service consuming programs and producing bytecode.
 (define (start request)
   (with-handlers ([void 
@@ -471,7 +489,7 @@
  (serve #:dispatch
         (apply sequencer:make
                (append
-                (list (filter:make #rx"^/servlets/standalone.ss" (lift:make start)))
+                (list (filter:make #rx"^/servlets/standalone.ss" (lift:make start #;start/maybe-503)))
                 (map (lambda (extra-files-path)
                        (files:make
                         #:url->path (fsmap:make-url->path extra-files-path)
