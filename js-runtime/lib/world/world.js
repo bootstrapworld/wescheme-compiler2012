@@ -452,7 +452,7 @@ if (typeof(world) === 'undefined') {
 
     FileImage.installBrokenImage = function(path) {
         imageCache[path] = new TextImage("Unable to load " + path, 10, colorDb.get("red"),
-                                         "normal", "Optimer","","",false);
+                                         "normal", "Arial","","",false);
     };
 
     FileImage.prototype.render = function(ctx, x, y) {
@@ -1006,15 +1006,13 @@ if (typeof(world) === 'undefined') {
         this.weight     = (weight=== "light")? "lighter" : weight; // Racket's "light" -> CSS's "lighter"
         this.underline  = underline;
         // example: "bold italic 20px 'Times', sans-serif". 
-        // Default weight is "normal", face is "Optimer"
-        var canvas      = world.Kernel.makeCanvas(0, 0);
-        var ctx         = canvas.getContext("2d");
-        
-        this.font = (this.weight + " " +
-                     this.style + " " +
-                     this.size + "px " +
-                     maybeQuote(this.face) + " " +
-                     maybeQuote(this.family));
+        // Default weight is "normal", face is "Arial"
+        var canvas      = world.Kernel.makeCanvas(0, 0),
+            ctx         = canvas.getContext("2d"),
+            fontString  = this.style + " " + this.weight + " " + this.size + "px " +
+                          maybeQuote(this.face) + " " + maybeQuote(this.family);
+ 
+        this.font = (fontString);
         try {
             ctx.font    = this.font;
         } catch (e) {

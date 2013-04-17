@@ -5301,7 +5301,7 @@ PRIMITIVES['text'] =
 			 aColor = colorDb.get(aColor);
 		     }
 		     return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-						   "normal", "Optimer","","",false);
+						   "normal", "Arial","","",false);
 		 });
 
 
@@ -5331,7 +5331,7 @@ new PrimProc('text/font',
                              } catch(e) {
                                  // Under IE 8, something breaks.  I don't know yet what it is.
 		        return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-											  "normal", "Optimer","","",false);
+											  "normal", "Arial","","",false);
                              }
 			 });
 /*
