@@ -460,13 +460,13 @@ if (typeof(world) === 'undefined') {
     };
 
     // The following is a hack that we use to allow animated gifs to show
-    // as animating on the canvas.
+    // as animating on the canvas. They have to be added to the DOM as *images*
+    // in order to have their frames fed to the canvas, so we add them someplace hidden
     FileImage.prototype.installHackToSupportAnimatedGifs = function(afterInit) {
         var that = this;
         this.animationHackImg = this.img.cloneNode(true);
         document.body.appendChild(this.animationHackImg);
-        this.animationHackImg.width = 0;
-        this.animationHackImg.height = 0;
+        this.animationHackImg.style.top = '-2000px';
         if (this.animationHackImg.complete) {
             afterInit(that);
         } else {
