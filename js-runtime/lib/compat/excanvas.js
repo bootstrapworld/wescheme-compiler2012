@@ -536,6 +536,10 @@ if (!document.createElement('canvas').getContext) {
     for (var p in style) {
       computedStyle[p] = style[p];
     }
+                                                    
+    if(computedStyle.family && computedStyle.family.indexOf(' ')>-1){
+      computedStyle.family = computedStyle.family.split(' ')[1];
+    }
 
     // Compute the size
     var canvasFontSize = parseFloat(element.currentStyle.fontSize),
@@ -560,11 +564,6 @@ if (!document.createElement('canvas').getContext) {
     computedStyle.size *= 0.981;
 
     return computedStyle;
-  }
-
-  function buildStyle(style) {
-    return style.style + ' ' + style.variant + ' ' + style.weight + ' ' +
-        style.size + 'px ' + style.family;
   }
 
   var lineCapMap = {
@@ -630,8 +629,8 @@ if (!document.createElement('canvas').getContext) {
   var contextPrototype = CanvasRenderingContext2D_.prototype;
   contextPrototype.clearRect = function() {
     if (this.textMeasureEl_) {
-//      this.textMeasureEl_.removeNode(true);
-//      this.textMeasureEl_ = null;
+      this.textMeasureEl_.removeNode(true);
+      this.textMeasureEl_ = null;
     }
     this.clip_.innerHTML = '';
   };
@@ -806,7 +805,6 @@ if (!document.createElement('canvas').getContext) {
     // get the original size
     var w = image.width;
     var h = image.height;
-                                                    alert('original WxH:'+w+'x'+h);
 	
     // and remove overides
     if(rts) {
@@ -1281,7 +1279,8 @@ if (!document.createElement('canvas').getContext) {
     var fontStyle = getComputedStyle(processFontStyle(this.font),
                                      this.clip_);
 
-    var fontStyleString = buildStyle(fontStyle);
+    var vmlStyleString = fontStyle.style + ' ' + fontStyle.variant + ' ' + fontStyle.weight + ' ' +
+                          fontStyle.size + 'px ' + fontStyle.family;
 
     var elementStyle = this.clip_.currentStyle;
     var textAlign = this.textAlign.toLowerCase();
@@ -1353,7 +1352,7 @@ if (!document.createElement('canvas').getContext) {
                  '<g_vml_:textpath on="true" string="',
                  encodeHtmlAttribute(text),
                  '" style="v-text-align:', textAlign,
-                 ';font:', encodeHtmlAttribute(fontStyleString),
+                 ';font:', encodeHtmlAttribute(vmlStyleString),
                  '" /></g_vml_:line>');
 
     this.clip_.insertAdjacentHTML('beforeEnd', lineStr.join(''));
@@ -1370,23 +1369,21 @@ if (!document.createElement('canvas').getContext) {
   contextPrototype.measureText = function(text) {
     if (!this.textMeasureEl_) {             
       var s = '<span style="position:absolute;' +
-          'top:0px;left:0;padding:0;margin:0;border:none;' +
+          'top:-20000px;left:0;padding:0;margin:0;border:none;' +
           'white-space:pre;"></span>';
       document.body.insertAdjacentHTML('beforeEnd', s);
       this.textMeasureEl_ = document.body.lastChild;
     }
     this.textMeasureEl_.innerHTML = '';
     // FIX: Apply current font style to textMeasureEl to get correct size
-	var fontStyle = getComputedStyle(processFontStyle(this.font), this.clip_),
-	    fontStyleString = buildStyle(fontStyle);
-	this.textMeasureEl_.style.font = fontStyleString;
-
+    var fontStyle = getComputedStyle(processFontStyle(this.font), this.clip_);
+    this.textMeasureEl_.style.font = fontStyle.style+' '+fontStyle.variant+' '+fontStyle.weight+' '+fontStyle.size+' '+fontStyle.family;
+                                                    
     // Don't use innerHTML or innerText because they allow markup/whitespace.
     this.textMeasureEl_.appendChild(document.createTextNode(text));
-                                                    
-var width = this.textMeasureEl_.offsetWidth;
-alert(width);
-//document.body.removeChild(container);
+    var width = this.textMeasureEl_.offsetWidth;
+    this.textMeasureEl_.removeNode(true);
+    this.textMeasureEl_ = null;
     return {width: width};
   };
 
