@@ -353,8 +353,9 @@ if (typeof(world) === 'undefined') {
         ctx.fillStyle = "rgba(0,0,0,0)";
         ctx.fillRect(x, y, this.width, this.height);
         ctx.restore();
-        
+        // save the context, reset the path, and clip to the path around the scene edge
         ctx.save();
+        ctx.beginPath();
         ctx.rect(x, y, this.width, this.height);
         ctx.clip();
         // Ask every object to render itself inside the region
