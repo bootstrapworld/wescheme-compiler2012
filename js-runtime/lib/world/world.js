@@ -998,19 +998,21 @@ if (typeof(world) === 'undefined') {
         BaseImage.call(this);
         var metrics;
         this.msg        = msg;
-        this.size       = size;
-        this.color      = color;
-        this.face       = face;
-        this.family     = family;
+        this.size       = size;   // 18
+        this.color      = color;  // red
+        this.face       = face;   // Gill Sans
+        this.family     = family; // 'swiss
         this.style      = (style === "slant")? "oblique" : style;  // Racket's "slant" -> CSS's "oblique"
         this.weight     = (weight=== "light")? "lighter" : weight; // Racket's "light" -> CSS's "lighter"
         this.underline  = underline;
         // example: "bold italic 20px 'Times', sans-serif". 
         // Default weight is "normal", face is "Arial"
+ 
+        // NOTE: we *ignore* font-family, as it causes a number of font bugs due the browser inconsistencies
         var canvas      = world.Kernel.makeCanvas(0, 0),
             ctx         = canvas.getContext("2d"),
             fontString  = this.style + " " + this.weight + " " + this.size + "px " +
-                          maybeQuote(this.face) + " " + maybeQuote(this.family);
+                          maybeQuote(this.face);
  
         this.font = (fontString);
         try {
