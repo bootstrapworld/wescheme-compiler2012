@@ -4695,9 +4695,9 @@ PRIMITIVES['put-pinhole'] =
 		 3,
 		 false, false,
 		 function(aState, x, y, img) {
-			check(aState, x, isReal, "put-pinhole", "real", 1, arguments);
-			check(aState, y, isReal, "put-pinhole", "real", 2, arguments);
-      check(aState, img, isImage, "put-pinhole", "image", 3, arguments);
+      check(aState, img, isImage, "put-pinhole", "image", 1, arguments);
+			check(aState, x, isReal, "put-pinhole", "real", 2, arguments);
+			check(aState, y, isReal, "put-pinhole", "real", 3, arguments);
 			return img.updatePinhole(jsnums.toFixnum(x), jsnums.toFixnum(y));
     		 });
 
