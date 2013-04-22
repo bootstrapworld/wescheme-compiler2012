@@ -37,6 +37,8 @@
          "src/collects/moby/runtime/dom-helpers.ss"
          "js-runtime/src/sexp.ss")
 
+(provide start-server)
+
 (define-runtime-path htdocs "servlet-htdocs")
 (define-runtime-path compat 
   "js-runtime/lib/compat")
@@ -159,7 +161,7 @@
                                                            #:with-gzip? (request-accepts-gzip-encoding? request))]
                [(compiled-program-port) (open-output-bytes)])
     (let ([pinfo (compile/port program-input-port compiled-program-port
-                               #:pinfo compiler-service-base-pinfo
+                               #:pinfo (current-compiler-service-base-pinfo)
                                #:name program-name
                                #:runtime-version THIS-RUNTIME-VERSION)])
       (fprintf output-port "~a(~a);" 
@@ -356,7 +358,7 @@
                                      #:with-gzip? (request-accepts-gzip-encoding? request))]
                 [(program-output-port) (open-output-bytes)])
     (let ([pinfo (compile/port program-input-port program-output-port
-                               #:pinfo compiler-service-base-pinfo
+                               #:pinfo (current-compiler-service-base-pinfo)
                                #:name program-name
                                #:runtime-version THIS-RUNTIME-VERSION)])    
       (display (format-output (get-output-bytes program-output-port) pinfo request) output-port)
@@ -412,95 +414,102 @@
           (Loc-id a-loc)))
 
 
-;; relate-to-current-directory: path -> absolute-path
-;; Given a path, try to localize it to the current directory if it's relative.
-(define (relate-to-current-directory p)
-  (cond
-    [(absolute-path? p)
-     p]
-    [(relative-path? p)
-     (simplify-path (build-path (current-directory) p))]
-    [else
-     (error 'relate-to-current-directory "Neither relative nor absolute path" p)]))
-
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;; Write out a fresh copy of the support library.
-(call-with-output-file (build-path htdocs "support.js")
-  (lambda (op)
-    (write-support "browser" op))
-  #:exists 'replace)
 
 
-;; Also, write out the collections.
-(unless (directory-exists? (build-path htdocs "collects"))
-  (make-directory (build-path htdocs "collects")))
-(write-collections/dir (build-path htdocs "collects"))
-
-
-(define extra-module-providers (make-parameter '()))
-
-
-;; We hold onto an anchor to this module's namespace, since extra-module-providers
-;; needs it.
+;; We hold onto an anchor to this module's namespace, since
 (define-namespace-anchor anchor)
 
 
-(define (extra-module-providers-list->module-provider)
+(define (extra-module-providers->module-provider extra-module-providers)
   (define dynamic-module-providers
     (parameterize ([current-namespace (namespace-anchor->namespace anchor)])
-      (for/list ([mp (extra-module-providers)])
-        (dynamic-require mp 'module-provider))))
+      (for/list ([mp extra-module-providers])
+        (dynamic-require (relate-to-current-directory mp) 'module-provider))))
   (define (the-module-provider name)
     (for/or ([provider dynamic-module-providers])
       (provider name)))
   the-module-provider)
 
+;; relate-to-current-directory: path -> absolute-path
+;; Given a path, try to localize it to the current directory if it's relative.
+(define (relate-to-current-directory p)
+  (cond
+   [(absolute-path? p)
+    p]
+   [(relative-path? p)
+    (simplify-path (build-path (current-directory) p))]
+   [else
+    (error 'relate-to-current-directory "Neither relative nor absolute path" p)]))
+
+;; The initial state of the compiler is this one, parameterized in
+;; start-server.
+(define current-compiler-service-base-pinfo (make-parameter #f))
 
 
-(define port 8000)
-(void (command-line #:program "servlet"
-                    #:once-each
-                    [("-p" "--port") p "Port (default 8000)" (set! port (string->number p))]
-                    #:multi
-                    [("--extra-module-provider") 
-                     mp
-                     "The path of a module, relative to current-directory, that provides an additional 'module-provider"
-                     (extra-module-providers 
-                      (cons (relate-to-current-directory mp)
-                            (extra-module-providers)))]))
 
-(define the-external-module-provider 
-  (extra-module-providers-list->module-provider))
+;; start-server: #:port number #:extra-module-providers (listof path-string) -> void
+;; Does not return.  Starts up a server on a particular port.
+(define (start-server #:port [port 8000]
+                      #:extra-module-providers [extra-module-providers '()])
+  (parameterize ([current-compiler-service-base-pinfo
+                  (let ([the-external-module-provider 
+                         (extra-module-providers->module-provider 
+                          extra-module-providers)])
+                    (pinfo-update-module-resolver
+                     default-base-pinfo
+                     (extend-module-resolver-with-module-provider
+                      (pinfo-module-resolver default-base-pinfo)
+                      the-external-module-provider)))])
+    (serve #:dispatch
+           (apply sequencer:make
+                  (append
+                   (list (filter:make #rx"^/servlets/standalone.ss" (lift:make start #;start/maybe-503)))
+                   (map (lambda (extra-files-path)
+                          (files:make
+                           #:url->path (fsmap:make-url->path extra-files-path)
+                           #:path->mime-type (make-path->mime-type mime-types-path)
+                           #:indices (list "index.html" "index.htm")))
+                        (list htdocs compat easyxdm))
+                   (list (lift:make
+                          (lambda (req)
+                            (file-response 404 #"File not found" file-not-found-path))))))
+           #:port port
+           #:listen-ip #f
+           #:max-waiting 500))
+  (printf "WeScheme server compiler started on port ~s.\n" port)
+  (do-not-return))
 
 
-;; The initial state of the compiler is this one:
-(define compiler-service-base-pinfo 
-  (pinfo-update-module-resolver default-base-pinfo
-                                (extend-module-resolver-with-module-provider
-                                 (pinfo-module-resolver default-base-pinfo)
-                                 the-external-module-provider)))
+(module+ main
 
-(void
- (serve #:dispatch
-        (apply sequencer:make
-               (append
-                (list (filter:make #rx"^/servlets/standalone.ss" (lift:make start #;start/maybe-503)))
-                (map (lambda (extra-files-path)
-                       (files:make
-                        #:url->path (fsmap:make-url->path extra-files-path)
-                        #:path->mime-type (make-path->mime-type mime-types-path)
-                        #:indices (list "index.html" "index.htm")))
-                     (list htdocs compat easyxdm))
-                (list (lift:make
-                       (lambda (req)
-                         (file-response 404 #"File not found" file-not-found-path))))))
-        #:port port
-        #:listen-ip #f
-        #:max-waiting 500))
-(printf "WeScheme server compiler started on port ~s.\n" port)
-(do-not-return)
+  ;; Write out a fresh copy of the support library.
+  (call-with-output-file (build-path htdocs "support.js")
+    (lambda (op)
+      (write-support "browser" op))
+    #:exists 'replace)
+
+  ;; Also, write out the collections.
+  (unless (directory-exists? (build-path htdocs "collects"))
+    (make-directory (build-path htdocs "collects")))
+  (write-collections/dir (build-path htdocs "collects"))
+
+  ;; A list of the extra module providers.
+  (define extra-module-providers '())
+  (define port 8000)
+  (void (command-line #:program "servlet"
+                      #:once-each
+                      [("-p" "--port") p "Port (default 8000)" (set! port (string->number p))]
+                      #:multi
+                      [("--extra-module-provider") 
+                       mp
+                       "The path of a module, relative to current-directory, that provides an additional 'module-provider"
+                       (set! extra-module-providers 
+                        (cons mp extra-module-providers))]))
+  (start-server #:port port
+                #:extra-module-providers extra-module-providers))
