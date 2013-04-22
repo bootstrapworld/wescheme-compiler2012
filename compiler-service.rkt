@@ -37,7 +37,7 @@
          "src/collects/moby/runtime/dom-helpers.ss"
          "js-runtime/src/sexp.ss")
 
-(provide start-server)
+(provide start-server write-runtime-files)
 
 (define-runtime-path htdocs "servlet-htdocs")
 (define-runtime-path compat 
@@ -485,9 +485,7 @@
   (printf "WeScheme server compiler started on port ~s.\n" port)
   (do-not-return))
 
-
-(module+ main
-
+(define (write-runtime-files)
   ;; Write out a fresh copy of the support library.
   (call-with-output-file (build-path htdocs "support.js")
     (lambda (op)
@@ -497,7 +495,13 @@
   ;; Also, write out the collections.
   (unless (directory-exists? (build-path htdocs "collects"))
     (make-directory (build-path htdocs "collects")))
-  (write-collections/dir (build-path htdocs "collects"))
+  (write-collections/dir (build-path htdocs "collects")))
+
+
+
+(module+ main
+
+  (write-runtime-files)
 
   ;; A list of the extra module providers.
   (define extra-module-providers '())
