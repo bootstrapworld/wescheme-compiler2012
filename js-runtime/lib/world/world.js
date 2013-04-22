@@ -1010,11 +1010,14 @@ if (typeof(world) === 'undefined') {
  
         // NOTE: we *ignore* font-family, as it causes a number of font bugs due the browser inconsistencies
         var canvas      = world.Kernel.makeCanvas(0, 0),
-            ctx         = canvas.getContext("2d"),
-            fontString  = this.style + " " + this.weight + " " + this.size + "px " +
-                          maybeQuote(this.face);
+            ctx         = canvas.getContext("2d");
  
-        this.font = (fontString);
+        this.font = (this.style + " " +
+                     this.weight + " " +
+                     this.size + "px " +
+                     '"'+this.face+'", '+
+                     this.family);
+ 
         try {
             ctx.font    = this.font;
         } catch (e) {
