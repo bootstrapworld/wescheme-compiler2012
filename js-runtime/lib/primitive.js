@@ -5334,39 +5334,6 @@ new PrimProc('text/font',
 											  "normal", "Arial","","",false);
                              }
 			 });
-/*
-PRIMITIVES['bitmap/url'] = 
-PRIMITIVES['image-url'] =
-    new PrimProc('image-url',
-		 1,
-		 false, true,
-		 function(aState, path) {
-		     check(aState, path, isString, "image-url", "string", 1);
-		     var originalPath = path.toString();
-		     if (aState.getImageProxyHook()) {
-			 path = (aState.getImageProxyHook() +
-				 "?url=" + encodeURIComponent(path.toString()));
-		     } else {
-			 path = path.toString();
-		     }
-
-		     aState.v = PAUSE(function(restarter, caller) {
-			 var rawImage = new Image();
-			 rawImage.onload = function() {
-			     world.Kernel.fileImage(
-				 path,
-				 rawImage,
-			         restarter);
-			 };
-			 rawImage.onerror = function(e) {
-			     restarter(types.schemeError(types.incompleteExn(
-					types.exnFail,
-					" (unable to load: " + originalPath + ")",
-					[])));
-			 };
-			 rawImage.src = path;
-		     });
-		 });*/
 PRIMITIVES['bitmap/url'] = 
 PRIMITIVES['image-url'] =
     new PrimProc('image-url',
