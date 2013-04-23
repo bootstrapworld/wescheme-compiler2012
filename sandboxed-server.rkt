@@ -42,6 +42,11 @@
                              (exn-message exn)))]
                   [exn:fail:sandbox-terminated?
                    (lambda (exn)
+                     (printf "server died prematurely due to sandbox?  ~s\n" 
+                             (exn-message exn)))]
+                  [exn:fail?
+                   ;; We should never hit this case, but never say never
+                   (lambda (exn)
                      (printf "server died prematurely?  ~s\n" 
                              (exn-message exn)))])
     (let loop ()
