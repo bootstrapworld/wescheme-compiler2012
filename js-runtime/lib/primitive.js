@@ -4695,9 +4695,9 @@ PRIMITIVES['put-pinhole'] =
 		 3,
 		 false, false,
 		 function(aState, x, y, img) {
-			check(aState, x, isReal, "put-pinhole", "real", 1, arguments);
-			check(aState, y, isReal, "put-pinhole", "real", 2, arguments);
-      check(aState, img, isImage, "put-pinhole", "image", 3, arguments);
+      check(aState, img, isImage, "put-pinhole", "image", 1, arguments);
+			check(aState, x, isReal, "put-pinhole", "real", 2, arguments);
+			check(aState, y, isReal, "put-pinhole", "real", 3, arguments);
 			return img.updatePinhole(jsnums.toFixnum(x), jsnums.toFixnum(y));
     		 });
 
@@ -5301,7 +5301,7 @@ PRIMITIVES['text'] =
 			 aColor = colorDb.get(aColor);
 		     }
 		     return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-						   "normal", "Optimer","","",false);
+						   "normal", "Arial","","",false);
 		 });
 
 
@@ -5331,42 +5331,9 @@ new PrimProc('text/font',
                              } catch(e) {
                                  // Under IE 8, something breaks.  I don't know yet what it is.
 		        return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-											  "normal", "Optimer","","",false);
+											  "normal", "Arial","","",false);
                              }
 			 });
-/*
-PRIMITIVES['bitmap/url'] = 
-PRIMITIVES['image-url'] =
-    new PrimProc('image-url',
-		 1,
-		 false, true,
-		 function(aState, path) {
-		     check(aState, path, isString, "image-url", "string", 1);
-		     var originalPath = path.toString();
-		     if (aState.getImageProxyHook()) {
-			 path = (aState.getImageProxyHook() +
-				 "?url=" + encodeURIComponent(path.toString()));
-		     } else {
-			 path = path.toString();
-		     }
-
-		     aState.v = PAUSE(function(restarter, caller) {
-			 var rawImage = new Image();
-			 rawImage.onload = function() {
-			     world.Kernel.fileImage(
-				 path,
-				 rawImage,
-			         restarter);
-			 };
-			 rawImage.onerror = function(e) {
-			     restarter(types.schemeError(types.incompleteExn(
-					types.exnFail,
-					" (unable to load: " + originalPath + ")",
-					[])));
-			 };
-			 rawImage.src = path;
-		     });
-		 });*/
 PRIMITIVES['bitmap/url'] = 
 PRIMITIVES['image-url'] =
     new PrimProc('image-url',

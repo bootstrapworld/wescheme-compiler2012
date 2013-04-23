@@ -353,8 +353,9 @@ if (typeof(world) === 'undefined') {
         ctx.fillStyle = "rgba(0,0,0,0)";
         ctx.fillRect(x, y, this.width, this.height);
         ctx.restore();
-        
+        // save the context, reset the path, and clip to the path around the scene edge
         ctx.save();
+        ctx.beginPath();
         ctx.rect(x, y, this.width, this.height);
         ctx.clip();
         // Ask every object to render itself inside the region
@@ -451,7 +452,7 @@ if (typeof(world) === 'undefined') {
 
     FileImage.installBrokenImage = function(path) {
         imageCache[path] = new TextImage("Unable to load " + path, 10, colorDb.get("red"),
-                                         "normal", "Optimer","","",false);
+                                         "normal", "Arial","","",false);
     };
 
     FileImage.prototype.render = function(ctx, x, y) {
@@ -459,13 +460,13 @@ if (typeof(world) === 'undefined') {
     };
 
     // The following is a hack that we use to allow animated gifs to show
-    // as animating on the canvas.
+    // as animating on the canvas. They have to be added to the DOM as *images*
+    // in order to have their frames fed to the canvas, so we add them someplace hidden
     FileImage.prototype.installHackToSupportAnimatedGifs = function(afterInit) {
         var that = this;
         this.animationHackImg = this.img.cloneNode(true);
         document.body.appendChild(this.animationHackImg);
-        this.animationHackImg.width = 0;
-        this.animationHackImg.height = 0;
+        this.animationHackImg.style.top = '-2000px';
         if (this.animationHackImg.complete) {
             afterInit(that);
         } else {
@@ -997,23 +998,26 @@ if (typeof(world) === 'undefined') {
         BaseImage.call(this);
         var metrics;
         this.msg        = msg;
-        this.size       = size;
-        this.color      = color;
-        this.face       = face;
-        this.family     = family;
+        this.size       = size;   // 18
+        this.color      = color;  // red
+        this.face       = face;   // Gill Sans
+        this.family     = family; // 'swiss
         this.style      = (style === "slant")? "oblique" : style;  // Racket's "slant" -> CSS's "oblique"
         this.weight     = (weight=== "light")? "lighter" : weight; // Racket's "light" -> CSS's "lighter"
         this.underline  = underline;
         // example: "bold italic 20px 'Times', sans-serif". 
-        // Default weight is "normal", face is "Optimer"
-        var canvas      = world.Kernel.makeCanvas(0, 0);
-        var ctx         = canvas.getContext("2d");
-        
-        this.font = (this.weight + " " +
-                     this.style + " " +
+        // Default weight is "normal", face is "Arial"
+ 
+        // NOTE: we *ignore* font-family, as it causes a number of font bugs due the browser inconsistencies
+        var canvas      = world.Kernel.makeCanvas(0, 0),
+            ctx         = canvas.getContext("2d");
+ 
+        this.font = (this.style + " " +
+                     this.weight + " " +
                      this.size + "px " +
-                     maybeQuote(this.face) + " " +
-                     maybeQuote(this.family));
+                     '"'+this.face+'", '+
+                     this.family);
+ 
         try {
             ctx.font    = this.font;
         } catch (e) {
