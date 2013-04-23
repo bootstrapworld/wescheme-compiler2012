@@ -19,7 +19,8 @@
          (prefix-in lift: web-server/dispatchers/dispatch-lift)
          (prefix-in files: web-server/dispatchers/dispatch-files)
          (prefix-in fsmap: web-server/dispatchers/filesystem-map)        
-         
+         (prefix-in limit: web-server/dispatchers/limit)
+
          ;; must avoid conflict with the bindings in web-server, by prefixing.
          (prefix-in moby: "src/collects/moby/runtime/binding.ss")
          "find-paren-loc.rkt"
@@ -453,6 +454,10 @@
 
 
 
+(define MAX-WAITING 40)
+(define MAX-CONCURRENT 40)
+
+
 ;; start-server: #:port number #:extra-module-providers (listof path-string) -> void
 ;; Does not return.  Starts up a server on a particular port.
 (define (start-server #:port [port 8000]
@@ -469,7 +474,10 @@
     (serve #:dispatch
            (apply sequencer:make
                   (append
-                   (list (filter:make #rx"^/servlets/standalone.ss" (lift:make start #;start/maybe-503)))
+                   (list (filter:make #rx"^/servlets/standalone.ss" 
+                                      (limit:make 
+                                       MAX-CONCURRENT 
+                                       (lift:make start #;start/maybe-503))))
                    (map (lambda (extra-files-path)
                           (files:make
                            #:url->path (fsmap:make-url->path extra-files-path)
@@ -481,7 +489,7 @@
                             (file-response 404 #"File not found" file-not-found-path))))))
            #:port port
            #:listen-ip #f
-           #:max-waiting 500))
+           #:max-waiting MAX-WAITING))
   (printf "WeScheme server compiler started on port ~s.\n" port)
   (do-not-return))
 
