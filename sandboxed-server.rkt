@@ -36,9 +36,13 @@
 
 
 (let sandbox-loop ()
-  (with-handlers ([exn:fail?
+  (with-handlers ([exn:fail:resource?
                    (lambda (exn)
-                     (printf "server died prematurely from the sandbox?  ~s\n" 
+                     (printf "server died from resource limits?  ~s\n" 
+                             (exn-message exn)))]
+                  [exn:fail:sandbox-terminated?
+                   (lambda (exn)
+                     (printf "server died prematurely?  ~s\n" 
                              (exn-message exn)))])
     (let loop ()
       (parameterize ([sandbox-memory-limit (current-memory-limit)]
