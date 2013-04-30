@@ -167,6 +167,17 @@
          (regular-polygon 38 4 "solid" (make-color 200 200 255))
          (regular-polygon 44 4 "solid" (make-color 250 250 255)))
 
+"overlay with place-image - target should be centered"
+ (place-image (overlay (ellipse 10 10 "solid" "white")
+                    (ellipse 20 20 "solid" "black")                   
+                     (ellipse 30 30 "solid" "white")                    
+                      (ellipse 40 40 "solid" "black")       
+                       (ellipse 50 50 "solid" "white")
+                        (ellipse 60 60 "solid" "black"))
+ 150 100
+ (rectangle 300 200 "solid" "black"))
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OVERLAY/XY
