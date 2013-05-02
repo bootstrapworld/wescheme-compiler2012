@@ -589,6 +589,11 @@ Australia2
  (beside (crop 40 0 40 40 (circle 40 "solid" "lightcoral"))
          (crop 0 0 40 40 (circle 40 "solid" "palevioletred"))))
 
+"should be a quarter of a circle, inscribed in a square"
+(place-image
+ (crop 0 0 20 20 (circle 20 "solid" "Magenta"))
+ 10 10
+ (rectangle 40 40 "solid" "blue"))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; LINE, ADD-LINE & SCENE+LINE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
