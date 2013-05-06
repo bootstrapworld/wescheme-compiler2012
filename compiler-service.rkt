@@ -500,7 +500,7 @@
                        (lambda (req)
                          (file-response 404 #"File not found" file-not-found-path))))))
         #:port port
-        #:connection-close? #f
+        #:connection-close? #t
         #:listen-ip #f
         #:max-waiting 500))
 (printf "WeScheme server compiler started on port ~s.\n" port)
