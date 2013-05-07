@@ -4694,7 +4694,7 @@ PRIMITIVES['put-pinhole'] =
     new PrimProc('put-pinhole',
 		 3,
 		 false, false,
-		 function(aState, x, y, img) {
+		 function(aState, img, x, y) {
       check(aState, img, isImage, "put-pinhole", "image", 1, arguments);
 			check(aState, x, isReal, "put-pinhole", "real", 2, arguments);
 			check(aState, y, isReal, "put-pinhole", "real", 3, arguments);
