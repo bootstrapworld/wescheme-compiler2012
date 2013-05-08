@@ -56,7 +56,7 @@
                              (number->string (world-y w)))
               14 'black)
 	     (quotient (image-width scene) 2)
-	     0
+	     15
              scene))))
     (draw-butterfly w 
                     (draw-text w (empty-scene WIDTH HEIGHT)))))

@@ -790,6 +790,9 @@ if (typeof(world) === 'undefined') {
 
     CropImage.prototype.render = function(ctx, x, y) {
         ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, this.width, this.height);
+        ctx.clip();
         ctx.translate(-this.x, -this.y);
         this.img.render(ctx, x, y);
         ctx.restore();
