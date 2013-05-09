@@ -584,7 +584,7 @@
         if (config.lookup('onTap')) {
 	    var wrappedTap = function(w, e, k) {
                 var x = e.pageX, y = e.pageY;
-                var currentElement = e.target;
+                var currentElement = e.target || e.srcElement;
                 do {
                     x -= currentElement.offsetLeft;
                     y -= currentElement.offsetTop;
