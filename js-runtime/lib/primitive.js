@@ -4828,23 +4828,6 @@ new PrimProc('regular-polygon',
 											  s.toString(), 
 											  c);
 			 });
-/*
-PRIMITIVES['vertex-polygon'] =
-new PrimProc('vertex-polygon',
-			 3,
-			 false, false,
-			 function(aState, list, s, c) {
-			 check(aState, list,	isList,	"vertex-polygon", "check if valid list", 1, arguments);
-			 check(aState, s,		isMode, "vertex-polygon", 'style ("solid" or "outline" or [0-255])', 2, arguments);
-			 check(aState, c,		isColor, "vertex-polygon", "color", 3, arguments);
-			 
-			 if (colorDb.get(c)) {
-				 c = colorDb.get(c);
-			 }
-			 return world.Kernel.vertexPolygonImage(list, 
-											  s.toString(), 
-											  c);
-			 });*/
 
 PRIMITIVES['star-polygon'] =
 new PrimProc('star-polygon',
