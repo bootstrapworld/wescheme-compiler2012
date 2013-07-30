@@ -1,5 +1,28 @@
 (printf "images.rkt\n")
+
+;; "Checking Empty scene"
+;; (empty-scene 40 50 "red")
+
+"Trying SAA triangle (100 30 90)"
+(triangle/saa 100 30 90 "solid" "red")
+
+"Trying ASA triangle (30 40 60)"
+(triangle/asa 30 40 60 "solid" "blue")
+
+"Trying AAS triangle (30 60 40)"
+(triangle/aas 30 60 40 "outline" "green")
+
+"Trying SSA triangle (60 60 40)"
+(triangle/ass 60 60 40 "outline" "turquoise")
+
+"Trying ASS triangle (60 80 90)"
+(triangle/ass 60 80 90 "solid" "maroon")
+
+"Trying SSS triangle (60 60 60)"
+(triangle/sss 60 60 60 "outline" "red")
    
+"Trying SAS triangle (60 30 60)"
+(triangle/sas 60 30 60 "solid" "brown")
 
 "These three circles (red, green, blue) should be left aligned"
 (above/align "left"
@@ -128,8 +151,8 @@
 ;; IMAGE-URL & VIDEO-URL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 "importing images and video"
-(image-url "http://racket-lang.org/logo.png")
-(open-image-url "http://racket-lang.org/logo.png")
+(image-url "logo.png")
+(open-image-url "logo.png")
 
 ;(video-url "http://www.youtube.com/demo/google_main.mp4")
 ;(overlay (circle 20 "solid" "red")
@@ -519,12 +542,12 @@ Australia2
 ;; ROTATE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 "Three images at 30, 60, 90 degree rotation:"
-(rotate 30 (image-url "http://racket-lang.org/logo.png"))
-(rotate 60 (image-url "http://racket-lang.org/logo.png"))
-(rotate 90 (image-url "http://racket-lang.org/logo.png"))
+(rotate 30 (image-url "logo.png"))
+(rotate 60 (image-url "logo.png"))
+(rotate 90 (image-url "logo.png"))
 
 "Rotated, huge image"
-(rotate 30 (scale 3 (image-url "http://racket-lang.org/logo.png")))
+(rotate 30 (scale 3 (image-url "logo.png")))
 
 "From the Racket documentation:"
 (rotate 45 (ellipse 60 20 "solid" "olivedrab"))
@@ -553,14 +576,14 @@ Australia2
 ;; SCALE & SCALE/XY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;       
 "scaling small and large"
-(scale 1/2 (image-url "http://racket-lang.org/logo.png"))
-(scale 2 (image-url "http://racket-lang.org/logo.png"))
+(scale 1/2 (image-url "logo.png"))
+(scale 2 (image-url "logo.png"))
 
-(scale/xy 1 2 (image-url "http://racket-lang.org/logo.png"))
-(scale/xy 2 1 (image-url "http://racket-lang.org/logo.png"))
+(scale/xy 1 2 (image-url "logo.png"))
+(scale/xy 2 1 (image-url "logo.png"))
 
 "This should be the normal image"
-(scale/xy 1 1 (image-url "http://racket-lang.org/logo.png"))
+(scale/xy 1 1 (image-url "logo.png"))
 
 "From the Racket documentation: two identical ellipses, and a circle"
 (scale 2 (ellipse 20 30 "solid" "blue"))
@@ -644,8 +667,8 @@ Australia2
 
 
 "one image flipped vertically, and one flipped horizontally"
-(flip-vertical (image-url "http://racket-lang.org/logo.png"))
-(flip-horizontal (image-url "http://racket-lang.org/logo.png"))
+(flip-vertical (image-url "logo.png"))
+(flip-horizontal (image-url "logo.png"))
 
 "BESIDE: reference image"
 (beside (square 20 "solid" (make-color  50  50 255))
