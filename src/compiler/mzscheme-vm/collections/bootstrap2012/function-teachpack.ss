@@ -20,7 +20,7 @@
 (define IMAGE0 (empty-scene WIDTH HEIGHT))
 
 (define source (bitmap/url "http://www.wescheme.org/images/teachpacks2012/rocket.png"))
-(define ROCKET (put-pinhole source (/ (image-width source) 2) (image-height source)))
+(define ROCKET source)
 
 ;; -----------------------------------------------------------------------------
 ;; draw-world: Number -> Image 
@@ -32,11 +32,11 @@
 ;; add the height of the rocket and the time elapsed to the image
 (define (text-add time height IMAGE0)
   (place-image (text (string-append "Time: " (number->string time)) 14 (make-color 41 128 38))
-               67 
-               0 
+               60
+               15 
                (place-image (text (string-append "Height: " (number->string height)) 14 (make-color 38 38 128))
                             60
-                            20
+                            30
                             IMAGE0)))
 
 ;; rocket-add : Number Image -> Image 
@@ -45,7 +45,7 @@
   (cond
     [(>= (image-height ROCKET) (- HEIGHT ((cdr w) (car w))))
      (place-image ROCKET 100 200 IMAGE0)]
-    [else (place-image ROCKET 100 (- HEIGHT ((cdr w) (car w))) IMAGE0)]))
+    [else (place-image ROCKET 100 (- (- HEIGHT ((cdr w) (car w))) (/ (image-height source) 2)) IMAGE0)]))
 
 
 ;; (Number (Number -> Number)) Symbol -> (Number (Number -> Number))
@@ -98,7 +98,7 @@
           ;; (dyoo: warn disabled because WeScheme doesn't properly
           ;;  handle vararity functions yet)
           ;; warn
-          number->image string->image boolean->string boolean->image put-image overlay-at
+          number->image string->image boolean->string boolean->image overlay-at
           clipart/url color->alpha)
 
 ;; warn : any* -> any, and a side effect.
@@ -292,12 +292,6 @@
 ;; (in positive-y point space) relative to the center
 (define (overlay-at background x y foreground)
   (overlay/xy background x (- 0 y) foreground))
-
-;; put-image : Image Number Number Image -> Image
-;; Place the foreground on the background at x y
-;; (in positive-y point space) relative to the lower left
-(define (put-image foreground x y background)
-  (place-image foreground x (- (image-height background) y) background))
 
                                         ; sq : Number -> Number
 (define (sq x) (* x x))

@@ -545,8 +545,11 @@ var isFontWeight = function(x){
 var colorDb = world.Kernel.colorDb;
 var isMode = function(x) {
 	return ((isString(x) || isSymbol(x)) &&
-		(x.toString().toLowerCase() == "solid" ||
-		 x.toString().toLowerCase() == "outline"));
+          (x.toString().toLowerCase() == "solid" ||
+           x.toString().toLowerCase() == "outline")) ||
+         ((isReal(x)) &&
+          (jsnums.greaterThanOrEqual(x, 0) &&
+           jsnums.lessThanOrEqual(x, 255)));
 };
 
 var isPlaceX = function(x) {
@@ -4575,6 +4578,30 @@ PRIMITIVES['empty-scene'] =
 		        return world.Kernel.sceneImage(jsnums.toFixnum(width), jsnums.toFixnum(height), [], true);
 		 });
 
+// just like place-image, but we flip the y-coordinate
+PRIMITIVES['put-image'] =
+    new PrimProc('put-image',
+     4,
+     false, false,
+     function(aState, picture, x, y, background) {
+      check(aState, picture, isImage, "put-image", "image", 1, arguments);
+      check(aState, x, isReal, "put-image", "real", 2, arguments);
+      check(aState, y, isReal, "put-image", "real", 3, arguments);
+      check(aState, background, function(x) { return isScene(x) || isImage(x) },
+            "put-image", "image", 4, arguments);
+      if (isScene(background)) {
+          return background.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
+      } else {
+          var newScene = world.Kernel.sceneImage(background.getWidth(),
+                  background.getHeight(),
+                  [],
+                  false);
+          newScene = newScene.add(background, background.getWidth()/2, background.getHeight()/2);
+          newScene = newScene.add(picture, jsnums.toFixnum(x), background.getHeight() - jsnums.toFixnum(y));
+          return newScene;
+      }
+    });
+
 
 PRIMITIVES['place-image'] =
     new PrimProc('place-image',
@@ -4593,8 +4620,8 @@ PRIMITIVES['place-image'] =
 								   background.getHeight(),
 								   [], 
 								   false);
-			    newScene = newScene.add(background.updatePinhole(0, 0), 0, 0);
-			    newScene = newScene.add(picture, jsnums.toFixnum(x), jsnums.toFixnum(y));
+          newScene = newScene.add(background, background.getWidth()/2, background.getHeight()/2);
+          newScene = newScene.add(picture, jsnums.toFixnum(x), jsnums.toFixnum(y));
 			    return newScene;
 			}
 		 });
@@ -4612,21 +4639,21 @@ PRIMITIVES['place-image/align'] =
 			 check(aState, placeY,	isPlaceY,	"place-image/align", "y-place", 5, arguments);
 			 check(aState, background, function(x) { return isScene(x) || isImage(x) },
 			       "place-image/align", "image",	6, arguments);
-			 
-			 // calculate x and y based on placeX and placeY
-			 if		 (placeX == "left"  ) x = x + img.pinholeX;
-			 else if (placeX == "right" ) x = x - img.pinholeX;
-			 if		 (placeY == "top"   ) y = y + img.pinholeY;
-			 else if (placeY == "bottom") y = y - img.pinholeY;
+
+      // calculate x and y based on placeX and placeY
+			 if		 (placeX == "left"  )  x = x + img.getWidth()/2;
+			 else if (placeX == "right" ) x = x - img.getWidth()/2;
+			 if		 (placeY == "top"   )  y = y + img.getHeight()/2;
+			 else if (placeY == "bottom") y = y - img.getHeight()/2;
 
 			 if (isScene(background)) {
 			     return  background.add(img, jsnums.toFixnum(x), jsnums.toFixnum(y));
 			 } else {
 			     var newScene = world.Kernel.sceneImage(background.getWidth(),
-								    background.getHeight(),
-								    [], 
-								    false);
-			     newScene = newScene.add(background.updatePinhole(0, 0), 0, 0);
+                                                  background.getHeight(),
+                                                  [],
+                                                  false);
+			     newScene = newScene.add(background, background.getWidth()/2, background.getHeight()/2);
 			     newScene = newScene.add(img, jsnums.toFixnum(x), jsnums.toFixnum(y));
 			     return  newScene;
 			 }
@@ -4643,23 +4670,24 @@ PRIMITIVES['scene+line'] =
 			 check(aState, y1,		isReal,		"scene+line", "finite real number", 3, arguments);
 			 check(aState, x2,		isReal,		"scene+line", "finite real number", 4, arguments);
 			 check(aState, y2,		isReal,		"scene+line", "finite real number", 5, arguments);
-			 check(aState, c,		isColor,	"scene+line", "color",				6, arguments);
+			 check(aState, c,     isColor,	"scene+line", "color",				6, arguments);
 			 if (colorDb.get(c)) {
 			     c = colorDb.get(c);
 			 }
 			 // make a scene containing the image
-		         newScene = world.Kernel.sceneImage(jsnums.toFixnum(img.getWidth()), 
-							    jsnums.toFixnum(img.getHeight()), 
-							    [],
-							    true);
-			 newScene = newScene.add(img.updatePinhole(0, 0), 0, 0);
+       newScene = world.Kernel.sceneImage(jsnums.toFixnum(img.getWidth()),
+                                          jsnums.toFixnum(img.getHeight()),
+                                          [],
+                                          false);
+			 newScene = newScene.add(img, img.getWidth()/2, img.getHeight()/2);
 			 // make an image containing the line
 			 line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
-						       jsnums.toFixnum(y2-y1),
-						       c,
-						       false);
+                                     jsnums.toFixnum(y2-y1),
+                                     c);
+       leftMost = Math.min(x1,x2),
+       topMost = Math.min(y1,y2);
 			 // add the line to scene, offset by the original amount
-			 return newScene.add(line, jsnums.toFixnum(x1), jsnums.toFixnum(y1));
+			 return newScene.add(line, line.getWidth()/2+leftMost, line.getHeight()/2+topMost);
 		     });
 
 PRIMITIVES['put-pinhole'] =
@@ -4667,12 +4695,11 @@ PRIMITIVES['put-pinhole'] =
 		 3,
 		 false, false,
 		 function(aState, img, x, y) {
-			check(aState, img, isImage, "put-pinhole", "image", 1, arguments);
+      check(aState, img, isImage, "put-pinhole", "image", 1, arguments);
 			check(aState, x, isReal, "put-pinhole", "real", 2, arguments);
 			check(aState, y, isReal, "put-pinhole", "real", 3, arguments);
 			return img.updatePinhole(jsnums.toFixnum(x), jsnums.toFixnum(y));
     		 });
-
 
 PRIMITIVES['circle'] =
     new PrimProc('circle',
@@ -4680,7 +4707,7 @@ PRIMITIVES['circle'] =
 		 false, false,
 		 function(aState, aRadius, aStyle, aColor) {
 			check(aState, aRadius, isNonNegativeReal, "circle", "non-negative number", 1, arguments);
-			check(aState, aStyle, isMode, "circle", 'style ("solid" or "outline")', 2, arguments);
+			check(aState, aStyle, isMode, "circle", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			check(aState, aColor, isColor, "circle", "color", 3, arguments);
 
 
@@ -4708,7 +4735,7 @@ PRIMITIVES['star'] =
 			  check(aState, inner, 
 				isNonNegativeReal, "star",
 				"non-negative number", 3, arguments);
-			  check(aState, m, isMode, "star", 'style ("solid" or "outline")', 4, arguments);
+			  check(aState, m, isMode, "star", 'style ("solid" or "outline" or [0-255])', 4, arguments);
 			  check(aState, c, isColor, "star", "color", 5, arguments);
 			  if (colorDb.get(c)) {
 			      c = colorDb.get(c);
@@ -4726,7 +4753,7 @@ PRIMITIVES['star'] =
 		      function(aState, sideLength, mode, color) {
 			  check(aState, sideLength, isNonNegativeReal,
 				"star", "non-negative number", 1, arguments);
-			  check(aState, mode, isMode, "star", 'style ("solid" or "outline")', 2, arguments);
+			  check(aState, mode, isMode, "star", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			  check(aState, color, isColor, "star", "color", 3, arguments);
 			  if (colorDb.get(color)) {
 			      color = colorDb.get(color);
@@ -4751,7 +4778,7 @@ new PrimProc('radial-star',
 									"radial-star", "positive number", 2, arguments);
 			 check(aState, anInner, function(x) { return isReal(x) && jsnums.greaterThan(x, 0); },
 									"radial-star", "positive number", 3, arguments);
-			 check(aState, aStyle, isMode, "radial-star", 'style ("solid" or "outline")', 4, arguments);
+			 check(aState, aStyle, isMode, "radial-star", 'style ("solid" or "outline" or [0-255])', 4, arguments);
 			 check(aState, aColor, isColor, "radial-star", "color", 5, arguments);
 			 
 			 if (colorDb.get(aColor)) {
@@ -4764,27 +4791,6 @@ new PrimProc('radial-star',
 										   aColor);
 			 });
 
-
-PRIMITIVES['nw:rectangle'] =
-    new PrimProc('nw:rectangle',
-		 4,
-		 false, false,
-		 function(aState, w, h, s, c) {
-			check(aState, w, isNonNegativeReal, "nw:rectangle", "non-negative number", 1, arguments);
-			check(aState, h, isNonNegativeReal, "nw:rectangle", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "nw:rectangle", 'style ("solid" or "outline")', 3, arguments);
-			check(aState, c, isColor, "nw:rectangle", "color", 4, arguments);
-
-			if (colorDb.get(c)) {
-				c = colorDb.get(c);
-			}
-			var aRect = world.Kernel.rectangleImage(jsnums.toFixnum(w),
-								jsnums.toFixnum(h),
-								s.toString(), c);
-			return aRect.updatePinhole(0, 0);
-		 });
-
-
 PRIMITIVES['rectangle'] =
     new PrimProc('rectangle',
 		 4,
@@ -4792,7 +4798,7 @@ PRIMITIVES['rectangle'] =
 		 function(aState, w, h, s, c) {
 			check(aState, w, isNonNegativeReal, "rectangle", "non-negative number", 1, arguments);
 			check(aState, h, isNonNegativeReal, "rectangle", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "rectangle", 'style ("solid" or "outline")', 3, arguments);
+			check(aState, s, isMode, "rectangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			check(aState, c, isColor, "rectangle", "color", 4, arguments);
 
 			if (colorDb.get(c)) {
@@ -4810,7 +4816,7 @@ new PrimProc('regular-polygon',
 			 function(aState, length, count, s, c) {
 			 check(aState, length,	isNonNegativeReal,	"regular-polygon", "non-negative number", 1, arguments);
 			 check(aState, count,	isSideCount,		"regular-polygon", "positive integer greater than or equal to 3", 2, arguments);
-			 check(aState, s,		isMode, "regular-polygon", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s,		isMode, "regular-polygon", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c,		isColor, "regular-polygon", "color", 4, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4831,7 +4837,7 @@ new PrimProc('star-polygon',
 			 check(aState, length,	isNonNegativeReal,	"star-polygon", "non-negative number", 1, arguments);
 			 check(aState, count,	isSideCount,		"star-polygon", "positive integer greater than or equal to 3", 2, arguments);
 			 check(aState, step,	isStepCount,		"star-polygon", "positive integer greater than or equal to 1", 3, arguments);
-			 check(aState, s,		isMode,				"star-polygon", 'style ("solid" or "outline")', 4, arguments);
+			 check(aState, s,		isMode,				"star-polygon", 'style ("solid" or "outline" or [0-255])', 4, arguments);
 			 check(aState, c,		isColor,			"star-polygon", "color", 5, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4851,7 +4857,7 @@ new PrimProc('rhombus',
 			 function(aState, l, a, s, c) {
 			 check(aState, l, isNonNegativeReal, "rhombus", "non-negative number", 1, arguments);
 			 check(aState, a, isNonNegativeReal, "rhombus", "non-negative number", 2, arguments);
-			 check(aState, s, isMode, "rhombus", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s, isMode, "rhombus", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c, isColor, "rhombus", "color", 4, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4866,7 +4872,7 @@ new PrimProc('square',
 			 false, false,
 			 function(aState, l, s, c) {
 			 check(aState, l, isNonNegativeReal, "square", "non-negative number", 1, arguments);
-			 check(aState, s, isMode, "square", 'style ("solid" or "outline")', 2, arguments);
+			 check(aState, s, isMode, "square", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			 check(aState, c, isColor, "square", "color", 3, arguments);
 			 
 			 if (colorDb.get(c)) {
@@ -4881,7 +4887,7 @@ PRIMITIVES['triangle'] =
 		 false, false,
 		 function(aState, s, m, c) {
 			check(aState, s, isNonNegativeReal, "triangle", "non-negative number", 1, arguments);
-			check(aState, m, isMode, "triangle", 'style ("solid" or "outline")', 2, arguments);
+			check(aState, m, isMode, "triangle", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			check(aState, c, isColor, "triangle", "color", 3, arguments);
 			if (colorDb.get(c)) {
 				c = colorDb.get(c);
@@ -4900,7 +4906,7 @@ new PrimProc('right-triangle',
 			 function(aState, side1, side2, s, c) {
 			 check(aState, side1, isNonNegativeReal, "right-triangle", "non-negative number", 1, arguments);
 			 check(aState, side2, isNonNegativeReal, "right-triangle", "non-negative number", 2, arguments);
-			 check(aState, s, isMode, "right-triangle", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s, isMode, "right-triangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c, isColor, "right-triangle", "color", 4, arguments);
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
@@ -4916,7 +4922,7 @@ new PrimProc('isosceles-triangle',
 			 function(aState, side, angle, s, c) {
 			 check(aState, side, isNonNegativeReal, "isosceles-triangle", "non-negative number", 1, arguments);
 			 check(aState, angle, isAngle, "isosceles-triangle", "finite real number between 0 and 360", 2, arguments);
-			 check(aState, s, isMode, "isosceles-triangle", 'style ("solid" or "outline")', 3, arguments);
+			 check(aState, s, isMode, "isosceles-triangle", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			 check(aState, c, isColor, "isosceles-triangle", "color", 4, arguments);
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
@@ -4932,7 +4938,7 @@ PRIMITIVES['ellipse'] =
 		 function(aState, w, h, s, c) {
 			check(aState, w, isNonNegativeReal, "ellipse", "non-negative number", 1, arguments);
 			check(aState, h, isNonNegativeReal, "ellipse", "non-negative number", 2, arguments);
-			check(aState, s, isMode, "ellipse", "string", 3, arguments);
+			check(aState, s, isMode, "ellipse", 'style ("solid" or "outline" or [0-255])', 3, arguments);
 			check(aState, c, isColor, "ellipse", "color", 4, arguments);
 			
 			if (colorDb.get(c)) {
@@ -4957,9 +4963,8 @@ PRIMITIVES['line'] =
 				c = colorDb.get(c);
 			}
 			var line = world.Kernel.lineImage(jsnums.toFixnum(x),
-							  jsnums.toFixnum(y),
-							  c,
-							  true);
+                                        jsnums.toFixnum(y),
+                                        c);
 		        return line;
 		 });
 
@@ -4969,20 +4974,21 @@ PRIMITIVES['add-line'] =
 		     6,
 		     false, false,
 		     function(aState, img, x1, y1, x2, y2, c) {
-			 check(aState, img, isImage,	"add-line", "image",			  1, arguments);
+			 check(aState, img, isImage,	"add-line", "image",             1, arguments);
 			 check(aState, x1,	isReal,		"add-line", "finite real number", 2, arguments);
 			 check(aState, y1,	isReal,		"add-line", "finite real number", 3, arguments);
 			 check(aState, x2,	isReal,		"add-line", "finite real number", 4, arguments);
 			 check(aState, y2,	isReal,		"add-line", "finite real number", 5, arguments);
-			 check(aState, c,	isColor,	"add-line", "color",			  6, arguments);
+			 check(aState, c,	  isColor,	"add-line", "color",             6, arguments);
 			 if (colorDb.get(c)) {
 			     c = colorDb.get(c);
 			 }
-			 line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
-						       jsnums.toFixnum(y2-y1),
-						       c,
-						       true);
-			 return world.Kernel.overlayImage(line, img, x1, y1);
+			 var line = world.Kernel.lineImage(jsnums.toFixnum(x2-x1),
+                                         jsnums.toFixnum(y2-y1),
+                                         c),
+           leftMost = Math.min(x1,x2),
+           topMost = Math.min(y1,y2);
+			 return world.Kernel.overlayImage(line, img, -leftMost, -topMost);
 			 });
 
 
@@ -5014,10 +5020,10 @@ PRIMITIVES['overlay/xy'] =
 		     check(aState, deltaX, isReal, "overlay/xy", "finite real number", 2, arguments);
 		     check(aState, deltaY, isReal, "overlay/xy", "finite real number", 3, arguments);
 		     check(aState, img2, isImage, "overlay/xy", "image", 4, arguments);
-		     return world.Kernel.overlayImage(img1.updatePinhole(0, 0),
-						      img2.updatePinhole(0, 0),
-						      jsnums.toFixnum(deltaX),
-						      jsnums.toFixnum(deltaY));
+		     return world.Kernel.overlayImage(img1,
+                                          img2,
+                                          jsnums.toFixnum(deltaX),
+                                          jsnums.toFixnum(deltaY));
 		 });
 
 
@@ -5072,10 +5078,10 @@ PRIMITIVES['underlay/xy'] =
 		     check(aState, deltaX, isReal, "underlay/xy", "finite real number", 2, arguments);
 		     check(aState, deltaY, isReal, "underlay/xy", "finite real number", 3, arguments);
 		     check(aState, img2, isImage, "underlay/xy", "image", 4, arguments);                     
-		     return world.Kernel.overlayImage(img2.updatePinhole(0, 0), 
-						      img1.updatePinhole(0, 0),
-						      -jsnums.toFixnum(deltaX),
-						      -jsnums.toFixnum(deltaY));
+		     return world.Kernel.overlayImage(img2,
+                                          img1,
+                                          -jsnums.toFixnum(deltaX),
+                                          -jsnums.toFixnum(deltaY));
 		 });
 
 
@@ -5295,7 +5301,7 @@ PRIMITIVES['text'] =
 			 aColor = colorDb.get(aColor);
 		     }
 		     return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-						   "normal", "Optimer","","",false);
+						   "normal", "Arial","","",false);
 		 });
 
 
@@ -5325,42 +5331,9 @@ new PrimProc('text/font',
                              } catch(e) {
                                  // Under IE 8, something breaks.  I don't know yet what it is.
 		        return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-											  "normal", "Optimer","","",false);
+											  "normal", "Arial","","",false);
                              }
 			 });
-/*
-PRIMITIVES['bitmap/url'] = 
-PRIMITIVES['image-url'] =
-    new PrimProc('image-url',
-		 1,
-		 false, true,
-		 function(aState, path) {
-		     check(aState, path, isString, "image-url", "string", 1);
-		     var originalPath = path.toString();
-		     if (aState.getImageProxyHook()) {
-			 path = (aState.getImageProxyHook() +
-				 "?url=" + encodeURIComponent(path.toString()));
-		     } else {
-			 path = path.toString();
-		     }
-
-		     aState.v = PAUSE(function(restarter, caller) {
-			 var rawImage = new Image();
-			 rawImage.onload = function() {
-			     world.Kernel.fileImage(
-				 path,
-				 rawImage,
-			         restarter);
-			 };
-			 rawImage.onerror = function(e) {
-			     restarter(types.schemeError(types.incompleteExn(
-					types.exnFail,
-					" (unable to load: " + originalPath + ")",
-					[])));
-			 };
-			 rawImage.src = path;
-		     });
-		 });*/
 PRIMITIVES['bitmap/url'] = 
 PRIMITIVES['image-url'] =
     new PrimProc('image-url',
@@ -5397,7 +5370,7 @@ PRIMITIVES['image-url'] =
 
 PRIMITIVES['open-image-url'] = PRIMITIVES['image-url'];
 
-
+PRIMITIVES['video/url'] =
 PRIMITIVES['video-url'] =
 new PrimProc('video-url',
 			 1,
