@@ -114,8 +114,12 @@
         (cond [(jsonp-request? request)
                (handle-json-response request program-name program-input-port)]
               [else
-               (handle-response request program-name program-input-port)]))])))
+                (call-with-semaphore
+                  lock
+                  (lambda ()
+                    (handle-response request program-name program-input-port)))]))])))
 
+(define lock (make-semaphore 1))
 
 
 
