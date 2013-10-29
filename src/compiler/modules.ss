@@ -274,6 +274,13 @@
 					   rhombus
 					   square
 					   triangle
+             triangle/sas
+             triangle/sss
+             triangle/ass
+             triangle/ssa
+             triangle/aas
+             triangle/asa
+             triangle/saa
 					   right-triangle
 					   isosceles-triangle
 					   ellipse

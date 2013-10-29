@@ -4889,15 +4889,149 @@ PRIMITIVES['triangle'] =
 			check(aState, s, isNonNegativeReal, "triangle", "non-negative number", 1, arguments);
 			check(aState, m, isMode, "triangle", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			check(aState, c, isColor, "triangle", "color", 3, arguments);
-			if (colorDb.get(c)) {
-				c = colorDb.get(c);
-			}
-		     return world.Kernel.triangleImage(jsnums.toFixnum(s), 
-						       60, 
-						       m.toString(),
-						       c);
-		 });
-
+			if (colorDb.get(c)) {c = colorDb.get(c);}
+      return world.Kernel.triangleImage(jsnums.toFixnum(s),
+                                        jsnums.toFixnum(60+180), // add 180 to make the triangle point up
+                                        jsnums.toFixnum(s),
+                                        m.toString(),
+                                        c);
+      });
+ 
+PRIMITIVES['triangle/sas'] =
+    new PrimProc('triangle/sas',
+      5,
+      false, false,
+      function(aState, base, angleC, sideB, style, color) {
+       check(aState, base, isNonNegativeReal, "triangle/sas", 1, arguments);
+       check(aState, angleC, isAngle, "triangle/sas", 2, arguments);
+       check(aState, sideB, isNonNegativeReal, "triangle/sas", 3, arguments);
+       check(aState, style, isMode, "triangle/sas", 4, arguments);
+       check(aState, color, isColor, "triangle/sas", 5, arguments);
+       if (colorDb.get(color)) { color = colorDb.get(color); }
+       return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                         jsnums.toFixnum(angleC),
+                                         jsnums.toFixnum(sideB),
+                                         style.toString(),
+                                         color);
+      });
+ 
+PRIMITIVES['triangle/sss'] =
+    new PrimProc('triangle/sss',
+      5,
+      false, false,
+      function(aState, base, sideB, sideC, style, color) {
+        check(aState, base, isNonNegativeReal, "triangle/sss", 1, arguments);
+        check(aState, sideB, isNonNegativeReal, "triangle/sss", 2, arguments);
+        check(aState, sideC, isNonNegativeReal, "triangle/sss", 3, arguments);
+        check(aState, style, isMode, "triangle/sss", 4, arguments);
+        check(aState, color, isColor, "triangle/sss", 5, arguments);
+        if (colorDb.get(color)) { color = colorDb.get(color); }
+        var angleC = (Math.acos((base*base + sideB*sideB - sideC*sideC) / (2*base*sideB)))*180/Math.PI;
+        return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                         jsnums.toFixnum(angleC),
+                                         jsnums.toFixnum(sideB),
+                                         style.toString(),
+                                         color);
+      });
+ 
+PRIMITIVES['triangle/ass'] =
+    new PrimProc('triangle/ass',
+      5,
+      false, false,
+      function(aState, angle, base, sideB, style, color) {
+       check(aState, angle, isAngle, "triangle/ass", 1, arguments);
+       check(aState, base, isNonNegativeReal, "triangle/ass", 2, arguments);
+       check(aState, sideB, isNonNegativeReal, "triangle/ass", 3, arguments);
+       check(aState, style, isMode, "triangle/ass", 4, arguments);
+       check(aState, color, isColor, "triangle/ass", 5, arguments);
+       if (colorDb.get(color)) { color = colorDb.get(color); }
+       return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                        jsnums.toFixnum(angle),
+                                        jsnums.toFixnum(sideB),
+                                        style.toString(),
+                                        color);
+      });
+ 
+PRIMITIVES['triangle/ssa'] =
+    new PrimProc('triangle/ssa',
+      5,
+      false, false,
+      function(aState, base, sideB, angleA, style, color) {
+         check(aState, base, isNonNegativeReal, "triangle/ssa", 2, arguments);
+         check(aState, sideB, isNonNegativeReal, "triangle/ssa", 3, arguments);
+         check(aState, angleA, isAngle, "triangle/ssa", 1, arguments);
+         check(aState, style, isMode, "triangle/ssa", 4, arguments);
+         check(aState, color, isColor, "triangle/ssa", 5, arguments);
+         if (colorDb.get(color)) { color = colorDb.get(color); }
+         var angleB = Math.asin(Math.sin(angleA*Math.PI/180)*sideB/sideA)*180/Math.PI;
+         var angleC = (180 - angleA - angleB);
+         return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                          jsnums.toFixnum(angleC),
+                                          jsnums.toFixnum(sideB),
+                                          style.toString(),
+                                          color);
+      });
+ 
+PRIMITIVES['triangle/aas'] =
+      new PrimProc('triangle/aas',
+        5,
+        false, false,
+        function(aState, angleA, angleB, base, style, color) {
+         check(aState, angleA, isAngle, "triangle/aas", 2, arguments);
+         check(aState, angleB, isAngle, "triangle/aas", 3, arguments);
+         check(aState, base, isNonNegativeReal, "triangle/aas", 1, arguments);
+         check(aState, style, isMode, "triangle/aas", 4, arguments);
+         check(aState, color, isColor, "triangle/aas", 5, arguments);
+        if (colorDb.get(color)) { color = colorDb.get(color); }
+        var angleC = (180 - angleA - angleB);
+        var sideB = (base * Math.sin(angleB*Math.PI/180)) / (Math.sin(angleC*Math.PI/180));
+        return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                         jsnums.toFixnum(angleC),
+                                         jsnums.toFixnum(sideB),
+                                         style.toString(),
+                                         color);
+        });
+ 
+PRIMITIVES['triangle/asa'] =
+       new PrimProc('triangle/asa',
+          5,
+          false, false,
+          function(aState, angleA, sideC, angleB, style, color) {
+            check(aState, angleA, isAngle, "triangle/aas", 2, arguments);
+            check(aState, sideC, isNonNegativeReal, "triangle/aas", 3, arguments);
+            check(aState, angleB, isAngle, "triangle/aas", 1, arguments);
+            check(aState, style, isMode, "triangle/aas", 4, arguments);
+            check(aState, color, isColor, "triangle/aas", 5, arguments);
+            if (colorDb.get(color)) { color = colorDb.get(color); }
+            var angleC = (180 - angleA - angleB);
+            var base = (sideC * Math.sin(angleA*Math.PI/180)) / (Math.sin(angleC*Math.PI/180));
+            var sideB = (sideC * Math.sin(angleB*Math.PI/180)) / (Math.sin(angleC*Math.PI/180));
+            return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                             jsnums.toFixnum(angleC),
+                                             jsnums.toFixnum(sideB),
+                                             style.toString(),
+                                             color);
+          });
+ 
+PRIMITIVES['triangle/saa'] =
+        new PrimProc('triangle/saa',
+            5,
+            false, false,
+            function(aState, base, angleC, angleA, style, color) {
+             check(aState, base, isNonNegativeReal, "triangle/aas", 2, arguments);
+             check(aState, angleC, isAngle, "triangle/aas", 3, arguments);
+             check(aState, angleA, isAngle, "triangle/aas", 1, arguments);
+             check(aState, style, isMode, "triangle/aas", 4, arguments);
+             check(aState, color, isColor, "triangle/aas", 5, arguments);
+             if (colorDb.get(color)) { color = colorDb.get(color); }
+             var angleB = (180 - angleA - angleC);
+             var sideB = (base * Math.sin(angleB*Math.PI/180)) / (Math.sin(angleA*Math.PI/180));
+             return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                               jsnums.toFixnum(angleC),
+                                               jsnums.toFixnum(sideB),
+                                               style.toString(),
+                                               color);
+            });
 
 PRIMITIVES['right-triangle'] =
 new PrimProc('right-triangle',
@@ -4911,7 +5045,11 @@ new PrimProc('right-triangle',
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
 			 }
-		     return world.Kernel.rightTriangleImage(jsnums.toFixnum(side1), jsnums.toFixnum(side2), s.toString(), c);
+       return world.Kernel.triangleImage(jsnums.toFixnum(side1),
+                                         jsnums.toFixnum(90+180), // add 180 to make the triangle point up
+                                         jsnums.toFixnum(side2),
+                                         s.toString(),
+                                         c);
 			 });
 
 
@@ -4927,7 +5065,13 @@ new PrimProc('isosceles-triangle',
 			 if (colorDb.get(c)) {
 			 c = colorDb.get(c);
 			 }
-		     return world.Kernel.triangleImage(jsnums.toFixnum(side), jsnums.toFixnum(angle), s.toString(), c);
+       var angleAB = (180-angle)/2;
+       var base = 2*side*Math.sin((angle*Math.PI/180)/2);
+       return world.Kernel.triangleImage(jsnums.toFixnum(base),
+                                         jsnums.toFixnum(angleAB+180),// add 180 to make the triangle point up
+                                         jsnums.toFixnum(side),
+                                         s.toString(),
+                                         c);
 			 });
 
 
