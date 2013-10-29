@@ -505,7 +505,7 @@ if (typeof(world) === 'undefined') {
             this.video.volume           = 1;
             this.video.poster           = "http://www.wescheme.org/images/broken.png";
             this.video.autoplay         = true;
-            this.video.autobuffer       =true;
+            this.video.autobuffer       = true;
             this.video.loop             = true;
             this.video.play();
         } else {
@@ -989,23 +989,6 @@ if (typeof(world) === 'undefined') {
  
     PolygonImage.prototype = heir(BaseImage.prototype);
 
-/*
-    var VertexPolygonImage = function(list, style, color) {
-        BaseImage.call(this);
-        this.vertices = list;
-        this.style      = style;
-        this.color      = color;
- 
-        // shift the vertices by the calculated offsets, now that we know the width
-        var xOffset = Math.round(this.width/2);
-        var yOffset = ((this.count % 2)? this.outerRadius : this.innerRadius);
-        for(i=0; i<vertices.length; i++){
-            vertices[i].x += xOffset; vertices[i].y += yOffset;
-        }
-        this.vertices   = vertices;
-    };
-    VertexPolygonImage.prototype = heir(BaseImage.prototype); */
-
     var maybeQuote = function(s) {
         if (/ /.test(s)) {
             return "\"" + s + "\"";
@@ -1146,69 +1129,35 @@ if (typeof(world) === 'undefined') {
 
     StarImage.prototype = heir(BaseImage.prototype);
 
-    /////////////////////////////////////////////////////////////////////
-    //TriangleImage: Number Number Mode Color -> Image
-    var TriangleImage = function(side, angle, style, color) {
-        BaseImage.call(this);
-        // sin(angle/2-in-radians) * side = half of base
-        // cos(angle/2-in-radians) * side = height of altitude
-        this.width = Math.sin(angle/2 * Math.PI / 180) * side * 2;
-        this.height = Math.floor(Math.abs(Math.cos(angle/2 * Math.PI / 180)) * side);
-        var vertices = [];
-        // if angle < 180 start at the top of the canvas, otherwise start at the bottom
-        if(angle < 180){
-          vertices.push({x:this.width/2, y:0});
-          vertices.push({x:0,            y:this.height});
-          vertices.push({x:this.width,   y:this.height});
-        } else {
-          vertices.push({x:this.width/2, y:this.height});
-          vertices.push({x:0,            y:0});
-          vertices.push({x:this.width,   y:0});
-        }
-        this.side = side;
-        this.angle = angle;
-        this.style = style;
-        this.color = color;
-        this.vertices = vertices;
-    };
-    TriangleImage.prototype = heir(BaseImage.prototype);
-
-    /////////////////////////////////////////////////////////////////////
-    //TriangleSAS: Number Number Number Mode Color -> Image
-	//Draws a triangle with the base = side1, and the angle between side1 
-	//and side2 being the given angle
-    var TriangleSASImage = function(sideA, angleC, sideB, style, color) {
-        BaseImage.call(this);
-		this.width = sideA;
-		this.height = Math.abs(sideB*Math.sin(angleC*Math.PI/180));
-
-		var vertices = [];
-		vertices.push({x: 0, y: 0});
-		vertices.push({x: sideA, y: 0});
-		vertices.push({x: sideB*Math.cos(angleC*Math.PI/180), y: sideB*Math.sin(angleC*Math.PI/180)});
-        this.vertices = vertices;
-
-        this.style = style;
-        this.color = color;
-    };
-    TriangleSASImage.prototype = heir(BaseImage.prototype);
-
-
-    /////////////////////////////////////////////////////////////////////
-    //RightTriangleImage: Number Number Mode Color -> Image
-    var RightTriangleImage = function(side1, side2, style, color) {
-        BaseImage.call(this);
-        this.width = side1;
-        this.height = side2;
-        this.side1 = side1;
-        this.side2 = side2;
-        this.style = style;
-        this.color = color;
-        this.vertices = [{x:    0, y:side2},
-                         {x:side1, y:side2},
-                         {x:    0, y:0}];
-    };
-    RightTriangleImage.prototype = heir(BaseImage.prototype);
+     /////////////////////////////////////////////////////////////////////
+     //TriangleImage: Number Number Number Mode Color -> Image
+     // Draws a triangle with the base = sideC, and the angle between sideC
+     // and sideB being angleA
+     // See http://docs.racket-lang.org/teachpack/2htdpimage.html#(def._((lib._2htdp/image..rkt)._triangle))
+     var TriangleImage = function(sideC, angleA, sideB, style, color) {
+       BaseImage.call(this);
+       this.width = sideC;
+       this.height = Math.sqrt(Math.pow(sideB,2) - Math.pow(0.5*sideC,2));
+       
+       var vertices = [];
+       // if angle < 180 start at the top of the canvas, otherwise start at the bottom
+       if(angleA < 180){
+         vertices.push({x: 0, y: 0});
+         vertices.push({x: sideC, y: 0});
+         vertices.push({x: sideB*Math.cos(angleA*Math.PI/180),
+                        y: this.height});
+       } else {
+         vertices.push({x: 0, y: this.height - 0});
+         vertices.push({x: sideC, y: this.height - 0});
+         vertices.push({x: Math.abs(sideB*Math.cos(angleA*Math.PI/180)),
+                        y: 0});
+       }
+       this.vertices = vertices;
+       
+       this.style = style;
+       this.color = color;
+     };
+     TriangleImage.prototype = heir(BaseImage.prototype);
 
     //////////////////////////////////////////////////////////////////////
     //Ellipse : Number Number Mode Color -> Image
@@ -1547,21 +1496,11 @@ if (typeof(world) === 'undefined') {
     world.Kernel.polygonImage = function(length, count, step, style, color) {
         return new PolygonImage(length, count, step, style, color);
     };
-    /*
-    world.Kernel.vertexPolygonImage = function(list, style, color) {
-        return new VertexPolygonImage(list, style, color);
-    };*/
     world.Kernel.squareImage = function(length, style, color) {
         return new RectangleImage(length, length, style, color);
     };
-    world.Kernel.rightTriangleImage = function(side1, side2, style, color) {
-        return new RightTriangleImage(side1, side2, style, color);
-    };
-    world.Kernel.triangleImage = function(side, angle, style, color) {
-        return new TriangleImage(side, angle, style, color);
-    };
-    world.Kernel.triangleSASImage = function(sideA, angleC, sideB, style, color) {
-        return new TriangleSASImage(sideA, angleC, sideB, style, color);
+    world.Kernel.triangleImage = function(side, angle, side2, style, color) {
+        return new TriangleImage(side, angle, side2, style, color);
     };
     world.Kernel.ellipseImage = function(width, height, style, color) {
         return new EllipseImage(width, height, style, color);
@@ -1601,12 +1540,8 @@ if (typeof(world) === 'undefined') {
     world.Kernel.isStarImage    = function(x) { return x instanceof StarImage; };
     world.Kernel.isRectangleImage=function(x) { return x instanceof RectangleImage; };
     world.Kernel.isPolygonImage = function(x) { return x instanceof PolygonImage; };
-    /*
-    world.Kernel.isVertexPolygonImage = function(x) { return x instanceof VertexPolygonImage; };*/
     world.Kernel.isRhombusImage = function(x) { return x instanceof RhombusImage; };
     world.Kernel.isTriangleImage= function(x) { return x instanceof TriangleImage; };
-    world.Kernel.isRightTriangleImage = function(x) { return x instanceof RightTriangleImage; };
-    world.Kernel.isTriangleSASImage= function(x) { return x instanceof TriangleSASImage; };
     world.Kernel.isEllipseImage = function(x) { return x instanceof EllipseImage; };
     world.Kernel.isLineImage    = function(x) { return x instanceof LineImage; };
     world.Kernel.isOverlayImage = function(x) { return x instanceof OverlayImage; };

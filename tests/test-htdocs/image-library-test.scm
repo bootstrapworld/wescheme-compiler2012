@@ -471,6 +471,27 @@ Australia2
 (isosceles-triangle 200 170 "outline" "seagreen")
 (isosceles-triangle 60 330 "solid" "lightseagreen")
 
+"Trying ASA triangle (30 40 60)"
+(triangle/asa 30 40 60 "solid" "blue")
+
+"Trying AAS triangle (30 60 40)"
+(triangle/aas 30 60 40 "outline" "green")
+
+"Trying SAA triangle (100 30 90)"
+(triangle/saa 100 30 90 "solid" "red")
+
+"Trying SSA triangle (60 60 40)"
+(triangle/ass 60 60 40 "outline" "turquoise")
+
+"Trying ASS triangle (60 80 90)"
+(triangle/ass 60 80 90 "solid" "maroon")
+
+"Trying SSS triangle (60 60 60)"
+(triangle/sss 60 60 60 "outline" "red")
+   
+"Trying SAS triangle (60 30 60)"
+(triangle/sas 60 30 60 "solid" "brown")
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; STAR, RADIAL-STAR & STAR-POLYGON
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

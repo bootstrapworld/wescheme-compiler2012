@@ -251,15 +251,16 @@
                                  (module-binding-bindings world-effects-module)
                                  (map bf '(key=?
 					   
-					   big-bang                          
+					   big-bang
+                                       
 					   make-color
 					   color-red
 					   color-green
 					   color-blue
-             color-alpha
+                                           color-alpha
 					   empty-scene
 					   scene+line
-             put-image
+                                           put-image
 					   place-image
 					   place-image/align
 					   put-pinhole
@@ -273,15 +274,15 @@
 					   rhombus
 					   square
 					   triangle
-					   right-triangle
-					   isosceles-triangle
-					   triangle/sas
+             triangle/sas
              triangle/sss
              triangle/ass
              triangle/ssa
              triangle/aas
              triangle/asa
              triangle/saa
+					   right-triangle
+					   isosceles-triangle
 					   ellipse
 					   line
 					   add-line
