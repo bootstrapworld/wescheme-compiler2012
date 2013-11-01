@@ -4957,9 +4957,9 @@ PRIMITIVES['triangle/ssa'] =
       5,
       false, false,
       function(aState, base, sideB, angleA, style, color) {
-         check(aState, base, isNonNegativeReal, "triangle/ssa", 2, arguments);
-         check(aState, sideB, isNonNegativeReal, "triangle/ssa", 3, arguments);
-         check(aState, angleA, isAngle, "triangle/ssa", 1, arguments);
+         check(aState, base, isNonNegativeReal, "triangle/ssa", 1, arguments);
+         check(aState, sideB, isNonNegativeReal, "triangle/ssa", 2, arguments);
+         check(aState, angleA, isAngle, "triangle/ssa", 3, arguments);
          check(aState, style, isMode, "triangle/ssa", 4, arguments);
          check(aState, color, isColor, "triangle/ssa", 5, arguments);
          if (colorDb.get(color)) { color = colorDb.get(color); }
@@ -4977,9 +4977,9 @@ PRIMITIVES['triangle/aas'] =
         5,
         false, false,
         function(aState, angleA, angleB, base, style, color) {
-         check(aState, angleA, isAngle, "triangle/aas", 2, arguments);
-         check(aState, angleB, isAngle, "triangle/aas", 3, arguments);
-         check(aState, base, isNonNegativeReal, "triangle/aas", 1, arguments);
+         check(aState, angleA, isAngle, "triangle/aas", 1, arguments);
+         check(aState, angleB, isAngle, "triangle/aas", 2, arguments);
+         check(aState, base, isNonNegativeReal, "triangle/aas", 3, arguments);
          check(aState, style, isMode, "triangle/aas", 4, arguments);
          check(aState, color, isColor, "triangle/aas", 5, arguments);
         if (colorDb.get(color)) { color = colorDb.get(color); }
@@ -4997,9 +4997,9 @@ PRIMITIVES['triangle/asa'] =
           5,
           false, false,
           function(aState, angleA, sideC, angleB, style, color) {
-            check(aState, angleA, isAngle, "triangle/aas", 2, arguments);
-            check(aState, sideC, isNonNegativeReal, "triangle/aas", 3, arguments);
-            check(aState, angleB, isAngle, "triangle/aas", 1, arguments);
+            check(aState, angleA, isAngle, "triangle/aas", 1, arguments);
+            check(aState, sideC, isNonNegativeReal, "triangle/aas", 2, arguments);
+            check(aState, angleB, isAngle, "triangle/aas", 3, arguments);
             check(aState, style, isMode, "triangle/aas", 4, arguments);
             check(aState, color, isColor, "triangle/aas", 5, arguments);
             if (colorDb.get(color)) { color = colorDb.get(color); }
@@ -5018,9 +5018,9 @@ PRIMITIVES['triangle/saa'] =
             5,
             false, false,
             function(aState, base, angleC, angleA, style, color) {
-             check(aState, base, isNonNegativeReal, "triangle/aas", 2, arguments);
-             check(aState, angleC, isAngle, "triangle/aas", 3, arguments);
-             check(aState, angleA, isAngle, "triangle/aas", 1, arguments);
+             check(aState, base, isNonNegativeReal, "triangle/aas", 1, arguments);
+             check(aState, angleC, isAngle, "triangle/aas", 2, arguments);
+             check(aState, angleA, isAngle, "triangle/aas", 3, arguments);
              check(aState, style, isMode, "triangle/aas", 4, arguments);
              check(aState, color, isColor, "triangle/aas", 5, arguments);
              if (colorDb.get(color)) { color = colorDb.get(color); }
