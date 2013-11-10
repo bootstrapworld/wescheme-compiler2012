@@ -1137,23 +1137,28 @@ if (typeof(world) === 'undefined') {
      var TriangleImage = function(sideC, angleA, sideB, style, color) {
        BaseImage.call(this);
        this.width = sideC;
-       this.height = Math.sqrt(Math.pow(sideB,2) - Math.pow(0.5*sideC,2));
+       this.height = sideB*Math.sin(angleA*Math.PI/180);
        
-       var vertices = [];
+       var xs = [], ys = [];
        // if angle < 180 start at the top of the canvas, otherwise start at the bottom
        if(angleA < 180){
-         vertices.push({x: 0, y: 0});
-         vertices.push({x: sideC, y: 0});
-         vertices.push({x: sideB*Math.cos(angleA*Math.PI/180),
-                        y: this.height});
+         xs = [0, sideC, sideB*Math.cos(angleA*Math.PI/180)];
+         ys = [0, 0, this.height];
        } else {
-         vertices.push({x: 0, y: this.height - 0});
-         vertices.push({x: sideC, y: this.height - 0});
-         vertices.push({x: Math.abs(sideB*Math.cos(angleA*Math.PI/180)),
-                        y: 0});
+         xs = [0, sideC, Math.abs(sideB*Math.cos(angleA*Math.PI/180))];
+         ys = [this.height, this.height, 0];
        }
-       this.vertices = vertices;
-       
+       this.vertices = zipVertices(xs, ys);
+ 
+       // take obtuse triangles into account, which may have vertices out of the range of base
+       var xMin = Math.min.apply(Math, xs ), yMin = Math.min.apply(Math, ys),
+           xMax = Math.max.apply(Math, xs ), yMax = Math.max.apply(Math, ys);
+       this.width  = xMax-xMin;
+       this.height = yMax-yMin;
+       for(var i=0; i<this.vertices.length; i++){
+         this.vertices[i].x -= xMin; this.vertices[i].y -= yMin;
+       }
+ 
        this.style = style;
        this.color = color;
      };

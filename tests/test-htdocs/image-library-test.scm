@@ -2,28 +2,6 @@
 
 ;; "Checking Empty scene"
 ;; (empty-scene 40 50 "red")
-
-"Trying SAA triangle (100 30 90)"
-(triangle/saa 100 30 90 "solid" "red")
-
-"Trying ASA triangle (30 40 60)"
-(triangle/asa 30 40 60 "solid" "blue")
-
-"Trying AAS triangle (30 60 40)"
-(triangle/aas 30 60 40 "outline" "green")
-
-"Trying SSA triangle (60 60 40)"
-(triangle/ass 60 60 40 "outline" "turquoise")
-
-"Trying ASS triangle (60 80 90)"
-(triangle/ass 60 80 90 "solid" "maroon")
-
-"Trying SSS triangle (60 60 60)"
-(triangle/sss 60 60 60 "outline" "red")
-   
-"Trying SAS triangle (60 30 60)"
-(triangle/sas 60 30 60 "solid" "brown")
-
 "These three circles (red, green, blue) should be left aligned"
 (above/align "left"
              (circle 30 "solid" "red")
@@ -151,14 +129,14 @@
 ;; IMAGE-URL & VIDEO-URL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 "importing images and video"
-(image-url "logo.png")
-(open-image-url "logo.png")
+(image-url "http://www.bootstrapworld.org/images/icon.png")
+(open-image-url "http://www.bootstrapworld.org/images/icon.png")
 
-;(video-url "http://www.youtube.com/demo/google_main.mp4")
+;(video-url "http://www.quirksmode.org/html5/videos/big_buck_bunny.mp4")
 ;(overlay (circle 20 "solid" "red")
-;  (video-url "http://www.youtube.com/demo/google_main.mp4"))
+;  (video-url "http://www.quirksmode.org/html5/videos/big_buck_bunny.mp4"))
 ;(rotate 45
-;  (video-url "http://www.youtube.com/demo/google_main.mp4"))
+;  (video-url "http://www.quirksmode.org/html5/videos/big_buck_bunny.mp4"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; OVERLAY

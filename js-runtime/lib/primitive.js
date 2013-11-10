@@ -4901,15 +4901,19 @@ PRIMITIVES['triangle/sas'] =
     new PrimProc('triangle/sas',
       5,
       false, false,
-      function(aState, base, angleC, sideB, style, color) {
-       check(aState, base, isNonNegativeReal, "triangle/sas", 1, arguments);
-       check(aState, angleC, isAngle, "triangle/sas", 2, arguments);
-       check(aState, sideB, isNonNegativeReal, "triangle/sas", 3, arguments);
-       check(aState, style, isMode, "triangle/sas", 4, arguments);
-       check(aState, color, isColor, "triangle/sas", 5, arguments);
+      function(aState, sideA, angleB, sideC, style, color) {
+       check(aState, sideA, isNonNegativeReal, "triangle/sas", "non-negative number", 1, arguments);
+       check(aState, angleB, isAngle, "triangle/sas", "finite real number between 0 and 360", 2, arguments);
+       check(aState, sideC, isNonNegativeReal, "triangle/sas", "non-negative number", 3, arguments);
+       check(aState, style, isMode, "triangle/sas", 'style ("solid" or "outline" or [0-255])', 4, arguments);
+       check(aState, color, isColor, "triangle/sas", "color", 5, arguments);
        if (colorDb.get(color)) { color = colorDb.get(color); }
-       return world.Kernel.triangleImage(jsnums.toFixnum(base),
-                                         jsnums.toFixnum(angleC),
+       // law of cosines: s2 = sqrt( s1^2+s3^2 - 2*s1*s3*cos(a2) )
+       var sideB = Math.sqrt( (sideA*sideA + sideC*sideC) - 2*sideA*sideC*Math.cos(angleB*Math.PI/180) );
+       // law of sines: sin(a1)/s1 = sin(a2)/s2
+       var angleA = Math.asin(sideA*Math.sin(angleB*Math.PI/180)/sideB)*180/Math.PI;
+       return world.Kernel.triangleImage(jsnums.toFixnum(sideC),
+                                         jsnums.toFixnum(angleA),
                                          jsnums.toFixnum(sideB),
                                          style.toString(),
                                          color);
@@ -4919,16 +4923,17 @@ PRIMITIVES['triangle/sss'] =
     new PrimProc('triangle/sss',
       5,
       false, false,
-      function(aState, base, sideB, sideC, style, color) {
-        check(aState, base, isNonNegativeReal, "triangle/sss", 1, arguments);
-        check(aState, sideB, isNonNegativeReal, "triangle/sss", 2, arguments);
-        check(aState, sideC, isNonNegativeReal, "triangle/sss", 3, arguments);
-        check(aState, style, isMode, "triangle/sss", 4, arguments);
-        check(aState, color, isColor, "triangle/sss", 5, arguments);
+      function(aState, sideA, sideB, sideC, style, color) {
+        check(aState, sideA, isNonNegativeReal, "triangle/sss", "non-negative number", 1, arguments);
+        check(aState, sideB, isNonNegativeReal, "triangle/sss", "non-negative number", 2, arguments);
+        check(aState, sideC, isNonNegativeReal, "triangle/sss", "non-negative number", 3, arguments);
+        check(aState, style, isMode, "triangle/sss", 'style ("solid" or "outline" or [0-255])', 4, arguments);
+        check(aState, color, isColor, "triangle/sss", "color", 5, arguments);
         if (colorDb.get(color)) { color = colorDb.get(color); }
-        var angleC = (Math.acos((base*base + sideB*sideB - sideC*sideC) / (2*base*sideB)))*180/Math.PI;
-        return world.Kernel.triangleImage(jsnums.toFixnum(base),
-                                         jsnums.toFixnum(angleC),
+        // law of cosines: cos A = (b^2 + c^2 - a^2)/2bc
+        var angleA = (Math.acos(((sideB*sideB + sideC*sideC) - sideA*sideA) / (2*sideB*sideC)))*180/Math.PI;
+        return world.Kernel.triangleImage(jsnums.toFixnum(sideC),
+                                         jsnums.toFixnum(angleA),
                                          jsnums.toFixnum(sideB),
                                          style.toString(),
                                          color);
@@ -4938,15 +4943,15 @@ PRIMITIVES['triangle/ass'] =
     new PrimProc('triangle/ass',
       5,
       false, false,
-      function(aState, angle, base, sideB, style, color) {
-       check(aState, angle, isAngle, "triangle/ass", 1, arguments);
-       check(aState, base, isNonNegativeReal, "triangle/ass", 2, arguments);
-       check(aState, sideB, isNonNegativeReal, "triangle/ass", 3, arguments);
-       check(aState, style, isMode, "triangle/ass", 4, arguments);
-       check(aState, color, isColor, "triangle/ass", 5, arguments);
+      function(aState, angleA, sideB, sideC, style, color) {
+       check(aState, angleA, isAngle, "triangle/ass", "finite real number between 0 and 360", 1, arguments);
+       check(aState, sideB, isNonNegativeReal, "triangle/ass", "non-negative number", 2, arguments);
+       check(aState, sideC, isNonNegativeReal, "triangle/ass", "non-negative number", 3, arguments);
+       check(aState, style, isMode, "triangle/ass", 'style ("solid" or "outline" or [0-255])', 4, arguments);
+       check(aState, color, isColor, "triangle/ass", "color", 5, arguments);
        if (colorDb.get(color)) { color = colorDb.get(color); }
-       return world.Kernel.triangleImage(jsnums.toFixnum(base),
-                                        jsnums.toFixnum(angle),
+       return world.Kernel.triangleImage(jsnums.toFixnum(sideC),
+                                        jsnums.toFixnum(angleA),
                                         jsnums.toFixnum(sideB),
                                         style.toString(),
                                         color);
@@ -4956,17 +4961,19 @@ PRIMITIVES['triangle/ssa'] =
     new PrimProc('triangle/ssa',
       5,
       false, false,
-      function(aState, base, sideB, angleA, style, color) {
-         check(aState, base, isNonNegativeReal, "triangle/ssa", 1, arguments);
-         check(aState, sideB, isNonNegativeReal, "triangle/ssa", 2, arguments);
-         check(aState, angleA, isAngle, "triangle/ssa", 3, arguments);
-         check(aState, style, isMode, "triangle/ssa", 4, arguments);
-         check(aState, color, isColor, "triangle/ssa", 5, arguments);
+      function(aState, sideA, sideB, angleC, style, color) {
+         check(aState, sideA, isNonNegativeReal, "triangle/ssa", "non-negative number", 1, arguments);
+         check(aState, sideB, isNonNegativeReal, "triangle/ssa", "non-negative number", 2, arguments);
+         check(aState, angleC, isAngle, "triangle/ssa", "finite real number between 0 and 360", 3, arguments);
+         check(aState, style, isMode, "triangle/ssa", 'style ("solid" or "outline" or [0-255])', 4, arguments);
+         check(aState, color, isColor, "triangle/ssa", "color", 5, arguments);
          if (colorDb.get(color)) { color = colorDb.get(color); }
-         var angleB = Math.asin(Math.sin(angleA*Math.PI/180)*sideB/sideA)*180/Math.PI;
-         var angleC = (180 - angleA - angleB);
-         return world.Kernel.triangleImage(jsnums.toFixnum(base),
-                                          jsnums.toFixnum(angleC),
+         // law of cosines: s3 = sqrt( s1^2+s2^2 - 2*s1*s2*cos(a3) )
+         var sideC = Math.sqrt( sideA*sideA + sideB*sideB) - 2*sideA*sideB*Math.cos(angleC*Math.PI/180);
+         // law of sines: sin(a1)/s1 = sin(a3)/s3
+         var angleA = Math.asin(sideA*Math.sin(angleC*Math.PI/180)/sideC)*180/Math.PI;
+         return world.Kernel.triangleImage(jsnums.toFixnum(sideC),
+                                          jsnums.toFixnum(angleA),
                                           jsnums.toFixnum(sideB),
                                           style.toString(),
                                           color);
@@ -4976,17 +4983,18 @@ PRIMITIVES['triangle/aas'] =
       new PrimProc('triangle/aas',
         5,
         false, false,
-        function(aState, angleA, angleB, base, style, color) {
-         check(aState, angleA, isAngle, "triangle/aas", 1, arguments);
-         check(aState, angleB, isAngle, "triangle/aas", 2, arguments);
-         check(aState, base, isNonNegativeReal, "triangle/aas", 3, arguments);
-         check(aState, style, isMode, "triangle/aas", 4, arguments);
-         check(aState, color, isColor, "triangle/aas", 5, arguments);
+        function(aState, angleA, angleB, sideC, style, color) {
+         check(aState, angleA, isAngle, "triangle/aas", "finite real number between 0 and 360", 1, arguments);
+         check(aState, angleB, isAngle, "triangle/aas", "finite real number between 0 and 360", 2, arguments);
+         check(aState, sideC, isNonNegativeReal, "triangle/aas", "non-negative number", 3, arguments);
+         check(aState, style, isMode, "triangle/aas", 'style ("solid" or "outline" or [0-255])', 4, arguments);
+         check(aState, color, isColor, "triangle/aas", "color", 5, arguments);
         if (colorDb.get(color)) { color = colorDb.get(color); }
         var angleC = (180 - angleA - angleB);
-        var sideB = (base * Math.sin(angleB*Math.PI/180)) / (Math.sin(angleC*Math.PI/180));
-        return world.Kernel.triangleImage(jsnums.toFixnum(base),
-                                         jsnums.toFixnum(angleC),
+         // law of sines: s2/sin(a2) = s3/sin(a3)
+        var sideB = Math.sin(angleA*Math.PI/180)*sideC/Math.sin(angleC*Math.PI/180);
+        return world.Kernel.triangleImage(jsnums.toFixnum(sideC),
+                                         jsnums.toFixnum(angleA),
                                          jsnums.toFixnum(sideB),
                                          style.toString(),
                                          color);
@@ -4996,18 +5004,18 @@ PRIMITIVES['triangle/asa'] =
        new PrimProc('triangle/asa',
           5,
           false, false,
-          function(aState, angleA, sideC, angleB, style, color) {
-            check(aState, angleA, isAngle, "triangle/aas", 1, arguments);
-            check(aState, sideC, isNonNegativeReal, "triangle/aas", 2, arguments);
-            check(aState, angleB, isAngle, "triangle/aas", 3, arguments);
-            check(aState, style, isMode, "triangle/aas", 4, arguments);
-            check(aState, color, isColor, "triangle/aas", 5, arguments);
+          function(aState, angleA, sideB, angleC, style, color) {
+            check(aState, angleA, isAngle, "triangle/asa", "finite real number between 0 and 360", 1, arguments);
+            check(aState, sideB, isNonNegativeReal, "triangle/asa", "non-negative number", 2, arguments);
+            check(aState, angleC, isAngle, "triangle/asa", "finite real number between 0 and 360", 3, arguments);
+            check(aState, style, isMode, "triangle/asa", 'style ("solid" or "outline" or [0-255])', 4, arguments);
+            check(aState, color, isColor, "triangle/asa", "color", 5, arguments);
             if (colorDb.get(color)) { color = colorDb.get(color); }
-            var angleC = (180 - angleA - angleB);
-            var base = (sideC * Math.sin(angleA*Math.PI/180)) / (Math.sin(angleC*Math.PI/180));
-            var sideB = (sideC * Math.sin(angleB*Math.PI/180)) / (Math.sin(angleC*Math.PI/180));
-            return world.Kernel.triangleImage(jsnums.toFixnum(base),
-                                             jsnums.toFixnum(angleC),
+            var angleB = (180 - angleA - angleC);
+            // law of sines: s3/sin(a3) = s2/sin(a2)
+            var sideC = sideB * Math.sin(angleC*Math.PI/180)/Math.sin(angleB*Math.PI/180);
+            return world.Kernel.triangleImage(jsnums.toFixnum(sideC),
+                                             jsnums.toFixnum(angleA),
                                              jsnums.toFixnum(sideB),
                                              style.toString(),
                                              color);
@@ -5017,17 +5025,20 @@ PRIMITIVES['triangle/saa'] =
         new PrimProc('triangle/saa',
             5,
             false, false,
-            function(aState, base, angleC, angleA, style, color) {
-             check(aState, base, isNonNegativeReal, "triangle/aas", 1, arguments);
-             check(aState, angleC, isAngle, "triangle/aas", 2, arguments);
-             check(aState, angleA, isAngle, "triangle/aas", 3, arguments);
-             check(aState, style, isMode, "triangle/aas", 4, arguments);
-             check(aState, color, isColor, "triangle/aas", 5, arguments);
+            function(aState, sideA, angleB, angleC, style, color) {
+             check(aState, sideA, isNonNegativeReal, "triangle/saa", "non-negative number", 1, arguments);
+             check(aState, angleB, isAngle, "triangle/saa", "finite real number between 0 and 360", 2, arguments);
+             check(aState, angleC, isAngle, "triangle/saa", "finite real number between 0 and 360", 3, arguments);
+             check(aState, style, isMode, "triangle/saa", 'style ("solid" or "outline" or [0-255])', 4, arguments);
+             check(aState, color, isColor, "triangle/saa", "color", 5, arguments);
              if (colorDb.get(color)) { color = colorDb.get(color); }
-             var angleB = (180 - angleA - angleC);
-             var sideB = (base * Math.sin(angleB*Math.PI/180)) / (Math.sin(angleA*Math.PI/180));
-             return world.Kernel.triangleImage(jsnums.toFixnum(base),
-                                               jsnums.toFixnum(angleC),
+             var angleA = (180 - angleB - angleC);
+             // law of sines: s3/sin(a3) = s1/sin(a1)
+             var sideC = Math.sin(angleC*Math.PI/180)*sideA/Math.sin(angleA*Math.PI/180);
+             // law of sines: s2/sin(a2) = s1/sin(a1)
+             var sideB = Math.sin(angleB*Math.PI/180)*sideA/Math.sin(angleA*Math.PI/180);
+             return world.Kernel.triangleImage(jsnums.toFixnum(sideC),
+                                               jsnums.toFixnum(angleA),
                                                jsnums.toFixnum(sideB),
                                                style.toString(),
                                                color);
