@@ -45,6 +45,13 @@
 (define-runtime-path mime-types-path "mime.types")
 (define-runtime-path file-not-found-path "not-found.html")
 
+(struct prefab-request (bindings headers) #:prefab)
+
+(define (request->prefab-request req)
+  (prefab-request
+    (request-bindings req)
+    (request-headers req)))
+
 
 ;; make-port-response: (values response/incremental output-port)
 ;; Creates a response that's coupled to an output-port: whatever you
@@ -74,19 +81,19 @@
 ;; has-program-text?: request -> boolean
 ;; returns true if the request includes program text.
 (define (has-program-text? request)
-  (exists-binding? 'program (request-bindings request)))
+  (exists-binding? 'program (prefab-request-bindings request)))
 
 ;; get-program-text: request -> string
 ;; Returns the textual content of the program.
 (define (get-program-text request)
-  (extract-binding/single 'program (request-bindings request)))
+  (extract-binding/single 'program (prefab-request-bindings request)))
 
 
 
 ;; request-accepts-gzip-encoding?: request -> boolean
 ;; Returns true if we can send a respond with gzip encoding.
 (define (request-accepts-gzip-encoding? request)
-  (define elts (assq 'accept-encoding (request-headers request)))
+  (define elts (assq 'accept-encoding (prefab-request-headers request)))
   (and elts (member "gzip" (regexp-split #px"," (cdr elts))) #t))
   
 
@@ -109,7 +116,8 @@
 
 
 ;; Web service consuming programs and producing bytecode.
-(define (start request)
+(define (start request*)
+  (define request (request->prefab-request request*))
   (with-handlers ([void 
                    (lambda (exn-or-moby-error)
                      (define the-exn (if (exn? exn-or-moby-error)
@@ -131,7 +139,7 @@
 
     (let*-values ([(program-name)
                    (string->symbol
-                    (extract-binding/single 'name (request-bindings request)))]
+                    (extract-binding/single 'name (prefab-request-bindings request)))]
                   [(program-text) 
                    (get-program-text request)]
                   [(program-input-port) (open-input-string program-text)])
@@ -152,7 +160,7 @@
 ;; jsonp-request?: request -> boolean
 ;; Does the request look like a jsonp request?
 (define (jsonp-request? request)
-  (exists-binding? 'callback (request-bindings request)))
+  (exists-binding? 'callback (prefab-request-bindings request)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -168,7 +176,7 @@
                                #:name program-name
                                #:runtime-version THIS-RUNTIME-VERSION)])
       (fprintf output-port "~a(~a);" 
-               (extract-binding/single 'callback (request-bindings request))
+               (extract-binding/single 'callback (prefab-request-bindings request))
                (format-output (get-output-bytes compiled-program-port)
                               pinfo
                               request))
@@ -203,7 +211,7 @@
 ;; json output is allowed to generate the bytecode, permissions, and
 ;; provides.
 (define (wants-json-output? req)
-  (let ([bindings (request-bindings req)])
+  (let ([bindings (prefab-request-bindings req)])
     (and (exists-binding? 'format bindings)
          (string=? (extract-binding/single 'format bindings)
                    "json"))))
@@ -232,7 +240,7 @@
      (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
                                                               #:with-gzip? (request-accepts-gzip-encoding? request))])
        (let ([payload
-              (format "~a(~a);\n" (extract-binding/single 'on-error (request-bindings request))
+              (format "~a(~a);\n" (extract-binding/single 'on-error (prefab-request-bindings request))
                       (sexp->js (exn-message exn)))])
          (fprintf output-port "~a" payload)
          (close-output-port output-port)
@@ -241,7 +249,7 @@
      (let-values ([(response output-port) (make-port-response #:mime-type #"text/javascript"
                                                               #:with-gzip? (request-accepts-gzip-encoding? request))])
        (let ([payload
-              (format "~a(~a);\n" (extract-binding/single 'on-error (request-bindings request))
+              (format "~a(~a);\n" (extract-binding/single 'on-error (prefab-request-bindings request))
                       (jsexpr->json (exn->json-structured-output request exn)))])
          (fprintf output-port "~a" payload)
          (close-output-port output-port)
@@ -402,8 +410,8 @@
 ;; 1: support for structured error messages.
 (define (compiler-version request)
   (cond
-    [(exists-binding? 'compiler-version (request-bindings request))
-     (string->number (extract-binding/single 'compiler-version (request-bindings request)))]
+    [(exists-binding? 'compiler-version (prefab-request-bindings request))
+     (string->number (extract-binding/single 'compiler-version (prefab-request-bindings request)))]
     [else
      0]))
 
