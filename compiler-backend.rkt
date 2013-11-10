@@ -23,6 +23,8 @@
          "src/collects/moby/runtime/error-struct-to-dom.ss"
          "src/collects/moby/runtime/stx.ss"
          "src/collects/moby/runtime/dom-helpers.ss"
+         "src/compiler/mzscheme-vm/collections-module-resolver.ss"
+         "src/compiler/pinfo.ss"
          "js-runtime/src/sexp.ss")
 
 
@@ -30,13 +32,34 @@
 (provide
   request->prefab-request
   handle-request
-  set-compiler-service-base-pinfo!)
+  set-extra-module-providers!)
 
 (struct prefab-request (bindings headers) #:prefab)
 
+
+;; We hold onto an anchor to this module's namespace, since extra-module-providers
+;; needs it.
+(define-namespace-anchor anchor)
+
+
+(define (extra-module-providers-list->module-provider mp-list)
+  (define dynamic-module-providers
+    (parameterize ([current-namespace (namespace-anchor->namespace anchor)])
+      (for/list ([mp mp-list])
+        (dynamic-require mp 'module-provider))))
+  (define (the-module-provider name)
+    (for/or ([provider dynamic-module-providers])
+      (provider name)))
+  the-module-provider)
+
+
 (define compiler-service-base-pinfo #f)
-(define (set-compiler-service-base-pinfo! v)
-  (set! compiler-service-base-pinfo v))
+(define (set-extra-module-providers! mp-list)
+  (set! compiler-service-base-pinfo
+    (pinfo-update-module-resolver default-base-pinfo
+                                  (extend-module-resolver-with-module-provider
+                                   (pinfo-module-resolver default-base-pinfo)
+                                   (extra-module-providers-list->module-provider mp-list)))))
 
 
 ;; make-port-response: (values response/incremental output-port)

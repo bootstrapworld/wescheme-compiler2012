@@ -15,11 +15,7 @@
          (prefix-in fsmap: web-server/dispatchers/filesystem-map)        
          
          "compiler-backend.rkt"
-         "find-paren-loc.rkt"
-         "src/compiler/mzscheme-vm/collections-module-resolver.ss"
-         "src/compiler/mzscheme-vm/write-support.ss"
-         "src/compiler/mzscheme-vm/compile.ss"
-         "src/compiler/pinfo.ss")
+         "src/compiler/mzscheme-vm/write-support.ss")
 
 (define-runtime-path htdocs "servlet-htdocs")
 (define-runtime-path compat 
@@ -88,24 +84,6 @@
 
 (define extra-module-providers (make-parameter '()))
 
-
-;; We hold onto an anchor to this module's namespace, since extra-module-providers
-;; needs it.
-(define-namespace-anchor anchor)
-
-
-(define (extra-module-providers-list->module-provider)
-  (define dynamic-module-providers
-    (parameterize ([current-namespace (namespace-anchor->namespace anchor)])
-      (for/list ([mp (extra-module-providers)])
-        (dynamic-require mp 'module-provider))))
-  (define (the-module-provider name)
-    (for/or ([provider dynamic-module-providers])
-      (provider name)))
-  the-module-provider)
-
-
-
 (define port 8000)
 (void (command-line #:program "servlet"
                     #:once-each
@@ -118,16 +96,8 @@
                       (cons (relate-to-current-directory mp)
                             (extra-module-providers)))]))
 
-(define the-external-module-provider 
-  (extra-module-providers-list->module-provider))
-
-
 ;; The initial state of the compiler is this one:
-(set-compiler-service-base-pinfo!
-  (pinfo-update-module-resolver default-base-pinfo
-                                (extend-module-resolver-with-module-provider
-                                 (pinfo-module-resolver default-base-pinfo)
-                                 the-external-module-provider)))
+(set-extra-module-providers! (extra-module-providers))
 
 (void
  (serve #:dispatch
