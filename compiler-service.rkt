@@ -102,7 +102,8 @@
 (set-extra-module-providers! (extra-module-providers))
 
 (define-values (root-channel worker-channel) (place-channel))
-(for ((i 1))
+(define num-workers (processor-count))
+(for ((i num-workers))
   (place-worker worker-channel (extra-module-providers)))
 
 
