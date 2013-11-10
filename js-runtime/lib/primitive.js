@@ -5525,7 +5525,6 @@ PRIMITIVES['image-url'] =
 
 PRIMITIVES['open-image-url'] = PRIMITIVES['image-url'];
 
-PRIMITIVES['video/url'] =
 PRIMITIVES['video-url'] =
 new PrimProc('video-url',
 			 1,
@@ -5536,7 +5535,7 @@ new PrimProc('video-url',
 										var rawVideo = document.createElement('video');
 										rawVideo.src = path.toString();
 										rawVideo.addEventListener('canplay', function() {
-										restarter(world.Kernel.videoImage(path.toString(), rawVideo));
+										restarter(world.Kernel.fileVideo(path.toString(), rawVideo));
 										});
 										rawVideo.addEventListener('error', function(e) {
 										restarter(types.schemeError(types.incompleteExn(
@@ -5547,7 +5546,7 @@ new PrimProc('video-url',
 										rawVideo.src = path.toString();
 										});
 			 });
-
+PRIMITIVES['video/url'] = PRIMITIVES['video-url'];
 
 PRIMITIVES['image-width'] =
     new PrimProc('image-width',
