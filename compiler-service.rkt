@@ -3,22 +3,23 @@
 
 (require racket/runtime-path
          racket/cmdline
+         racket/place
          web-server/web-server
          web-server/http/response-structs
          web-server/private/mime-types
          web-server/configuration/responders
-         
+
          (prefix-in sequencer: web-server/dispatchers/dispatch-sequencer)
          (prefix-in filter: web-server/dispatchers/dispatch-filter)
          (prefix-in lift: web-server/dispatchers/dispatch-lift)
          (prefix-in files: web-server/dispatchers/dispatch-files)
-         (prefix-in fsmap: web-server/dispatchers/filesystem-map)        
-         
+         (prefix-in fsmap: web-server/dispatchers/filesystem-map)
+
          "compiler-backend.rkt"
          "src/compiler/mzscheme-vm/write-support.ss")
 
 (define-runtime-path htdocs "servlet-htdocs")
-(define-runtime-path compat 
+(define-runtime-path compat
   "js-runtime/lib/compat")
 (define-runtime-path easyxdm "support/easyXDM")
 
@@ -26,7 +27,7 @@
 (define-runtime-path file-not-found-path "not-found.html")
 
 
-  
+
 
 ;; For testing.
 ;; Raises 503 half of the time, to make sure the evaluator
@@ -48,7 +49,9 @@
 
 ;; Web service consuming programs and producing bytecode.
 (define (start request*)
-  (handle-request (request->prefab-request request*)))
+  (define-values(send-pc recv-pc) (place-channel))
+  (place-channel-put root-channel (list (request->prefab-request request*) send-pc))
+  (sync recv-pc))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helpers
@@ -89,15 +92,19 @@
                     #:once-each
                     [("-p" "--port") p "Port (default 8000)" (set! port (string->number p))]
                     #:multi
-                    [("--extra-module-provider") 
+                    [("--extra-module-provider")
                      mp
                      "The path of a module, relative to current-directory, that provides an additional 'module-provider"
-                     (extra-module-providers 
+                     (extra-module-providers
                       (cons (relate-to-current-directory mp)
                             (extra-module-providers)))]))
 
-;; The initial state of the compiler is this one:
 (set-extra-module-providers! (extra-module-providers))
+
+(define-values (root-channel worker-channel) (place-channel))
+(for ((i 1))
+  (place-worker worker-channel (extra-module-providers)))
+
 
 (void
  (serve #:dispatch

@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require 
+(require racket/place
          racket/match
          racket/list
          file/gzip
@@ -32,6 +32,7 @@
 (provide
   request->prefab-request
   handle-request
+  place-worker
   set-extra-module-providers!)
 
 (struct prefab-request (bindings headers) #:prefab)
@@ -51,6 +52,22 @@
     (for/or ([provider dynamic-module-providers])
       (provider name)))
   the-module-provider)
+
+
+(define (place-worker pc mp-list)
+  (define worker
+    (place init-channel
+      (define pc (sync init-channel))
+      (set-extra-module-providers! (sync init-channel))
+      (let loop ()
+        (match-define (list req return-pc) (sync pc))
+        (unless (prefab-request? req)
+          (error 'place-worker "Unknown message"))
+        (place-channel-put return-pc (handle-request req))
+        (loop))))
+  (place-channel-put worker pc)
+  (place-channel-put worker mp-list)
+  (void))
 
 
 (define compiler-service-base-pinfo #f)
