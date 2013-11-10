@@ -31,11 +31,48 @@
 
 (provide
   request->prefab-request
+  prefab-response->response
   handle-request
   place-worker
   set-extra-module-providers!)
 
 (struct prefab-request (bindings headers) #:prefab)
+;; Output is a string
+(struct prefab-response (code message seconds mime headers output) #:prefab)
+(struct prefab-header (field value) #:prefab)
+
+(define (request->prefab-request req)
+  (prefab-request
+    (request-bindings req)
+    (request-headers req)))
+
+(define (response->prefab-response resp)
+  (define bytes (open-output-bytes))
+  (match resp
+    [(response code message seconds mime headers output-fun)
+     (output-fun bytes)
+     (prefab-response code message seconds mime
+                      (map header->prefab-header headers)
+                      (get-output-bytes bytes))]))
+
+(define (prefab-response->response resp)
+  (match resp
+    [(prefab-response code message seconds mime headers output)
+     (response code message seconds mime
+               (map prefab-header->header headers)
+               (lambda (op) (write-bytes output op)))]))
+
+(define (header->prefab-header head)
+  (match head
+    [(header field value)
+     (prefab-header field value)]))
+
+(define (prefab-header->header head)
+  (match head
+    [(prefab-header field value)
+     (header field value)]))
+
+
 
 
 ;; We hold onto an anchor to this module's namespace, since extra-module-providers
@@ -63,7 +100,8 @@
         (match-define (list req return-pc) (sync pc))
         (unless (prefab-request? req)
           (error 'place-worker "Unknown message"))
-        (place-channel-put return-pc (handle-request req))
+        (define response (handle-request req))
+        (place-channel-put return-pc (response->prefab-response response))
         (loop))))
   (place-channel-put worker pc)
   (place-channel-put worker mp-list)
@@ -122,10 +160,6 @@
   (and elts (member "gzip" (regexp-split #px"," (cdr elts))) #t))
 
 
-(define (request->prefab-request req)
-  (prefab-request
-    (request-bindings req)
-    (request-headers req)))
 
 (define (handle-request request)
   (with-handlers ([void 

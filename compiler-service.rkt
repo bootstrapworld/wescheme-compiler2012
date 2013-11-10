@@ -51,7 +51,7 @@
 (define (start request*)
   (define-values(send-pc recv-pc) (place-channel))
   (place-channel-put root-channel (list (request->prefab-request request*) send-pc))
-  (sync recv-pc))
+  (prefab-response->response (sync recv-pc)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Helpers
