@@ -1,17 +1,17 @@
 // Scheme numbers.
 
 
-// var __PLTNUMBERS_TOP__;
-// if (typeof(exports) !== 'undefined') {
-//     __PLTNUMBERS_TOP__ = exports;
-// } else {
-//     if (! this['jsnums']) {
-//  	this['jsnums'] = {};
-//     }
-//     __PLTNUMBERS_TOP__  = this['jsnums'];
-// }
+var __PLTNUMBERS_TOP__;
+if (typeof(exports) !== 'undefined') {
+    __PLTNUMBERS_TOP__ = exports;
+} else {
+    if (! this['jsnums']) {
+ 	this['jsnums'] = {};
+    }
+    __PLTNUMBERS_TOP__  = this['jsnums'];
+}
 
-var jsnums = {};
+//var jsnums = {};
 
 
 // The numeric tower has the following levels:
@@ -36,9 +36,10 @@ var jsnums = {};
 
 
 (function() {
+    'use strict';
     // Abbreviation
-//     var Numbers = __PLTNUMBERS_TOP__;
-    var Numbers = jsnums;
+    var Numbers = __PLTNUMBERS_TOP__;
+    //var Numbers = jsnums;
 
 
     // makeNumericBinop: (fixnum fixnum -> any) (scheme-number scheme-number -> any) -> (scheme-number scheme-number) X
@@ -78,14 +79,48 @@ var jsnums = {};
 	}
 	var nf = Math.floor(x);
 	if (nf === x) {
-	    if (isOverflow(nf)) {
-		return makeBignum(x);
-	    } else {
+            if (isOverflow(nf)) {
+		return makeBignum(expandExponent(x+''));
+            } else {
 		return nf;
 	    }
 	} else {
-	    return FloatPoint.makeInstance(x);
+            return FloatPoint.makeInstance(x);
 	}
+    };
+
+    var expandExponent = function(s) {
+	var match = s.match(scientificPattern), mantissaChunks, exponent;
+	if (match) {
+	    mantissaChunks = match[1].match(/^([^.]*)(.*)$/);
+	    exponent = Number(match[2]);
+
+	    if (mantissaChunks[2].length === 0) {
+		return mantissaChunks[1] + zfill(exponent);
+	    }
+
+	    if (exponent >= mantissaChunks[2].length - 1) {
+		return (mantissaChunks[1] + 
+			mantissaChunks[2].substring(1) + 
+			zfill(exponent - (mantissaChunks[2].length - 1)));
+	    } else {
+		return (mantissaChunks[1] +
+			mantissaChunks[2].substring(1, 1+exponent));
+	    }
+	} else {
+	    return s;
+	}
+    };
+
+    // zfill: integer -> string
+    // builds a string of "0"'s of length n.
+    var zfill = function(n) {
+	var buffer = [];
+	buffer.length = n;
+	for (var i = 0; i < n; i++) {
+	    buffer[i] = '0';
+	}
+	return buffer.join('');
     };
     
 
@@ -206,7 +241,21 @@ var jsnums = {};
 
 
     // add: scheme-number scheme-number -> scheme-number
-    var add = makeNumericBinop(
+    var add = function(x, y) {
+        var sum;
+        if (typeof(x) === 'number' && typeof(y) === 'number') {
+            sum = x + y;
+            if (isOverflow(sum)) {
+		return (makeBignum(x)).add(makeBignum(y));
+            }
+        }
+        if (x instanceof FloatPoint && y instanceof FloatPoint) {
+            return x.add(y);
+        }
+        return addSlow(x, y);        
+    };
+
+    var addSlow = makeNumericBinop(
 	function(x, y) {
 	    var sum = x + y;
 	    if (isOverflow(sum)) {
@@ -250,7 +299,22 @@ var jsnums = {};
 
 
     // mulitply: scheme-number scheme-number -> scheme-number
-    var multiply = makeNumericBinop(
+    var multiply = function(x, y) {
+        var prod;
+        if (typeof(x) === 'number' && typeof(y) === 'number') {
+	    prod = x * y;
+	    if (isOverflow(prod)) {
+		return (makeBignum(x)).multiply(makeBignum(y));
+            } else {
+                return prod;
+            }
+        }
+        if (x instanceof FloatPoint && y instanceof FloatPoint) {
+            return x.multiply(y);
+        }
+        return multiplySlow(x, y);
+    };
+    var multiplySlow = makeNumericBinop(
 	function(x, y) {
 	    var prod = x * y;
 	    if (isOverflow(prod)) {
@@ -304,38 +368,19 @@ var jsnums = {};
 	function(x, y) {
 	    return x.divide(y);
 	},
-	{ isYSpecialCase: function(y) { 
-	    return (eqv(y, INEXACT_ZERO) || eqv(y, NEGATIVE_ZERO))},
-	  onYSpecialCase: function(x, y) {
-	      var pos = (y !== NEGATIVE_ZERO);
-
-
-	      if (isReal(x)) {
-		  if (isExact(x)) {
-		      if (greaterThan(x, 0)) {
-			  return pos ? inf : neginf;
-		      } else if (lessThan(x, 0)) {
-			  return pos ? neginf : inf;
-		      } else {
-			  return 0;
-		      }
-		  } else {
-		      // both x and y are inexact
-		      if (isNaN(toFixnum(x))) {
-			  return NaN;
-		      } else if (greaterThan(x, 0)) {
-			  return pos ? inf : neginf;
-		      } else if (lessThan(x, 0)) {
-			  return pos ? neginf : inf;
-		      } else {
-			  return NaN;
-		      }
-		  }
-	      } else {
-		  if (x.level < y.level) x = x.liftTo(y);
-		  if (y.level < x.level) y = y.liftTo(x);
-		  return x.divide(y);
+	{ isXSpecialCase: function(x) {
+	    return (eqv(x, 0));
+	},
+	  onXSpecialCase: function(x, y) {
+	      if (eqv(y, 0)) {
+		  throwRuntimeError("/: division by zero", x, y);
 	      }
+	      return 0;
+	  },
+	  isYSpecialCase: function(y) { 
+	    return (eqv(y, 0)); },
+	  onYSpecialCase: function(x, y) {
+	      throwRuntimeError("/: division by zero", x, y);
 	  }
 	});
     
@@ -601,6 +646,7 @@ var jsnums = {};
 
     // tan: scheme-number -> scheme-number
     var tan = function(n) {
+	if (eqv(n, 0)) { return 0; }
 	if (typeof(n) === 'number') {
 	    return FloatPoint.makeInstance(Math.tan(n));
 	}
@@ -609,6 +655,7 @@ var jsnums = {};
 
     // atan: scheme-number -> scheme-number
     var atan = function(n) {
+	if (eqv(n, 0)) { return 0; }
 	if (typeof(n) === 'number') {
 	    return FloatPoint.makeInstance(Math.atan(n));
 	}
@@ -644,6 +691,7 @@ var jsnums = {};
 
     // asin: scheme-number -> scheme-number
     var asin = function(n) {
+        if (eqv(n, 0)) { return 0; }
 	if (typeof(n) === 'number') {
 	    return FloatPoint.makeInstance(Math.asin(n));
 	}
@@ -791,7 +839,7 @@ var jsnums = {};
     var makeComplexPolar = function(r, theta) {
 	// special case: if theta is zero, just return
 	// the scalar.
-	if (equals(theta, 0)) {
+	if (eqv(theta, 0)) {
 	    return r;
 	}
 	return Complex.makeInstance(multiply(r, cos(theta)),
@@ -1360,8 +1408,6 @@ var jsnums = {};
 	return this.d;
     };
 
-    // FIXME: up to this point I've modified Rational to use the _integer functions.
-    // I need to fix up the rest of Rational.
     Rational.prototype.greaterThan = function(other) {
 	return _integerGreaterThan(_integerMultiply(this.n, other.d),
 				   _integerMultiply(this.d, other.n));
@@ -1518,16 +1564,15 @@ var jsnums = {};
 	    var fl = Math.floor(v);
 	    var ce = Math.ceil(v);
 	    if (_integerIsZero(fl % 2)) {
-		return fromFixnum(fl);
+		return fl;
 	    }
 	    else {
-		return fromFixnum(ce);
+		return ce;
 	    }
 	} else {
-	    return fromFixnum(Math.round(this.n / this.d));
+	    return Math.round(this.n / this.d);
 	}
     };
-
 
 
     Rational.makeInstance = function(n, d) {
@@ -1574,7 +1619,7 @@ var jsnums = {};
 
     // Negative zero is a distinguished value representing -0.0.
     // There should only be one instance for -0.0.
-    var NEGATIVE_ZERO = new FloatPoint(0);
+    var NEGATIVE_ZERO = new FloatPoint(-0.0);
     var INEXACT_ZERO = new FloatPoint(0.0);
 
     FloatPoint.pi = new FloatPoint(Math.PI);
@@ -1590,6 +1635,12 @@ var jsnums = {};
 	    return FloatPoint.inf;
 	} else if (n === Number.NEGATIVE_INFINITY) {
 	    return FloatPoint.neginf;
+	} else if (n === 0) {
+	    if ((1/n) === -Infinity) {
+		return NEGATIVE_ZERO;
+	    } else {
+		return INEXACT_ZERO;
+	    }
 	}
 	return new FloatPoint(n);
     };
@@ -1703,9 +1754,6 @@ var jsnums = {};
 
     FloatPoint.prototype.add = function(other) {
 	if (this.isFinite() && other.isFinite()) {
-	    if (this === NEGATIVE_ZERO && other === NEGATIVE_ZERO) {
-		return NEGATIVE_ZERO;
-	    }
 	    return FloatPoint.makeInstance(this.n + other.n);
 	} else {
 	    if (isNaN(this.n) || isNaN(other.n)) {
@@ -1723,16 +1771,7 @@ var jsnums = {};
 
     FloatPoint.prototype.subtract = function(other) {
 	if (this.isFinite() && other.isFinite()) {
-	    var result = this.n - other.n;
-	    if (result === 0.0) {
-		if (other === NEGATIVE_ZERO) {
-		    return FloatPoint.makeInstance(result);
-		}
-		else if (this === NEGATIVE_ZERO) {
-		    return NEGATIVE_ZERO;
-		}
-	    }
-	    return FloatPoint.makeInstance(result);
+	    return FloatPoint.makeInstance(this.n - other.n);
 	} else if (isNaN(this.n) || isNaN(other.n)) {
 	    return NaN;
 	} else if (! this.isFinite() && ! other.isFinite()) {
@@ -1750,55 +1789,15 @@ var jsnums = {};
 
 
     FloatPoint.prototype.negate = function() {
-	if (this === NEGATIVE_ZERO) {
-	    return FloatPoint.makeInstance(0);
-	} else if (this.n === 0) {
-	    return NEGATIVE_ZERO;
-	}
 	return FloatPoint.makeInstance(-this.n);
     };
 
     FloatPoint.prototype.multiply = function(other) {
-	if (this.n === 0 || other.n === 0) { 
-	    if (this === NEGATIVE_ZERO && other === NEGATIVE_ZERO) {
-		return INEXACT_ZERO;
-	    } else if (this === NEGATIVE_ZERO || other === NEGATIVE_ZERO) {
-		return NEGATIVE_ZERO;
-	    }
-	    return INEXACT_ZERO;
-	}
-
-	if (this.isFinite() && other.isFinite()) {
-	    var product = this.n * other.n;
-	    if (product !== 0) {
-		return FloatPoint.makeInstance(product);
-	    }
-	    return sign(this) * sign(other) == 1 ?
-		FloatPoint.makeInstance(0) : NEGATIVE_ZERO;
-	} else if (isNaN(this.n) || isNaN(other.n)) {
-	    return NaN;
-	} else {
-	    return ((sign(this) * sign(other) === 1) ? inf : neginf);
-	}
+	return FloatPoint.makeInstance(this.n * other.n);
     };
 
     FloatPoint.prototype.divide = function(other) {
-	if (this.isFinite() && other.isFinite()) {
-	    if (other.n === 0) {
-		return throwRuntimeError("/: division by zero", this, other);
-	    }
-            return FloatPoint.makeInstance(this.n / other.n);
-	} else if (isNaN(this.n) || isNaN(other.n)) {
-	    return NaN;
-	} else if (! this.isFinite() && !other.isFinite()) {
-	    return NaN;
-	} else if (this.isFinite() && !other.isFinite()) {
-	    return FloatPoint.makeInstance(0.0);
-	} else if (! this.isFinite() && other.isFinite()) {
-	    return ((sign(this) * sign(other) === 1) ? inf : neginf);
-	} else {
-	    return throwRuntimeError("impossible", this, other);
-	}
+        return FloatPoint.makeInstance(this.n / other.n);
     };
 
 
@@ -1835,23 +1834,12 @@ var jsnums = {};
 
 
     FloatPoint.prototype.floor = function() {
-	if (! isFinite(this.n)) {
-	    return this;
-	} else if (this === NEGATIVE_ZERO) {
-	    return this;
-	} else {
-	    return FloatPoint.makeInstance(Math.floor(this.n));
-	}
+	return FloatPoint.makeInstance(Math.floor(this.n));
     };
 
     FloatPoint.prototype.ceiling = function() {
-	if (! isFinite(this.n)) {
-	    return this;
-	} else if (this === NEGATIVE_ZERO) {
-	    return this;
-	} return FloatPoint.makeInstance(Math.ceil(this.n));
+	return FloatPoint.makeInstance(Math.ceil(this.n));
     };
-
 
 
     FloatPoint.prototype.greaterThan = function(other) {
@@ -2009,8 +1997,6 @@ var jsnums = {};
     // either be plt.type.Rational or plt.type.FloatPoint.
     Complex.makeInstance = function(r, i){
 	if (i === undefined) { i = 0; }
-	if (typeof(r) === 'number') { r = fromFixnum(r); }
-	if (typeof(i) === 'number') { i = fromFixnum(i); }
 	if (isExact(i) && isInteger(i) && _integerIsZero(i)) {
 	    return r;
 	}
@@ -2400,26 +2386,89 @@ var jsnums = {};
 
 
 
-    var rationalRegexp = new RegExp("^([+-]?\\d+)/(\\d+)$");
-    var bignumScientificPattern = new RegExp("^([+-]?\\d*)\\.?(\\d*)[Ee](\\+?\\d+)$");
-    var complexRegexp = new RegExp("^([+-]?[\\d\\w/\\.]*)([+-])([\\d\\w/\\.]*)i$");
-    var flonumRegexp = new RegExp("^([+-]?\\d*)\\.?(\\d*)$");
-    var digitRegexp = new RegExp("\\d");
+    var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])?(.*)$")
+    function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
+    function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
+    function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
+    function flonumRegexp(digits) { return new RegExp("^([+-]?["+digits+"]*)\\.(["+digits+"]*)$"); }
+    function scientificPattern(digits, exp_mark)
+	{ return new RegExp("^([+-]?["+digits+"]*\\.?["+digits+"]*)["+exp_mark+"](\\+?["+digits+"]+)$"); }
+
+    function digitsForRadix(radix) {
+	return radix === 2  ? "01" :
+	       radix === 8  ? "0-7" :
+	       radix === 10 ? "0-9" :
+	       radix === 16 ? "0-9a-fA-F" :
+	       throwRuntimeError("digitsForRadix: invalid radix", this, radix)
+    }
+
+    function expMarkForRadix(radix) {
+	return (radix === 2 || radix === 8 || radix === 10) ? "defsl" :
+	       (radix === 16)                               ? "sl" :
+	       throwRuntimeError("expMarkForRadix: invalid radix", this, radix)
+    }
 
     // fromString: string -> (scheme-number | false)
     var fromString = function(x) {
-	var aMatch = x.match(rationalRegexp);
-	if (aMatch) {
-	    return Rational.makeInstance(fromString(aMatch[1]),
-					 fromString(aMatch[2]));
+	var radix = 10
+	// not used currently, because parsing exact non-decimal stirngs is
+	// unimplemented
+	var exactp = false
+
+	var hMatch = x.match(hashModifiersRegexp)
+	if (hMatch[1]) {
+	    var modifierString = hMatch[1];
+
+	    var exactFlag = modifierString.match(new RegExp("(#[ei])"))
+	    var radixFlag = modifierString.match(new RegExp("(#[bodx])"))
+
+	    if (exactFlag) {
+		var f = exactFlag[1].charAt(1)
+		exactp = f === 'e' ? true :
+			 f === 'i' ? false :
+			 throwRuntimeError("fromString: invalid exactness flag", this, r)
+	    }
+	    if (radixFlag) {
+		var f = radixFlag[1].charAt(1)
+		radix = f === 'b' ? 2 :
+			f === 'o' ? 8 :
+			f === 'd' ? 10 :
+			f === 'x' ? 16 :
+			throwRuntimeError("fromString: invalid radix flag", this, r)
+	    }
 	}
 
-	var cMatch = x.match(complexRegexp);
+	var numberString = hMatch ? hMatch[2] : x
+
+	return fromStringRaw(numberString, radix, exactp)
+    };
+
+    function fromStringRaw(x, radix, exactp) {
+	// exactp is currently unused
+	var cMatch = x.match(complexRegexp(digitsForRadix(radix)));
 	if (cMatch) {
-	    return Complex.makeInstance(fromString(cMatch[1] || "0"),
-					fromString(cMatch[2] + (cMatch[3] || "1")));
+	    return Complex.makeInstance(fromStringRawNoComplex( cMatch[1] || "0"
+							      , radix
+							      , exactp
+							      ),
+					fromStringRawNoComplex( cMatch[2] + (cMatch[3] || "1")
+							      , radix
+							      , exactp
+							      ));
 	}
 
+        return fromStringRawNoComplex(x, radix, exactp)
+    }
+
+    function fromStringRawNoComplex(x, radix, exactp) {
+	// exactp is currently unused
+	var aMatch = x.match(rationalRegexp(digitsForRadix(radix)));
+	if (aMatch) {
+	    return Rational.makeInstance(fromStringRawNoComplex(aMatch[1], radix, exactp),
+					 fromStringRawNoComplex(aMatch[2], radix, exactp));
+	}
+
+	// Floating point tests
 	if (x === '+nan.0' || x === '-nan.0')
 	    return FloatPoint.nan;
 	if (x === '+inf.0')
@@ -2429,21 +2478,43 @@ var jsnums = {};
 	if (x === "-0.0") {
 	    return NEGATIVE_ZERO;
 	}
-	if (x.match(digitRegexp) &&
-	    (x.match(flonumRegexp) || x.match(bignumScientificPattern))) {
-	    var n = Number(x);
+
+	var fMatch = x.match(flonumRegexp(digitsForRadix(radix)))
+	if (fMatch) {
+	    return parseFloat(fMatch[1], fMatch[2], radix)
+	}
+
+	var sMatch = x.match(scientificPattern( digitsForRadix(radix)
+					      , expMarkForRadix(radix)
+					      ))
+	if (sMatch) {
+	    var coefficient = fromStringRawNoComplex(sMatch[1], radix, exactp)
+	    var exponent = parseInt(sMatch[2], radix, exactp)
+	    return FloatPoint.makeInstance(coefficient * Math.pow(radix, exponent));
+	}
+
+	// Finally, integer tests.
+	if (x.match(digitRegexp(digitsForRadix(radix)))) {
+	    var n = parseInt(x, radix);
 	    if (isOverflow(n)) {
 		return makeBignum(x);
 	    } else {
-		return fromFixnum(n);
+		return n;
 	    }
 	} else {
 	    return false;
 	}
     };
 
+    function parseFloat(integralPart, fractionalPart, radix) {
+	var integralPartValue = parseInt(integralPart, radix)
 
+	var fractionalNumerator = parseInt(fractionalPart, radix)
+        var fractionalDenominator = Math.pow(radix, fractionalPart.length)
+	var fractionalPartValue = fractionalNumerator / fractionalDenominator
 
+	return FloatPoint.makeInstance(integralPartValue + fractionalPartValue);
+    }
 
 
     //////////////////////////////////////////////////////////////////////
@@ -3697,15 +3768,10 @@ var jsnums = {};
     // makeBignum: string -> BigInteger
     var makeBignum = function(s) {
 	if (typeof(s) === 'number') { s = s + ''; }
-	var match = s.match(bignumScientificPattern);
-	if (match) {
-	    return new BigInteger(match[1]+match[2] +
-				  zerostring(Number(match[3]) - match[2].length),
-				  10);
-	} else {
-	    return new BigInteger(s, 10);
-	}
+	s = expandExponent(s);
+	return new BigInteger(s, 10);
     };
+
     var zerostring = function(n) {
 	var buf = [];
 	for (var i = 0; i < n; i++) {
@@ -3825,46 +3891,49 @@ var jsnums = {};
 	// adapted for integer-sqrt.
 	// http://en.wikipedia.org/wiki/Newton's_method#Square_root_of_a_number
 	    var searchIter = function(n, guess) {
-		while(!(goodEnough(n, guess))) {
-		    guess = average(guess, 
-				    floor(divide(n, guess)));
+		while(!(lessThanOrEqual(sqr(guess),n) &&
+			lessThan(n,sqr(add(guess, 1))))) {
+		    guess = floor(divide(add(guess,
+					     floor(divide(n, guess))),
+					 2));
 		}
 		return guess;
-	    };
-	    	    
-	    var average = function (x,y) {
-		return floor(divide(add(x,y), 2));
-	    };
-
-	    var goodEnough = function(n, guess) {
-		return (lessThanOrEqual(sqr(guess),n) &&
-			lessThan(n,sqr(add(guess, 1))));
 	    };
 
 	    // integerSqrt: -> scheme-number
 	    BigInteger.prototype.integerSqrt = function() {
-		if(this.s == 0) {
+		var n;
+		if(sign(this) >= 0) {
 		    return searchIter(this, this);
 		} else {
-		    var tmpThis = multiply(this, -1);
-		    return Complex.makeInstance(0, 
-						searchIter(tmpThis, tmpThis));
+		    n = this.negate();
+		    return Complex.makeInstance(0, searchIter(n, n));
 		}
 	    };
     })();
 
 
-    (function() {
-	// Get an approximation using integerSqrt, 
+    (function() {	
+	// Get an approximation using integerSqrt, and then start another
+	// Newton-Ralphson search if necessary.
 	BigInteger.prototype.sqrt = function() {
-	    var approx = this.integerSqrt();
+	    var approx = this.integerSqrt(), fix;
 	    if (eqv(sqr(approx), this)) {
 		return approx;
 	    }
-	    // TODO: get closer to the result by Newton's method if
-	    // we can do so by floating-point
-	    return approx;
-	}
+	    fix = toFixnum(this);
+	    if (isFinite(fix)) {
+		if (fix >= 0) {
+		    return FloatPoint.makeInstance(Math.sqrt(fix));
+		} else {
+		    return Complex.makeInstance(
+			0,
+			FloatPoint.makeInstance(Math.sqrt(-fix)));
+		}
+	    } else {
+		return approx;
+	    }
+	};
     })();
 
 
@@ -4117,5 +4186,17 @@ var jsnums = {};
     Numbers['lcm'] = lcm;
 
     Numbers['toRepeatingDecimal'] = toRepeatingDecimal;
+
+
+
+    // The following exposes the class representations for easier
+    // integration with other projects.
+    Numbers['BigInteger'] = BigInteger;
+    Numbers['Rational'] = Rational;
+    Numbers['FloatPoint'] = FloatPoint;
+    Numbers['Complex'] = Complex;   
+
+    Numbers['MIN_FIXNUM'] = MIN_FIXNUM;
+    Numbers['MAX_FIXNUM'] = MAX_FIXNUM;
 
 })();
