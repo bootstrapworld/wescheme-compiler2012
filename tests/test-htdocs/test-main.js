@@ -1503,9 +1503,9 @@ var runTests = function(after) {
 	           });
 
 
-        runRawTest('stinrg->number',
+        runRawTest('string->number',
 	           function() {
-		       testPrim('string->number', runtime.string, ['abc'], false);
+//          testPrim('string->number', runtime.string, ['abc'], runtime.string("cannot parse abc as an inexact base 10 number"));
 		       testPrim('string->number', id, ['123'], 123);
 		       testPrim('string->number', runtime.string, ['0+3i'], runtime.complex(0, 3));
 	           });
