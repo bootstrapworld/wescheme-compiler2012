@@ -2386,7 +2386,7 @@ if (typeof(exports) !== 'undefined') {
 
 
 
-    var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])?(.*)$")
+    var hashModifiersRegexp = new RegExp("^(#[ei]#[bodx]|#[bodx]#[ei]|#[bodxei])(.*)$")
     function rationalRegexp(digits) { return new RegExp("^([+-]?["+digits+"]+)/(["+digits+"]+)$"); }
     function complexRegexp(digits) { return new RegExp("^([+-]?["+digits+"\\w/\\.]*)([+-])(["+digits+"\\w/\\.]*)i$"); }
     function digitRegexp(digits) { return new RegExp("^[+-]?["+digits+"]+$"); }
@@ -2416,7 +2416,7 @@ if (typeof(exports) !== 'undefined') {
 	var exactp = false
 
 	var hMatch = x.match(hashModifiersRegexp)
-	if (hMatch[1]) {
+	if (hMatch) {
 	    var modifierString = hMatch[1];
 
 	    var exactFlag = modifierString.match(new RegExp("(#[ei])"))
@@ -2426,7 +2426,8 @@ if (typeof(exports) !== 'undefined') {
 		var f = exactFlag[1].charAt(1)
 		exactp = f === 'e' ? true :
 			 f === 'i' ? false :
-			 throwRuntimeError("fromString: invalid exactness flag", this, r)
+			 // this case is unreachable
+			 throwRuntimeError("invalid exactness flag", this, r)
 	    }
 	    if (radixFlag) {
 		var f = radixFlag[1].charAt(1)
@@ -2434,16 +2435,21 @@ if (typeof(exports) !== 'undefined') {
 			f === 'o' ? 8 :
 			f === 'd' ? 10 :
 			f === 'x' ? 16 :
-			throwRuntimeError("fromString: invalid radix flag", this, r)
+			 // this case is unreachable
+			throwRuntimeError("invalid radix flag", this, r)
 	    }
 	}
 
 	var numberString = hMatch ? hMatch[2] : x
+	// if the string begins with a hash modifier, then it must parse as a
+	// number, an invalid parse is an error, not false. False is returned
+	// when the item could potentially have been read as a symbol.
+	var mustBeANumberp = hMatch ? true : false
 
-	return fromStringRaw(numberString, radix, exactp)
+	return fromStringRaw(numberString, radix, exactp, mustBeANumberp)
     };
 
-    function fromStringRaw(x, radix, exactp) {
+    function fromStringRaw(x, radix, exactp, mustBeANumberp) {
 	// exactp is currently unused
 	var cMatch = x.match(complexRegexp(digitsForRadix(radix)));
 	if (cMatch) {
@@ -2457,10 +2463,10 @@ if (typeof(exports) !== 'undefined') {
 							      ));
 	}
 
-        return fromStringRawNoComplex(x, radix, exactp)
+        return fromStringRawNoComplex(x, radix, exactp, mustBeANumberp)
     }
 
-    function fromStringRawNoComplex(x, radix, exactp) {
+    function fromStringRawNoComplex(x, radix, exactp, mustBeANumberp) {
 	// exactp is currently unused
 	var aMatch = x.match(rationalRegexp(digitsForRadix(radix)));
 	if (aMatch) {
@@ -2501,11 +2507,13 @@ if (typeof(exports) !== 'undefined') {
 	    } else {
 		return n;
 	    }
-	} else {
-	    throwRuntimeError("fromString: cannot parse " + x + " as an " +
+	} else if (mustBeANumberp) {
+	    throwRuntimeError("cannot parse " + x + " as an " +
                               (exactp ? "exact" : "inexact") +
                               " base " + radix + " number",
                               this);
+	} else {
+	    return false;
 	}
     };
 
