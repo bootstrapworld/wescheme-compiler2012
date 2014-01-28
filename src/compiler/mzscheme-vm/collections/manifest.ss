@@ -69,8 +69,25 @@
 	 (build-path self "bootstrap2012" "function-teachpack.ss"))
 	(make-collection-reference
 	 'bootstrap2012/bootstrap-common
-	 (build-path self "bootstrap2012" "bootstrap-common.ss"))))
+	 (build-path self "bootstrap2012" "bootstrap-common.ss"))
 
+
+        ;; Bootstrap 2014
+        (make-collection-reference
+	 'bootstrap2014/bootstrap-teachpack
+	 (build-path self "bootstrap2014" "bootstrap-teachpack.ss"))
+        (make-collection-reference
+	 'bootstrap2014/bootstrap-tilt-teachpack
+	 (build-path self "bootstrap2014" "bootstrap-tilt-teachpack.ss"))
+	(make-collection-reference
+	 'bootstrap2014/cage-teachpack
+	 (build-path self "bootstrap2014" "cage-teachpack.ss"))
+	(make-collection-reference
+	 'bootstrap2014/function-teachpack
+	 (build-path self "bootstrap2014" "function-teachpack.ss"))
+	(make-collection-reference
+	 'bootstrap2014/bootstrap-common
+	 (build-path self "bootstrap2014" "bootstrap-common.ss"))))
 
 (provide/contract [struct collection-reference ([name module-name?]
                                                 [path path?])]
