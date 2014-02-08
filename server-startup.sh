@@ -4,5 +4,6 @@
 
 git fetch
 git reset --hard origin/stable
-/home/ubuntu/racket/bin/raco make compiler-service.rkt
-/usr/bin/nohup /home/ubuntu/racket/bin/racket compiler-service.rkt  --extra-module-provider wescheme-module-provider.rkt &
+raco make compiler-service.rkt
+/usr/bin/nohup racket compiler-service.rkt  --extra-module-provider wescheme-module-provider.rkt &
+echo $! > /tmp/wescheme-compiler.pid
