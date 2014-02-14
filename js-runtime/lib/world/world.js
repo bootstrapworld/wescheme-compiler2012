@@ -1141,13 +1141,14 @@ if (typeof(world) === 'undefined') {
        this.height = sideB*Math.sin(angleA*Math.PI/180);
        
        var xs = [], ys = [];
-       // if angle < 180 start at the top of the canvas, otherwise start at the bottom
+       // if angle < 180 start at the top of the canvas,
+       // otherwise start at the bottom and use negative height
        if(angleA < 180){
          xs = [0, sideC, sideB*Math.cos(angleA*Math.PI/180)];
          ys = [0, 0, this.height];
        } else {
          xs = [0, sideC, Math.abs(sideB*Math.cos(angleA*Math.PI/180))];
-         ys = [this.height, this.height, 0];
+         ys = [-this.height, -this.height, 0];
        }
        this.vertices = zipVertices(xs, ys);
  
