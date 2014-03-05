@@ -1581,7 +1581,11 @@ if (typeof(exports) !== 'undefined') {
 
 	if (d === undefined) { d = 1; }
 
-	if (_integerLessThan(d, 0)) {
+	if (_integerIsZero(d)) {
+	    throwRuntimeError("division by zero: "+n+"/"+d);
+	}
+
+  if (_integerLessThan(d, 0)) {
 	    n = negate(n);
 	    d = negate(d);
 	}
