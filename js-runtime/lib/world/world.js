@@ -1145,10 +1145,10 @@ if (typeof(world) === 'undefined') {
        // otherwise start at the bottom and use negative height
        if(angleA < 180){
          xs = [0, sideC, sideB*Math.cos(angleA*Math.PI/180)];
-         ys = [0, 0, this.height];
+         ys = [0, 0, Math.floor(this.height)];
        } else {
          xs = [0, sideC, Math.abs(sideB*Math.cos(angleA*Math.PI/180))];
-         ys = [-this.height, -this.height, 0];
+         ys = [Math.floor(-this.height), Math.floor(-this.height), 0];
        }
        this.vertices = zipVertices(xs, ys);
  
