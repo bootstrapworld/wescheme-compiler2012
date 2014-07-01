@@ -1808,7 +1808,7 @@ PRIMITIVES['cosh'] =
 
 
 PRIMITIVES['sqr'] =
-    new PrimProc('sqr',
+ new PrimProc('sqr',
 		 1,
 		 false, false,
 		 function(aState, x) {
@@ -5365,7 +5365,7 @@ new PrimProc('rotate',
 			 check(aState, angle, isAngle, "rotate", "finite real number between 0 and 360", 1, arguments);
 			 check(aState, img, isImage, "rotate", "image", 2, arguments);
 				 // negate the angle, to make it a counterclockwise rotation
-			     return world.Kernel.rotateImage(jsnums.toFixnum(-angle), img);
+			     return world.Kernel.rotateImage(jsnums.toFixnum(jsnums.multiply(-1, angle)), img);
 			 });
 
 PRIMITIVES['scale/xy'] =
