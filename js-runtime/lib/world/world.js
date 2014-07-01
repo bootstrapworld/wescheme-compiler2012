@@ -1137,34 +1137,32 @@ if (typeof(world) === 'undefined') {
      // See http://docs.racket-lang.org/teachpack/2htdpimage.html#(def._((lib._2htdp/image..rkt)._triangle))
      var TriangleImage = function(sideC, angleA, sideB, style, color) {
        BaseImage.call(this);
-       this.width = sideC;
-       this.height = sideB*Math.sin(angleA*Math.PI/180);
-       
-       var xs = [], ys = [];
-       // if angle < 180 start at the top of the canvas,
-       // otherwise start at the bottom and use negative height
-       if(angleA < 180){
-         xs = [0, sideC, sideB*Math.cos(angleA*Math.PI/180)];
-         ys = [0, 0, Math.floor(this.height)];
-       } else {
-         xs = [0, sideC, Math.abs(sideB*Math.cos(angleA*Math.PI/180))];
-         ys = [Math.floor(-this.height), Math.floor(-this.height), 0];
-       }
-       this.vertices = zipVertices(xs, ys);
- 
-       // take obtuse triangles into account, which may have vertices out of the range of base
-       var xMin = Math.min.apply(Math, xs ), yMin = Math.min.apply(Math, ys),
-           xMax = Math.max.apply(Math, xs ), yMax = Math.max.apply(Math, ys);
-       this.width  = xMax-xMin;
-       this.height = yMax-yMin;
-       for(var i=0; i<this.vertices.length; i++){
-         this.vertices[i].x -= xMin; this.vertices[i].y -= yMin;
-       }
- 
-       this.style = style;
-       this.color = color;
-     };
-     TriangleImage.prototype = heir(BaseImage.prototype);
+          var thirdX = sideB * Math.cos(angleA * Math.PI/180);
+          var thirdY = sideB * Math.sin(angleA * Math.PI/180);
+
+          var offsetX = 0 - Math.min(0, thirdX); // angleA could be obtuse
+
+          this.width = Math.max(sideC, thirdX) + offsetX;
+          this.height = Math.abs(thirdY);
+          
+          var vertices = [];
+          // if angle < 180 start at the top of the canvas, otherwise start at the bottom
+          if(thirdY > 0){
+            vertices.push({x: offsetX + 0, y: 0});
+            vertices.push({x: offsetX + sideC, y: 0});
+            vertices.push({x: offsetX + thirdX, y: thirdY});
+          } else {
+            vertices.push({x: offsetX + 0, y: -thirdY});
+            vertices.push({x: offsetX + sideC, y: -thirdY});
+            vertices.push({x: offsetX + thirdX, y: 0});
+          }
+            console.log(vertices);
+          this.vertices = vertices;
+          
+          this.style = style;
+          this.color = color;
+    };
+    TriangleImage.prototype = heir(BaseImage.prototype);
 
     //////////////////////////////////////////////////////////////////////
     //Ellipse : Number Number Mode Color -> Image
