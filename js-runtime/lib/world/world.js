@@ -1156,7 +1156,6 @@ if (typeof(world) === 'undefined') {
             vertices.push({x: offsetX + sideC, y: -thirdY});
             vertices.push({x: offsetX + thirdX, y: 0});
           }
-            console.log(vertices);
           this.vertices = vertices;
           
           this.style = style;
