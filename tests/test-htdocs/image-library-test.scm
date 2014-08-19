@@ -428,7 +428,7 @@ Australia2
 "Three triangles of various sizes and fills"
 (triangle 36 "solid" "darkslategray")
 (triangle  4 "solid" "purple")
-(triangle 30 "solid" "cornflowerblue")
+(triangle 30 "outline" "cornflowerblue")
 
 "Triangles side by side"
 (beside (triangle 36 "solid" "darkslategray")
@@ -541,12 +541,12 @@ Australia2
 ;; ROTATE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 "Three images at 30, 60, 90 degree rotation:"
-(rotate 30 (image-url "logo.png"))
-(rotate 60 (image-url "logo.png"))
-(rotate 90 (image-url "logo.png"))
+(rotate 30 (image-url "http://www.bootstrapworld.org/images/icon.png"))
+(rotate 60 (image-url "http://www.bootstrapworld.org/images/icon.png"))
+(rotate 90 (image-url "http://www.bootstrapworld.org/images/icon.png"))
 
 "Rotated, huge image"
-(rotate 30 (scale 3 (image-url "logo.png")))
+(rotate 30 (scale 3 (image-url "http://www.bootstrapworld.org/images/icon.png")))
 
 "From the Racket documentation:"
 (rotate 45 (ellipse 60 20 "solid" "olivedrab"))
@@ -575,14 +575,14 @@ Australia2
 ;; SCALE & SCALE/XY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;       
 "scaling small and large"
-(scale 1/2 (image-url "logo.png"))
-(scale 2 (image-url "logo.png"))
+(scale 1/2 (image-url "http://www.bootstrapworld.org/images/icon.png"))
+(scale 2 (image-url "http://www.bootstrapworld.org/images/icon.png"))
 
-(scale/xy 1 2 (image-url "logo.png"))
-(scale/xy 2 1 (image-url "logo.png"))
+(scale/xy 1 2 (image-url "http://www.bootstrapworld.org/images/icon.png"))
+(scale/xy 2 1 (image-url "http://www.bootstrapworld.org/images/icon.png"))
 
 "This should be the normal image"
-(scale/xy 1 1 (image-url "logo.png"))
+(scale/xy 1 1 (image-url "http://www.bootstrapworld.org/images/icon.png"))
 
 "From the Racket documentation: two identical ellipses, and a circle"
 (scale 2 (ellipse 20 30 "solid" "blue"))
@@ -666,8 +666,8 @@ Australia2
 
 
 "one image flipped vertically, and one flipped horizontally"
-(flip-vertical (image-url "logo.png"))
-(flip-horizontal (image-url "logo.png"))
+(flip-vertical (image-url "http://www.bootstrapworld.org/images/icon.png"))
+(flip-horizontal (image-url "http://www.bootstrapworld.org/images/icon.png"))
 
 "BESIDE: reference image"
 (beside (square 20 "solid" (make-color  50  50 255))
@@ -760,7 +760,7 @@ Australia2
 
 "checking a bitmap against a different one"
 (check-expect (image=? (bitmap/url "http://www.bootstrapworld.org/images/icon.gif")
-                       (bitmap/url "http://www.bootstrapworld.org/images/logo.png"))
+                       (bitmap/url "http://www.bootstrapworld.org/images/icon.png"))
               #f)
 
 "checking a rectangle against itself"
