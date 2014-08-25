@@ -62,6 +62,12 @@
 "should be an outline red rectangle: " (rectangle 200 300 "outline" "red")
 "should be an *invisible* red rectangle: " (rectangle 200 300 0 "red")
 
+(define halfred (make-color 255 0 0 128))
+(define quarterred (make-color 255 0 0 64))
+"should be a solid red triangle" (triangle 50 "solid" "red")
+"should be a solid triangle made from a half-transparent red" (triangle 50 "solid" halfred)
+"should be a solid, half-alpha triangle made from a half-transparent red" (triangle 50 128 halfred)
+"should be a solid triangle made from a quater-trasparent red" (triangle 50 "solid" quarterred)
 
 ;(check-expect (color? (make-color 3 4 5)))
 
