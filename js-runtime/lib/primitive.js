@@ -4526,9 +4526,9 @@ PRIMITIVES['make-color'] =
 		                        3,
 		                        false, false,
 		                        function(aState, r, g, b) {
-		 	                    check(aState, r, isByte, 'make-color', 'number between 0 and 255', 1, arguments);
-		 	                    check(aState, g, isByte, 'make-color', 'number between 0 and 255', 2, arguments);
-		 	                    check(aState, b, isByte, 'make-color', 'number between 0 and 255', 3, arguments);
+		 	                    check(aState, r, isByte, 'make-color', 'exact number between 0 and 255', 1, arguments);
+		 	                    check(aState, g, isByte, 'make-color', 'exact number between 0 and 255', 2, arguments);
+		 	                    check(aState, b, isByte, 'make-color', 'exact number between 0 and 255', 3, arguments);
                                             
 			                    return types.color(jsnums.toFixnum(r),
 					                       jsnums.toFixnum(g),
@@ -4538,10 +4538,10 @@ PRIMITIVES['make-color'] =
 		                        4,
 		                        false, false,
 		                        function(aState, r, g, b, a) {
-		 	                    check(aState, r, isByte, 'make-color', 'number between 0 and 255', 1, arguments);
-		 	                    check(aState, g, isByte, 'make-color', 'number between 0 and 255', 2, arguments);
-		 	                    check(aState, b, isByte, 'make-color', 'number between 0 and 255', 3, arguments);
-		 	                    check(aState, a, isByte, 'make-color', 'number between 0 and 255', 4, arguments);
+		 	                    check(aState, r, isByte, 'make-color', 'exact number between 0 and 255', 1, arguments);
+		 	                    check(aState, g, isByte, 'make-color', 'exact number between 0 and 255', 2, arguments);
+		 	                    check(aState, b, isByte, 'make-color', 'exact number between 0 and 255', 3, arguments);
+		 	                    check(aState, a, isByte, 'make-color', 'exact number between 0 and 255', 4, arguments);
                                             
 			                    return types.color(jsnums.toFixnum(r),
 					                       jsnums.toFixnum(g),

@@ -6915,20 +6915,20 @@ PRIMITIVES['bytes>?'] = ALL DNE */
 
         queueErrorTest("make-color with 1st argument not a number between 0 and 255",
                        "(make-color 256 1 2 3)",
-                       'make-color: expects a number between 0 and 255 as 1st argument, but given: 256; other arguments were: 1 2 3');
+                       'make-color: expects an exact number between 0 and 255 as 1st argument, but given: 256; other arguments were: 1 2 3');
 
         queueErrorTest("make-color with 2nd argument not a number between 0 and 255",
                        "(make-color 255 256 2 3)",
-                       'make-color: expects a number between 0 and 255 as 2nd argument, but given: 256; other arguments were: 255 2 3');
+                       'make-color: expects an exact number between 0 and 255 as 2nd argument, but given: 256; other arguments were: 255 2 3');
 
 
         queueErrorTest("make-color with 3rd argument not a number between 0 and 255",
                        "(make-color 255 255 256 3)",
-                       'make-color: expects a number between 0 and 255 as 3rd argument, but given: 256; other arguments were: 255 255 3');
+                       'make-color: expects an exact number between 0 and 255 as 3rd argument, but given: 256; other arguments were: 255 255 3');
 
         queueErrorTest("make-color with 4th argument not a number between 0 and 255",
                        "(make-color 255 255 255 256)",
-                       'make-color: expects a number between 0 and 255 as 4th argument, but given: 256; other arguments were: 255 255 255');
+                       'make-color: expects an exact number between 0 and 255 as 4th argument, but given: 256; other arguments were: 255 255 255');
 
 //PRIMITIVES['color-red']
 
