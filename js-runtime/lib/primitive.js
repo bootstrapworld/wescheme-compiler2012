@@ -5796,8 +5796,14 @@ var OnTickBang = WorldConfigOption.extend({
 
 
 
-// The default tick delay is 28 times a second.
-var DEFAULT_TICK_DELAY = types.rational(1, 28);
+ // The default tick delay is 28 times a second.
+ // On slower browsers, we'll force all delays to be >= 1/10
+ var slow_browser = false;
+ if(window.plt !== undefined){
+   var clientInfo  = plt.wescheme.BrowserDetect,
+       slow_browser= (clientInfo.browser==="Explorer") && (clientInfo.version<11);
+ }
+ var DEFAULT_TICK_DELAY = slow_browser? (types.rational(1, 10)) : (types.rational(1, 28));
 
 PRIMITIVES['on-tick'] =
 	new CasePrimitive(
@@ -5818,10 +5824,11 @@ PRIMITIVES['on-tick'] =
 			  function(aState, f, aDelay) {
 			      check(aState, f, isFunction, "on-tick", "function name", 1, arguments);
 			      check(aState, aDelay, isNonNegativeReal, "on-tick", "non-negative number", 2, arguments);
+            if(slow_browser) console.log('Slow browser detected: limiting framerate to preserve responsiveness');
 			      return new OnTickBang(f,
 						    new PrimProc('', 1, false, false,
 								 function(aState, w) { return types.effectDoNothing(); }),
-						    aDelay);
+                slow_browser? Math.max(jsnums.toFixnum(aDelay), jsnums.toFixnum(DEFAULT_TICK_DELAY)) : aDelay);
 			  }) ]);
 
 
@@ -5843,7 +5850,9 @@ PRIMITIVES['on-tick!'] =
 			  check(aState, handler, isFunction, "on-tick!", "function name", 1, arguments);
 			  check(aState, effectHandler, isFunction, "on-tick!","function name", 2, arguments);
 			  check(aState, aDelay, isNonNegativeReal, "on-tick!", "non-negative number", 3, arguments);
-			  return new OnTickBang(handler, effectHandler, aDelay);
+        if(slow_browser) console.log('Slow browser detected: limiting framerate to preserve responsiveness');
+			  return new OnTickBang(handler, effectHandler,
+                              slow_browser? Math.max(jsnums.toFixnum(aDelay), jsnums.toFixnum(DEFAULT_TICK_DELAY)) : aDelay);
 		      }) ]);
 
 
