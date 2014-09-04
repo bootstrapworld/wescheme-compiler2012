@@ -5803,7 +5803,7 @@ var OnTickBang = WorldConfigOption.extend({
    var clientInfo  = plt.wescheme.BrowserDetect,
        slow_browser= (clientInfo.browser==="Explorer") && (clientInfo.version<11);
  }
- var DEFAULT_TICK_DELAY = slow_browser? (types.rational(1, 10)) : (types.rational(1, 28));
+ var DEFAULT_TICK_DELAY = slow_browser? (types.rational(1, 8)) : (types.rational(1, 28));
 
 PRIMITIVES['on-tick'] =
 	new CasePrimitive(
