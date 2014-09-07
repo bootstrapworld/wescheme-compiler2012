@@ -5572,7 +5572,7 @@ PRIMITIVES['play-sound'] =
 										var rawAudio = document.createElement('audio');
 										rawAudio.src = path.toString();
 										rawAudio.addEventListener('canplay', function() {
-                                              restarter(world.Kernel.fileAudio(path.toString(), rawAudio));
+                                              restarter(world.Kernel.fileAudio(path.toString(), false, rawAudio));
                                               });
 										rawAudio.addEventListener('error', function(e) {
                                               restarter(types.schemeError(types.incompleteExn(
@@ -5581,7 +5581,7 @@ PRIMITIVES['play-sound'] =
 																				   [])));
 										});
 										rawAudio.src = path.toString();
-										});
+          });
 		 });
  
  

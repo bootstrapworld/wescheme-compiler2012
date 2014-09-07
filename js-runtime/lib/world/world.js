@@ -550,14 +550,14 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
     // FileAudio: String Node -> Video
-    var FileAudio = function(src, rawAudio) {
-        var self = this;
+    var FileAudio = function(src, loop, rawAudio) {
         this.src = src;
         if (rawAudio && (rawAudio.readyState===4)) {
             this.audio                  = rawAudio;
             this.audio.autoplay         = true;
             this.audio.autobuffer       = true;
-            this.audio.loop             = false;
+            this.audio.currentTime      = 0;
+            this.audio.loop             = loop;
             this.audio.play();
         } else {
             // fixme: we may want to do something blocking here for
@@ -567,22 +567,26 @@ if (typeof(world) === 'undefined') {
             this.audio = document.createElement('audio');
             this.audio.src = src;
             this.audio.addEventListener('canplay', function() {
-                this.video.autoplay     = true;
-                this.video.autobuffer   = true;
-                this.video.loop         = false;
-                this.video.play();
+                this.audio.autoplay     = true;
+                this.audio.autobuffer   = true;
+                this.audio.currentTime  = 0;
+                this.audio.loop         = loop;
+                this.audio.play();
             });
         }
     };
     var audioCache = {};
-    FileAudio.makeInstance = function(path, loop, rawAudio, afterInit) {
-        if (! (path in audioCache)) {
+    FileAudio.makeInstance = function(path, loop, rawAudio) {
+/*        if (! (path in audioCache)) {
             audioCache[path] = new FileAudio(path, loop, rawAudio, afterInit);
             return audioCache[path];
         } else {
+            audioCache[path].audio.play();
             afterInit(audioCache[path]);
             return audioCache[path];
         }
+ */
+        return new FileAudio(path, loop, rawAudio);
     };
  
     //////////////////////////////////////////////////////////////////////
@@ -1572,8 +1576,8 @@ if (typeof(world) === 'undefined') {
     world.Kernel.fileVideo = function(path, rawVideo) {
         return FileVideo.makeInstance(path, rawVideo);
     };
-    world.Kernel.fileAudio = function(path, rawImage, afterInit) {
-        return FileAudio.makeInstance(path, rawImage, afterInit);
+    world.Kernel.fileAudio = function(path, loop, rawAudio) {
+        return FileAudio.makeInstance(path, loop, rawAudio);
     };
 
     world.Kernel.isSceneImage   = function(x) { return x instanceof SceneImage; };
