@@ -274,13 +274,13 @@
 					   rhombus
 					   square
 					   triangle
-             triangle/sas
-             triangle/sss
-             triangle/ass
-             triangle/ssa
-             triangle/aas
-             triangle/asa
-             triangle/saa
+                                           triangle/sas
+                                           triangle/sss
+                                           triangle/ass
+                                           triangle/ssa
+                                           triangle/aas
+                                           triangle/asa
+                                           triangle/saa
 					   right-triangle
 					   isosceles-triangle
 					   ellipse
@@ -327,6 +327,7 @@
 					   angle?
 					   side-count?
 					   step-count?
+             play-sound
 					   ))))))
 
 

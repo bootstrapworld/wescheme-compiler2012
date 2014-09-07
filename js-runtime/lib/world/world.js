@@ -446,10 +446,6 @@ if (typeof(world) === 'undefined') {
         }
     };
 
-    FileImage.installInstance = function(path, rawImage, afterInit) {
-        imageCache[path] = new FileImage(path, rawImage, afterInit);
-    };
-
     FileImage.installBrokenImage = function(path) {
         imageCache[path] = new TextImage("Unable to load " + path, 10, colorDb.get("red"),
                                          "normal", "Arial","","",false);
@@ -549,6 +545,44 @@ if (typeof(world) === 'undefined') {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
         }
         return (this.src === other.src);
+    };
+ 
+
+    //////////////////////////////////////////////////////////////////////
+    // FileAudio: String Node -> Video
+    var FileAudio = function(src, rawAudio) {
+        var self = this;
+        this.src = src;
+        if (rawAudio && (rawAudio.readyState===4)) {
+            this.audio                  = rawAudio;
+            this.audio.autoplay         = true;
+            this.audio.autobuffer       = true;
+            this.audio.loop             = false;
+            this.audio.play();
+        } else {
+            // fixme: we may want to do something blocking here for
+            // onload, since we don't know at this time what the file size
+            // should be, nor will drawImage do the right thing until the
+            // file is loaded.
+            this.audio = document.createElement('audio');
+            this.audio.src = src;
+            this.audio.addEventListener('canplay', function() {
+                this.video.autoplay     = true;
+                this.video.autobuffer   = true;
+                this.video.loop         = false;
+                this.video.play();
+            });
+        }
+    };
+    var audioCache = {};
+    FileAudio.makeInstance = function(path, loop, rawAudio, afterInit) {
+        if (! (path in audioCache)) {
+            audioCache[path] = new FileAudio(path, loop, rawAudio, afterInit);
+            return audioCache[path];
+        } else {
+            afterInit(audioCache[path]);
+            return audioCache[path];
+        }
     };
  
     //////////////////////////////////////////////////////////////////////
@@ -1468,8 +1502,6 @@ if (typeof(world) === 'undefined') {
         return colorDb.get('' + s);
     };
 
-
-
     ///////////////////////////////////////////////////////////////
     // Exports
 
@@ -1539,6 +1571,9 @@ if (typeof(world) === 'undefined') {
     };
     world.Kernel.fileVideo = function(path, rawVideo) {
         return FileVideo.makeInstance(path, rawVideo);
+    };
+    world.Kernel.fileAudio = function(path, rawImage, afterInit) {
+        return FileAudio.makeInstance(path, rawImage, afterInit);
     };
 
     world.Kernel.isSceneImage   = function(x) { return x instanceof SceneImage; };

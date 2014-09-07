@@ -1,5 +1,7 @@
 (printf "images.rkt\n")
 
+(play-sound "http://www.html5tutorial.info/media/vincent.mp3")
+
 ;; "Checking Empty scene"
 ;; (empty-scene 40 50 "red")
 "These three circles (red, green, blue) should be left aligned"

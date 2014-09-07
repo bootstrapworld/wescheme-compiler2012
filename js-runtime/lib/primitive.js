@@ -5550,19 +5550,41 @@ new PrimProc('text/font',
 			 check(aState, aWeight,	isFontWeight,	"text/font", "weight",	7, arguments);
 			 check(aState, aUnderline,isBoolean,	"text/font", "underline?",8, arguments);
 			 
-			 if (colorDb.get(aColor)) {
-			 aColor = colorDb.get(aColor);
-			 }
-                             try {
-			 return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-										   aFace.toString(), aFamily.toString(), aStyle.toString(),
-										   aWeight.toString(), aUnderline);
-                             } catch(e) {
-                                 // Under IE 8, something breaks.  I don't know yet what it is.
-		        return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
-											  "normal", "Arial","","",false);
-                             }
-			 });
+			 if (colorDb.get(aColor)) { aColor = colorDb.get(aColor); }
+       try {
+         return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
+                                       aFace.toString(), aFamily.toString(), aStyle.toString(),
+                                       aWeight.toString(), aUnderline);
+      } catch(e) {
+      // Under IE 8, something breaks.  I don't know yet what it is.
+        return world.Kernel.textImage(aString.toString(), jsnums.toFixnum(aSize), aColor,
+                                      "normal", "Arial","","",false);
+      }
+    });
+ 
+PRIMITIVES['play-sound'] =
+    new PrimProc('play-sound',
+		 1,
+		 false, false,
+		 function(aState, path) {
+		     check(aState, path, isString, "play-sound", "string", 1);
+			     return PAUSE(function(restarter, caller) {
+										var rawAudio = document.createElement('audio');
+										rawAudio.src = path.toString();
+										rawAudio.addEventListener('canplay', function() {
+                                              restarter(world.Kernel.fileAudio(path.toString(), rawAudio));
+                                              });
+										rawAudio.addEventListener('error', function(e) {
+                                              restarter(types.schemeError(types.incompleteExn(
+																				   types.exnFail,
+																				   " (unable to load: " + path + ")",
+																				   [])));
+										});
+										rawAudio.src = path.toString();
+										});
+		 });
+ 
+ 
 PRIMITIVES['bitmap/url'] = 
 PRIMITIVES['image-url'] =
     new PrimProc('image-url',
@@ -5609,10 +5631,10 @@ new PrimProc('video-url',
 										var rawVideo = document.createElement('video');
 										rawVideo.src = path.toString();
 										rawVideo.addEventListener('canplay', function() {
-										restarter(world.Kernel.fileVideo(path.toString(), rawVideo));
-										});
+                                              restarter(world.Kernel.fileVideo(path.toString(), rawVideo));
+                                              });
 										rawVideo.addEventListener('error', function(e) {
-										restarter(types.schemeError(types.incompleteExn(
+                                              restarter(types.schemeError(types.incompleteExn(
 																				   types.exnFail,
 																				   " (unable to load: " + path + ")",
 																				   [])));
