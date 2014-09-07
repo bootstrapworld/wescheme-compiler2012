@@ -1476,7 +1476,7 @@ var textToDomNode = function(text) {
     var i;
     var wrapper = document.createElement("span");
     var newlineDiv;
-    wrapper.className = "wescheme-string";
+    wrapper.className = (text==="true" || text==="false")? "wescheme-boolean" : "wescheme-string";
     wrapper.style.fontFamily = 'monospace';
     wrapper.style.whiteSpace = "pre";
     if (chunks.length > 0) {
