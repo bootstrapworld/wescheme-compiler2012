@@ -1,6 +1,6 @@
 (printf "images.rkt\n")
 
-(play-sound "http://www.html5tutorial.info/media/vincent.mp3")
+(play-sound "http://www.html5tutorial.info/media/vincent.mp3" true)
 
 ;; "Checking Empty scene"
 ;; (empty-scene 40 50 "red")
@@ -544,6 +544,28 @@ Australia2
 (regular-polygon 30 8 "solid" "darkgoldenrod")
 "A nonagon of side-length 20: should be 58x57"
 (regular-polygon 20 9 "solid" "sienna")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; POLYGON
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+"Some polygons defined with posns..."
+(polygon (list (make-posn 0 0)
+                (make-posn -10 20)
+                (make-posn 60 0)
+                (make-posn -10 -20))
+          "solid"
+          "burlywood")
+          
+(polygon (list (make-posn 0 0)
+                 (make-posn 0 40)
+                 (make-posn 20 40)
+                 (make-posn 20 60)
+                 (make-posn 40 60)
+                 (make-posn 40 20)
+                 (make-posn 20 20)
+                 (make-posn 20 0))
+           "solid"
+           "plum")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ROTATE

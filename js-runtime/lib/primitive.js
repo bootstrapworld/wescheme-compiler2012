@@ -4828,6 +4828,22 @@ PRIMITIVES['rectangle'] =
 							   s.toString(), c);
 		 });
 
+PRIMITIVES['polygon'] =
+new PrimProc('polygon',
+			 3,
+			 false, false,
+			 function(aState, points, s, c) {
+       function isPosnList(lst){ return isListOf(lst, types.isPosn); }
+			 check(aState, points,	isPosnList,	"polygon", "list of posns", 1, arguments);
+			 check(aState, s,		isMode, "polygon", 'style ("solid" or "outline" or [0-255])', 2, arguments);
+			 check(aState, c,		isColor, "polygon", "color", 3, arguments);
+			 
+			 if (colorDb.get(c)) { c = colorDb.get(c); }
+			 return world.Kernel.posnImage(helpers.flattenSchemeListToArray(points),
+											  s.toString(),
+											  c);
+			 });
+
 PRIMITIVES['regular-polygon'] =
 new PrimProc('regular-polygon',
 			 4,

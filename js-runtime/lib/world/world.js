@@ -574,6 +574,7 @@ if (typeof(world) === 'undefined') {
                 this.audio.play();
             });
         }
+        return true;
     };
     var audioCache = {};
     FileAudio.makeInstance = function(path, loop, rawAudio) {
@@ -987,6 +988,29 @@ if (typeof(world) === 'undefined') {
     RhombusImage.prototype.getHeight = function() {
         return this.height;
     };
+
+    //////////////////////////////////////////////////////////////////////
+    // PosnImage: Vertices Mode Color -> Image
+    //
+    var PosnImage = function(vertices, style, color) {
+        BaseImage.call(this);
+        var xs = vertices.map(function(v){return types.posnX(v);}),
+            ys = vertices.map(function(v){return types.posnY(v);}),
+            vertices = zipVertices(xs, ys);
+
+        this.width      = Math.max.apply(Math, xs) - Math.min.apply(Math, xs);
+        this.height     = Math.max.apply(Math, ys) - Math.min.apply(Math, ys);
+        this.style      = style;
+        this.color      = color;
+        // shift the vertices by the calculated offsets, now that we know the width
+        var xOffset = Math.min.apply(Math, xs);
+        var yOffset = Math.min.apply(Math, ys);
+        for(var i=0; i<vertices.length; i++){
+            vertices[i].x -= xOffset; vertices[i].y -= yOffset;
+        }
+        this.vertices   = vertices;
+    };
+    PosnImage.prototype = heir(BaseImage.prototype);
 
     //////////////////////////////////////////////////////////////////////
     // PolygonImage: Number Count Step Mode Color -> Image
@@ -1536,6 +1560,9 @@ if (typeof(world) === 'undefined') {
     };
     world.Kernel.polygonImage = function(length, count, step, style, color) {
         return new PolygonImage(length, count, step, style, color);
+    };
+    world.Kernel.posnImage = function(posns, style, color) {
+        return new PosnImage(posns, style, color);
     };
     world.Kernel.squareImage = function(length, style, color) {
         return new RectangleImage(length, length, style, color);
