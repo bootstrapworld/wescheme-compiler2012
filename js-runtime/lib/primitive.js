@@ -5574,7 +5574,7 @@ PRIMITIVES['play-sound'] =
 										rawAudio.src = path.toString();
                     // return true at 'canplay' if we're using async, or at 'ended' if we're not
                     rawAudio.addEventListener('canplay', function() {
-                        world.Kernel.fileAudio(path.toString(), false, rawAudio);
+                        var temp = new world.Kernel.fileAudio(path.toString(), false, rawAudio);
                         if(async){ return restarter(true); }
                         else { rawAudio.addEventListener('ended', function(){return restarter(true);}); }
                     });
