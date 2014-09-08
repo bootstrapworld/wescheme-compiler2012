@@ -5844,7 +5844,6 @@ PRIMITIVES['on-tick'] =
 			  function(aState, f, aDelay) {
 			      check(aState, f, isFunction, "on-tick", "function name", 1, arguments);
 			      check(aState, aDelay, isNonNegativeReal, "on-tick", "non-negative number", 2, arguments);
-            if(slow_browser) console.log('Slow browser detected: limiting framerate to preserve responsiveness');
 			      return new OnTickBang(f,
 						    new PrimProc('', 1, false, false,
 								 function(aState, w) { return types.effectDoNothing(); }),
@@ -5870,7 +5869,6 @@ PRIMITIVES['on-tick!'] =
 			  check(aState, handler, isFunction, "on-tick!", "function name", 1, arguments);
 			  check(aState, effectHandler, isFunction, "on-tick!","function name", 2, arguments);
 			  check(aState, aDelay, isNonNegativeReal, "on-tick!", "non-negative number", 3, arguments);
-        if(slow_browser) console.log('Slow browser detected: limiting framerate to preserve responsiveness');
 			  return new OnTickBang(handler, effectHandler,
                               slow_browser? Math.max(jsnums.toFixnum(aDelay), jsnums.toFixnum(DEFAULT_TICK_DELAY)) : aDelay);
 		      }) ]);
