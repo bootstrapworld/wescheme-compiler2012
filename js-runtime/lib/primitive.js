@@ -5564,26 +5564,24 @@ new PrimProc('text/font',
  
 PRIMITIVES['play-sound'] =
     new PrimProc('play-sound',
-		 1,
+		 2,
 		 false, false,
-		 function(aState, path) {
+		 function(aState, path, async) {
 		     check(aState, path, isString, "play-sound", "string", 1);
+         check(aState, async, isBoolean, "play-sound", "boolean", 2);
 			     return PAUSE(function(restarter, caller) {
 										var rawAudio = document.createElement('audio');
 										rawAudio.src = path.toString();
-										rawAudio.addEventListener('canplay', function() {
-                                              restarter(world.Kernel.fileAudio(path.toString(), false, rawAudio));
-                                              });
-										rawAudio.addEventListener('error', function(e) {
-                                              restarter(types.schemeError(types.incompleteExn(
-																				   types.exnFail,
-																				   " (unable to load: " + path + ")",
-																				   [])));
-										});
+                    // return true at 'canplay' if we're using async, or at 'ended' if we're not
+                    rawAudio.addEventListener('canplay', function() {
+                        world.Kernel.fileAudio(path.toString(), false, rawAudio);
+                        if(async){ return restarter(true); }
+                        else { rawAudio.addEventListener('ended', function(){return restarter(true);}); }
+                    });
+										rawAudio.addEventListener('error', function(e) { restarter(false);	});
 										rawAudio.src = path.toString();
           });
 		 });
- 
  
 PRIMITIVES['bitmap/url'] = 
 PRIMITIVES['image-url'] =
