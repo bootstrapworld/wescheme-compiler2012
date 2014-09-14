@@ -4834,6 +4834,7 @@ new PrimProc('polygon',
 			 false, false,
 			 function(aState, points, s, c) {
        function isPosnList(lst){ return isListOf(lst, types.isPosn); }
+       checkListOfLength(aState, points, 3, 'polygon', 1);
 			 check(aState, points,	isPosnList,	"polygon", "list of posns", 1, arguments);
 			 check(aState, s,		isMode, "polygon", 'style ("solid" or "outline" or [0-255])', 2, arguments);
 			 check(aState, c,		isColor, "polygon", "color", 3, arguments);
