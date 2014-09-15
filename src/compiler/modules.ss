@@ -271,6 +271,7 @@
 					   nw:rectangle
 					   rectangle
 					   regular-polygon
+                                           polygon
 					   rhombus
 					   square
 					   triangle
