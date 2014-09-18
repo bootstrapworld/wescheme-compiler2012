@@ -1062,10 +1062,9 @@ if (typeof(world) === 'undefined') {
 
     //////////////////////////////////////////////////////////////////////
     // TextImage: String Number Color String String String String any/c -> Image
-    var TextImage = function(msg, size, color, face, family, style, weight, underline) {        
+    var TextImage = function(str, size, color, face, family, style, weight, underline) {
         BaseImage.call(this);
-        var metrics;
-        this.msg        = msg;
+        this.str        = str;
         this.size       = size;   // 18
         this.color      = color;  // red
         this.face       = face;   // Gill Sans
@@ -1073,52 +1072,38 @@ if (typeof(world) === 'undefined') {
         this.style      = (style === "slant")? "oblique" : style;  // Racket's "slant" -> CSS's "oblique"
         this.weight     = (weight=== "light")? "lighter" : weight; // Racket's "light" -> CSS's "lighter"
         this.underline  = underline;
-        // example: "bold italic 20px 'Times', sans-serif". 
-        // Default weight is "normal", face is "Arial"
  
         // NOTE: we *ignore* font-family, as it causes a number of font bugs due the browser inconsistencies
-        var canvas      = world.Kernel.makeCanvas(0, 0),
-            ctx         = canvas.getContext("2d");
+        // example: "bold italic 20px 'Times', sans-serif".
+        // Default weight is "normal", face is "Arial"
+        this.font = (this.style+" " +this.weight+" "+this.size+"px "+'"'+this.face+'", '+this.family);
+
+        // We don't trust ctx.measureText, since (a) it's buggy and (b) it doesn't measure height
+        // based off of the amazing work at http://mudcu.be/journal/2011/01/html5-typographic-metrics/#baselineCanvas
+        // PENDING CANVAS V5 API: http://www.whatwg.org/specs/web-apps/current-work/#textmetrics
  
-        this.font = (this.style + " " +
-                     this.weight + " " +
-                     this.size + "px " +
-                     '"'+this.face+'", '+
-                     this.family);
- 
-        try {
-            ctx.font    = this.font;
-        } catch (e) {
-            this.fallbackOnFont();
-            ctx.font    = this.font;
-        }
+        // build a DOM node with the same styling as the canvas, then measure it
+        var container = document.createElement("div"),
+            parent = document.createElement("span"),
+            image = document.createElement("img");    // hack to get at CSS measuring properties
+        parent.style.font = this.font;                // use the same font settings as the context
+        image.width = 42; image.height = 1;           // we use a dataURL to reduce dependency on external image files
+        image.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWM4MbPgPwAGzwLR05RbqwAAAABJRU5ErkJggg==";
+        container.style.cssText = "position: absolute; top: 0px; left: 0px;  zIndex=-1";
+        parent.appendChild(document.createTextNode(str));
+        parent.appendChild(image);
+        container.appendChild(parent);
+        document.body.appendChild(container);
         
-        // Defensive: on IE, this can break.
-        try {
-            metrics     = ctx.measureText(msg);
-            this.width  = metrics.width;
-            this.height = Number(this.size); 
-        } catch(e) {
-            this.fallbackOnFont();
-        }
+        // getting (more accurate) css equivalent of ctx.measureText()
+        image.style.display = "none";
+        parent.style.display= "inline";
+        this.alphaBaseline = 0;
+        this.width       = parent.offsetWidth;
+        this.height      = parent.offsetHeight;
+        document.body.removeChild(container);       // clean up after ourselves
     };
- 
-
     TextImage.prototype = heir(BaseImage.prototype);
-
-    TextImage.prototype.fallbackOnFont = function() {
-        // Defensive: if the browser doesn't support certain features, we
-        // reduce to a smaller feature set and try again.
-        this.font       = this.size + "px " + maybeQuote(this.family);    
-        var canvas      = world.Kernel.makeCanvas(0, 0);
-        var ctx         = canvas.getContext("2d");
-        ctx.font        = this.font;
-        var metrics     = ctx.measureText(this.msg);
-        this.width      = metrics.width;
-        // KLUDGE: I don't know how to get at the height.
-        this.height     = Number(this.size);//ctx.measureText("m").width + 20;
-    };
-
 
     TextImage.prototype.render = function(ctx, x, y) {
         ctx.save();
@@ -1126,13 +1111,7 @@ if (typeof(world) === 'undefined') {
         ctx.textBaseline= 'top';
         ctx.fillStyle   = colorString(this.color);
         ctx.font        = this.font;
-        try { 
-            ctx.fillText(this.msg, x, y); 
-        } catch (e) {
-            this.fallbackOnFont();
-            ctx.font = this.font;    
-            ctx.fillText(this.msg, x, y); 
-        }
+        ctx.fillText(this.str, x, y);
         if(this.underline){
             ctx.beginPath();
             ctx.moveTo(x, y+this.size);
@@ -1145,15 +1124,13 @@ if (typeof(world) === 'undefined') {
         ctx.restore();
     };
 
-    TextImage.prototype.getBaseline = function() {
-        return this.size;
-    };
+    TextImage.prototype.getBaseline = function() { return this.alphaBaseline; };
 
     TextImage.prototype.isEqual = function(other, aUnionFind) {
         if (!(other instanceof TextImage)) {
           return BaseImage.prototype.isEqual.call(this, other, aUnionFind);
         }
-        return (this.msg      === other.msg &&
+        return (this.str      === other.str &&
                 this.size     === other.size &&
                 this.face     === other.face &&
                 this.family   === other.family &&
@@ -1594,8 +1571,8 @@ if (typeof(world) === 'undefined') {
     world.Kernel.flipImage = function(img, direction) {
         return new FlipImage(img, direction);
     };
-    world.Kernel.textImage = function(msg, size, color, face, family, style, weight, underline) {
-        return new TextImage(msg, size, color, face, family, style, weight, underline);
+    world.Kernel.textImage = function(str, size, color, face, family, style, weight, underline) {
+        return new TextImage(str, size, color, face, family, style, weight, underline);
     };
     world.Kernel.fileImage = function(path, rawImage, afterInit) {
         return FileImage.makeInstance(path, rawImage, afterInit);
