@@ -552,26 +552,27 @@ if (typeof(world) === 'undefined') {
     // FileAudio: String Node -> Video
     var FileAudio = function(src, loop, rawAudio) {
         this.src = src;
+        var that = this;
         if (rawAudio && (rawAudio.readyState===4)) {
-            this.audio                  = rawAudio;
-            this.audio.autoplay         = true;
-            this.audio.autobuffer       = true;
-            this.audio.currentTime      = 0;
-            this.audio.loop             = loop;
-            this.audio.play();
+            that.audio                  = rawAudio;
+            that.audio.autoplay         = true;
+            that.audio.autobuffer       = true;
+            that.audio.currentTime      = 0;
+            that.audio.loop             = loop;
+            that.audio.play();
         } else {
             // fixme: we may want to do something blocking here for
             // onload, since we don't know at this time what the file size
             // should be, nor will drawImage do the right thing until the
             // file is loaded.
-            this.audio = document.createElement('audio');
-            this.audio.src = src;
-            this.audio.addEventListener('canplay', function() {
-                this.audio.autoplay     = true;
-                this.audio.autobuffer   = true;
-                this.audio.currentTime  = 0;
-                this.audio.loop         = loop;
-                this.audio.play();
+            that.audio = document.createElement('audio');
+            that.audio.src = src;
+            that.audio.addEventListener('canplay', function() {
+                that.audio.autoplay     = true;
+                that.audio.autobuffer   = true;
+                that.audio.currentTime  = 0;
+                that.audio.loop         = loop;
+                that.audio.play();
             });
         }
         return true;
