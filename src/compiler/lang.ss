@@ -175,7 +175,7 @@
          
          ;; Contract-related stuff: the following will be erased on 
          ;; javascript bootstrapping time.
-         provide/contract -> any/c listof list/c or/c false/c natural-number/c hash?
+         provide/contract -> any any/c listof list/c or/c false/c natural-number/c hash?
 
          begin
          void
