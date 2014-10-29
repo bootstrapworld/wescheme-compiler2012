@@ -94,9 +94,10 @@ var Evaluator = (function() {
             var newlineDiv;
             var i;
             for (i = 1; i < chunks.length; i++) {
-                newlineDiv = document.createElement("br");
-                newlineDiv.style.clear = 'left';
-                dom.appendChild(newlineDiv);
+                newline = document.createElement("br");
+                newline.style.clear = 'left';
+                newline.className = 'value-seperator';
+                dom.appendChild(newline);
                 dom.appendChild(document.createTextNode(chunks[i]));
             }
 	    dom = that.transformDom(dom);
