@@ -75,6 +75,9 @@ var world = {};
 	    // onKeyEffect: world key -> effect
 	    onKeyEffect : false,
 
+	    // onMouse: world number number string -> world
+	    onMouse: false,
+ 
 	    // onTilt: world number number number -> world
 	    onTilt: false,
 	    // onTiltEffect: world number number number -> effect

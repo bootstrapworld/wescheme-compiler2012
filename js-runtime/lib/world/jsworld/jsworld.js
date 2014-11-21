@@ -894,15 +894,15 @@ var jsworld = {};
 	}
     }
     Jsworld.on_key = on_key;
-/*
+
     function on_mouse(mouse) {
       return function() {
         var e;
         var top;
 
-        var stillClicking = false;
-        var clearClicking = function() {
-            stillClicking = false;
+        var stillMousing = false;
+        var clearMousing = function() {
+            stillMousing = false;
         };
 
         var f = function(w, k) { mouse(w, e, k); };
@@ -913,10 +913,10 @@ var jsworld = {};
           preventDefault(e);
           stopPropagation(e);
  
-//          if (! stillClicking) {
-//            stillClicking = true;
-            change_world(f, true);
-//          }
+          if (! stillMousing) {
+            stillMousing = true;
+            change_world(f, clearMousing);
+          }
         };
 
         return {
@@ -936,7 +936,7 @@ var jsworld = {};
     }
     Jsworld.on_mouse = on_mouse;
 
- */
+ 
 
  
 
@@ -967,11 +967,11 @@ var jsworld = {};
 	    return {
 		onRegister: function(top_) {
                     top = top_;
-                    attachEvent(top, 'mousedown', wrappedPress); 
+//                    attachEvent(top, 'mousedown', wrappedPress);
                     attachEvent(top, 'touchstart', wrappedPress); 
                 },
 		onUnregister: function(top) { 
-                    detachEvent(top, 'mousedown', wrappedPress);
+//                    detachEvent(top, 'mousedown', wrappedPress);
                     detachEvent(top, 'touchstart', wrappedPress); 
                 }
 	    };

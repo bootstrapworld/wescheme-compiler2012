@@ -22,8 +22,8 @@
 (define (on-key! f ef)
   (make-world-config:on-key f ef))
 
-;(define (on-mouse f)
-;  (make-world-config:on-mouse f (lambda (w x y type) '())))
+(define (on-mouse f)
+  (make-world-config:on-mouse f (lambda (w x y type) '())))
 
 (define (on-tick delay f)
   (make-world-config:on-tick delay f (lambda (w) '())))
