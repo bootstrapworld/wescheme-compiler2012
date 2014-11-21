@@ -156,9 +156,9 @@
                          module-path
                          (list (bf 'on-tick module-path 1 true)
                                (bf 'on-tick! module-path 2 true)
-                               #;(bf 'on-mouse module-path 1 false)
-                               #;(bf 'on-mouse! module-path 2 false)
-                               
+                               ;(bf 'on-mouse module-path 1 false)
+                               ;(bf 'on-mouse! module-path 2 false)
+
                                
                                (bf 'initial-effect module-path 1 false)
                                

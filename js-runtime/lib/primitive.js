@@ -5897,6 +5897,9 @@ PRIMITIVES['on-tilt'] = new PrimProc('on-tilt', 1, false, false, onEvent('on-til
 
 PRIMITIVES['on-key'] = new PrimProc('on-key', 1, false, false, onEvent('on-key', 'onKey', 2));
 PRIMITIVES['on-key!'] = new PrimProc('on-key!', 2, false, false, onEventBang('on-key!', 'onKey'));
+ 
+//PRIMITIVES['on-mouse'] = new PrimProc('on-mouse', 1, false, false, onEvent('on-mouse', 'onMouse', 3));
+
 
 // PRIMITIVES['on-announce'] = new PrimProc('on-announce', 1, false, false,
 // 					 onEvent('on-announce', 'onAnnounce', 3));

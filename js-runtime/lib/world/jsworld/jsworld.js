@@ -894,6 +894,51 @@ var jsworld = {};
 	}
     }
     Jsworld.on_key = on_key;
+/*
+    function on_mouse(mouse) {
+      return function() {
+        var e;
+        var top;
+
+        var stillClicking = false;
+        var clearClicking = function() {
+            stillClicking = false;
+        };
+
+        var f = function(w, k) { mouse(w, e, k); };
+        var wrappedMouse = function(_e) {
+          e = _e;
+          if (top) { top.focus(); }
+
+          preventDefault(e);
+          stopPropagation(e);
+ 
+//          if (! stillClicking) {
+//            stillClicking = true;
+            change_world(f, true);
+//          }
+        };
+
+        return {
+          onRegister: function(top_) {
+            top = top_;
+            attachEvent(top, 'mousedown', wrappedMouse);
+            attachEvent(top, 'mouseup', wrappedMouse);
+            attachEvent(top, 'mousemove', wrappedMouse);
+          },
+          onUnregister: function(top) {
+            detachEvent(top, 'mousedown', wrappedMouse);
+            detachEvent(top, 'mouseup', wrappedMouse);
+            detachEvent(top, 'mousemove', wrappedMouse);
+          }
+        };
+      }
+    }
+    Jsworld.on_mouse = on_mouse;
+
+ */
+
+ 
 
 
     function on_tap(press) {

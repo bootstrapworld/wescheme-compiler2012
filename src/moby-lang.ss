@@ -146,6 +146,7 @@
          
          ;; Configuration handlers
          on-key on-key!
+        ;on-mouse
          on-tick on-tick!
          on-location-change on-location-change!
          on-tilt on-tilt!
