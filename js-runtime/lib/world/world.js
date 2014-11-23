@@ -1179,7 +1179,7 @@ if (typeof(world) === 'undefined') {
      var TriangleImage = function(sideC, angleA, sideB, style, color) {
        BaseImage.call(this);
           var thirdX = sideB * Math.cos(angleA * Math.PI/180);
-          var thirdY = sideB * Math.sin(angleA * Math.PI/180);
+          var thirdY = Math.floor(sideB * Math.sin(angleA * Math.PI/180));
 
           var offsetX = 0 - Math.min(0, thirdX); // angleA could be obtuse
 
