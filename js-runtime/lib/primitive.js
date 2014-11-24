@@ -663,6 +663,16 @@ var checkAllSameLength = function(aState, lists, functionName, args) {
 		});
 }
 
+ 
+// A hook for notifying the outside world about file loading
+ var notifyLoading = function(url){
+    if(window.plt && window.plt.wescheme){
+      var shortenedUrl = url.substring(0,20)+"..."+url.substring(url.length-20);
+      plt.wescheme.WeSchemeIntentBus.notify("load-file", shortenedUrl);
+    } else {
+      console.log("Loading from "+url);
+    }
+ };
 
 //////////////////////////////////////////////////////////////////////
 
@@ -5587,6 +5597,7 @@ PRIMITIVES['play-sound'] =
 		     check(aState, path, isString, "play-sound", "string", 1);
          check(aState, async, isBoolean, "play-sound", "boolean", 2);
 			     return PAUSE(function(restarter, caller) {
+                    notifyLoading(path.toString());
 										var rawAudio = document.createElement('audio');
 										rawAudio.src = path.toString();
                     // return true at 'canplay' if we're using async, or at 'ended' if we're not
@@ -5616,6 +5627,7 @@ PRIMITIVES['image-url'] =
 		     }
 
 		     return PAUSE(function(restarter, caller) {
+       notifyLoading(originalPath);
 			 var rawImage = new Image();
 			 rawImage.onload = function() {
 			     world.Kernel.fileImage(
@@ -5643,6 +5655,7 @@ new PrimProc('video-url',
 			 function(aState, path) {
 		     check(aState, path, isString, "video-url", "string", 1);
 			     return PAUSE(function(restarter, caller) {
+                      notifyLoading(path.toString());
 										var rawVideo = document.createElement('video');
 										rawVideo.src = path.toString();
 										rawVideo.addEventListener('canplay', function() {
