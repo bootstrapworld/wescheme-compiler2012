@@ -904,29 +904,43 @@ var jsworld = {};
         var clearMousing = function() {
             stillMousing = false;
         };
-
-        var f = function(w, k) { mouse(w, e, k); };
-        var wrappedMouse = function(_e) {
-          e = _e;
-          if (top) { top.focus(); }
-
-          preventDefault(e);
-          stopPropagation(e);
  
-          if (! stillMousing) {
-            stillMousing = true;
-            change_world(f, clearMousing);
-          }
+        var f = function(w, k) { mouse(w, e, k); };
+ 
+        // all dblclick events are preceded by mouseup and mousedown events, which means
+        // a dblclick will accidentally trigger a mouse-event inside big-bang
+        // to prevent this, we wait 300ms after recieving an event, and a dblclick
+        // event will clear the action if it fires
+ 
+        // This leads to a 300ms lag in responsiveness, but preserves the behavior we expect
+        var waitToSeeIfDoubleClick;
+        var wrappedMouse = function(_e) {
+          waitToSeeIfDoubleClick = setTimeout(function(){
+            e = _e;
+            if (top) { top.focus(); }
+
+            preventDefault(e);
+            stopPropagation(e);
+   
+            if (! stillMousing) {
+              stillMousing = true;
+              change_world(f, clearMousing);
+            }
+          }, 300);
         };
+ 
+        var cancelOnDoubleClick = function(){ clearTimeout(waitToSeeIfDoubleClick)};
 
         return {
           onRegister: function(top_) {
             top = top_;
+            attachEvent(top, 'dblclick', cancelOnDoubleClick);
             attachEvent(top, 'mousedown', wrappedMouse);
             attachEvent(top, 'mouseup', wrappedMouse);
             attachEvent(top, 'mousemove', wrappedMouse);
           },
           onUnregister: function(top) {
+            detachEvent(top, 'dblclick', cancelOnDoubleClick);
             detachEvent(top, 'mousedown', wrappedMouse);
             detachEvent(top, 'mouseup', wrappedMouse);
             detachEvent(top, 'mousemove', wrappedMouse);
