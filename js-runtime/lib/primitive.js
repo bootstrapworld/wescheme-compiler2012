@@ -666,7 +666,7 @@ var checkAllSameLength = function(aState, lists, functionName, args) {
  
 // A hook for notifying the outside world about file loading
  var notifyLoading = function(url){
-    if(window.plt && window.plt.wescheme){
+    if(window.plt && window.plt.wescheme && plt.wescheme.WeSchemeIntentBus){
       var shortenedUrl = url.substring(0,20)+"..."+url.substring(url.length-20);
       plt.wescheme.WeSchemeIntentBus.notify("load-file", shortenedUrl);
     } else {
