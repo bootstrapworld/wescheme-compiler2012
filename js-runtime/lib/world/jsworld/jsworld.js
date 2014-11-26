@@ -905,7 +905,7 @@ var jsworld = {};
             stillMousing = false;
         };
  
-        var f = function(w, k) { mouse(w, e, k); }; 
+        var f = function(w, k) { mouse(w, e, k); };
         var wrappedMouse = function(_e) {
             e = _e;
             if (top) { top.focus(); }
