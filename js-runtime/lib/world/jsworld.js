@@ -582,23 +582,25 @@
 
   if (config.lookup('onMouse')) {
 	    var wrappedMouse = function(w, e, k) {
-                var x = e.pageX, y = e.pageY,
-                    type  = e.type==='mousemove'? "move"
-                          : e.type==='mousedown'? "button-down"
-                          : e.type==='mouseup' ? "button-up"
-                          : "other";
-                var currentElement = e.target;
-                do {
-                    x -= currentElement.offsetLeft;
-                    y -= currentElement.offsetTop;
-                    currentElement = currentElement.offsetParent;
-                } while(currentElement);
+          var x = e.pageX, y = e.pageY,
+              type  = e.type==='mousemove'? "move"
+                    : e.type==='mousedown'? "button-down"
+                    : e.type==='mouseup' ? "button-up"
+                    : "other";
+          var currentElement = e.target;
+          do {
+              x -= currentElement.offsetLeft;
+              y -= currentElement.offsetTop;
+              currentElement = currentElement.offsetParent;
+          } while(currentElement);
 
-                caller(config.lookup('onMouse'), [w, x, y, type], k);
+          var scaledX = x*e.target.width/e.target.offsetWidth
+              scaledY = y*e.target.height/e.target.offsetHeight;
+          caller(config.lookup('onMouse'), [w, scaledX, scaledY, type], k);
 	    }
 	    wrappedHandlers.push(_js.on_mouse(wrappedMouse));
   }
-
+ 
         if (config.lookup('onTap')) {
 	    var wrappedTap = function(w, e, k) {
                 var x = e.pageX, y = e.pageY;
