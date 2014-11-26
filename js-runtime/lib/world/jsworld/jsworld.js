@@ -912,7 +912,7 @@ var jsworld = {};
         // to prevent this, we wait 300ms after recieving an event, and a dblclick
         // event will clear the action if it fires
  
-        // This leads to a 300ms lag in performance, but preserves the behavior we expect
+        // This leads to a 300ms lag in responsiveness, but preserves the behavior we expect
         var waitToSeeIfDoubleClick;
         var wrappedMouse = function(_e) {
           waitToSeeIfDoubleClick = setTimeout(function(){
@@ -926,7 +926,7 @@ var jsworld = {};
               stillMousing = true;
               change_world(f, clearMousing);
             }
-          }, 200);
+          }, 300);
         };
  
         var cancelOnDoubleClick = function(){ clearTimeout(waitToSeeIfDoubleClick)};
