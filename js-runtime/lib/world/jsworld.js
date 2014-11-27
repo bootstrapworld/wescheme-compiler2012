@@ -580,13 +580,23 @@
 	    toplevelNode.focus();
 	}
 
+  var mouseIsDown = false;
   if (config.lookup('onMouse')) {
 	    var wrappedMouse = function(w, e, k) {
+          // browsers don't send drag events for *all* move-while-down mouse events,
+          // so we use state to track those events
+          if(e.type==="mousedown") mouseIsDown = true;
+          if(e.type==="mouseup" || e.type==="mouseleave")   mouseIsDown = false;
+ 
           var x = e.pageX, y = e.pageY,
-              type  = e.type==='mousemove'? "move"
-                    : e.type==='mousedown'? "button-down"
-                    : e.type==='mouseup' ? "button-up"
-                    : "other";
+              type  = e.type==='mousedown' ? "button-down"
+                    : e.type==='mouseup'   ? "button-up"
+                    : e.type==='mouseenter'? "enter"
+                    : e.type==='mouseleave'? "leave"
+                    : (e.type==='mousemove' && mouseIsDown)? "drag"
+                    : e.type==='mousemove'? "move"
+                    : e.type;
+ 
           var currentElement = e.target;
           do {
               x -= currentElement.offsetLeft;
