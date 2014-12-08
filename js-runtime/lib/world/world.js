@@ -297,11 +297,12 @@ if (typeof(world) === 'undefined') {
       }
       // if it's something more sophisticated, render both images to canvases
       // First check canvas dimensions, then go pixel-by-pixel
-      var c1 = this.toDomNode(), c2 = other.toDomNode();
-      c1.afterAttach();  c2.afterAttach();
-      if(c1.width !== c2.width || c1.height !== c2.height){ return false;}
+      var node1 = this.toDomNode(), node2 = other.toDomNode();
+      if(node1.width !== node2.width || node1.height !== node2.height){ return false;}
       try{
-        var ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d'),
+          var c1 = makeCanvas(node1.width, node1.height);
+          var c2 = makeCanvas(node2.width, node2.height);
+          var ctx1 = c1.getContext('2d'), ctx2 = c2.getContext('2d'),
             data1 = ctx1.getImageData(0, 0, c1.width, c1.height),
             data2 = ctx2.getImageData(0, 0, c2.width, c2.height);
         var pixels1 = data1.data,
