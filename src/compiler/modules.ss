@@ -314,6 +314,10 @@
 					   image=?
 					   image-width
 					   image-height
+                                           
+                                           ;; mouse events
+                                           mouse-event?
+                                           mouse=?
 					   
 					   image->color-list
 					   color-list->image

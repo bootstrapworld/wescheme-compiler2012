@@ -580,6 +580,9 @@ var isAssocList = function(x) {
 	return isPair(x) && isPair(x.rest()) && isEmpty(x.rest().rest());
 };
 
+var isMouseEvent = function(x){
+ return ["button-down", "button-up", "drag", "move", "enter", "leave"].indexOf(x) > -1;
+};
 
 var isCompoundEffect = function(x) {
 	return ( types.isEffect(x) || isListOf(x, isCompoundEffect) );
@@ -5912,6 +5915,25 @@ PRIMITIVES['on-key'] = new PrimProc('on-key', 1, false, false, onEvent('on-key',
 PRIMITIVES['on-key!'] = new PrimProc('on-key!', 2, false, false, onEventBang('on-key!', 'onKey'));
  
 PRIMITIVES['on-mouse'] = new PrimProc('on-mouse', 1, false, false, onEvent('on-mouse', 'onMouse', 3));
+
+
+PRIMITIVES['mouse-event?'] =
+    new PrimProc('mouse-event?',
+		 1,
+		 true, false,
+     function(aState, v) { return isMouseEvent(v); });
+ 
+ 
+PRIMITIVES['mouse=?'] =
+    new PrimProc('mouse=?',
+		 2,
+		 true, false,
+		 function(aState, mouseA, mouseB) {
+		 	check(aState, mouseA, isMouseEvent, 'mouse-event?', 'mouse-event', 1);
+		 	check(aState, mouseB, isMouseEvent, 'mouse-event?', 'mouse-event', 2);
+			return mouseA===mouseB;
+});
+
 
 
 // PRIMITIVES['on-announce'] = new PrimProc('on-announce', 1, false, false,
