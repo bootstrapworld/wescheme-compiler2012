@@ -5606,6 +5606,8 @@ PRIMITIVES['play-sound'] =
                     // return true at 'canplay' if we're using async, or at 'ended' if we're not
                     rawAudio.addEventListener('canplay', function() {
                         var temp = new world.Kernel.fileAudio(path.toString(), false, rawAudio);
+                        function pause(){ temp.audio.pause(); return true;};
+                        aState.addBreakRequestedListener(pause);
                         if(async){ return restarter(true); }
                         else { rawAudio.addEventListener('ended', function(){return restarter(true);}); }
                     });
@@ -5663,6 +5665,8 @@ new PrimProc('video-url',
 										rawVideo.src = path.toString();
 										rawVideo.addEventListener('canplay', function() {
                                               restarter(world.Kernel.fileVideo(path.toString(), rawVideo));
+                                              function pause(){ rawVideo.pause(); return true;};
+                                              aState.addBreakRequestedListener(pause);
                                               });
 										rawVideo.addEventListener('error', function(e) {
                                               restarter(types.schemeError(types.incompleteExn(
