@@ -601,6 +601,12 @@ Australia2
 "A solid blue triangle, rotated 30 degrees. Should be flush left"
 (rotate 30 (triangle 100 "solid" "blue"))
 
+"Rotation should preserve fractional pixels"
+(define img (rotate 45 (square 40 "outline" "black")))
+(define both (beside img img))
+(check-expect (image-width img) 57)
+(check-expect (image-width both) 113)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SCALE & SCALE/XY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;       
@@ -742,6 +748,9 @@ Australia2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IMAGE EQUALITY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; IMAGE EQUALITY
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 "checking a circle against a rectangle"
 (check-expect (image=? (circle 50 "solid" "blue")
                        (rectangle 20 30 "outline" "turquoise"))
@@ -822,6 +831,44 @@ Australia2
 (check-expect (image=? (circle 50 90 "orange")
                        (ellipse 100 100 90 "orange"))
               #t)
+
+
+"checking a circle against its rotated self"
+(check-expect (image=? (circle 50 90 "orange")
+                       (rotate 45 (circle 50 90 "orange")))
+              #t)
+
+"checking structurally-different overlays"
+(define img (circle 15 "solid" "red"))
+(check-expect (beside img (beside img img))
+            (beside img img img))
+
+"bulls-eye tests"
+(define (bulls-eye i color1 color2)
+  (if (<= i 0)
+      empty-image
+      (overlay (bulls-eye (sub1 i) color2 color1)
+               (circle (* i 10) "solid" color1))))
+      
+(check-expect (bulls-eye 0 "blue" "red") empty-image)
+(check-expect (bulls-eye 1 "blue" "red") (circle 10 "solid" "blue"))
+(check-expect (bulls-eye 2 "blue" "red")
+              (overlay (circle 10 "solid" "red")
+                       (circle 20 "solid" "blue")))
+
+"shrinking balls tests"
+(define (line-of-balls r)
+  (if (<= r 1)
+      (circle r "solid" "red")
+      (beside
+       (circle r "solid" "red")
+       (line-of-balls (* r 0.8)))))
+
+(define manual (beside (circle 2 "solid" "red")
+                       (circle (* 2 .8) "solid" "red")
+                       (circle (* 2 .8 .8) "solid" "red")
+                       (circle (* 2 .8 .8 .8) "solid" "red")
+                       (circle (* 2 .8 .8 .8 .8) "solid" "red")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; IMAGE PROPERTIES
