@@ -602,9 +602,9 @@ Australia2
 (rotate 30 (triangle 100 "solid" "blue"))
 
 "Rotation should preserve fractional pixels"
-(define img (rotate 45 (square 40 "outline" "black")))
-(define both (beside img img))
-(check-expect (image-width img) 57)
+(define img2 (rotate 45 (square 40 "outline" "black")))
+(define both (beside img2 img2))
+(check-expect (image-width img2) 57)
 (check-expect (image-width both) 113)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
