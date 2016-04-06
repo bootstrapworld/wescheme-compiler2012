@@ -153,7 +153,9 @@
     [(= (procedure-arity f) 1)
      (lambda (b) (make-being (make-posn (f (being-x b)) (being-y b)) (being-costume b)))]
     [(= (procedure-arity f) 2)
-     (lambda (b) (make-being (f (being-x b) (being-y b)) (being-costume b)))]))
+     (lambda (b) (make-being (f (being-x b) (being-y b)) (being-costume b)))]
+    [else (display "ERROR: Expected procedure " f
+                   " to take either one or two inputs\n.")]))
 
 
 ; reset : Being (Being->Being) -> Being
